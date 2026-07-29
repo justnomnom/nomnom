@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { getSiteUrl } from 'src/libs/site-url';
 import { getStripe } from 'src/libs/stripe/stripe-server';
 import { supabaseAdminClient } from 'src/libs/supabase/supabase-admin';
+import { captureServerEvent } from 'src/libs/posthog/capture-server-event';
 import {
   getSupabaseAuthUser,
   createSupabaseServerClient,
@@ -171,12 +172,33 @@ export async function POST(request) {
       const code = e && typeof e === 'object' && 'code' in e ? e.code : undefined;
       const message = e && typeof e === 'object' && 'message' in e ? e.message : String(e);
       console.error('[stripe checkout] snapshot sessions.create', code, message, e);
+      await captureServerEvent('snapshot_checkout_failed', {
+        list_id: listId,
+        user_id: user.id,
+        error_code: 'checkout_session_failed',
+        amount_cents: amountCents,
+        currency,
+      });
       return NextResponse.json({ error: 'checkout_session_failed' }, { status: 502 });
     }
 
     if (!session.url) {
+      await captureServerEvent('snapshot_checkout_failed', {
+        list_id: listId,
+        user_id: user.id,
+        error_code: 'no_session_url',
+        amount_cents: amountCents,
+        currency,
+      });
       return NextResponse.json({ error: 'no_session_url' }, { status: 500 });
     }
+
+    await captureServerEvent('snapshot_checkout_redirected', {
+      list_id: listId,
+      user_id: user.id,
+      amount_cents: amountCents,
+      currency,
+    });
     return NextResponse.json({ url: session.url });
   }
 
@@ -230,12 +252,26 @@ export async function POST(request) {
     );
   } catch (e) {
     console.error('[stripe checkout] sessions.create', e);
+    await captureServerEvent('live_list_checkout_failed', {
+      list_id: listId,
+      user_id: user.id,
+      error_code: 'checkout_session_failed',
+    });
     return NextResponse.json({ error: 'checkout_session_failed' }, { status: 502 });
   }
 
   if (!session.url) {
+    await captureServerEvent('live_list_checkout_failed', {
+      list_id: listId,
+      user_id: user.id,
+      error_code: 'no_session_url',
+    });
     return NextResponse.json({ error: 'no_session_url' }, { status: 500 });
   }
 
+  await captureServerEvent('live_list_checkout_redirected', {
+    list_id: listId,
+    user_id: user.id,
+  });
   return NextResponse.json({ url: session.url });
 }

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { getSiteUrl } from 'src/libs/site-url';
 import { getStripe } from 'src/libs/stripe/stripe-server';
+import { captureServerEvent } from 'src/libs/posthog/capture-server-event';
 import { STRIPE_CONNECT_DEFAULT_COUNTRY } from 'src/libs/stripe/list-stripe-constants';
 import {
   getSupabaseAuthUser,
@@ -130,6 +131,10 @@ export async function POST() {
     const account = await stripe.accounts.retrieve(accountId);
     if (account?.charges_enabled && account?.details_submitted) {
       const loginLink = await stripe.accounts.createLoginLink(accountId);
+      await captureServerEvent('stripe_connect_started', {
+        user_id: user.id,
+        status: 'dashboard',
+      });
       return NextResponse.json({ url: loginLink.url, mode: 'dashboard' });
     }
   } catch (e) {
@@ -167,11 +172,21 @@ export async function POST() {
       );
       if (clearErr) {
         console.error('[stripe connect onboard] clear stale account', clearErr);
+        await captureServerEvent('stripe_connect_failed', {
+          user_id: user.id,
+          error_code: 'account_clear_failed',
+        });
         return NextResponse.json({ error: 'account_clear_failed' }, { status: 500 });
       }
 
       const recreated = await createExpressAccountAndSave();
-      if (!recreated.ok) return recreated.response;
+      if (!recreated.ok) {
+        await captureServerEvent('stripe_connect_failed', {
+          user_id: user.id,
+          error_code: 'account_recreate_failed',
+        });
+        return recreated.response;
+      }
 
       try {
         link = await stripe.accountLinks.create({
@@ -182,15 +197,32 @@ export async function POST() {
         });
       } catch (e2) {
         console.error('[stripe connect onboard] accountLinks.create (after reset)', e2);
+        await captureServerEvent('stripe_connect_failed', {
+          user_id: user.id,
+          error_code: 'account_link_failed',
+        });
         return NextResponse.json(jsonWithStripeError('account_link_failed', e2), { status: 502 });
       }
 
+      await captureServerEvent('stripe_connect_started', {
+        user_id: user.id,
+        status: 'onboarding',
+        reset: true,
+      });
       return NextResponse.json({ url: link.url });
     }
 
     console.error('[stripe connect onboard] accountLinks.create', e);
+    await captureServerEvent('stripe_connect_failed', {
+      user_id: user.id,
+      error_code: 'account_link_failed',
+    });
     return NextResponse.json(jsonWithStripeError('account_link_failed', e), { status: 502 });
   }
 
+  await captureServerEvent('stripe_connect_started', {
+    user_id: user.id,
+    status: 'onboarding',
+  });
   return NextResponse.json({ url: link.url });
 }
