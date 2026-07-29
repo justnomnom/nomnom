@@ -18,7 +18,7 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-/** Every sort mode the Nom Nom List supports, in display order. */
+/** Every sort mode the NomNom List supports, in display order. */
 export const MAP_SHEET_SORT_MODES = ['relevance', 'distance', 'recent'];
 
 const MODE_META = {

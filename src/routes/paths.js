@@ -49,7 +49,7 @@ export const paths = {
     opts?.username && opts?.slug ? `/lists/${opts.username}/${opts.slug}` : `/lists/${id}`,
   /** Supabase restaurant (share link; readable without signing in). */
   restaurantPublic: (id) => `/restaurants/${id}`,
-  /** Public profile by @handle (PAGES-SPEC). */
+  /** Public profile by @handle. */
   userPublic: (username) => `/u/${String(username ?? '').replace(/^@/, '')}`,
 
   // AUTH
@@ -71,7 +71,7 @@ export const paths = {
     blank: `${ROOTS.DASHBOARD}/blank`,
     map: `${ROOTS.DASHBOARD}/map`,
     restaurant: (id) => `${ROOTS.DASHBOARD}/restaurants/${id}`,
-    /** My Nom Nom lists index (not list detail — that is `listDetails`). */
+    /** My NomNom lists index (not list detail — that is `listDetails`). */
     lists: `${ROOTS.DASHBOARD}/lists`,
     settings: `${ROOTS.DASHBOARD}/settings`,
     settingsEdit: `${ROOTS.DASHBOARD}/settings/profile/edit`,

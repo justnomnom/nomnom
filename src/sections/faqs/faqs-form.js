@@ -114,10 +114,20 @@ export default function FaqsForm({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Prefer live form values so browser autofill is included even if onChange never fired.
+    const fd = new FormData(e.currentTarget);
+    const nextData = {
+      name: String(fd.get('name') ?? formData.name ?? '').trim(),
+      email: String(fd.get('email') ?? formData.email ?? '').trim(),
+      message: String(fd.get('message') ?? formData.message ?? '').trim(),
+      topic: formData.topic,
+    };
+    setFormData((prev) => ({ ...prev, ...nextData }));
+
     const nextErrors = {
-      email: validateField('email', formData.email),
-      message: validateField('message', formData.message),
-      topic: validateField('topic', formData.topic),
+      email: validateField('email', nextData.email, nextData),
+      message: validateField('message', nextData.message, nextData),
+      topic: validateField('topic', nextData.topic, nextData),
     };
     setTouched({ email: true, message: true, topic: true, name: true });
     setFieldErrors(nextErrors);
@@ -128,14 +138,14 @@ export default function FaqsForm({
 
     setLoading(true);
 
-    const subjectLabel = t(key(`topics.${formData.topic}`));
+    const subjectLabel = t(key(`topics.${nextData.topic}`));
 
     try {
       const result = await sendContactInquiryEmail({
-        name: formData.name,
-        email: formData.email,
+        name: nextData.name,
+        email: nextData.email,
         subject: subjectLabel,
-        message: formData.message,
+        message: nextData.message,
       });
 
       if (!result.ok) {
@@ -145,7 +155,7 @@ export default function FaqsForm({
       analytics.trackFormSubmit('faq_contact_form', {
         location: analyticsLocation,
         subject: subjectLabel,
-        topic: formData.topic,
+        topic: nextData.topic,
       });
 
       setNotification({
@@ -162,12 +172,18 @@ export default function FaqsForm({
         location: analyticsLocation,
         form_type: 'contact_form',
         subject: subjectLabel,
-        topic: formData.topic,
+        topic: nextData.topic,
       });
+
+      const serverMessage = typeof error?.message === 'string' ? error.message.trim() : '';
+      const isUserFacing =
+        serverMessage &&
+        !serverMessage.startsWith('resend_') &&
+        serverMessage !== 'Failed to send email';
 
       setNotification({
         open: true,
-        message: t(key('error')),
+        message: isUserFacing ? serverMessage : t(key('error')),
         severity: 'error',
       });
     } finally {
@@ -199,6 +215,33 @@ export default function FaqsForm({
       </Typography>
     </MotionPart>
   );
+
+  const formAlert =
+    notification.open && notification.message ? (
+      <Alert
+        onClose={handleCloseNotification}
+        severity={notification.severity}
+        variant="outlined"
+        role={notification.severity === 'error' ? 'alert' : 'status'}
+        aria-live="polite"
+        sx={{ width: 1 }}
+        action={
+          notification.severity === 'success' ? (
+            <Button
+              component={RouterLink}
+              href={paths.home}
+              color="inherit"
+              size="small"
+              sx={{ fontWeight: 700, whiteSpace: 'nowrap' }}
+            >
+              {t(key('success_cta'))}
+            </Button>
+          ) : null
+        }
+      >
+        {notification.message}
+      </Alert>
+    ) : null;
 
   const topicChips = (
     <Stack spacing={1} sx={{ width: 1 }}>
@@ -286,6 +329,7 @@ export default function FaqsForm({
       />
 
       <Stack spacing={1} sx={{ width: 1 }}>
+        {formAlert}
         <Button
           size="large"
           color="primary"
@@ -304,32 +348,6 @@ export default function FaqsForm({
     </>
   );
 
-  const formAlert =
-    notification.open && notification.message ? (
-      <Alert
-        onClose={handleCloseNotification}
-        severity={notification.severity}
-        variant="outlined"
-        role={notification.severity === 'error' ? 'alert' : 'status'}
-        sx={{ width: 1 }}
-        action={
-          notification.severity === 'success' ? (
-            <Button
-              component={RouterLink}
-              href={paths.home}
-              color="inherit"
-              size="small"
-              sx={{ fontWeight: 700, whiteSpace: 'nowrap' }}
-            >
-              {t(key('success_cta'))}
-            </Button>
-          ) : null
-        }
-      >
-        {notification.message}
-      </Alert>
-    ) : null;
-
   if (isSettings) {
     return (
       <Box
@@ -346,7 +364,6 @@ export default function FaqsForm({
       >
         <Stack spacing={2} sx={{ width: 1, alignItems: 'stretch' }}>
           {formTitle}
-          {formAlert}
           {fields}
         </Stack>
       </Box>
@@ -365,34 +382,35 @@ export default function FaqsForm({
         px: 0,
       }}
     >
-      <Stack
-        spacing={{ xs: 2, md: 3 }}
-        component={MotionViewport}
+      <Box
+        component="form"
         onSubmit={handleSubmit}
-        as="form"
         noValidate
         sx={{
-          marginBottom: { xs: '20px', md: '40px' },
-          mt: { xs: 2, md: 4 },
-          alignItems: 'center',
-          maxWidth: { xs: '100%', md: '600px' },
           width: '100%',
+          maxWidth: { xs: '100%', md: '600px' },
           mx: 'auto',
-          px: { xs: 0, sm: 0 },
         }}
       >
-        {formTitle}
-        {formAlert ? (
+        <Stack
+          spacing={{ xs: 2, md: 3 }}
+          component={MotionViewport}
+          sx={{
+            marginBottom: { xs: '20px', md: '40px' },
+            mt: { xs: 2, md: 4 },
+            alignItems: 'center',
+            width: '100%',
+            px: { xs: 0, sm: 0 },
+          }}
+        >
+          {formTitle}
           <MotionPart variants={varFade().inUp} style={{ width: '100%' }}>
-            {formAlert}
+            <Stack spacing={2} sx={{ width: 1 }}>
+              {fields}
+            </Stack>
           </MotionPart>
-        ) : null}
-        <MotionPart variants={varFade().inUp} style={{ width: '100%' }}>
-          <Stack spacing={2} sx={{ width: 1 }}>
-            {fields}
-          </Stack>
-        </MotionPart>
-      </Stack>
+        </Stack>
+      </Box>
     </Container>
   );
 }

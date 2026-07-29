@@ -336,7 +336,7 @@ export const DEFAULT_APP_SETTINGS = {
 
 export const PATH_AFTER_LOGIN = paths.dashboard.discover;
 
-/** Series colors — align with Tailwind / export-html chart CSS vars if you change them */
+/** Series colors — align with Tailwind chart CSS vars if you change them */
 export const CHART_COLORS = {
   1: '#FF5A5F',
   2: '#3B82F6',

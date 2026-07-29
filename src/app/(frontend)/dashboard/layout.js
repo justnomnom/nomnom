@@ -22,9 +22,10 @@ export default async function Layout({ children }) {
   } = await getSupabaseAuthUser();
 
   if (user) {
-    const { data: profile } = await getUserOnboardingRow(user.id);
+    const { data: profile, error: profileError } = await getUserOnboardingRow(user.id);
 
-    if (!profile?.onboarding_completed_at) {
+    // Read failures must not be treated as "incomplete" — that loops users into onboarding.
+    if (!profileError && !profile?.onboarding_completed_at) {
       redirect(paths.onboarding);
     }
   }

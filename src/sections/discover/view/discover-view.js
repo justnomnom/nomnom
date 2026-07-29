@@ -291,7 +291,7 @@ export default function DiscoverView({
    */
   const [selectedVibeKey, setSelectedVibeKey] = useState(null);
   /**
-   * Feed category. `null` is "Daily Nom Noms" — the unfiltered feed — matching how the AI
+   * Feed category. `null` is "Daily NomNoms" — the unfiltered feed — matching how the AI
    * search path already treats `daily` (`restaurant-search-agent.js` maps it to null before
    * calling the RPC). The copy for these chips has been translated in both locales, and
    * named in `BRAND.md` as shipped, since before the chips themselves existed.
@@ -963,7 +963,7 @@ export default function DiscoverView({
     [trackEvent]
   );
 
-  /** `null` is the default "Daily Nom Noms" feed; re-tapping the active chip returns to it. */
+  /** `null` is the default "Daily NomNoms" feed; re-tapping the active chip returns to it. */
   const selectCategory = useCallback(
     (key) => {
       setSelectedCategoryKey((prev) => {

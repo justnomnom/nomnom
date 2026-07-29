@@ -282,6 +282,11 @@ export async function syncDiscoverHomeFromDevice(lng, lat) {
 
   const { id } = resolved.location;
 
+  const followResult = await syncUserPrimaryLocalityFollow(supabase, user.id, id);
+  if (followResult.error) {
+    return { ok: false, error: followResult.error };
+  }
+
   const { error } = await supabase
     .from('users')
     .update({
@@ -294,11 +299,6 @@ export async function syncDiscoverHomeFromDevice(lng, lat) {
   if (error) {
     console.error('[syncDiscoverHomeFromDevice]', error);
     return { ok: false, error: error.message };
-  }
-
-  const followResult = await syncUserPrimaryLocalityFollow(supabase, user.id, id);
-  if (followResult.error) {
-    return { ok: false, error: followResult.error };
   }
 
   revalidatePath(paths.dashboard.discover);
@@ -325,6 +325,11 @@ export async function syncDiscoverHomeToFallbackMarket() {
   }
 
   const first = rows[0];
+  const followResult = await syncUserPrimaryLocalityFollow(supabase, user.id, first.id);
+  if (followResult.error) {
+    return { ok: false, error: followResult.error };
+  }
+
   const { error } = await supabase
     .from('users')
     .update({
@@ -336,11 +341,6 @@ export async function syncDiscoverHomeToFallbackMarket() {
   if (error) {
     console.error('[syncDiscoverHomeToFallbackMarket] update', error);
     return { ok: false, error: error.message };
-  }
-
-  const followResult = await syncUserPrimaryLocalityFollow(supabase, user.id, first.id);
-  if (followResult.error) {
-    return { ok: false, error: followResult.error };
   }
 
   return { ok: true };

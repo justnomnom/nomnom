@@ -96,7 +96,7 @@ export function mapPlaceFromListRestaurant(r) {
 }
 
 /**
- * Normalize bbox / RPC rows for the map Nom Nom List sheet (parity with Discover).
+ * Normalize bbox / RPC rows for the map NomNom List sheet (parity with Discover).
  * @param {Array<Record<string, unknown>> | null | undefined} places
  * @returns {Array<Record<string, unknown>>}
  */
@@ -106,7 +106,7 @@ export function normalizeMapSheetPlaces(places) {
 }
 
 /**
- * Surface sponsored rows at the top of the Nom Nom List (Discover parity).
+ * Surface sponsored rows at the top of the NomNom List (Discover parity).
  * @param {Array<Record<string, unknown>> | null | undefined} places
  * @returns {Array<Record<string, unknown>>}
  */
@@ -133,7 +133,7 @@ function mapPlaceAddedAtMs(row) {
 }
 
 /**
- * "Last added" ordering for the Nom Nom List: newest `added_at` first, sponsored rows kept on
+ * "Last added" ordering for the NomNom List: newest `added_at` first, sponsored rows kept on
  * top (Discover parity). Rows without an `added_at` (e.g. bbox browse results, which carry no
  * per-restaurant added time) hold their existing relative order below the timestamped ones.
  * Stable sort.

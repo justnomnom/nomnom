@@ -113,7 +113,7 @@ export default async function DashboardRestaurantPage({ params }) {
 
   // Supplemental: public list rows for followed accounts (deduped vs primary RPC rows).
   // Primary: saves on lists you own, collaborate on, or subscribe to. Merged, then:
-  // (1) Nom Nom circle: you + people you follow on a list;
+  // (1) NomNom circle: you + people you follow on a list;
   // (2) drop other people’s list-only saves (no written review) — no “Someone saved this” cards;
   // list names remain only on rows you can see (RPC + public supplement for follows).
   const primaryItemIds = new Set((listMentionsResult.items ?? []).map((m) => m.id).filter(Boolean));
@@ -133,7 +133,7 @@ export default async function DashboardRestaurantPage({ params }) {
     });
   const listMentionsMerged = [...(listMentionsResult.items ?? []), ...supplemental];
 
-  // Nom Nom circle: only you and people you follow who have this place on a list.
+  // NomNom circle: only you and people you follow who have this place on a list.
   const listMentionsCircle = filterListMentionsToFollowsOnly(
     listMentionsMerged,
     myUserId,

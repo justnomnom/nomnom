@@ -2,7 +2,9 @@
 
 **Date:** 25 July 2026
 **Source:** `docs/competitor-review-mining.md` ideas 1–3.
-**Status:** plan only — nothing below is built yet.
+**Status:** partially shipped — visited reads (`visit-actions.js`), Roulette skip-visited, and
+saved-hub visit summary are live (name-matched until `lists.system_key` lands). §1.2 SQL and
+features 2–3 (social import, list-item comments) are still the durable plan.
 
 Three features, in the order they should ship. They are independent enough to land separately, but
 1 → 3 → 2 is the right sequence: visited state is small and touches the same read paths comments

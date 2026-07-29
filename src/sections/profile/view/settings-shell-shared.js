@@ -5,7 +5,7 @@ import { RADIUS, TOUCH_TARGET_SIZE } from 'src/theme/spacing';
 // ----------------------------------------------------------------------
 
 /**
- * Card radius used across settings hub + drill pages (export-html/settings).
+ * Card radius used across settings hub + drill pages.
  * Derived from `RADIUS.loose` (24px) — kept as a string here because consumers
  * pass it into CSS-value contexts (`borderRadius: ROUNDED_CARD`).
  */

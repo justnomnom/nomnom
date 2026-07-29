@@ -24,8 +24,6 @@ export function responsiveFontSizes({ sm, md, lg }) {
   };
 }
 
-// export-html: --font-sans / UI → Albert Sans; --font-serif → Libre Baskerville; --font-mono → JetBrains Mono
-
 export const primaryFont = Albert_Sans({
   weight: ['400', '500', '600', '700', '800'],
   subsets: ['latin'],

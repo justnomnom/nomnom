@@ -26,9 +26,10 @@ export default async function Layout({ children }) {
     redirect(`${paths.auth.supabase.login}?${q.toString()}`);
   }
 
-  const { data: profile } = await getUserOnboardingRow(user.id);
+  const { data: profile, error: profileError } = await getUserOnboardingRow(user.id);
 
-  if (profile?.onboarding_completed_at) {
+  // Only redirect away when we positively know onboarding is done.
+  if (!profileError && profile?.onboarding_completed_at) {
     redirect(paths.dashboard.discover);
   }
 

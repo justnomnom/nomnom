@@ -30,7 +30,7 @@ import UserPublicProfileView from './user-public-profile-view';
 
 // ----------------------------------------------------------------------
 
-/** Logged-in shell: creator-profile style toolbar (export-html), body below. */
+/** Logged-in shell: creator-profile style toolbar, body below. */
 export default function UserPublicProfileDashboardShell({
   profile,
   lists,
@@ -45,7 +45,7 @@ export default function UserPublicProfileDashboardShell({
   const handle = profile?.username ? `@${profile.username}` : '';
   /** Display name for native share only — not shown in the compact top bar. */
   const shareTitle = profile?.display_name?.trim() || handle || t('pages.dashboard.settings.title');
-  /** Compact bar has no centered label (export-html); keep prop for SettingsDrillShell API. */
+  /** Compact bar has no centered label; keep prop for SettingsDrillShell API. */
   const shellToolbarTitle = '';
   const isOwnProfile = Boolean(viewerUserId && profile?.id && viewerUserId === profile.id);
   const tIcon = minimalIconButtonSx(theme);

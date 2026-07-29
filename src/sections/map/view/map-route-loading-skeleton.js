@@ -17,7 +17,7 @@ import { SettingsDrillShell } from 'src/sections/profile/view';
 
 // ----------------------------------------------------------------------
 
-/** Keep in sync with Nom Nom list row skeleton in `map-spot-sheet-inner.js`. */
+/** Keep in sync with NomNom list row skeleton in `map-spot-sheet-inner.js`. */
 const MAP_SHEET_LIST_ROW_GALLERY_H = 88;
 const MAP_SHEET_LIST_ACTION_BTN = 32;
 

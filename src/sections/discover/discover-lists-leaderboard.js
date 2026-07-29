@@ -57,7 +57,7 @@ function leaderboardHandle(row) {
 }
 
 /**
- * Nom Nom list contributor leaderboard (Discover: all lists; manage: single list).
+ * NomNom list contributor leaderboard (Discover: all lists; manage: single list).
  *
  * @param {'discover' | 'listManage'} variant — which translation namespace keys to use.
  */

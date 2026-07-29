@@ -16,13 +16,15 @@ Worth stating, because several "obvious" ideas are already shipped:
 
 Lists (private / public / subscriber-only), collaboration with roles, invites and join requests,
 seeded "Must go" / "Visited" lists, Google Maps list import, map with bbox + tag filters + min-rating
-+ **natural-language AI search**, NomNom Roulette (incl. a public variant), discover feed with tag
-filtering and a lists leaderboard, restaurant reviews (half-star, media up to 6, 2000 chars),
-must-try dishes (curated tags + AI signature dishes), AI review consensus, follows (people *and*
-localities), suggested creators, public profiles `/u/:handle` and public lists `/lists/:id`,
-notifications with in-app + web push + digests + mutes + granular preferences, Stripe subscriptions,
-Snapshot purchases, Connect payouts and a freemium gate, admin sponsored placements, PWA install,
-Capacitor iOS/Android shells, en/pt i18n, Tina-backed blog.
++ **open-now** + **natural-language AI search**, NomNom Roulette (incl. skip-visited + a public
+variant), discover feed with tag filtering / open-now / lists leaderboard, restaurant reviews
+(half-star, media up to 6, 2000 chars), must-try dishes (curated tags + AI signature dishes), AI
+review consensus, follows (people *and* localities), suggested creators, public profiles
+`/u/:handle` and public lists `/lists/:id`, notifications with in-app + web push + digests + mutes
++ granular preferences, Stripe subscriptions + **billing portal** + Snapshot purchases, Connect
+payouts (Express login) and a freemium gate, admin sponsored placements, PWA install, Capacitor
+iOS/Android shells, en/pt i18n, Tina-backed blog. Visited-state *reads* (summary, Roulette filter)
+exist; durable `lists.system_key` typing is still planned.
 
 Restaurant records already carry **opening hours, closed status, price level and price tags** from
 ingest — several items below are unlocking data we already have rather than new pipelines.
@@ -36,11 +38,11 @@ genuinely better rather than incrementally better.
 
 | # | Feature | Why | Effort |
 |---|---|---|---|
-| 1.1 | **Been / to-try state** — type the seeded lists, badge everywhere, filter chips | Google Maps' most-cited gap; users hand-maintain two lists | 3–4 d · *planned* |
+| 1.1 | **Been / to-try state** — durable `lists.system_key`, badges everywhere, filter chips | Reads exist (name-matched); rename-safe typing + badges still open | 1–2 d remaining · *partial* |
 | 1.2 | **Imports land as "been"** | Beli users explicitly ask for this; no importer in the category does it | 0.5 d · *planned* |
 | 1.3 | **Private notes on a saved spot** | Answers "social pressure corrupts honesty" — a note nobody else can read. `list_items` has no note column today | 1–2 d |
-| 1.4 | **Resurface what you saved** — "47 saved · 6 been", a Roulette mode limited to saved-and-unvisited near you, an opt-in monthly digest | The defining failure of Instagram, TikTok and Maps saves alike | 2–3 d |
-| 1.5 | **"Open now" filter** | Hours and closed status are already ingested and unused in the UI. Cheapest real win in this document | 1 d |
+| 1.4 | **Resurface what you saved** — visit summary exists; still need Roulette-on-saved-unvisited + opt-in monthly digest | The defining failure of Instagram, TikTok and Maps saves alike | 1–2 d remaining · *partial* |
+| ~~1.5~~ | ~~**"Open now" filter**~~ | **Shipped** — Discover + map chips, AI search `openNow`, RPC `p_open_now` | — |
 | 1.6 | **Group decision mode** — shortlist a few spots, share a link, everyone taps, top pick wins | Nobody in the competitive set does group decision-making; every list app stops at the list | 4–5 d |
 | 1.7 | **Occasion filters** (date night, quick lunch, group dinner) on discover and map | Tag catalog and filter UI already exist; this is curation, not engineering | 1–2 d |
 
@@ -127,7 +129,7 @@ them. That is unusually good value.
 ## 7. Recommended sequence
 
 **Now** (~3 weeks, the highest-conviction block)
-1.1 visited state → 1.2 import-as-been → 1.5 open now → 5.1/5.2/5.3 hygiene → 4.1 + 4.2 comments
+1.1 visited typing (`system_key`) → 1.2 import-as-been → 5.1/5.2/5.3 hygiene → 4.1 + 4.2 comments
 
 **Next** (~3–4 weeks)
 2.1 Instagram export import → 2.2 TikTok → 1.4 resurface saves → 3.1 provenance → 3.3 report a spot

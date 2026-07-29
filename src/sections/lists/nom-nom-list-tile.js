@@ -606,7 +606,7 @@ NomNomListLinkTile.propTypes = {
 // ----------------------------------------------------------------------
 
 /**
- * "New Nom Nom list" create tile.
+ * "New NomNom list" create tile.
  * Compact mode: matches profile page portrait card — dashed ring with + icon, label below.
  * Non-compact: landscape dashed row.
  */

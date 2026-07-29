@@ -2,9 +2,9 @@
  * Scope Tailwind's automatic content detection to `src/` (this file lives at
  * src/components/ui/, so `../../` = src). Without this, Tailwind v4 crawls the
  * whole repo on every CSS rebuild — including ~180MB of `supabase/migrations`
- * SQL geo-data and `export-html/` — which takes ~5 min and blows past
- * Turbopack's PostCSS-loader IPC deadline, panicking the dev server (every
- * route 500s). All Tailwind class usage lives under `src/`.
+ * SQL geo-data — which takes ~5 min and blows past Turbopack's PostCSS-loader
+ * IPC deadline, panicking the dev server (every route 500s). All Tailwind
+ * class usage lives under `src/`.
  */
 @import "tailwindcss" source("../..");
 

@@ -39,18 +39,13 @@ These shape several specs and are worth reading first.
    without identity. §3.1 changes this on purpose.
 6. **List-save timestamps are read but never shown.** `rowMentionActivityMs` sorts by them;
    nothing displays "saved 3 days ago".
-7. **Opening hours are written at ingest and never read.** They live inside `restaurants.metadata`
-   JSONB (`open_hours`, `hours_parsed`, `timezone`, `status`, `is_closed`, `closed_reason`) — there is
-   no dedicated column. Crucially, `src/lib/slim-restaurant-card-metadata.js` allowlists only
-   `['rating','review_consensus','photos','hero_url','image_url']` and **explicitly strips
-   `hours_parsed` and `open_hours`** from every RPC row before it reaches the client. Surfacing hours
-   is therefore not a client-side change (see 1.5).
+7. **Opening hours are ingested and used** — open/closed status on detail surfaces, Discover/map
+   open-now filters, and AI search `openNow` (see §1.5 shipped). Card RPCs still strip raw
+   `hours_parsed` from list payloads on purpose.
 8. **`price_level` is never referenced anywhere in `src/`.** Price exists only as a tag category
    (`tags.category = 'price'`, `PRICE_TAG_SLUGS`), used in the map's tag sheet.
-9. **Discover applies none of the filters its RPC supports.** `restaurants_for_municipality` accepts
-   `p_tag_slugs`, `p_match_all`, `p_min_rating`, `p_vibe_key`, `p_category_key` — Discover passes them
-   all null on every call, and its "filter" button is a link to `paths.dashboard.map?filters=open`.
-   Filtering on Discover is wiring, not new SQL.
+9. **Discover filtering is partially wired** — open-now, vibe and category chips exist; tag / min-rating
+   RPC params may still be underused vs map. Re-check before rebuilding filters.
 10. **Roulette has no filters, no exclusion set and no re-roll.** Both views load an id-only pool
    (`circle_restaurants_for_viewer` RPC for the authed view, a Lisbon bbox for the public
    `/roleta/lisboa` route) and pick uniformly at random. A spin is a hard navigation, so "re-roll"
@@ -174,41 +169,13 @@ never revisited; the platform has no mechanism to bring you back."
 **Tests.** Unit for the "saved but not visited" set operation (pure, given two id lists). E2E for the
 counter. The digest needs a scheduled-job test at the same level as the existing digest sender.
 
-## 1.5 "Open now" · 2–3 d — *harder than it looks, still worth it*
+## 1.5 "Open now" · **shipped**
 
-**Why.** Hours are already parsed at ingest into a clean structure and no user has ever seen them.
+**Live.** Discover and map open-now chips, AI search plan `openNow`, and `p_open_now` on the bbox /
+municipality / saved / following map RPCs. Client helper: `src/libs/restaurant/opening-hours.js`
+(`resolveOpeningStatus`). Hours display on restaurant detail / map spot sheet uses the same path.
 
-**The catch.** An earlier estimate of one day assumed the data reaches the client. It does not.
-`src/lib/slim-restaurant-card-metadata.js` strips `open_hours` and `hours_parsed` from every RPC row —
-deliberately, because metadata averages ~7.7 KB/row and the map refetches on every pan. Adding them to
-`CARD_METADATA_KEYS` would put that payload cost on the hottest path in the product. So this is a
-server-side feature.
-
-**Recommended split.**
-
-*Phase A — display (1 d, no filter).* Show "Open now" / "Closed" / "Opens at 19:00" on the **restaurant
-detail page** and the **map spot sheet**, both of which already do a per-restaurant fetch where the
-full metadata is available (`fetchRestaurantByIdForSsr` selects `metadata` wholesale). Zero impact on
-the map payload. Arguably most of the user value: people check hours when considering one place, not
-when scanning a map.
-
-*Phase B — filter (1–2 d).* Add a computed boolean to the RPCs rather than shipping the raw hours: a
-SQL helper `restaurant_is_open_at(metadata, ts)` and an optional `p_open_now boolean` parameter on
-`restaurants_in_bbox_pins`, `restaurants_for_municipality` and the saved/following map RPCs. Returns a
-single bit per row instead of a KB of JSON. Add the chip to `map-tag-filter-sheet.js`, and add an
-`openNow` field to the AI search plan schema in `src/lib/restaurant-search-agent.js` so "somewhere open
-now near Cais do Sodré" works.
-
-**Shared helper.** `src/libs/restaurant/is-open-now.js` — `isOpenNow(hoursParsed, now, tz)` returning
-`'open' | 'closed' | 'unknown'`. Used directly by Phase A; Phase B mirrors its logic in SQL. Keeping
-two implementations in sync is the cost of not shipping the payload — test them against the same
-fixtures.
-
-**Tests.** Unit is the whole story: past-midnight ranges (`crosses_midnight` is already a field on
-parsed intervals), split lunch/dinner service, missing days, `is_closed` / `closed_reason` set,
-malformed strings, and the unknown-hours fallback (must render nothing, never "Closed").
-`map-google-place-payload.js` already has fixtures in `src/libs/restaurant-ingest/__tests__/` — reuse
-them so the reader and the writer agree.
+No further work required unless SQL and JS drift — keep fixtures aligned.
 
 ## 1.6 Group decision mode · 4–5 d
 
@@ -531,10 +498,9 @@ severity order:
 3. **Deletion never handles owned lists** — no delete, transfer or unpublish. Whatever happens is
    whatever the FK rules do.
 
-Also missing across the money surface: **no Stripe billing portal, no invoice history, no receipt
-download, no payment-method update.** The entire post-purchase surface is three cancel buttons. And the
-"Manage" button in billing re-issues an `account_onboarding` link rather than an Express `loginLink`,
-so creators have no payout dashboard.
+Also on the money surface: **Stripe billing portal** (`/api/stripe/billing-portal`) and Connect
+Express `loginLink` (onboard route) are **shipped**. Remaining gaps are cancel-on-delete hardening
+and churn instrumentation if not already covered by delete-account / money-path e2e.
 
 **What already works** (do not rebuild): subscribers can self-cancel from two places —
 `/dashboard/settings/my-subscriptions` and the creator's public profile — both calling
@@ -552,13 +518,13 @@ deliberate and correct.
    confirmation screen before the user commits.
 3. **Owned lists.** Decide and implement: orphan (current de-facto behaviour), delete, or offer
    transfer. State it in the confirmation copy.
-4. **Stripe billing portal** for subscribers — invoice history and payment-method updates, a few hours
-   of work against `stripe.billingPortal.sessions.create` on the Connect account.
-5. **Confirmation emails** on cancellation, via the existing Resend helpers.
-6. **Fix the duplicated platform fee** while in this code: `getCreatorListStats()` hardcodes
-   `const PLATFORM_FEE = 0.1` instead of calling `getPlatformFeePercent()`.
-7. **Cancellation reason** — a one-tap optional reason on cancel. There is no churn data being captured
-   anywhere today, and this is the cheapest possible instrumentation of it.
+4. ~~**Stripe billing portal**~~ — **shipped**.
+5. ~~**Confirmation emails** on cancellation~~ — **shipped** (`subscription-cancelled-email.js`).
+6. ~~**Duplicated platform fee**~~ — **shipped** (`getPlatformFeePercent` / creator net helpers).
+7. ~~**Cancellation reason**~~ — **shipped** (`cancellation-reasons.js` + my-subscriptions UI).
+
+Remaining 5.2 work is mainly verifying cancel-on-delete / Connect teardown / owned-lists behaviour
+against `delete-account` and money-path e2e if any edge cases remain.
 
 **Tests.** Extend `tests/e2e/dashboard/delete-account.spec.ts` (the existing canary) with a seeded
 *subscriber* who deletes their account, asserting the Stripe subscription is cancelled — not just that
@@ -694,21 +660,21 @@ matters, it is noted.
 placements without disclosure. The third is groundwork: with an empty `types.ts`, gitignored
 migrations and an ambiguous test baseline, every change after this is made without a safety net.*
 
-**Release 1 — "your saves, sorted" (~2.5 weeks)**
-1.1 visited state · 1.2 import-as-been · 1.3 private notes · 1.5 phase A (hours on detail + spot
-sheet) · 5.3 never lose a save
-*Coherent story, no external dependencies.*
+**Release 1 — "your saves, sorted" (~2 weeks)**
+1.1 visited typing (`system_key` + badges) · 1.2 import-as-been · 1.3 private notes ·
+5.3 never lose a save
+*Hours / open-now already shipped (§1.5). Coherent story, no external dependencies.*
 
-**Release 2 — "trust and hygiene" (~2 weeks)**
-5.1 export · 5.2 steps 4–7 (billing portal, emails, cancellation reason) · 5.4 notification
-restructure · 6.1 phase 1 (show the revenue already computed) · 3.2 part 2 (creator disclosure)
+**Release 2 — "trust and hygiene" (~1 week)**
+5.1 export · 5.4 notification restructure · 6.1 phase 1 (show the revenue already computed) ·
+3.2 part 2 (creator disclosure)
+*Billing portal, cancel emails, fee dedup and cancellation reasons already shipped.*
 
 **Release 3 — "conversation" (~2 weeks)**
-4.1 comments · 4.2 reactions · 3.3 report a spot · 1.4 resurface saves
+4.1 comments · 4.2 reactions · 3.3 report a spot · 1.4 digest / Roulette-on-saved-unvisited
 
-**Release 4 — "get your spots in" (~2.5 weeks)**
-2.1 Instagram export import · 2.2 TikTok · 2.5 paste anything · 3.1 provenance chips ·
-1.5 phase B (open-now filter)
+**Release 4 — "get your spots in" (~2 weeks)**
+2.1 Instagram export import · 2.2 TikTok · 2.5 paste anything · 3.1 provenance chips
 
 **Release 5 — differentiation (~3 weeks)**
 1.6 group decision · 6.2 snapshot changelog · 6.1 phases 2–3 · 4.3 ask your circle

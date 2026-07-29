@@ -6,7 +6,7 @@ import { useTranslate } from 'src/locales';
 
 import SettingsSelectionRow from './settings-selection-row';
 
-// Same row pattern as SettingsAppearanceForm (export-html content management).
+// Same row pattern as SettingsAppearanceForm.
 
 // ----------------------------------------------------------------------
 
