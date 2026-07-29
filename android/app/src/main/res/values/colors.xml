@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Required by AppTheme in styles.xml -->
+    <color name="colorPrimary">#faf7f2</color>
+    <color name="colorPrimaryDark">#f0ebe1</color>
+    <color name="colorAccent">#d4a853</color>
+</resources>

@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+    <style type="text/tailwindcss">
+      @theme inline {
+        --color-background: var(--background);
+        --color-foreground: var(--foreground);
+        --color-primary: var(--primary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-secondary: var(--secondary);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-muted: var(--muted);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-accent: var(--accent);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-destructive: var(--destructive);
+        --color-card: var(--card);
+        --color-card-foreground: var(--card-foreground);
+        --color-popover: var(--popover);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-border: var(--border);
+        --color-input: var(--input);
+        --color-ring: var(--ring);
+        --color-chart-1: var(--chart-1);
+        --color-chart-2: var(--chart-2);
+        --color-chart-3: var(--chart-3);
+        --color-chart-4: var(--chart-4);
+        --color-chart-5: var(--chart-5);
+
+        --font-font-sans: var(--font-sans);
+        --font-font-heading: var(--font-heading);
+        --font-font-serif: var(--font-serif);
+        --font-font-mono: var(--font-mono);
+
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+      }
+
+      :root {
+          --background: #FFFFFF;
+        --foreground: #0F172A;
+        --primary: #ff6b35;
+        --primary-foreground: #FFFFFF;
+        --secondary: #F1F5F9;
+        --secondary-foreground: #0F172A;
+        --muted: #F8FAFC;
+        --muted-foreground: #64748B;
+        --accent: #F1F5F9;
+        --accent-foreground: #0F172A;
+        --destructive: #EF4444;
+        --card: #FFFFFF;
+        --card-foreground: #0F172A;
+        --popover: #FFFFFF;
+        --popover-foreground: #0F172A;
+        --border: #E2E8F0;
+        --input: #F1F5F9;
+        --ring: #FF5A5F;
+        --chart-1: #FF5A5F;
+        --chart-2: #3B82F6;
+        --chart-3: #10B981;
+        --chart-4: #F59E0B;
+        --chart-5: #8B5CF6;
+
+        --font-sans: "Plus Jakarta Sans";
+        --font-heading: "Plus Jakarta Sans";
+        --font-serif: "Playfair Display";
+        --font-mono: "JetBrains Mono";
+
+        --radius: 1rem;
+      }
+
+      /* Prevent layout shift for icons without explicit dimensions */
+      iconify-icon:not([width]):not([height]) {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+      }
+
+      /* Hide scrollbars */
+      *,
+      *::before,
+      *::after {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      *::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="min-h-screen bg-background text-foreground pb-24 font-sans relative">
+      <button
+        class="fixed bottom-28 right-6 z-[60] size-16 bg-foreground text-background rounded-full shadow-2xl flex flex-col items-center justify-center border-4 border-background group active:scale-90 transition-transform hover:rotate-12"
+        onclick="location.href=&#39;#4igOmvQeWWl&#39;"
+      >
+        <iconify-icon icon="mdi:dice-5" class="text-2xl group-hover:animate-spin"></iconify-icon
+        ><span class="text-[8px] font-black uppercase tracking-tighter mt-1">Nom Nom?</span>
+      </button>
+      <header
+        class="px-4 pt-12 pb-4 sticky top-0 z-50 bg-background/90 backdrop-blur-lg border-b border-border"
+      >
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <div
+              class="size-9 bg-primary rounded-xl flex items-center justify-center rotate-3 shadow-sm overflow-hidden p-1.5"
+            >
+              <img
+                src="https://ggrhecslgdflloszjkwl.supabase.co/storage/v1/object/public/user-assets/6GZq4ggf385/components/DO01UL78ZZW.png"
+                class="w-full h-full object-contain brightness-0 invert"
+              />
+            </div>
+            <span class="font-heading font-black text-xl tracking-tighter">NomNom</span>
+          </div>
+          <button class="bg-secondary p-2.5 rounded-full text-foreground">
+            <iconify-icon icon="solar:bell-linear" width="20" height="20"></iconify-icon>
+          </button>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="flex-1 relative">
+            <iconify-icon
+              icon="solar:magnifer-linear"
+              class="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground"
+              width="20"
+              height="20"
+            ></iconify-icon
+            ><input
+              type="text"
+              class="w-full bg-input rounded-full py-3.5 pl-11 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium placeholder:text-muted-foreground/60"
+              placeholder="What are you feeling? (e.g. date night...)"
+            />
+          </div>
+          <button
+            class="bg-secondary p-3 rounded-full flex items-center justify-center text-foreground hover:bg-accent transition-colors"
+          >
+            <iconify-icon icon="solar:tuning-linear" width="20" height="20"></iconify-icon>
+          </button>
+        </div>
+      </header>
+      <main class="flex flex-col gap-8 pt-6">
+        <section>
+          <div class="px-4 flex items-center justify-between mb-3">
+            <h2
+              class="font-heading font-bold text-sm text-foreground tracking-tight italic uppercase opacity-70"
+            >
+              What's the vibe?
+            </h2>
+          </div>
+          <div
+            style="scrollbar-width: none;"
+            class="overflow-x-auto flex gap-3 px-4 pb-2 hide-scrollbar"
+          >
+            <button
+              class="snap-start flex items-center gap-2 bg-rose-50 border border-rose-100 px-4 py-2.5 rounded-full shrink-0 group active:scale-95 transition-all"
+              onclick="location.href=&#39;#Search Result&#39;"
+            >
+              <iconify-icon icon="solar:heart-bold" class="text-rose-500 text-lg"></iconify-icon
+              ><span class="text-[10px] font-black uppercase tracking-widest text-rose-900"
+                >Date Night</span
+              ></button
+            ><button
+              class="snap-start flex items-center gap-2 bg-blue-50 border border-blue-100 px-4 py-2.5 rounded-full shrink-0 group active:scale-95 transition-all"
+              onclick="location.href=&#39;#Search Result&#39;"
+            >
+              <iconify-icon
+                icon="solar:users-group-two-rounded-bold"
+                class="text-blue-500 text-lg"
+              ></iconify-icon
+              ><span class="text-[10px] font-black uppercase tracking-widest text-blue-900"
+                >Friends</span
+              ></button
+            ><button
+              class="snap-start flex items-center gap-2 bg-emerald-50 border border-emerald-100 px-4 py-2.5 rounded-full shrink-0 group active:scale-95 transition-all"
+              onclick="location.href=&#39;#Search Result&#39;"
+            >
+              <iconify-icon icon="solar:wallet-bold" class="text-emerald-600 text-lg"></iconify-icon
+              ><span class="text-[10px] font-black uppercase tracking-widest text-emerald-900"
+                >Cheap Eats</span
+              ></button
+            ><button
+              class="snap-start flex items-center gap-2 bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-full shrink-0 group active:scale-95 transition-all"
+              onclick="location.href=&#39;#Search Result&#39;"
+            >
+              <iconify-icon icon="mdi:briefcase" class="text-slate-600 text-lg"></iconify-icon
+              ><span class="text-[10px] font-black uppercase tracking-widest text-slate-900"
+                >Corporate</span
+              >
+            </button>
+          </div>
+        </section>
+        <section class="px-4">
+          <div class="flex items-center justify-center gap-2 mb-2">
+            <div class="h-[1px] flex-1 bg-border/50"></div>
+            <p
+              class="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] italic"
+            >
+              Or use this if you have no idea
+            </p>
+            <div class="h-[1px] flex-1 bg-border/50"></div>
+          </div>
+          <button
+            class="w-full bg-primary/5 border-2 border-primary/10 rounded-[2rem] p-4 flex items-center justify-between group overflow-hidden relative shadow-sm"
+            onclick="location.href=&#39;#4igOmvQeWWl&#39;"
+          >
+            <div
+              class="absolute -right-2 -top-2 opacity-5 rotate-12 group-hover:scale-110 transition-transform"
+            >
+              <iconify-icon icon="mdi:dice-5" width="80"></iconify-icon>
+            </div>
+            <div class="flex items-center gap-4 relative z-10">
+              <div
+                class="size-12 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 rotate-3"
+              >
+                <iconify-icon icon="mdi:dice-5" class="text-white text-2xl"></iconify-icon>
+              </div>
+              <div class="text-left">
+                <h3 class="font-black text-base tracking-tight leading-none">Nom Nom Roulette</h3>
+                <p
+                  class="text-[9px] text-muted-foreground font-bold uppercase tracking-widest mt-1"
+                >
+                  Shake for a random gem
+                </p>
+              </div>
+            </div>
+            <iconify-icon
+              icon="solar:arrow-right-bold"
+              class="text-primary text-xl relative z-10 group-hover:translate-x-1 transition-transform"
+            ></iconify-icon>
+          </button>
+        </section>
+        <section>
+          <div class="px-4 flex items-center justify-between mb-4">
+            <h2
+              class="font-heading font-bold text-lg text-foreground tracking-tight italic uppercase"
+            >
+              Trending Nom Nommers
+            </h2>
+            <button class="text-sm font-bold text-primary hover:text-primary/80 transition-colors">
+              View all
+            </button>
+          </div>
+          <div
+            style="scrollbar-width: none;"
+            class="overflow-x-auto flex gap-5 px-4 pb-2 hide-scrollbar"
+          >
+            <button class="snap-start flex flex-col items-center gap-2 min-w-[72px] group">
+              <div
+                class="relative w-[72px] h-[72px] rounded-full p-[3px] bg-gradient-to-tr from-primary via-rose-400 to-orange-400 shadow-sm transition-transform group-hover:scale-105"
+              >
+                <img
+                  alt="Emma"
+                  src="https://randomuser.me/api/portraits/women/44.jpg"
+                  class="w-full h-full object-cover rounded-full border-2 border-background"
+                />
+              </div>
+              <span class="text-[13px] font-semibold truncate w-full text-center text-foreground"
+                >@emma_eats</span
+              ></button
+            ><button class="snap-start flex flex-col items-center gap-2 min-w-[72px] group">
+              <div
+                class="relative w-[72px] h-[72px] rounded-full p-[3px] bg-gradient-to-tr from-primary via-rose-400 to-orange-400 shadow-sm transition-transform group-hover:scale-105"
+              >
+                <img
+                  alt="David"
+                  src="https://randomuser.me/api/portraits/men/32.jpg"
+                  class="w-full h-full object-cover rounded-full border-2 border-background"
+                />
+              </div>
+              <span class="text-[13px] font-semibold truncate w-full text-center text-foreground"
+                >@david_bites</span
+              ></button
+            ><button class="snap-start flex flex-col items-center gap-2 min-w-[72px] group">
+              <div
+                class="relative w-[72px] h-[72px] rounded-full p-[3px] bg-border transition-transform group-hover:scale-105"
+              >
+                <img
+                  alt="Sarah"
+                  src="https://randomuser.me/api/portraits/women/68.jpg"
+                  class="w-full h-full object-cover rounded-full border-2 border-background"
+                />
+              </div>
+              <span
+                class="text-[13px] font-medium truncate w-full text-center text-muted-foreground"
+                >@sarah.food</span
+              ></button
+            ><button class="snap-start flex flex-col items-center gap-2 min-w-[72px] group">
+              <div
+                class="relative w-[72px] h-[72px] rounded-full p-[3px] bg-border transition-transform group-hover:scale-105"
+              >
+                <img
+                  alt="Alex"
+                  src="https://randomuser.me/api/portraits/men/85.jpg"
+                  class="w-full h-full object-cover rounded-full border-2 border-background"
+                />
+              </div>
+              <span
+                class="text-[13px] font-medium truncate w-full text-center text-muted-foreground"
+                >@alex_cooks</span
+              >
+            </button>
+          </div>
+        </section>
+        <section
+          style="scrollbar-width: none;"
+          class="overflow-x-auto flex gap-2.5 px-4 pb-2 hide-scrollbar"
+        >
+          <button
+            class="whitespace-nowrap bg-foreground text-background px-5 py-2 rounded-full text-sm font-semibold shadow-sm transition-transform active:scale-95 italic"
+          >
+            Daily Nom Noms</button
+          ><button
+            class="whitespace-nowrap bg-secondary text-secondary-foreground hover:bg-accent px-5 py-2 rounded-full text-sm font-semibold transition-all active:scale-95"
+          >
+            Coffee &amp; Brunch</button
+          ><button
+            class="whitespace-nowrap bg-secondary text-secondary-foreground hover:bg-accent px-5 py-2 rounded-full text-sm font-semibold transition-all active:scale-95"
+          >
+            Hidden Gems</button
+          ><button
+            class="whitespace-nowrap bg-secondary text-secondary-foreground hover:bg-accent px-5 py-2 rounded-full text-sm font-semibold transition-all active:scale-95"
+          >
+            Date Night
+          </button>
+        </section>
+        <section class="px-4 flex flex-col gap-8">
+          <article
+            class="bg-card rounded-3xl border border-border shadow-[0_4px_24px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col"
+            onclick="location.href=&#39;#DBT17i88oFY&#39;"
+          >
+            <div class="relative w-full aspect-[4/5] bg-muted">
+              <img
+                alt="Lumina Cafe"
+                src="https://ggrhecslgdflloszjkwl.supabase.co/storage/v1/object/public/user-assets/6GZq4ggf385/components/wOkD9ZaNqLc.png"
+                class="w-full h-full object-cover"
+              />
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
+              ></div>
+              <div class="absolute top-4 left-4 flex gap-2">
+                <span
+                  class="bg-black/40 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-[13px] font-semibold flex items-center gap-1.5 shadow-sm border border-white/10"
+                  ><iconify-icon
+                    icon="solar:star-bold"
+                    class="text-yellow-400"
+                    width="14"
+                    height="14"
+                  ></iconify-icon>
+                  4.8</span
+                ><span
+                  class="bg-white/90 backdrop-blur-md text-foreground px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm"
+                  ><iconify-icon
+                    icon="solar:video-frame-play-horizontal-bold"
+                    class="text-primary"
+                    width="16"
+                    height="16"
+                  ></iconify-icon>
+                  Reel</span
+                >
+              </div>
+              <button
+                class="absolute top-4 right-4 bg-black/40 backdrop-blur-md p-2.5 rounded-full text-white hover:text-primary transition-colors border border-white/10"
+              >
+                <iconify-icon icon="solar:bookmark-linear" width="20" height="20"></iconify-icon>
+              </button>
+              <div
+                class="absolute bottom-4 left-4 right-4 bg-black/40 backdrop-blur-md p-3 rounded-2xl border border-white/10 flex flex-col gap-2"
+              >
+                <div class="flex items-center gap-3">
+                  <img
+                    src="https://randomuser.me/api/portraits/women/44.jpg"
+                    class="size-10 rounded-full object-cover border-2 border-white/20"
+                  />
+                  <div class="flex-1 min-w-0">
+                    <p class="text-[11px] font-bold text-white uppercase tracking-wider">
+                      @emma_eats is nomnomming on:
+                    </p>
+                    <p class="text-xs text-white/90 leading-snug line-clamp-2">
+                      "The best matcha latte in Silver Lake! You have to try the pistachio
+                      croissant..."
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="p-5 flex flex-col gap-5">
+              <div class="flex justify-between items-start gap-4">
+                <div class="flex-1">
+                  <h3
+                    class="font-heading font-bold text-xl mb-1 text-card-foreground leading-tight"
+                  >
+                    Lumina Cafe &amp; Roastery
+                  </h3>
+                  <div class="flex items-center gap-2 my-2.5">
+                    <div class="h-1.5 flex-1 bg-muted rounded-full overflow-hidden flex">
+                      <div class="h-full bg-primary animate-pulse" style="width: 85%"></div>
+                    </div>
+                    <div
+                      class="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-primary"
+                    >
+                      <iconify-icon icon="solar:fire-bold" class="animate-bounce"></iconify-icon>Nom
+                      Nom Meter: Hot
+                    </div>
+                  </div>
+                  <p class="text-muted-foreground text-sm flex items-center gap-1.5 font-medium">
+                    <iconify-icon icon="solar:map-point-bold" class="text-primary"></iconify-icon
+                    >Silver Lake, 0.8mi away
+                  </p>
+                </div>
+                <span
+                  class="text-sm font-bold text-foreground bg-secondary px-2.5 py-1 rounded-lg shrink-0"
+                  >$$</span
+                >
+              </div>
+              <div class="flex gap-3">
+                <button
+                  class="flex-1 bg-primary text-primary-foreground font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 hover:bg-primary/90 transition-all active:scale-[0.98] shadow-sm"
+                >
+                  <iconify-icon icon="solar:routing-2-bold" width="20" height="20"></iconify-icon
+                  >Open in Maps</button
+                ><button
+                  class="bg-secondary text-secondary-foreground font-semibold px-4 py-3.5 rounded-xl flex items-center justify-center hover:bg-accent transition-all active:scale-[0.98]"
+                >
+                  <iconify-icon icon="solar:share-bold" width="20" height="20"></iconify-icon>
+                </button>
+              </div>
+            </div>
+          </article>
+        </section>
+      </main>
+      <nav
+        class="fixed bottom-0 left-0 w-full bg-background/95 backdrop-blur-xl border-t border-border px-6 py-3 flex items-center justify-between z-50 safe-area-bottom"
+      >
+        <button class="flex flex-col items-center gap-1 text-primary w-16 group">
+          <div class="relative">
+            <iconify-icon icon="solar:compass-bold" width="24" height="24"></iconify-icon
+            ><span class="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full"></span>
+          </div>
+          <span class="text-[10px] font-bold tracking-wide">Discover</span></button
+        ><button
+          class="flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground w-16 transition-colors"
+          onclick="location.href=&#39;#HR9qNYKPac7&#39;"
+        >
+          <iconify-icon icon="solar:map-linear" width="24" height="24"></iconify-icon
+          ><span class="text-[10px] font-medium tracking-wide">Map</span></button
+        ><button
+          class="flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground w-16 transition-colors"
+          onclick="location.href=&#39;#dlxPwjvXOsT&#39;"
+        >
+          <iconify-icon icon="solar:bookmark-linear" width="24" height="24"></iconify-icon
+          ><span class="text-[10px] font-medium tracking-wide">Saved</span></button
+        ><button
+          class="flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground w-16 transition-colors"
+          onclick="location.href=&#39;#UP3QVIzvHzc&#39;"
+        >
+          <iconify-icon icon="solar:user-circle-linear" width="24" height="24"></iconify-icon
+          ><span class="text-[10px] font-medium tracking-wide">Profile</span>
+        </button>
+      </nav>
+    </div>
+  </body>
+</html>

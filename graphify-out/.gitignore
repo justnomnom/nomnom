@@ -1,0 +1,36 @@
+# graphify-out: commit the graph + report + manifest; ignore machine-specific
+# and regenerable artifacts.
+#
+# Keep tracked (root only):
+#   graph.json, GRAPH_REPORT.md, manifest.json, cost.json, .graphify_labels.json
+
+# Machine-specific absolute paths (recreated per-checkout by the skill)
+.graphify_python
+.graphify_root
+
+# Regenerable from graph.json via `graphify export html` / `graphify tree`
+graph.html
+GRAPH_TREE.html
+
+# Local AST extraction cache (rebuilt by `graphify update`)
+cache/
+
+# Local dated snapshots that duplicate root artifacts
+[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/
+
+# Work-memory / reflections (local feedback loop; optional to commit)
+memory/
+reflections/
+
+# Any leftover pipeline temp files
+.graphify_detect.json
+.graphify_extract.json
+.graphify_ast.json
+.graphify_semantic.json
+.graphify_analysis.json
+.graphify_incremental.json
+.graphify_old.json
+.graphify_chunk_*.json
+.graphify_transcripts.json
+.vocab.txt
+.needs_update

@@ -1,0 +1,139 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  width: 1080px;
+  height: 1080px;
+  overflow: hidden;
+  background: #faf9f5; /* marketing.paper — the app's default bg */
+}
+
+.card {
+  width: 1080px;
+  height: 1080px;
+  background: #faf9f5;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 72px 80px 60px 80px;
+  position: relative;
+}
+
+/* Terracotta top bar — warm, inviting, like the app's active nav */
+.card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0;
+  width: 100%; height: 10px;
+  background: #FF6B35;
+}
+
+/* TOP — title block */
+.top { width: 100%; }
+
+.quote {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 76px;
+  font-weight: 700;
+  color: #0F172A; /* grey[900] — primary text */
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  margin-bottom: 28px;
+}
+
+.subtitle {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 30px;
+  font-weight: 400;
+  font-style: italic;
+  color: #64748B; /* grey[600] — secondary text */
+  line-height: 1.35;
+}
+
+/* MIDDLE — hero image */
+.hero {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 40px 0;
+}
+
+.hero img {
+  max-height: 430px;
+  max-width: 920px;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+  /* warm shadow — not cold/dark */
+  box-shadow: 0 20px 60px rgba(255, 107, 53, 0.12), 0 8px 24px rgba(0,0,0,0.10);
+}
+
+/* BOTTOM — brand */
+.bottom {
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  border-top: 1px solid #e8e6dc; /* marketing.dividerWarm */
+  padding-top: 24px;
+}
+
+.brand-name {
+  font-family: 'Arial Black', 'Arial', sans-serif;
+  font-size: 30px;
+  font-weight: 900;
+  color: #FF6B35; /* terracotta — the brand accent */
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.brand-tagline {
+  font-family: 'Arial', sans-serif;
+  font-size: 16px;
+  color: #94A3B8; /* grey[500] — muted hint */
+  letter-spacing: 0.04em;
+  margin-top: 6px;
+}
+
+/* Warm terracotta circle accent — playful, matches app's avatar ring style */
+.accent-dot {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #FFE8DF; /* primary.lighter */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.accent-dot::after {
+  content: '🍴';
+  font-size: 26px;
+}
+</style></head>
+<body>
+<div class="card">
+
+  <div class="top">
+    <div class="quote">"{{TITLE}}"</div>
+    <div class="subtitle">{{SUBTITLE}}</div>
+  </div>
+
+  <div class="hero">
+    <img src="{{IMAGE_URL}}" alt=""/>
+  </div>
+
+  <div class="bottom">
+    <div>
+      <div class="brand-name">NomNom</div>
+      <div class="brand-tagline">restaurant picks from people you trust</div>
+    </div>
+    <div class="accent-dot"></div>
+  </div>
+
+</div>
+</body></html>

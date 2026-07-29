@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SavedContent</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+    <style type="text/tailwindcss">
+      @theme inline {
+        --color-background: var(--background);
+        --color-foreground: var(--foreground);
+        --color-primary: var(--primary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-secondary: var(--secondary);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-muted: var(--muted);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-accent: var(--accent);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-destructive: var(--destructive);
+        --color-card: var(--card);
+        --color-card-foreground: var(--card-foreground);
+        --color-popover: var(--popover);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-border: var(--border);
+        --color-input: var(--input);
+        --color-ring: var(--ring);
+        --color-chart-1: var(--chart-1);
+        --color-chart-2: var(--chart-2);
+        --color-chart-3: var(--chart-3);
+        --color-chart-4: var(--chart-4);
+        --color-chart-5: var(--chart-5);
+
+        --font-font-sans: var(--font-sans);
+        --font-font-heading: var(--font-heading);
+        --font-font-serif: var(--font-serif);
+        --font-font-mono: var(--font-mono);
+
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+      }
+
+      :root {
+          --background: #FFFFFF;
+        --foreground: #0F172A;
+        --primary: #ff6b35;
+        --primary-foreground: #FFFFFF;
+        --secondary: #F1F5F9;
+        --secondary-foreground: #0F172A;
+        --muted: #F8FAFC;
+        --muted-foreground: #64748B;
+        --accent: #F1F5F9;
+        --accent-foreground: #0F172A;
+        --destructive: #EF4444;
+        --card: #FFFFFF;
+        --card-foreground: #0F172A;
+        --popover: #FFFFFF;
+        --popover-foreground: #0F172A;
+        --border: #E2E8F0;
+        --input: #F1F5F9;
+        --ring: #FF5A5F;
+        --chart-1: #FF5A5F;
+        --chart-2: #3B82F6;
+        --chart-3: #10B981;
+        --chart-4: #F59E0B;
+        --chart-5: #8B5CF6;
+
+        --font-sans: "Plus Jakarta Sans";
+        --font-heading: "Plus Jakarta Sans";
+        --font-serif: "Playfair Display";
+        --font-mono: "JetBrains Mono";
+
+        --radius: 1rem;
+      }
+
+      /* Prevent layout shift for icons without explicit dimensions */
+      iconify-icon:not([width]):not([height]) {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+      }
+
+      /* Hide scrollbars */
+      *,
+      *::before,
+      *::after {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      *::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="min-h-screen bg-background text-foreground pb-24 font-sans relative">
+      <button
+        class="fixed bottom-28 right-6 z-[60] size-14 bg-foreground text-background rounded-full shadow-2xl flex flex-col items-center justify-center border-4 border-background active:scale-90 transition-transform"
+        onclick="location.href=&#39;#RouletteScreen&#39;"
+      >
+        <iconify-icon icon="mdi:dice-5" class="text-xl"></iconify-icon
+        ><span class="text-[7px] font-black uppercase tracking-tighter mt-0.5">Pick!</span>
+      </button>
+      <header
+        class="px-6 pt-12 pb-6 sticky top-0 bg-background/95 backdrop-blur-xl z-40 border-b border-border/50"
+      >
+        <h1 class="font-heading font-black text-2xl tracking-tighter uppercase italic">
+          My Nom Noms
+        </h1>
+      </header>
+      <main class="px-6 pt-6 space-y-6">
+        <div class="flex items-center gap-2 bg-secondary/50 p-1.5 rounded-2xl">
+          <button
+            class="flex-1 bg-background text-foreground py-2.5 rounded-xl text-xs font-black uppercase tracking-widest shadow-sm shadow-black/5"
+          >
+            Restaurants (24)</button
+          ><button
+            class="flex-1 text-muted-foreground py-2.5 rounded-xl text-xs font-black uppercase tracking-widest"
+          >
+            My Lists (12)
+          </button>
+        </div>
+        <section class="grid grid-cols-1 gap-6 pb-12">
+          <article
+            class="group relative bg-card border border-border rounded-3xl overflow-hidden shadow-sm transition-transform active:scale-[0.98]"
+          >
+            <div class="aspect-[16/10] overflow-hidden relative">
+              <img
+                alt="Cafe"
+                src="https://ggrhecslgdflloszjkwl.supabase.co/storage/v1/object/public/user-assets/6GZq4ggf385/components/wOkD9ZaNqLc.png"
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              /><button
+                class="absolute top-4 right-4 w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center transition-all shadow-lg border border-white/20"
+              >
+                <iconify-icon icon="solar:bookmark-bold" width="22" height="22"></iconify-icon>
+              </button>
+              <div
+                class="absolute bottom-4 left-4 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 flex items-center gap-2"
+              >
+                <iconify-icon
+                  icon="solar:fire-bold"
+                  class="text-primary text-sm animate-bounce"
+                ></iconify-icon
+                ><span class="text-[10px] font-black text-white uppercase tracking-widest"
+                  >Sizzling</span
+                >
+              </div>
+            </div>
+            <div class="p-4 pt-5">
+              <div class="flex justify-between items-start mb-3">
+                <div>
+                  <h3 class="font-black text-lg leading-tight tracking-tight uppercase italic">
+                    Lumina Cafe &amp; Roastery
+                  </h3>
+                  <p
+                    class="text-[11px] font-bold text-muted-foreground flex items-center gap-1.5 mt-1.5 tracking-wider uppercase"
+                  >
+                    <iconify-icon icon="solar:map-point-bold" class="text-primary"></iconify-icon
+                    >Silver Lake
+                  </p>
+                </div>
+                <span class="bg-secondary px-2.5 py-1 rounded-lg text-xs font-black">$$</span>
+              </div>
+              <div class="bg-primary/5 rounded-2xl p-3 mb-4 border border-primary/10">
+                <div class="flex justify-between items-center mb-1.5">
+                  <span
+                    class="text-[10px] font-black text-primary uppercase tracking-[0.1em] italic"
+                    >Current Nom Nom Meter</span
+                  ><span class="text-[10px] font-black text-primary">88%</span>
+                </div>
+                <div class="h-1.5 w-full bg-primary/10 rounded-full overflow-hidden flex">
+                  <div class="h-full bg-primary animate-pulse" style="width: 88%"></div>
+                </div>
+                <p
+                  class="text-[9px] text-muted-foreground font-bold mt-1.5 uppercase tracking-tight"
+                >
+                  12 of your friends want to go here!
+                </p>
+              </div>
+              <button
+                class="w-full bg-primary text-primary-foreground font-black py-4 rounded-2xl flex items-center justify-center gap-2 text-sm shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all uppercase tracking-widest"
+              >
+                <iconify-icon icon="solar:routing-2-bold" width="20" height="20"></iconify-icon>Open
+                in Maps
+              </button>
+            </div>
+          </article>
+          <article
+            class="group relative bg-card border border-border rounded-3xl overflow-hidden shadow-sm transition-transform active:scale-[0.98]"
+          >
+            <div class="aspect-[16/10] overflow-hidden relative">
+              <img
+                alt="Bakery"
+                src="https://ggrhecslgdflloszjkwl.supabase.co/storage/v1/object/public/user-assets/6GZq4ggf385/components/EWpU3Z1DWjn.png"
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              /><button
+                class="absolute top-4 right-4 w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center transition-all shadow-lg border border-white/20"
+              >
+                <iconify-icon icon="solar:bookmark-bold" width="22" height="22"></iconify-icon>
+              </button>
+              <div
+                class="absolute bottom-4 left-4 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 flex items-center gap-2"
+              >
+                <iconify-icon icon="solar:fire-bold" class="text-orange-400 text-sm"></iconify-icon
+                ><span class="text-[10px] font-black text-white uppercase tracking-widest"
+                  >Warming Up</span
+                >
+              </div>
+            </div>
+            <div class="p-4 pt-5">
+              <div class="flex justify-between items-start mb-3">
+                <div>
+                  <h3 class="font-black text-lg leading-tight tracking-tight uppercase italic">
+                    Petit Bakery
+                  </h3>
+                  <p
+                    class="text-[11px] font-bold text-muted-foreground flex items-center gap-1.5 mt-1.5 tracking-wider uppercase"
+                  >
+                    <iconify-icon icon="solar:map-point-bold" class="text-primary"></iconify-icon
+                    >Beverly Hills
+                  </p>
+                </div>
+                <span class="bg-secondary px-2.5 py-1 rounded-lg text-xs font-black">$$$</span>
+              </div>
+              <div class="bg-orange-400/5 rounded-2xl p-3 mb-4 border border-orange-400/10">
+                <div class="flex justify-between items-center mb-1.5">
+                  <span
+                    class="text-[10px] font-black text-orange-500 uppercase tracking-[0.1em] italic"
+                    >Current Nom Nom Meter</span
+                  ><span class="text-[10px] font-black text-orange-500">45%</span>
+                </div>
+                <div class="h-1.5 w-full bg-orange-400/10 rounded-full overflow-hidden flex">
+                  <div class="h-full bg-orange-400" style="width: 45%"></div>
+                </div>
+                <p
+                  class="text-[9px] text-muted-foreground font-bold mt-1.5 uppercase tracking-tight"
+                >
+                  Warming up in your circles!
+                </p>
+              </div>
+              <button
+                class="w-full bg-primary text-primary-foreground font-black py-4 rounded-2xl flex items-center justify-center gap-2 text-sm shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all uppercase tracking-widest"
+              >
+                <iconify-icon icon="solar:routing-2-bold" width="20" height="20"></iconify-icon>Open
+                in Maps
+              </button>
+            </div>
+          </article>
+        </section>
+      </main>
+      <nav
+        class="fixed bottom-0 left-0 w-full bg-background/95 backdrop-blur-xl border-t border-border px-6 py-3 flex items-center justify-between z-50 safe-area-bottom"
+      >
+        <button
+          class="flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground w-16 transition-colors"
+          onclick="location.href=&#39;#N1Q2qxG9BHO&#39;"
+        >
+          <iconify-icon icon="solar:compass-linear" width="24" height="24"></iconify-icon
+          ><span class="text-[10px] font-medium tracking-wide">Discover</span></button
+        ><button
+          class="flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground w-16 transition-colors"
+          onclick="location.href=&#39;#HR9qNYKPac7&#39;"
+        >
+          <iconify-icon icon="solar:map-linear" width="24" height="24"></iconify-icon
+          ><span class="text-[10px] font-medium tracking-wide">Map</span></button
+        ><button class="flex flex-col items-center gap-1 text-primary w-16 group">
+          <iconify-icon icon="solar:bookmark-bold" width="24" height="24"></iconify-icon
+          ><span class="text-[10px] font-bold tracking-wide">Saved</span></button
+        ><button
+          class="flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground w-16 transition-colors"
+          onclick="location.href=&#39;#UP3QVIzvHzc&#39;"
+        >
+          <iconify-icon icon="solar:user-circle-linear" width="24" height="24"></iconify-icon
+          ><span class="text-[10px] font-medium tracking-wide">Profile</span>
+        </button>
+      </nav>
+    </div>
+  </body>
+</html>

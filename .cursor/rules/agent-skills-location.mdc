@@ -1,0 +1,13 @@
+---
+description: Store new Agent Skills under .claude/skills for this repository
+alwaysApply: true
+---
+
+# Agent Skills location (this repo)
+
+When creating, adding, or moving **Agent Skills** for this project:
+
+- **Use** `.claude/skills/<skill-name>/` as the root. Each skill is a folder containing `SKILL.md` (and optional `references/`, scripts, etc.), matching the existing layout in this repository.
+- **Do not** put project skills under `.cursor/skills/` for this codebase. That path is not the canonical store here.
+
+If generic documentation says "project skills → `.cursor/skills/`", treat that as overridden for **nomnom**: use **`.claude/skills/`** instead.

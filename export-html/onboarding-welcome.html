@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OnboardingWelcome</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+    <style type="text/tailwindcss">
+      @theme inline {
+        --color-background: var(--background);
+        --color-foreground: var(--foreground);
+        --color-primary: var(--primary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-secondary: var(--secondary);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-muted: var(--muted);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-accent: var(--accent);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-destructive: var(--destructive);
+        --color-card: var(--card);
+        --color-card-foreground: var(--card-foreground);
+        --color-popover: var(--popover);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-border: var(--border);
+        --color-input: var(--input);
+        --color-ring: var(--ring);
+        --color-chart-1: var(--chart-1);
+        --color-chart-2: var(--chart-2);
+        --color-chart-3: var(--chart-3);
+        --color-chart-4: var(--chart-4);
+        --color-chart-5: var(--chart-5);
+
+        --font-font-sans: var(--font-sans);
+        --font-font-heading: var(--font-heading);
+        --font-font-serif: var(--font-serif);
+        --font-font-mono: var(--font-mono);
+
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+      }
+
+      :root {
+          --background: #FFFFFF;
+        --foreground: #0F172A;
+        --primary: #ff6b35;
+        --primary-foreground: #FFFFFF;
+        --secondary: #F1F5F9;
+        --secondary-foreground: #0F172A;
+        --muted: #F8FAFC;
+        --muted-foreground: #64748B;
+        --accent: #F1F5F9;
+        --accent-foreground: #0F172A;
+        --destructive: #EF4444;
+        --card: #FFFFFF;
+        --card-foreground: #0F172A;
+        --popover: #FFFFFF;
+        --popover-foreground: #0F172A;
+        --border: #E2E8F0;
+        --input: #F1F5F9;
+        --ring: #FF5A5F;
+        --chart-1: #FF5A5F;
+        --chart-2: #3B82F6;
+        --chart-3: #10B981;
+        --chart-4: #F59E0B;
+        --chart-5: #8B5CF6;
+
+        --font-sans: "Plus Jakarta Sans";
+        --font-heading: "Plus Jakarta Sans";
+        --font-serif: "Playfair Display";
+        --font-mono: "JetBrains Mono";
+
+        --radius: 1rem;
+      }
+
+      /* Prevent layout shift for icons without explicit dimensions */
+      iconify-icon:not([width]):not([height]) {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+      }
+
+      /* Hide scrollbars */
+      *,
+      *::before,
+      *::after {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      *::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="min-h-screen bg-background flex flex-col p-6 pb-10 relative overflow-hidden">
+      <div class="absolute top-20 left-10 animate-pulse opacity-40">
+        <iconify-icon icon="fluent-emoji:sparkles" width="32"></iconify-icon>
+      </div>
+      <div class="absolute top-40 right-10 animate-bounce opacity-40 delay-300">
+        <iconify-icon icon="fluent-emoji:doughnut" width="48"></iconify-icon>
+      </div>
+      <div class="flex items-center justify-between mb-8 relative z-10">
+        <div class="flex gap-2 flex-1 mr-4">
+          <div class="h-2 flex-1 bg-primary rounded-full"></div>
+          <div class="h-2 flex-1 bg-primary rounded-full"></div>
+          <div class="h-2 flex-1 bg-primary rounded-full"></div>
+          <div class="h-2 flex-1 bg-primary rounded-full"></div>
+        </div>
+      </div>
+      <div class="flex-1 flex flex-col items-center text-center relative z-10">
+        <div class="relative w-full aspect-square max-w-[320px] mb-12">
+          <div class="absolute inset-0 bg-primary/10 rounded-[3rem] -rotate-6 scale-105"></div>
+          <img
+            src="https://ggrhecslgdflloszjkwl.supabase.co/storage/v1/object/public/user-assets/6GZq4ggf385/components/EC9RUz6GCYj.png"
+            class="w-full h-full object-cover rounded-[2.5rem] shadow-2xl rotate-2 relative z-10"
+            alt="Welcome"
+          />
+          <div
+            class="absolute -bottom-6 -right-6 size-28 bg-primary rounded-[2rem] flex items-center justify-center shadow-2xl -rotate-12 z-20 animate-bounce p-5 overflow-hidden"
+          >
+            <img
+              src="https://ggrhecslgdflloszjkwl.supabase.co/storage/v1/object/public/user-assets/6GZq4ggf385/components/DO01UL78ZZW.png"
+              class="w-full h-full object-contain brightness-0 invert"
+            />
+          </div>
+        </div>
+        <h1
+          class="text-4xl font-black font-heading mb-4 tracking-tighter text-foreground uppercase italic"
+        >
+          Ready to Nomnom? 🥳
+        </h1>
+        <p class="text-muted-foreground px-8 leading-relaxed font-medium text-lg">
+          Welcome to
+          <span class="text-primary font-black uppercase italic tracking-tighter">NomNom</span
+          >. Your personalized food feed is ready!
+        </p>
+        <div class="mt-12 w-full space-y-4">
+          <div
+            class="flex items-center gap-4 p-5 rounded-[2rem] bg-primary/5 border-2 border-primary/10 text-left transition-all hover:bg-primary/10 group"
+          >
+            <div
+              class="size-14 rounded-2xl bg-white flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-transform"
+            >
+              <iconify-icon icon="fluent-emoji:round-pushpin" class="text-3xl"></iconify-icon>
+            </div>
+            <div class="flex-1">
+              <h4 class="font-black text-sm uppercase tracking-tight">Nomnomming Nearby</h4>
+              <p class="text-xs text-muted-foreground font-medium">Find the best local flavors!</p>
+            </div>
+            <button
+              class="bg-primary text-white px-5 py-2 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/20 active:scale-95 transition-all"
+            >
+              Enable
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="mt-8 relative z-10">
+        <button
+          class="w-full bg-foreground text-background py-5 rounded-[2rem] font-black text-xl shadow-2xl flex items-center justify-center gap-3 active:scale-95 transition-all hover:gap-5"
+          onclick="location.href=&#39;#N1Q2qxG9BHO&#39;"
+        >
+          Let's Nomnom!<iconify-icon icon="fluent-emoji:rocket" class="text-2xl"></iconify-icon>
+        </button>
+      </div>
+    </div>
+  </body>
+</html>

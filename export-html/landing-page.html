@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LandingPage</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+    <style type="text/tailwindcss">
+      @theme inline {
+        --color-background: var(--background);
+        --color-foreground: var(--foreground);
+        --color-primary: var(--primary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-secondary: var(--secondary);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-muted: var(--muted);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-accent: var(--accent);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-destructive: var(--destructive);
+        --color-card: var(--card);
+        --color-card-foreground: var(--card-foreground);
+        --color-popover: var(--popover);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-border: var(--border);
+        --color-input: var(--input);
+        --color-ring: var(--ring);
+        --color-chart-1: var(--chart-1);
+        --color-chart-2: var(--chart-2);
+        --color-chart-3: var(--chart-3);
+        --color-chart-4: var(--chart-4);
+        --color-chart-5: var(--chart-5);
+
+        --font-font-sans: var(--font-sans);
+        --font-font-heading: var(--font-heading);
+        --font-font-serif: var(--font-serif);
+        --font-font-mono: var(--font-mono);
+
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+      }
+
+      :root {
+          --background: #FFFFFF;
+        --foreground: #0F172A;
+        --primary: #ff6b35;
+        --primary-foreground: #FFFFFF;
+        --secondary: #F1F5F9;
+        --secondary-foreground: #0F172A;
+        --muted: #F8FAFC;
+        --muted-foreground: #64748B;
+        --accent: #F1F5F9;
+        --accent-foreground: #0F172A;
+        --destructive: #EF4444;
+        --card: #FFFFFF;
+        --card-foreground: #0F172A;
+        --popover: #FFFFFF;
+        --popover-foreground: #0F172A;
+        --border: #E2E8F0;
+        --input: #F1F5F9;
+        --ring: #FF5A5F;
+        --chart-1: #FF5A5F;
+        --chart-2: #3B82F6;
+        --chart-3: #10B981;
+        --chart-4: #F59E0B;
+        --chart-5: #8B5CF6;
+
+        --font-sans: "Plus Jakarta Sans";
+        --font-heading: "Plus Jakarta Sans";
+        --font-serif: "Playfair Display";
+        --font-mono: "JetBrains Mono";
+
+        --radius: 1rem;
+      }
+
+      /* Prevent layout shift for icons without explicit dimensions */
+      iconify-icon:not([width]):not([height]) {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+      }
+
+      /* Hide scrollbars */
+      *,
+      *::before,
+      *::after {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      *::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      class="min-h-screen bg-background text-foreground font-sans selection:bg-primary selection:text-white"
+    >
+      <nav
+        class="fixed top-0 left-0 w-full z-[100] bg-background/80 backdrop-blur-xl border-b border-border px-6 md:px-20 py-5 flex items-center justify-between"
+      >
+        <div class="flex items-center gap-2.5">
+          <div
+            class="size-10 bg-primary rounded-xl flex items-center justify-center rotate-3 shadow-lg p-2 overflow-hidden"
+          >
+            <img
+              src="https://ggrhecslgdflloszjkwl.supabase.co/storage/v1/object/public/user-assets/6GZq4ggf385/components/DO01UL78ZZW.png"
+              class="w-full h-full object-contain brightness-0 invert"
+            />
+          </div>
+          <span class="font-heading font-black text-2xl tracking-tighter">NomNom</span>
+        </div>
+        <div class="hidden md:flex items-center gap-10">
+          <a
+            href="#features"
+            class="text-sm font-black uppercase tracking-widest hover:text-primary transition-colors italic"
+            >Features</a
+          ><a
+            href="#creators"
+            class="text-sm font-black uppercase tracking-widest hover:text-primary transition-colors italic"
+            >Creators</a
+          ><button
+            class="bg-foreground text-background px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest shadow-xl hover:scale-105 transition-all active:scale-95"
+            onclick="location.href=&#39;#PERP1pqEOz4&#39;"
+          >
+            Open Web App
+          </button>
+        </div>
+        <button
+          class="md:hidden size-10 flex items-center justify-center bg-secondary rounded-full"
+        >
+          <iconify-icon icon="solar:hamburger-menu-linear" width="24"></iconify-icon>
+        </button>
+      </nav>
+      <section class="relative pt-32 pb-20 md:pt-48 md:pb-40 overflow-hidden">
+        <div
+          class="absolute -top-20 -right-20 size-[600px] bg-primary/5 rounded-full blur-3xl -z-10"
+        ></div>
+        <div
+          class="absolute bottom-40 -left-20 size-[400px] bg-primary/10 rounded-full blur-3xl -z-10 animate-pulse"
+        ></div>
+        <div class="container mx-auto px-6 md:px-20 grid md:grid-cols-2 gap-16 items-center">
+          <div class="text-center md:text-left space-y-8">
+            <div
+              class="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 px-4 py-2 rounded-full"
+            >
+              <span class="animate-ping size-2 bg-primary rounded-full"></span
+              ><span class="text-[10px] font-black uppercase tracking-[0.2em] text-primary"
+                >Now Live for Web &amp; Mobile</span
+              >
+            </div>
+            <h1
+              class="text-6xl md:text-8xl font-heading font-black tracking-tighter leading-[0.9] uppercase italic"
+            >
+              <span class="text-foreground">Stop Searching,</span><br /><span class="text-primary"
+                >Start Nomnomming.</span
+              >
+            </h1>
+            <p
+              class="text-xl md:text-2xl text-muted-foreground font-medium max-w-xl leading-relaxed"
+            >
+              The only social feed where you don't just look at food—you find your next favorite
+              spot through people you actually trust.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center gap-4 pt-4">
+              <button
+                class="w-full sm:w-auto bg-primary text-white px-10 py-5 rounded-[2rem] text-lg font-black uppercase tracking-widest shadow-2xl shadow-primary/30 hover:scale-105 transition-all active:scale-95 flex items-center justify-center gap-3"
+                onclick="location.href=&#39;#PERP1pqEOz4&#39;"
+              >
+                <iconify-icon icon="solar:play-bold" class="text-2xl"></iconify-icon>Get Started</button
+              ><button
+                class="w-full sm:w-auto bg-white border-2 border-border text-foreground px-10 py-5 rounded-[2rem] text-lg font-black uppercase tracking-widest hover:bg-secondary transition-all active:scale-95 flex items-center justify-center gap-3"
+              >
+                <iconify-icon icon="mdi:apple" class="text-2xl"></iconify-icon>App Store
+              </button>
+            </div>
+            <div class="flex items-center justify-center md:justify-start -space-x-4 pt-4">
+              <img
+                src="https://randomuser.me/api/portraits/women/44.jpg"
+                class="size-12 rounded-full border-4 border-background object-cover"
+              /><img
+                src="https://randomuser.me/api/portraits/men/32.jpg"
+                class="size-12 rounded-full border-4 border-background object-cover"
+              /><img
+                src="https://randomuser.me/api/portraits/women/68.jpg"
+                class="size-12 rounded-full border-4 border-background object-cover"
+              />
+              <div
+                class="size-12 rounded-full border-4 border-background bg-secondary flex items-center justify-center text-[10px] font-black uppercase"
+              >
+                +10K
+              </div>
+              <p
+                class="ml-8 text-xs font-bold text-muted-foreground uppercase tracking-widest italic"
+              >
+                Join the Nom Nom Circle
+              </p>
+            </div>
+          </div>
+          <div class="relative">
+            <div class="absolute inset-0 bg-primary/20 blur-[120px] -z-10 scale-75 rotate-12"></div>
+            <img
+              src="https://ggrhecslgdflloszjkwl.supabase.co/storage/v1/object/public/user-assets/6GZq4ggf385/components/pMbFCIHxpsN.png"
+              class="w-full max-w-[450px] mx-auto drop-shadow-[0_32px_64px_rgba(0,0,0,0.15)] hover:rotate-2 transition-transform duration-700"
+              alt="App Mockup"
+            />
+          </div>
+        </div>
+      </section>
+      <section id="features" class="py-32 bg-secondary/30">
+        <div class="container mx-auto px-6 md:px-20">
+          <div class="text-center mb-20">
+            <h2
+              class="text-4xl md:text-5xl font-heading font-black tracking-tighter uppercase italic mb-4"
+            >
+              Feed Your Feelings
+            </h2>
+            <p class="text-muted-foreground font-medium max-w-2xl mx-auto">
+              We've built features that understand how you actually think about food.
+            </p>
+          </div>
+          <div class="grid md:grid-cols-3 gap-8">
+            <div
+              class="bg-background p-10 rounded-[3rem] border border-border shadow-sm group hover:border-primary transition-colors"
+            >
+              <div
+                class="size-16 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform"
+              >
+                <iconify-icon icon="solar:heart-bold" width="36"></iconify-icon>
+              </div>
+              <h3 class="text-2xl font-black mb-4 uppercase tracking-tight">Pick a Vibe</h3>
+              <p class="text-muted-foreground font-medium leading-relaxed">
+                Don't browse by cuisine. Browse by the vibe—Date Night, Friends, Corporate, or Cheap
+                Eats. We get you.
+              </p>
+            </div>
+            <div
+              class="bg-background p-10 rounded-[3rem] border border-border shadow-sm group hover:border-primary transition-colors"
+            >
+              <div
+                class="size-16 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform"
+              >
+                <iconify-icon icon="mdi:dice-5" width="36"></iconify-icon>
+              </div>
+              <h3 class="text-2xl font-black mb-4 uppercase tracking-tight">Nom Nom Roulette</h3>
+              <p class="text-muted-foreground font-medium leading-relaxed">
+                Zero ideas? No problem. Shake your phone and let destiny decide your next meal with
+                our curated random gems.
+              </p>
+            </div>
+            <div
+              class="bg-background p-10 rounded-[3rem] border border-border shadow-sm group hover:border-primary transition-colors"
+            >
+              <div
+                class="size-16 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform"
+              >
+                <iconify-icon
+                  icon="solar:video-frame-play-horizontal-bold"
+                  width="36"
+                ></iconify-icon>
+              </div>
+              <h3 class="text-2xl font-black mb-4 uppercase tracking-tight">Creator First</h3>
+              <p class="text-muted-foreground font-medium leading-relaxed">
+                No more anonymous reviews. See exactly what your favorite foodies are nomnomming in
+                real-time.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="py-32 overflow-hidden">
+        <div class="container mx-auto px-6 md:px-20 grid md:grid-cols-2 gap-20 items-center">
+          <div class="relative">
+            <img
+              src="https://ggrhecslgdflloszjkwl.supabase.co/storage/v1/object/public/user-assets/6GZq4ggf385/components/8ISeA8mGOr8.png"
+              class="w-full rounded-[4rem] shadow-2xl rotate-2"
+              alt="Food Spread"
+            />
+            <div
+              class="absolute -bottom-10 -right-10 bg-primary p-8 rounded-[3rem] shadow-2xl rotate-[-5deg] hidden md:block"
+            >
+              <p class="text-white text-4xl font-black italic tracking-tighter">4.9/5</p>
+              <p class="text-white/80 text-[10px] font-black uppercase tracking-[0.2em] mt-1">
+                App Store Rating
+              </p>
+            </div>
+          </div>
+          <div class="space-y-8">
+            <div>
+              <h2
+                class="text-5xl font-heading font-black tracking-tighter uppercase italic leading-none mb-6"
+              >
+                Built for the<br /><span class="text-primary">Next Gen of Foodies</span>
+              </h2>
+              <p class="text-xl text-muted-foreground font-medium leading-relaxed">
+                Instagram plus Google Maps plus your favorite food blog. We've combined the social
+                energy of feeds with the utility of local discovery.
+              </p>
+            </div>
+            <ul class="space-y-6">
+              <li class="flex items-start gap-4">
+                <div
+                  class="size-8 bg-primary/10 rounded-lg flex items-center justify-center shrink-0 mt-1"
+                >
+                  <iconify-icon icon="solar:check-read-bold" class="text-primary"></iconify-icon>
+                </div>
+                <div>
+                  <p class="font-black text-lg uppercase tracking-tight italic">
+                    Verified Creator Recs
+                  </p>
+                  <p class="text-muted-foreground text-sm font-medium">
+                    No bots, no fake reviews. Only real people.
+                  </p>
+                </div>
+              </li>
+              <li class="flex items-start gap-4">
+                <div
+                  class="size-8 bg-primary/10 rounded-lg flex items-center justify-center shrink-0 mt-1"
+                >
+                  <iconify-icon icon="solar:check-read-bold" class="text-primary"></iconify-icon>
+                </div>
+                <div>
+                  <p class="font-black text-lg uppercase tracking-tight italic">Interactive Maps</p>
+                  <p class="text-muted-foreground text-sm font-medium">
+                    Browse visually and save spots to your custom guides.
+                  </p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      <section class="py-32 bg-foreground text-background relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
+          <div class="grid grid-cols-4 gap-4 p-4">
+            <div class="aspect-square bg-white rounded-[2rem] rotate-12"></div>
+            <div class="aspect-square bg-white rounded-[2rem] -rotate-6"></div>
+            <div class="aspect-square bg-white rounded-[2rem] rotate-45"></div>
+            <div class="aspect-square bg-white rounded-[2rem] -rotate-12"></div>
+          </div>
+        </div>
+        <div class="container mx-auto px-6 md:px-20 text-center relative z-10">
+          <h2
+            class="text-5xl md:text-7xl font-heading font-black tracking-tighter uppercase italic mb-8"
+          >
+            Ready to join the<br />Nom Nom Circle?
+          </h2>
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+            <button
+              class="w-full sm:w-auto bg-primary text-white px-12 py-6 rounded-[2.5rem] text-xl font-black uppercase tracking-widest shadow-2xl hover:scale-110 transition-all active:scale-95"
+              onclick="location.href=&#39;#PERP1pqEOz4&#39;"
+            >
+              Let's Nomnom!
+            </button>
+          </div>
+        </div>
+      </section>
+      <footer class="bg-background border-t border-border py-20">
+        <div
+          class="container mx-auto px-6 md:px-20 flex flex-col md:flex-row justify-between items-center gap-10 text-center md:text-left"
+        >
+          <div>
+            <div class="flex items-center gap-2.5 mb-6 justify-center md:justify-start">
+              <div
+                class="size-8 bg-primary rounded-lg flex items-center justify-center rotate-3 shadow-lg p-1.5 overflow-hidden"
+              >
+                <img
+                  src="https://ggrhecslgdflloszjkwl.supabase.co/storage/v1/object/public/user-assets/6GZq4ggf385/components/DO01UL78ZZW.png"
+                  class="w-full h-full object-contain brightness-0 invert"
+                />
+              </div>
+              <span class="font-heading font-black text-xl tracking-tighter">NomNom</span>
+            </div>
+            <p class="text-muted-foreground text-sm max-w-xs leading-relaxed font-medium">
+              Changing the way we discover local food through the power of circle-led trust.
+            </p>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-12 md:gap-20">
+            <div class="space-y-4">
+              <p class="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                Product
+              </p>
+              <a href="#" class="block text-sm font-bold hover:text-primary transition-colors"
+                >Features</a
+              ><a href="#" class="block text-sm font-bold hover:text-primary transition-colors"
+                >Web App</a
+              ><a href="#" class="block text-sm font-bold hover:text-primary transition-colors"
+                >Mobile</a
+              >
+            </div>
+            <div class="space-y-4">
+              <p class="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                Creators
+              </p>
+              <a href="#" class="block text-sm font-bold hover:text-primary transition-colors"
+                >Apply</a
+              ><a href="#" class="block text-sm font-bold hover:text-primary transition-colors"
+                >Nom Nom Pro</a
+              ><a href="#" class="block text-sm font-bold hover:text-primary transition-colors"
+                >Guidelines</a
+              >
+            </div>
+            <div class="space-y-4">
+              <p class="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                Social
+              </p>
+              <a href="#" class="block text-sm font-bold hover:text-primary transition-colors"
+                >Instagram</a
+              ><a href="#" class="block text-sm font-bold hover:text-primary transition-colors"
+                >TikTok</a
+              ><a href="#" class="block text-sm font-bold hover:text-primary transition-colors"
+                >Twitter</a
+              >
+            </div>
+          </div>
+        </div>
+        <div
+          class="container mx-auto px-6 md:px-20 mt-20 pt-10 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-6"
+        >
+          <p class="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+            © 2024 NomNom. All rights reserved.
+          </p>
+          <div class="flex gap-8">
+            <a
+              href="#"
+              class="text-xs font-bold text-muted-foreground uppercase tracking-widest hover:text-foreground"
+              >Privacy</a
+            ><a
+              href="#"
+              class="text-xs font-bold text-muted-foreground uppercase tracking-widest hover:text-foreground"
+              >Terms</a
+            >
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

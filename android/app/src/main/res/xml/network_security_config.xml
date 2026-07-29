@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Explicit network security policy.
+  - Production builds (HTTPS) never use cleartext — the WebView loads via server.url (HTTPS).
+  - LAN dev (http://) is permitted only in **debug** builds via
+    `src/debug/res/xml/network_security_config.xml` (cleartext on).
+  - By declaring this file we prevent accidental cleartext in store builds even if a dependency
+    or future config change would otherwise allow it.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

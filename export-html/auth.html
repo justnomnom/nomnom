@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Auth</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+    <style type="text/tailwindcss">
+      @theme inline {
+        --color-background: var(--background);
+        --color-foreground: var(--foreground);
+        --color-primary: var(--primary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-secondary: var(--secondary);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-muted: var(--muted);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-accent: var(--accent);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-destructive: var(--destructive);
+        --color-card: var(--card);
+        --color-card-foreground: var(--card-foreground);
+        --color-popover: var(--popover);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-border: var(--border);
+        --color-input: var(--input);
+        --color-ring: var(--ring);
+        --color-chart-1: var(--chart-1);
+        --color-chart-2: var(--chart-2);
+        --color-chart-3: var(--chart-3);
+        --color-chart-4: var(--chart-4);
+        --color-chart-5: var(--chart-5);
+
+        --font-font-sans: var(--font-sans);
+        --font-font-heading: var(--font-heading);
+        --font-font-serif: var(--font-serif);
+        --font-font-mono: var(--font-mono);
+
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+      }
+
+      :root {
+          --background: #FFFFFF;
+        --foreground: #0F172A;
+        --primary: #ff6b35;
+        --primary-foreground: #FFFFFF;
+        --secondary: #F1F5F9;
+        --secondary-foreground: #0F172A;
+        --muted: #F8FAFC;
+        --muted-foreground: #64748B;
+        --accent: #F1F5F9;
+        --accent-foreground: #0F172A;
+        --destructive: #EF4444;
+        --card: #FFFFFF;
+        --card-foreground: #0F172A;
+        --popover: #FFFFFF;
+        --popover-foreground: #0F172A;
+        --border: #E2E8F0;
+        --input: #F1F5F9;
+        --ring: #FF5A5F;
+        --chart-1: #FF5A5F;
+        --chart-2: #3B82F6;
+        --chart-3: #10B981;
+        --chart-4: #F59E0B;
+        --chart-5: #8B5CF6;
+
+        --font-sans: "Plus Jakarta Sans";
+        --font-heading: "Plus Jakarta Sans";
+        --font-serif: "Playfair Display";
+        --font-mono: "JetBrains Mono";
+
+        --radius: 1rem;
+      }
+
+      /* Prevent layout shift for icons without explicit dimensions */
+      iconify-icon:not([width]):not([height]) {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+      }
+
+      /* Hide scrollbars */
+      *,
+      *::before,
+      *::after {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      *::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      class="min-h-screen bg-background flex flex-col items-center justify-between p-8 pb-12 overflow-hidden relative"
+    >
+      <div class="absolute top-10 -left-10 opacity-20 rotate-12 scale-150 pointer-events-none">
+        <iconify-icon icon="fluent-emoji:pizza" width="120"></iconify-icon>
+      </div>
+      <div class="absolute bottom-40 -right-10 opacity-20 -rotate-12 scale-150 pointer-events-none">
+        <iconify-icon icon="fluent-emoji:hamburger" width="120"></iconify-icon>
+      </div>
+      <div class="absolute top-1/2 -right-20 opacity-10 rotate-45 scale-125 pointer-events-none">
+        <iconify-icon icon="fluent-emoji:taco" width="140"></iconify-icon>
+      </div>
+      <div class="flex-1 flex flex-col items-center justify-center w-full max-w-sm relative z-10">
+        <div class="mb-12 text-center">
+          <div
+            class="size-32 bg-primary rounded-[3rem] flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-primary/30 animate-bounce transition-transform hover:scale-110 p-6 overflow-hidden"
+          >
+            <img
+              src="https://ggrhecslgdflloszjkwl.supabase.co/storage/v1/object/public/user-assets/6GZq4ggf385/components/DO01UL78ZZW.png"
+              class="w-full h-full object-contain brightness-0 invert"
+            />
+          </div>
+          <h1
+            class="text-6xl font-black font-heading tracking-tighter mb-4 text-foreground leading-none"
+          >
+            Just<br />Nom Nom
+          </h1>
+          <p class="text-muted-foreground text-xl font-medium px-4 leading-tight">
+            The ultimate feed for <span class="text-primary font-black italic">real-deal</span> food
+            discovery.
+          </p>
+        </div>
+        <div class="w-full space-y-4">
+          <button
+            class="w-full flex items-center justify-center gap-3 bg-white border-2 border-border py-5 px-6 rounded-[2rem] hover:bg-muted/5 transition-all shadow-sm active:scale-95"
+            onclick="location.href=&#39;#wTnzz6kdHAZ&#39;"
+          >
+            <iconify-icon icon="logos:google-icon" class="text-xl"></iconify-icon
+            ><span class="font-bold text-foreground">Start Nomnomming with Google</span></button
+          ><button
+            class="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-white py-5 px-6 rounded-[2rem] hover:opacity-90 transition-all shadow-xl active:scale-95"
+            onclick="location.href=&#39;#wTnzz6kdHAZ&#39;"
+          >
+            <iconify-icon icon="mdi:instagram" class="text-2xl"></iconify-icon
+            ><span class="font-bold tracking-tight">Join the Nom Nom Circle</span>
+          </button>
+        </div>
+      </div>
+      <div class="text-center max-w-xs relative z-10">
+        <p
+          class="text-[10px] text-muted-foreground leading-relaxed font-bold uppercase tracking-widest"
+        >
+          By continuing, you agree to NomNom's<br /><a
+            href="#"
+            class="text-foreground underline decoration-primary decoration-2 underline-offset-4"
+            >Terms</a
+          >
+          and
+          <a
+            href="#"
+            class="text-foreground underline decoration-primary decoration-2 underline-offset-4"
+            >Privacy</a
+          >.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,101 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
+// Parent of android/ — where package.json and node_modules live
+def repoRoot = settings.rootDir.parentFile
+
+include ':app'
+include ':capacitor-cordova-android-plugins'
+project(':capacitor-cordova-android-plugins').projectDir = new File(settings.rootDir, 'capacitor-cordova-android-plugins')
+
+// Do not use `apply from: capacitor.settings.gradle` here: the generated script uses
+// `new File('../node_modules/...')`, which is resolved against JVM user.dir in some
+// environments (IDE sync, composite builds) and can leave projects unregistered or
+// pointing at the wrong folder. Parse the same file and bind paths from settings.rootDir.
+def capSettingsFile = new File(settings.rootDir, 'capacitor.settings.gradle')
+if (!capSettingsFile.exists()) {
+    throw new GradleException(
+        "Missing ${capSettingsFile.name} under ${settings.rootDir}.\n\n" +
+            'From the repository root (the folder that contains android/), run:\n' +
+            '  npx cap sync android\n'
+    )
+}
+
+def includeCount = 0
+capSettingsFile.readLines().each { String raw ->
+    String line = raw.trim()
+    if (!line || line.startsWith('//')) {
+        return
+    }
+
+    // Prefer string parsing over strict regex: some environments (IDE sync, line endings,
+    // future Capacitor CLI tweaks) caused matcher-based parsing to skip lines so
+    // :capacitor-android was never registered.
+    if (line.startsWith('include')) {
+        int q1 = line.indexOf("'")
+        int q2 = line.lastIndexOf("'")
+        if (q1 >= 0 && q2 > q1) {
+            include line.substring(q1 + 1, q2)
+            includeCount++
+            return
+        }
+        q1 = line.indexOf('"')
+        q2 = line.lastIndexOf('"')
+        if (q1 >= 0 && q2 > q1) {
+            include line.substring(q1 + 1, q2)
+            includeCount++
+            return
+        }
+        return
+    }
+
+    String fileMarker = ".projectDir = new File('"
+    int fileIdx = line.lastIndexOf(fileMarker)
+    if (line.startsWith("project('") && fileIdx > 0 && line.endsWith("')")) {
+        int nameStart = "project('".length()
+        int nameEnd = line.indexOf("')")
+        if (nameEnd > nameStart) {
+            def projectName = line.substring(nameStart, nameEnd)
+            def relPath = line.substring(fileIdx + fileMarker.length(), line.length() - "')".length())
+            def dir = new File(relPath)
+            if (!dir.isAbsolute()) {
+                dir = new File(settings.rootDir, relPath)
+            }
+            project(projectName).projectDir = dir.canonicalFile
+            return
+        }
+    }
+}
+
+if (includeCount == 0) {
+    throw new GradleException(
+        "No include directives found in ${capSettingsFile.name}.\n\n" +
+            'Regenerate it from the repository root:\n' +
+            '  npx cap sync android\n'
+    )
+}
+
+def capAndroidDir = new File(repoRoot, 'node_modules/@capacitor/android/capacitor')
+if (!capAndroidDir.exists()) {
+    throw new GradleException(
+        "Capacitor Android not found at:\n  ${capAndroidDir}\n\n" +
+            'From the repository root (parent of android/), run:\n' +
+            '  npm install\n' +
+            '  npx cap sync android\n'
+    )
+}
+
+// Last resort if parsing missed the core module (seen as "could not be found :capacitor-android").
+if (findProject(':capacitor-android') == null) {
+    include ':capacitor-android'
+    project(':capacitor-android').projectDir = capAndroidDir.canonicalFile
+}

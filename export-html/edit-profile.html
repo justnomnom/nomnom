@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EditProfile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+    <style type="text/tailwindcss">
+      @theme inline {
+        --color-background: var(--background);
+        --color-foreground: var(--foreground);
+        --color-primary: var(--primary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-secondary: var(--secondary);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-muted: var(--muted);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-accent: var(--accent);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-destructive: var(--destructive);
+        --color-card: var(--card);
+        --color-card-foreground: var(--card-foreground);
+        --color-popover: var(--popover);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-border: var(--border);
+        --color-input: var(--input);
+        --color-ring: var(--ring);
+        --color-chart-1: var(--chart-1);
+        --color-chart-2: var(--chart-2);
+        --color-chart-3: var(--chart-3);
+        --color-chart-4: var(--chart-4);
+        --color-chart-5: var(--chart-5);
+
+        --font-font-sans: var(--font-sans);
+        --font-font-heading: var(--font-heading);
+        --font-font-serif: var(--font-serif);
+        --font-font-mono: var(--font-mono);
+
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+      }
+
+      :root {
+          --background: #FFFFFF;
+        --foreground: #0F172A;
+        --primary: #ff6b35;
+        --primary-foreground: #FFFFFF;
+        --secondary: #F1F5F9;
+        --secondary-foreground: #0F172A;
+        --muted: #F8FAFC;
+        --muted-foreground: #64748B;
+        --accent: #F1F5F9;
+        --accent-foreground: #0F172A;
+        --destructive: #EF4444;
+        --card: #FFFFFF;
+        --card-foreground: #0F172A;
+        --popover: #FFFFFF;
+        --popover-foreground: #0F172A;
+        --border: #E2E8F0;
+        --input: #F1F5F9;
+        --ring: #FF5A5F;
+        --chart-1: #FF5A5F;
+        --chart-2: #3B82F6;
+        --chart-3: #10B981;
+        --chart-4: #F59E0B;
+        --chart-5: #8B5CF6;
+
+        --font-sans: "Plus Jakarta Sans";
+        --font-heading: "Plus Jakarta Sans";
+        --font-serif: "Playfair Display";
+        --font-mono: "JetBrains Mono";
+
+        --radius: 1rem;
+      }
+
+      /* Prevent layout shift for icons without explicit dimensions */
+      iconify-icon:not([width]):not([height]) {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+      }
+
+      /* Hide scrollbars */
+      *,
+      *::before,
+      *::after {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      *::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="min-h-screen bg-background text-foreground pb-12 font-sans">
+      <header
+        class="px-6 pt-12 pb-6 flex items-center justify-between sticky top-0 bg-background/90 backdrop-blur-lg z-40"
+      >
+        <button
+          class="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+        >
+          Cancel
+        </button>
+        <h1 class="font-heading font-bold text-lg tracking-tight">Edit Profile</h1>
+        <button class="text-sm font-bold text-primary hover:opacity-80 transition-opacity">
+          Done
+        </button>
+      </header>
+      <main class="px-6 space-y-8">
+        <section class="flex flex-col items-center gap-4 py-4">
+          <div class="relative group cursor-pointer">
+            <div class="w-28 h-28 rounded-full p-1 bg-gradient-to-tr from-primary to-orange-400">
+              <img
+                alt="Profile"
+                src="https://randomuser.me/api/portraits/women/44.jpg"
+                class="w-full h-full object-cover rounded-full border-4 border-background shadow-lg group-hover:opacity-80 transition-opacity"
+              />
+            </div>
+            <div
+              class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <iconify-icon
+                icon="solar:camera-bold"
+                class="text-white text-3xl drop-shadow-md"
+              ></iconify-icon>
+            </div>
+          </div>
+          <button class="text-primary font-bold text-sm hover:underline">
+            Change Profile Photo
+          </button>
+        </section>
+        <section class="space-y-6">
+          <div class="space-y-2">
+            <label class="text-xs font-bold uppercase tracking-wider text-muted-foreground px-1"
+              >Name</label
+            >
+            <div class="relative">
+              <input
+                type="text"
+                value="Emma Watson"
+                class="w-full bg-secondary border-none rounded-2xl px-5 py-4 text-sm font-medium focus:ring-2 focus:ring-primary outline-none transition-all"
+              />
+            </div>
+          </div>
+          <div class="space-y-2">
+            <label class="text-xs font-bold uppercase tracking-wider text-muted-foreground px-1"
+              >Username</label
+            >
+            <div class="relative flex items-center">
+              <span class="absolute left-5 text-muted-foreground font-bold text-sm">@</span
+              ><input
+                type="text"
+                value="emma_eats"
+                class="w-full bg-secondary border-none rounded-2xl pl-10 pr-5 py-4 text-sm font-medium focus:ring-2 focus:ring-primary outline-none transition-all"
+              />
+            </div>
+          </div>
+          <div class="space-y-2">
+            <label class="text-xs font-bold uppercase tracking-wider text-muted-foreground px-1"
+              >Bio</label
+            ><textarea
+              rows="3"
+              class="w-full bg-secondary border-none rounded-2xl px-5 py-4 text-sm font-medium focus:ring-2 focus:ring-primary outline-none transition-all resize-none leading-relaxed"
+            >
+Full-time foodie exploring the hidden gems of LA. Brunch enthusiast and matcha critic. 🍵✨</textarea
+            >
+          </div>
+        </section>
+        <section class="space-y-4">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-muted-foreground px-1">
+            Social Links
+          </h2>
+          <div class="space-y-3">
+            <div class="flex items-center gap-3 bg-secondary p-3 rounded-2xl">
+              <div
+                class="w-10 h-10 rounded-xl bg-background flex items-center justify-center text-foreground shadow-sm"
+              >
+                <iconify-icon icon="mdi:instagram" width="20" height="20"></iconify-icon>
+              </div>
+              <input
+                type="text"
+                placeholder="Instagram username"
+                value="emma_eats"
+                class="flex-1 bg-transparent border-none p-0 text-sm font-medium focus:ring-0 outline-none"
+              />
+            </div>
+            <div class="flex items-center gap-3 bg-secondary p-3 rounded-2xl">
+              <div
+                class="w-10 h-10 rounded-xl bg-background flex items-center justify-center text-foreground shadow-sm"
+              >
+                <iconify-icon icon="hugeicons:tiktok" width="20" height="20"></iconify-icon>
+              </div>
+              <input
+                type="text"
+                placeholder="TikTok username"
+                value="emma.eats.la"
+                class="flex-1 bg-transparent border-none p-0 text-sm font-medium focus:ring-0 outline-none"
+              />
+            </div>
+            <div class="flex items-center gap-3 bg-secondary p-3 rounded-2xl">
+              <div
+                class="w-10 h-10 rounded-xl bg-background flex items-center justify-center text-foreground shadow-sm"
+              >
+                <iconify-icon icon="mdi:youtube" width="20" height="20"></iconify-icon>
+              </div>
+              <input
+                type="text"
+                placeholder="YouTube channel"
+                value="@emmaeatsworld"
+                class="flex-1 bg-transparent border-none p-0 text-sm font-medium focus:ring-0 outline-none"
+              />
+            </div>
+            <div class="flex items-center gap-3 bg-secondary p-3 rounded-2xl">
+              <div
+                class="w-10 h-10 rounded-xl bg-background flex items-center justify-center text-foreground shadow-sm"
+              >
+                <iconify-icon icon="solar:global-linear" width="20" height="20"></iconify-icon>
+              </div>
+              <input
+                type="text"
+                placeholder="Website URL"
+                value="emmaeatsla.com"
+                class="flex-1 bg-transparent border-none p-0 text-sm font-medium focus:ring-0 outline-none"
+              />
+            </div>
+          </div>
+        </section>
+        <section class="space-y-4 pt-4 border-t border-border">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-muted-foreground px-1">
+            Content Management
+          </h2>
+          <div class="space-y-2">
+            <button
+              class="w-full flex items-center justify-between p-4 bg-secondary rounded-2xl group"
+            >
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-10 h-10 rounded-xl bg-background flex items-center justify-center text-primary shadow-sm"
+                >
+                  <iconify-icon
+                    icon="solar:clapperboard-edit-linear"
+                    width="22"
+                    height="22"
+                  ></iconify-icon>
+                </div>
+                <div class="text-left">
+                  <p class="font-bold text-sm">Manage My Mentions</p>
+                  <p class="text-[10px] text-muted-foreground">84 restaurants shared</p>
+                </div>
+              </div>
+              <iconify-icon
+                icon="solar:alt-arrow-right-linear"
+                width="20"
+                height="20"
+                class="text-muted-foreground group-hover:translate-x-1 transition-transform"
+              ></iconify-icon>
+            </button>
+          </div>
+        </section>
+        <section class="pt-4 border-t border-border">
+          <button class="w-full flex items-center justify-between py-4 group">
+            <div class="flex items-center gap-3">
+              <div
+                class="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center text-destructive"
+              >
+                <iconify-icon icon="solar:logout-linear" width="20" height="20"></iconify-icon>
+              </div>
+              <span class="font-bold text-sm text-destructive">Log Out</span>
+            </div>
+            <iconify-icon
+              icon="solar:alt-arrow-right-linear"
+              width="20"
+              height="20"
+              class="text-muted-foreground group-hover:translate-x-1 transition-transform"
+            ></iconify-icon>
+          </button>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

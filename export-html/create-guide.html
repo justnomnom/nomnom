@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CreateGuide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+    <style type="text/tailwindcss">
+      @theme inline {
+        --color-background: var(--background);
+        --color-foreground: var(--foreground);
+        --color-primary: var(--primary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-secondary: var(--secondary);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-muted: var(--muted);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-accent: var(--accent);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-destructive: var(--destructive);
+        --color-card: var(--card);
+        --color-card-foreground: var(--card-foreground);
+        --color-popover: var(--popover);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-border: var(--border);
+        --color-input: var(--input);
+        --color-ring: var(--ring);
+        --color-chart-1: var(--chart-1);
+        --color-chart-2: var(--chart-2);
+        --color-chart-3: var(--chart-3);
+        --color-chart-4: var(--chart-4);
+        --color-chart-5: var(--chart-5);
+
+        --font-font-sans: var(--font-sans);
+        --font-font-heading: var(--font-heading);
+        --font-font-serif: var(--font-serif);
+        --font-font-mono: var(--font-mono);
+
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+      }
+
+      :root {
+          --background: #FFFFFF;
+        --foreground: #0F172A;
+        --primary: #ff6b35;
+        --primary-foreground: #FFFFFF;
+        --secondary: #F1F5F9;
+        --secondary-foreground: #0F172A;
+        --muted: #F8FAFC;
+        --muted-foreground: #64748B;
+        --accent: #F1F5F9;
+        --accent-foreground: #0F172A;
+        --destructive: #EF4444;
+        --card: #FFFFFF;
+        --card-foreground: #0F172A;
+        --popover: #FFFFFF;
+        --popover-foreground: #0F172A;
+        --border: #E2E8F0;
+        --input: #F1F5F9;
+        --ring: #FF5A5F;
+        --chart-1: #FF5A5F;
+        --chart-2: #3B82F6;
+        --chart-3: #10B981;
+        --chart-4: #F59E0B;
+        --chart-5: #8B5CF6;
+
+        --font-sans: "Plus Jakarta Sans";
+        --font-heading: "Plus Jakarta Sans";
+        --font-serif: "Playfair Display";
+        --font-mono: "JetBrains Mono";
+
+        --radius: 1rem;
+      }
+
+      /* Prevent layout shift for icons without explicit dimensions */
+      iconify-icon:not([width]):not([height]) {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+      }
+
+      /* Hide scrollbars */
+      *,
+      *::before,
+      *::after {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      *::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="min-h-screen bg-background text-foreground pb-24 font-sans">
+      <header
+        class="px-6 pt-12 pb-6 flex items-center justify-between sticky top-0 bg-background/90 backdrop-blur-lg z-40"
+      >
+        <button
+          class="w-10 h-10 rounded-full flex items-center justify-center bg-secondary text-foreground active:scale-95 transition-all"
+          onclick="history.back()"
+        >
+          <iconify-icon icon="solar:close-circle-linear" width="24" height="24"></iconify-icon>
+        </button>
+        <h1 class="font-heading font-bold text-lg tracking-tight uppercase italic">
+          New Nom Nom List
+        </h1>
+        <button class="text-primary font-bold text-sm">Save</button>
+      </header>
+      <main class="px-6 space-y-8">
+        <section class="space-y-4">
+          <div class="space-y-2">
+            <label
+              class="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground px-1"
+              >List Name</label
+            ><input
+              type="text"
+              placeholder="e.g. My Favorite Sushi Spots"
+              class="w-full bg-card border border-border rounded-2xl px-5 py-4 text-base font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
+            />
+          </div>
+          <div class="space-y-2">
+            <label
+              class="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground px-1"
+              >Description (Optional)</label
+            ><textarea
+              placeholder="Tell people what this nom nom list is about..."
+              class="w-full bg-card border border-border rounded-2xl px-5 py-4 text-base font-medium min-h-[100px] focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
+            ></textarea>
+          </div>
+        </section>
+        <section class="space-y-4">
+          <div class="flex items-center justify-between">
+            <h2
+              class="font-heading font-bold text-lg text-foreground uppercase italic tracking-tight"
+            >
+              Restaurants
+            </h2>
+            <button
+              class="flex items-center gap-1.5 text-primary bg-primary/10 px-3 py-1.5 rounded-xl text-xs font-bold"
+            >
+              <iconify-icon icon="material-symbols:add-rounded"></iconify-icon>Add Spot
+            </button>
+          </div>
+          <div class="space-y-4">
+            <div class="bg-card border border-border rounded-3xl p-4 space-y-4 shadow-sm">
+              <div class="flex gap-4">
+                <img
+                  src="https://ggrhecslgdflloszjkwl.supabase.co/storage/v1/object/public/user-assets/6GZq4ggf385/components/wOkD9ZaNqLc.png"
+                  class="w-20 h-20 rounded-2xl object-cover shrink-0"
+                />
+                <div class="flex-1 flex flex-col justify-center">
+                  <h3 class="font-bold text-base leading-tight">Lumina Cafe &amp; Roastery</h3>
+                  <p class="text-xs text-muted-foreground mt-1">Silver Lake, Los Angeles</p>
+                </div>
+                <button class="text-muted-foreground p-1">
+                  <iconify-icon icon="solar:trash-bin-trash-bold" width="20"></iconify-icon>
+                </button>
+              </div>
+              <div class="space-y-2">
+                <label
+                  class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-1"
+                  >Why is this a Must-Nom?</label
+                ><textarea
+                  placeholder="Write your specific recommendation for this list..."
+                  class="w-full bg-muted/50 border border-border/50 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-primary/50 transition-all"
+                ></textarea>
+              </div>
+            </div>
+            <div
+              class="bg-card border-2 border-dashed border-border rounded-3xl p-8 flex flex-col items-center justify-center gap-2 text-muted-foreground text-center"
+            >
+              <iconify-icon icon="solar:plate-linear" width="32"></iconify-icon>
+              <p class="text-sm font-medium">Add more spots to your<br />Nom Nom List</p>
+            </div>
+          </div>
+        </section>
+        <section class="space-y-4">
+          <h2
+            class="font-heading font-bold text-lg text-foreground uppercase italic tracking-tight"
+          >
+            Cover Image
+          </h2>
+          <div
+            class="relative aspect-video rounded-3xl overflow-hidden bg-muted flex flex-col items-center justify-center border border-border group cursor-pointer"
+          >
+            <img
+              src="https://ggrhecslgdflloszjkwl.supabase.co/storage/v1/object/public/user-assets/6GZq4ggf385/components/4k6ELJ52O0s.png"
+              class="absolute inset-0 w-full h-full object-cover opacity-60"
+            />
+            <div
+              class="relative z-10 flex flex-col items-center gap-2 text-foreground drop-shadow-md"
+            >
+              <iconify-icon icon="solar:camera-bold" width="32"></iconify-icon
+              ><span class="text-sm font-bold">Change Cover</span>
+            </div>
+          </div>
+        </section>
+      </main>
+      <div
+        class="fixed bottom-0 left-0 w-full p-6 bg-gradient-to-t from-background via-background/90 to-transparent z-40"
+      >
+        <button
+          class="w-full bg-primary text-primary-foreground font-black py-4 rounded-2xl shadow-xl shadow-primary/20 active:scale-[0.98] transition-all uppercase tracking-widest"
+        >
+          Publish Nom Nom List
+        </button>
+      </div>
+    </div>
+  </body>
+</html>
