@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { getSiteUrl } from 'src/libs/site-url';
 import { getStripe } from 'src/libs/stripe/stripe-server';
+import { getPostHogNodeClient } from 'src/libs/posthog/posthog-node';
 import { STRIPE_CONNECT_DEFAULT_COUNTRY } from 'src/libs/stripe/list-stripe-constants';
 import {
   getSupabaseAuthUser,
@@ -130,6 +131,15 @@ export async function POST() {
     const account = await stripe.accounts.retrieve(accountId);
     if (account?.charges_enabled && account?.details_submitted) {
       const loginLink = await stripe.accounts.createLoginLink(accountId);
+      const phDash = getPostHogNodeClient();
+      if (phDash) {
+        phDash.capture({
+          distinctId: user.id,
+          event: 'stripe_connect_onboard_link_created',
+          properties: { mode: 'dashboard', source: 'server' },
+        });
+        await phDash.shutdown();
+      }
       return NextResponse.json({ url: loginLink.url, mode: 'dashboard' });
     }
   } catch (e) {
@@ -182,14 +192,51 @@ export async function POST() {
         });
       } catch (e2) {
         console.error('[stripe connect onboard] accountLinks.create (after reset)', e2);
+        const phErr2 = getPostHogNodeClient();
+        if (phErr2) {
+          phErr2.capture({
+            distinctId: user.id,
+            event: 'stripe_connect_onboard_failed',
+            properties: { source: 'server' },
+          });
+          await phErr2.shutdown();
+        }
         return NextResponse.json(jsonWithStripeError('account_link_failed', e2), { status: 502 });
       }
 
+      const phReset = getPostHogNodeClient();
+      if (phReset) {
+        phReset.capture({
+          distinctId: user.id,
+          event: 'stripe_connect_onboard_link_created',
+          properties: { mode: 'onboarding', reset: true, source: 'server' },
+        });
+        await phReset.shutdown();
+      }
       return NextResponse.json({ url: link.url });
     }
 
     console.error('[stripe connect onboard] accountLinks.create', e);
+    const phErr = getPostHogNodeClient();
+    if (phErr) {
+      phErr.capture({
+        distinctId: user.id,
+        event: 'stripe_connect_onboard_failed',
+        properties: { source: 'server' },
+      });
+      await phErr.shutdown();
+    }
     return NextResponse.json(jsonWithStripeError('account_link_failed', e), { status: 502 });
+  }
+
+  const ph = getPostHogNodeClient();
+  if (ph) {
+    ph.capture({
+      distinctId: user.id,
+      event: 'stripe_connect_onboard_link_created',
+      properties: { mode: 'onboarding', source: 'server' },
+    });
+    await ph.shutdown();
   }
 
   return NextResponse.json({ url: link.url });

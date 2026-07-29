@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { getStripe } from 'src/libs/stripe/stripe-server';
+import { getPostHogNodeClient } from 'src/libs/posthog/posthog-node';
 import { getSupabaseAuthUser } from 'src/libs/supabase/supabase-server-client';
 import { upsertListSnapshotPurchase } from 'src/libs/stripe/upsert-list-snapshot-purchase';
 import { fetchListItemIdsForSnapshotCapture } from 'src/libs/stripe/fetch-list-item-ids-for-snapshot-capture';
@@ -92,7 +93,31 @@ export async function POST(request) {
 
   if (!result.ok) {
     console.error('[verify-snapshot] upsert', result.error);
+    const phErr = getPostHogNodeClient();
+    if (phErr) {
+      phErr.capture({
+        distinctId: user.id,
+        event: 'snapshot_purchase_confirm_failed',
+        properties: { list_id: listId, source: 'server' },
+      });
+      await phErr.shutdown();
+    }
     return NextResponse.json({ error: 'persist_failed' }, { status: 500 });
+  }
+
+  const ph = getPostHogNodeClient();
+  if (ph) {
+    ph.capture({
+      distinctId: user.id,
+      event: 'snapshot_purchase_confirmed',
+      properties: {
+        list_id: listId,
+        amount_cents: session.amount_total ?? 0,
+        currency: session.currency ?? 'eur',
+        source: 'server',
+      },
+    });
+    await ph.shutdown();
   }
 
   return NextResponse.json({ ok: true });

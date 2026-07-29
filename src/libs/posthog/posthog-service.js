@@ -1,4 +1,4 @@
-import { POSTHOG_API, INTEGRATION_FLAGS, POSTHOG_JS_INIT_OPTIONS } from 'src/config-global';
+import { POSTHOG_API, INTEGRATION_FLAGS } from 'src/config-global';
 
 // -----------------------------------------------------------------------------
 // PostHog configuration using global config pattern
@@ -45,20 +45,14 @@ function withClient(op) {
   pendingOps.push(op);
 }
 
-// Initialize PostHog only on client side (lazy-loads posthog-js).
+// Acquires the posthog-js singleton initialized via instrumentation-client.js (Next.js 15.3+).
+// Does NOT call posthog.init() — initialization is handled once in instrumentation-client.js.
 export const initPostHog = () => {
   if (!posthogEnabled() || loadPromise) {
     return loadPromise ?? undefined;
   }
   loadPromise = import('posthog-js')
     .then(({ default: ph }) => {
-      ph.init(POSTHOG_API.key, {
-        api_host: POSTHOG_API.host,
-        ...POSTHOG_JS_INIT_OPTIONS,
-        loaded: () => {
-          // Silent logging - no console output
-        },
-      });
       posthogClient = ph;
       flushPending();
       return ph;

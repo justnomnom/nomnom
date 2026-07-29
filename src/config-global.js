@@ -85,7 +85,7 @@ export const NAV = {
 export const INTEGRATION_FLAGS = {
   push: Boolean(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY),
   sleekplan: false,
-  posthog: false,
+  posthog: Boolean(process.env.NEXT_PUBLIC_POSTHOG_KEY),
   sentry: false,
 };
 

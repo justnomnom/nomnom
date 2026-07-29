@@ -133,6 +133,7 @@
     "nprogress": "^0.2.0",
     "postcss": "^8.5.19",
     "posthog-js": "^1.400.1",
+    "posthog-node": "^5.46.1",
     "prop-types": "^15.8.1",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",

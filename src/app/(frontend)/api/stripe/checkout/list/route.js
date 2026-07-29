@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { getSiteUrl } from 'src/libs/site-url';
 import { getStripe } from 'src/libs/stripe/stripe-server';
+import { getPostHogNodeClient } from 'src/libs/posthog/posthog-node';
 import { supabaseAdminClient } from 'src/libs/supabase/supabase-admin';
 import {
   getSupabaseAuthUser,
@@ -171,12 +172,32 @@ export async function POST(request) {
       const code = e && typeof e === 'object' && 'code' in e ? e.code : undefined;
       const message = e && typeof e === 'object' && 'message' in e ? e.message : String(e);
       console.error('[stripe checkout] snapshot sessions.create', code, message, e);
+      const phErr = getPostHogNodeClient();
+      if (phErr) {
+        phErr.capture({
+          distinctId: user.id,
+          event: 'checkout_session_creation_failed',
+          properties: { list_id: listId, purchase_type: 'snapshot', source: 'server' },
+        });
+        await phErr.shutdown();
+      }
       return NextResponse.json({ error: 'checkout_session_failed' }, { status: 502 });
     }
 
     if (!session.url) {
       return NextResponse.json({ error: 'no_session_url' }, { status: 500 });
     }
+
+    const ph = getPostHogNodeClient();
+    if (ph) {
+      ph.capture({
+        distinctId: user.id,
+        event: 'checkout_snapshot_session_created',
+        properties: { list_id: listId, amount_cents: amountCents, currency, source: 'server' },
+      });
+      await ph.shutdown();
+    }
+
     return NextResponse.json({ url: session.url });
   }
 
@@ -230,11 +251,30 @@ export async function POST(request) {
     );
   } catch (e) {
     console.error('[stripe checkout] sessions.create', e);
+    const phErr = getPostHogNodeClient();
+    if (phErr) {
+      phErr.capture({
+        distinctId: user.id,
+        event: 'checkout_session_creation_failed',
+        properties: { list_id: listId, purchase_type: 'subscription', source: 'server' },
+      });
+      await phErr.shutdown();
+    }
     return NextResponse.json({ error: 'checkout_session_failed' }, { status: 502 });
   }
 
   if (!session.url) {
     return NextResponse.json({ error: 'no_session_url' }, { status: 500 });
+  }
+
+  const ph = getPostHogNodeClient();
+  if (ph) {
+    ph.capture({
+      distinctId: user.id,
+      event: 'checkout_subscription_session_created',
+      properties: { list_id: listId, source: 'server' },
+    });
+    await ph.shutdown();
   }
 
   return NextResponse.json({ url: session.url });
