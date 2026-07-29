@@ -1,10 +1,23 @@
 /**
  * Keeps `user_location_follows` aligned with the user's chosen localities (primary first).
- * Discover GPS/fallback sync and onboarding both call this after setting `home_locality_id`.
+ * Callers should sync follows before relying on them; onboarding updates `home_locality_id`
+ * only after a successful sync.
+ *
+ * Delete-then-insert is restored from a snapshot if insert fails so we never leave an empty
+ * follow set after a successful delete.
  */
 
 /** @param {import('@supabase/supabase-js').SupabaseClient} supabase */
 export async function syncUserLocalityFollows(supabase, userId, localityIds) {
+  const { data: previous, error: readErr } = await supabase
+    .from('user_location_follows')
+    .select('user_id, locality_id, sort_order')
+    .eq('user_id', userId);
+  if (readErr) {
+    console.error('[syncUserLocalityFollows] read', readErr);
+    return { error: readErr.message };
+  }
+
   const { error: delErr } = await supabase
     .from('user_location_follows')
     .delete()
@@ -26,6 +39,12 @@ export async function syncUserLocalityFollows(supabase, userId, localityIds) {
   const { error: insErr } = await supabase.from('user_location_follows').insert(rows);
   if (insErr) {
     console.error('[syncUserLocalityFollows] insert', insErr);
+    if (previous?.length) {
+      const { error: restoreErr } = await supabase.from('user_location_follows').insert(previous);
+      if (restoreErr) {
+        console.error('[syncUserLocalityFollows] restore', restoreErr);
+      }
+    }
     if (insErr.code === '23503') {
       return { error: 'invalid_location' };
     }

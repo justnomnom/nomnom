@@ -222,8 +222,8 @@ views over `pg_catalog` and are not practically writable.
 Migration `20260722125000_geography_tier_documentation.sql` investigated the proposed
 `municipality_id → locality_id` rename and concluded, in its own header:
 
-> "Supersedes finding 9 of docs/db/SCHEMA-REVIEW-2026-07-22.md, which proposed renaming
-> restaurants.municipality_id to locality_id. That was WRONG and is not done"
+> "Supersedes finding 9 of the 2026-07-22 schema review (removed; this document supersedes it),
+> which proposed renaming restaurants.municipality_id to locality_id. That was WRONG and is not done"
 
 and, specifically: "Renaming municipality_id to locality_id would have collided with
 users.home_locality_id and quietly conflated the two."

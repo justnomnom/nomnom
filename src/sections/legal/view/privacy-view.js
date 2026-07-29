@@ -172,7 +172,7 @@ export default function PrivacyView() {
           <li>To create and maintain your account</li>
           <li>To personalise restaurant recommendations and filter results to your preferences</li>
           <li>To process payments and manage subscriptions</li>
-          <li>To let you create and share Nom Nom lists</li>
+          <li>To let you create and share NomNom lists</li>
           <li>To send transactional emails (account confirmation, password reset)</li>
           <li>To improve the product through aggregated analytics</li>
         </ul>

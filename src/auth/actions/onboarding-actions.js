@@ -78,6 +78,19 @@ async function ensurePublicUserRow(supabase, user) {
       console.error('[ensurePublicUserRow] insert', insErr);
       return insErr;
     }
+    // PK race with handle_new_user (or concurrent bootstrap) — row already exists.
+    const { data: raced, error: raceErr } = await supabase
+      .from('users')
+      .select('id')
+      .eq('id', user.id)
+      .maybeSingle();
+    if (raceErr) {
+      console.error('[ensurePublicUserRow] race select', raceErr);
+      return raceErr;
+    }
+    if (raced) {
+      return null;
+    }
     username =
       attempt >= 24
         ? `u${String(user.id).replace(/-/g, '').slice(0, 29)}`
@@ -117,6 +130,15 @@ export async function saveUserRestaurantTagPreferences(tagIds) {
     ),
   ];
 
+  const { data: previous, error: readErr } = await supabase
+    .from('user_restaurant_tag_preferences')
+    .select('user_id, tag_id')
+    .eq('user_id', user.id);
+  if (readErr) {
+    console.error('[saveUserRestaurantTagPreferences] read', readErr);
+    return { error: 'tag_prefs_save_failed' };
+  }
+
   const { error: delErr } = await supabase
     .from('user_restaurant_tag_preferences')
     .delete()
@@ -135,6 +157,14 @@ export async function saveUserRestaurantTagPreferences(tagIds) {
   const { error: insErr } = await supabase.from('user_restaurant_tag_preferences').insert(rows);
   if (insErr) {
     console.error('[saveUserRestaurantTagPreferences] insert', insErr);
+    if (previous?.length) {
+      const { error: restoreErr } = await supabase
+        .from('user_restaurant_tag_preferences')
+        .insert(previous);
+      if (restoreErr) {
+        console.error('[saveUserRestaurantTagPreferences] restore', restoreErr);
+      }
+    }
     return { error: 'tag_prefs_save_failed' };
   }
 
@@ -246,6 +276,14 @@ export async function saveOnboardingLocation(input) {
   const dbIds = orderedRows.map((r) => r.id);
   const primary = orderedRows[0];
 
+  // Follows first so a failed sync never leaves home_locality_id set with empty follows.
+  const followResult = await syncUserLocalityFollows(supabase, user.id, dbIds);
+  if (followResult.error) {
+    return {
+      error: followResult.error === 'invalid_location' ? 'invalid_location' : 'save_failed',
+    };
+  }
+
   const { error } = await supabase
     .from('users')
     .update({
@@ -257,13 +295,6 @@ export async function saveOnboardingLocation(input) {
   if (error) {
     console.error('[saveOnboardingLocation] users', error);
     return { error: error.message };
-  }
-
-  const followResult = await syncUserLocalityFollows(supabase, user.id, dbIds);
-  if (followResult.error) {
-    return {
-      error: followResult.error === 'invalid_location' ? 'invalid_location' : 'save_failed',
-    };
   }
 
   return { ok: true };
@@ -286,6 +317,14 @@ export async function saveOnboardingFollows(followingUserIds) {
   const raw = Array.isArray(followingUserIds) ? followingUserIds : [];
   const ids = [...new Set(raw.map(String).filter((id) => UUID_RE.test(id) && id !== user.id))];
 
+  const { data: previous, error: readErr } = await supabase
+    .from('user_follows')
+    .select('follower_id, following_id')
+    .eq('follower_id', user.id);
+  if (readErr) {
+    return { error: readErr.message };
+  }
+
   const { error: delErr } = await supabase.from('user_follows').delete().eq('follower_id', user.id);
   if (delErr) {
     return { error: delErr.message };
@@ -299,6 +338,12 @@ export async function saveOnboardingFollows(followingUserIds) {
   }));
   const { error: insErr } = await supabase.from('user_follows').insert(rows);
   if (insErr) {
+    if (previous?.length) {
+      const { error: restoreErr } = await supabase.from('user_follows').insert(previous);
+      if (restoreErr) {
+        console.error('[saveOnboardingFollows] restore', restoreErr);
+      }
+    }
     return { error: insErr.message };
   }
   return { ok: true };

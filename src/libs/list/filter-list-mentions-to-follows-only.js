@@ -1,5 +1,5 @@
 /**
- * Nom Nom circle: keep list-item rows for the viewer, or for people they follow who saved this
+ * NomNom circle: keep list-item rows for the viewer, or for people they follow who saved this
  * restaurant to a list (each row already represents a list save).
  * @param {Array<{ added_by?: string | null }>} mentions
  * @param {string | null | undefined} viewerUserId

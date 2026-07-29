@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 
-import { INTEGRATION_FLAGS } from 'src/config-global';
 import { getStripe } from 'src/libs/stripe/stripe-server';
 import { supabaseAdminClient } from 'src/libs/supabase/supabase-admin';
 import { isWellFormedUuid } from 'src/libs/stripe/list-stripe-constants';
+import { captureServerEvent } from 'src/libs/posthog/capture-server-event';
 import { insertNotifications } from 'src/libs/notifications/create-notification';
 import { upsertListSnapshotPurchase } from 'src/libs/stripe/upsert-list-snapshot-purchase';
 import { fetchListItemIdsForSnapshotCapture } from 'src/libs/stripe/fetch-list-item-ids-for-snapshot-capture';
@@ -11,41 +11,12 @@ import { fetchListItemIdsForSnapshotCapture } from 'src/libs/stripe/fetch-list-i
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-/**
- * Server-side PostHog capture for payment/subscription outcomes.
- * Gated by `INTEGRATION_FLAGS.posthog` so server events stay aligned with the client kill switch.
- * Best effort only: failures must never block Stripe webhook processing.
- */
-async function captureWebhookAnalytics(eventName, properties = {}) {
-  if (!INTEGRATION_FLAGS.posthog) return;
-
-  const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
-  const posthogHost = process.env.NEXT_PUBLIC_POSTHOG_HOST;
-  if (!posthogKey || !posthogHost) return;
-
-  try {
-    await fetch(`${posthogHost.replace(/\/+$/, '')}/capture/`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        api_key: posthogKey,
-        event: eventName,
-        distinct_id: String(
-          properties.subscriber_user_id ??
-            properties.buyer_user_id ??
-            properties.user_id ??
-            properties.list_id ??
-            'stripe_webhook'
-        ),
-        properties: {
-          source: 'stripe_webhook',
-          ...properties,
-        },
-      }),
-    });
-  } catch {
-    // Keep webhook path resilient.
-  }
+/** Best-effort PostHog capture — never blocks Stripe webhook processing. */
+function captureWebhookAnalytics(eventName, properties = {}) {
+  return captureServerEvent(eventName, properties, {
+    source: 'stripe_webhook',
+    distinctId: 'stripe_webhook',
+  });
 }
 
 /**

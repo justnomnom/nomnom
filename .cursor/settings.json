@@ -17,6 +17,9 @@
     },
     "stripe": {
       "enabled": true
+    },
+    "resend": {
+      "enabled": true
     }
   }
 }

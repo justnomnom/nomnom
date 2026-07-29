@@ -124,7 +124,7 @@ export default function HomeAdvertisement() {
   const headlineLinesRaw = t('pages.home.advertisement.headlineLines', { returnObjects: true });
   const headlineLines = Array.isArray(headlineLinesRaw)
     ? headlineLinesRaw
-    : ['Ready to join', 'the', 'Nom Nom', 'Circle?'];
+    : ['Ready to join', 'the', 'NomNom', 'Circle?'];
 
   const getStartedHref = user
     ? paths.dashboard.discover

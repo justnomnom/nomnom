@@ -117,12 +117,13 @@ export async function GET(request) {
     data: { user: sessionUser },
   } = await supabase.auth.getUser();
   if (sessionUser) {
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from('users')
       .select('onboarding_completed_at')
       .eq('id', sessionUser.id)
       .maybeSingle();
-    const needsOnboarding = !profile?.onboarding_completed_at;
+    // Profile read errors must not force onboarding (same as incomplete).
+    const needsOnboarding = !profileError && !profile?.onboarding_completed_at;
     const returnToIsOnboarding =
       returnTo === paths.onboarding || returnTo.startsWith(`${paths.onboarding}/`);
     if (needsOnboarding && !returnToIsOnboarding) {

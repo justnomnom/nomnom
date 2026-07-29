@@ -15,14 +15,15 @@ When a new piece of copy doesn't have an obvious answer, pick the choice that so
 | nomnom.app (domain) | nomnom.app |
 | @nomnom (handle) | @nomnom |
 
-**Verb form**: `Nom Nom` (two words) — used only in playful CTAs and exclamations. The brand mark stays one word; the verb stays two.
+**Verb / playful forms** — same compound as the brand mark (no space). Gerund: **NomNomming**.
 
 | Form | Example |
 |---|---|
 | Brand name | "Welcome to **NomNom**." |
 | Product feature | "Open **NomNom Roulette**." |
-| Verb / interjection | "Let's **Nom Nom**!" · "**Nom Nom**!" · "What makes you go **Nom Nom**?" |
-| Count noun | "3 **Nom Noms**" · "Daily **Nom Noms**" |
+| Verb / interjection | "Let's **NomNom**!" · "**NomNom**!" · "What makes you go **NomNom**?" |
+| Gerund | "already **NomNomming**" · "just **NomNomming**!" |
+| Count noun | "3 **NomNoms**" · "Daily **NomNoms**" |
 
 ### Branded product features
 
@@ -40,7 +41,7 @@ Always prefix with **NomNom** (no space):
 Three attributes, every piece of copy should sound like all three at once.
 
 **Playful but substantive**
-- *We are*: food-forward, a bit cheeky, never twee. We use "Nom Nom" the way real people use "yum."
+- *We are*: food-forward, a bit cheeky, never twee. We use "NomNom" / "NomNomming" the way real people use "yum."
 - *We are not*: kitschy, ironic, or full of foodie clichés ("hidden gem," "to die for," "OMG").
 - *Sounds like*: "Where's the hunger? 📍"
 - *Doesn't sound like*: "OMG yasss queen, time to feast! 🍴✨"
@@ -65,8 +66,8 @@ The voice stays fixed. The tone dial moves.
 
 | Surface | Tone dial | Example |
 |---|---|---|
-| Home / marketing | Energetic, confident | "Let's Nom Nom!" |
-| Onboarding | Warm, encouraging, light emoji | "You're in. Let's Nom Nom! 🍜" |
+| Home / marketing | Energetic, confident | "Let's NomNom!" |
+| Onboarding | Warm, encouraging, light emoji | "You're in. Let's NomNom! 🍜" |
 | Errors | Calm, honest, blame-free, no jokes about user input | "Something broke on our end. Give it another shot in a moment." |
 | Payment / billing | Plain, specific, no playful verbing | "Subscription cancelled — access until the end of your billing period." |
 | Legal / privacy | Direct, second-person, no jokes | "We collect what you need to use the app." |
@@ -95,7 +96,7 @@ The voice stays fixed. The tone dial moves.
 
 ### Heading case
 **Sentence case** for every heading, page title, button, tab, and section label.
-Title Case is reserved for: brand mark (`NomNom`), branded product features (`NomNom Roulette`), proper nouns, and named feed categories used as chips (`Date Night`, `Hidden Gems`, `Daily Nom Noms`).
+Title Case is reserved for: brand mark (`NomNom`), branded product features (`NomNom Roulette`), proper nouns, and named feed categories used as chips (`Date Night`, `Hidden Gems`, `Daily NomNoms`).
 
 | Use | Not |
 |---|---|
@@ -110,17 +111,17 @@ Title Case is reserved for: brand mark (`NomNom`), branded product features (`No
 - **Oxford comma**: yes. "fast, reliable, and trusted."
 - **Em dash**: spaces on both sides. "real picks — from people you trust."
 - **Ellipsis**: only in loading states ("Saving…"). Not in body copy.
-- **Exclamation marks**: max one per surface; reserve for CTAs and onboarding wins ("Let's Nom Nom!", "Location is on!").
+- **Exclamation marks**: max one per surface; reserve for CTAs and onboarding wins ("Let's NomNom!", "Location is on!").
 - **Apostrophes**: use curly (`'` `'` `"` `"`), already standard across the locale file.
 
 ### Numbers
-- Spell out one through nine in body; numerals for 10+ and any unit ("3 Nom Noms", "12 MB", "50%").
+- Spell out one through nine in body; numerals for 10+ and any unit ("3 NomNoms", "12 MB", "50%").
 - Currency: `€10`, `€10–25`, `€10/month` (no space before unit when paired with `/`).
 - Dates: `15 May 2026` in body; `Updated 15 May` short form.
 
 ### CTAs
 - One sentence, sentence case, no period: "Create account", "Sign in", "Save pricing".
-- Playful CTAs reserved for marketing/onboarding: "Let's Nom Nom!", "Spin the Noms!".
+- Playful CTAs reserved for marketing/onboarding: "Let's NomNom!", "Spin the Noms!".
 - Stripe/billing CTAs stay plain: "Set up", "Continue setup", "Manage payouts" — never four verbs for the same step.
 
 ---
@@ -131,7 +132,7 @@ Title Case is reserved for: brand mark (`NomNom`), branded product features (`No
 
 | Use this | Not this | Why |
 |---|---|---|
-| spot | venue, place (in marketing) | matches "Nom Nom spots", on-brand |
+| spot | venue, place (in marketing) | matches "NomNom spots", on-brand |
 | list | collection, catalogue | the product noun |
 | creator | influencer, blogger | how they self-identify |
 | local | resident, foodie | warmer, more inclusive |

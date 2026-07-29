@@ -55,7 +55,7 @@ const SaveToListSheet = dynamic(() => import('src/sections/lists/save-to-list-sh
 
 const MAP_SHEET_LIST_ACTION_BTN_SIZE = 32;
 const MAP_SHEET_LIST_ACTION_ICON = 18;
-/** Full-width gallery strip height in the Nom Nom list row (map sheet). */
+/** Full-width gallery strip height in the NomNom list row (map sheet). */
 const MAP_SHEET_LIST_ROW_GALLERY_H_PX = 88;
 /** Soft chips in list rows (`height: 22`); paired with `rowGap: 0.5`. */
 const MAP_SHEET_LIST_CHIP_LINE_PX = 22;
@@ -78,7 +78,7 @@ function countMapSheetSpotTagsHiddenBelowClip(root) {
 }
 
 /**
- * One Nom Nom List row: row 1 = title + action icons; row 2 = gallery, list rings, then tag chips
+ * One NomNom List row: row 1 = title + action icons; row 2 = gallery, list rings, then tag chips
  * (collapsed with +more), full width.
  */
 function MapSpotSheetListRowImpl({
@@ -989,7 +989,7 @@ MapSpotSheetListRowImpl.propTypes = {
 };
 
 /**
- * Scrollable map sheet body: loading skeleton, spot list (Nom Nom List heading), or selected restaurant detail.
+ * Scrollable map sheet body: loading skeleton, spot list (NomNom List heading), or selected restaurant detail.
  * Shared by dashboard map and list map.
  */
 function MapSpotSheetInner({

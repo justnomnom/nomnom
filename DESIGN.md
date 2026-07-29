@@ -8,8 +8,8 @@
 
 **Name**: NomNom  
 **Tagline**: Restaurant picks from people you trust  
-**Personality**: Cozy · Fun · Nom Nom — warm, playful, a little hungry. Never corporate, never judgmental.  
-**Voice**: Playful food language ("Nom Nomming!", "Shake It Up", "spots"). Warm and direct about the value of human recommendations.
+**Personality**: Cozy · Fun · NomNom — warm, playful, a little hungry. Never corporate, never judgmental.  
+**Voice**: Playful food language ("NomNomming!", "Shake It Up", "spots"). Warm and direct about the value of human recommendations.
 
 **What we are**: Human curation from creators and locals you follow — not aggregate star scores.  
 **What we are not**: A cold blue food directory. A premium-cold aesthetic. A generic "restaurant app."
@@ -534,7 +534,7 @@ Page-level vertical padding: `py: 3` (24px) top, `pb: 10` to clear fixed bottom 
 
 ## 11. Writing (Microcopy)
 
-- **Nom Nom language**: Use "spots" not "restaurants/venues/places" in UI copy. Use "Nom Nom" phrasing for branded moments (lists = "Nom Nom lists", roulette = "Nom Nom Roulette").
+- **NomNom language**: Use "spots" not "restaurants/venues/places" in UI copy. Use "NomNom" phrasing for branded moments (lists = "NomNom lists", roulette = "NomNom Roulette").
 - **Avoid corporate**: Never "establishments", "locations", "entities". Keep it human-sized.
 - **Action labels**: Start with verbs — "Save to a list", "Shake it up", "Change area", "Add a spot".
 - **Empty states**: Teach, don't lament. "Create a list to group your favourite spots." not "You have no lists."
@@ -630,7 +630,7 @@ Restaurant photography is the largest visual surface in the product — it deser
 
 - **Feed / Discover cards**: 4:3. Crops focus on the dish, not the room.
 - **Restaurant detail hero**: 16:9 on desktop, 4:3 on mobile. Always edge-to-edge horizontally.
-- **List cover (Nom Nom list)**: 1:1 square. Collage layout of 1, 2, or 4 dish images depending on list size.
+- **List cover (NomNom list)**: 1:1 square. Collage layout of 1, 2, or 4 dish images depending on list size.
 - **Avatar (creator)**: 1:1 square cropped to circle via `borderRadius: RADIUS.pill`.
 - **Map pin preview**: 3:2.
 
@@ -703,7 +703,7 @@ NomNom ships in `en` and `pt`. Portuguese has its own typographic implications.
 ### Sentence rhythm
 
 - Portuguese prefers fewer, longer sentences. Body copy may need a slightly tighter line-length cap (60ch instead of 65–75ch) so longer sentences don't sprawl across the column.
-- Don't translate microcopy literally. "Shake it up" is "Vamos sortear" or similar — preserve the *energy*, not the words. The "Nom Nom" voice (§11) applies to both locales.
+- Don't translate microcopy literally. "Shake it up" is "Vamos sortear" or similar — preserve the *energy*, not the words. The "NomNom" voice (§11) applies to both locales.
 
 ### Tabular numbers
 

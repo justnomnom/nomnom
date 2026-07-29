@@ -279,6 +279,9 @@ function onboardingErrorMessage(err, t) {
   if (s === 'gps_outside_supported') {
     return t('pages.onboarding.location.gps_outside_supported');
   }
+  if (s === 'gps_resolve_failed') {
+    return t('pages.onboarding.location.gps_resolve_failed');
+  }
   return t('pages.onboarding.errors.save_failed');
 }
 
@@ -598,6 +601,12 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
   const pendingGeoLocalityRef = useRef('');
   /** One-shot auto geolocation when the Location step first opens this session. */
   const autoGeoAttemptedRef = useRef(false);
+  /** Ignores stale `fetchLocationLocalities` results when Retry / Strict Mode overlaps. */
+  const locationsFetchGenRef = useRef(0);
+  /** Ignores stale `getCurrentPosition` / resolve callbacks after Clear or a newer request. */
+  const geoRequestGenRef = useRef(0);
+  /** Ignores stale suggested-creators responses when slug changes / Retry overlaps. */
+  const creatorsFetchGenRef = useRef(0);
 
   const onboardingSkeletonTheme = useSkeletonThemeColors();
   const [step, setStep] = useState(0);
@@ -638,15 +647,21 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
   const [locationGranted, setLocationGranted] = useState(false);
   const [geoLoading, setGeoLoading] = useState(false);
   const [followIds, setFollowIds] = useState(() => new Set());
-  const [locationsLoading, setLocationsLoading] = useState(true);
+  const [locationsLoading, setLocationsLoading] = useState(false);
   const [locationsError, setLocationsError] = useState(null);
   const [dbLocations, setDbLocations] = useState([]);
+  const dbLocationsRef = useRef(dbLocations);
+  dbLocationsRef.current = dbLocations;
+  const locationsErrorRef = useRef(locationsError);
+  locationsErrorRef.current = locationsError;
 
   const loadLocations = useCallback(() => {
+    const gen = ++locationsFetchGenRef.current;
     setLocationsLoading(true);
     setLocationsError(null);
     fetchLocationLocalities()
       .then(({ locations: rows, error }) => {
+        if (gen !== locationsFetchGenRef.current) return;
         if (error) {
           devWarn('[OnboardingWizard] locations:', error);
           setLocationsError(error);
@@ -656,18 +671,25 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
         setDbLocations(Array.isArray(rows) ? rows : []);
       })
       .catch((e) => {
+        if (gen !== locationsFetchGenRef.current) return;
         devWarn('[OnboardingWizard] locations:', e);
         setLocationsError(e?.message ?? 'fetch_failed');
         setDbLocations([]);
       })
       .finally(() => {
+        if (gen !== locationsFetchGenRef.current) return;
         setLocationsLoading(false);
       });
   }, []);
 
+  // Load cities once the user reaches Location (or later, e.g. draft resume on
+  // tags/creators). Avoid fetching on Welcome so a background failure does not
+  // greet them with an instant "Could not load locations" on the next step.
   useEffect(() => {
+    if (step < 1) return;
+    if (dbLocationsRef.current.length > 0 && !locationsErrorRef.current) return;
     loadLocations();
-  }, [loadLocations]);
+  }, [step, loadLocations]);
 
   useLayoutEffect(() => {
     if (typeof window === 'undefined') return;
@@ -719,7 +741,13 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
       }
       setLocationGranted(Boolean(d.locationGranted));
       if (Array.isArray(d.followIds)) {
-        setFollowIds(new Set(d.followIds.filter((x) => typeof x === 'string')));
+        setFollowIds(
+          new Set(
+            d.followIds
+              .map((x) => (typeof x === 'string' ? x.trim().toLowerCase() : ''))
+              .filter((id) => DRAFT_TAG_ID_RE.test(id))
+          )
+        );
       }
     } catch (e) {
       devWarn('[OnboardingWizard] restore draft failed', e);
@@ -870,6 +898,9 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
       locationGroupFallbacks
     );
     if (!pickerId) {
+      // Catalog is ready but GPS id does not map to a picker chip.
+      pendingGeoLocalityRef.current = '';
+      setErr('gps_outside_supported');
       return;
     }
     pendingGeoLocalityRef.current = '';
@@ -889,6 +920,7 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
 
   const loadSuggestedCreators = useCallback(
     (abortSignal) => {
+      const gen = ++creatorsFetchGenRef.current;
       setCreators([]);
       setCreatorsLoading(true);
       setCreatorsError(null);
@@ -896,7 +928,7 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
       const slug = creatorMunicipalitySlug;
       fetchSuggestedCreatorsForMunicipality(slug)
         .then(({ creators: rows, error }) => {
-          if (abortSignal?.aborted) return;
+          if (abortSignal?.aborted || gen !== creatorsFetchGenRef.current) return;
           if (error) {
             devWarn('[OnboardingWizard] suggested creators:', error);
             setCreatorsError(error);
@@ -906,13 +938,13 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
           setCreators(Array.isArray(rows) ? rows : []);
         })
         .catch((e) => {
-          if (abortSignal?.aborted) return;
+          if (abortSignal?.aborted || gen !== creatorsFetchGenRef.current) return;
           devWarn('[OnboardingWizard] suggested creators:', e);
           setCreatorsError(e?.message ?? 'fetch_failed');
           setCreators([]);
         })
         .finally(() => {
-          if (abortSignal?.aborted) return;
+          if (abortSignal?.aborted || gen !== creatorsFetchGenRef.current) return;
           setCreatorsLoading(false);
           setCreatorsFetchSettled(true);
         });
@@ -921,16 +953,22 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
   );
 
   const shouldLoadCreators = step >= 2 && step <= 3;
+  /** Wait for city catalog/remap so we never prefetch creators with an empty slug by accident. */
+  const creatorsSlugReady =
+    !locationsLoading &&
+    !(selectedLocalityIds.length > 0 && locationChoices.length === 0 && !locationsError);
 
   useEffect(() => {
     // Prefetch on tags (2) so creators are warm when advancing — avoid double wait
     // (save network + skeleton) on the creators step. Depend on the boolean so
     // step 2 → 3 does not abort/refetch.
-    if (!shouldLoadCreators) {
-      setCreators([]);
-      setCreatorsLoading(false);
-      setCreatorsError(null);
-      setCreatorsFetchSettled(false);
+    if (!shouldLoadCreators || !creatorsSlugReady) {
+      if (!shouldLoadCreators) {
+        setCreators([]);
+        setCreatorsLoading(false);
+        setCreatorsError(null);
+        setCreatorsFetchSettled(false);
+      }
       return undefined;
     }
     const ac = new AbortController();
@@ -938,7 +976,21 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
     return () => {
       ac.abort();
     };
-  }, [shouldLoadCreators, creatorMunicipalitySlug, loadSuggestedCreators]);
+  }, [shouldLoadCreators, creatorsSlugReady, creatorMunicipalitySlug, loadSuggestedCreators]);
+
+  useEffect(() => {
+    if (!creatorsFetchSettled || creatorsLoading || creatorsError) return;
+    const allowed = new Set(creators.map((c) => c.userId).filter(Boolean));
+    setFollowIds((prev) => {
+      let changed = false;
+      const next = new Set();
+      prev.forEach((id) => {
+        if (allowed.has(id)) next.add(id);
+        else changed = true;
+      });
+      return changed ? next : prev;
+    });
+  }, [creators, creatorsFetchSettled, creatorsLoading, creatorsError]);
 
   /** Warm the tags picker chunk on the location step so step 2 isn't blocked on import. */
   useEffect(() => {
@@ -1019,7 +1071,9 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
     setSelectedLocalityIds([
       ...new Set(arr.map((o) => normalizeOnboardingLocalityId(o?.id)).filter(Boolean)),
     ]);
-    setErr((prev) => (prev === 'gps_outside_supported' ? null : prev));
+    setErr((prev) =>
+      prev === 'gps_outside_supported' || prev === 'gps_resolve_failed' ? null : prev
+    );
   }, []);
 
   const applyGeoResolvedLocality = useCallback(
@@ -1036,16 +1090,23 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
       );
       if (pickerId) {
         pendingGeoLocalityRef.current = '';
+        setErr((prev) =>
+          prev === 'gps_outside_supported' || prev === 'gps_resolve_failed' ? null : prev
+        );
         setSelectedLocalityIds((prev) => [pickerId, ...prev.filter((x) => x !== pickerId)]);
         return;
       }
       pendingGeoLocalityRef.current = nid;
+      if (locationChoices.length > 0) {
+        setErr('gps_outside_supported');
+      }
     },
     [dbLocations, locationChoices, locationGroupFallbacks]
   );
 
   /** Turns off the GPS "location is on" state (hint: Tap to turn off). Keeps manual city picks. */
   const clearGeo = useCallback(() => {
+    geoRequestGenRef.current += 1;
     setLocationGranted(false);
     setGeoLoading(false);
     pendingGeoLocalityRef.current = '';
@@ -1058,18 +1119,23 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
       pendingGeoLocalityRef.current = '';
       return;
     }
+    const gen = ++geoRequestGenRef.current;
     setErr(null);
     setGeoLoading(true);
     navigator.geolocation.getCurrentPosition(
       async (position) => {
+        if (gen !== geoRequestGenRef.current) return;
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
         setLocationGranted(true);
         try {
           const { location: matched, error } = await resolveLocalityFromCoordinates(lng, lat);
+          if (gen !== geoRequestGenRef.current) return;
           if (error) {
+            // Network/RPC failure — not the same as "coords outside supported area".
+            // Keep "Location is on"; user can still pick a city manually.
             devWarn('[OnboardingWizard] resolve locality:', error);
-            setErr('gps_outside_supported');
+            setErr('gps_resolve_failed');
             return;
           }
           if (matched?.id) {
@@ -1079,10 +1145,13 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
           // Coords ok but no supported locality — button stays "on"; user must pick a city.
           setErr('gps_outside_supported');
         } finally {
-          setGeoLoading(false);
+          if (gen === geoRequestGenRef.current) {
+            setGeoLoading(false);
+          }
         }
       },
       () => {
+        if (gen !== geoRequestGenRef.current) return;
         setLocationGranted(false);
         pendingGeoLocalityRef.current = '';
         setGeoLoading(false);
@@ -1091,17 +1160,37 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
     );
   }, [applyGeoResolvedLocality]);
 
-  /** Auto-request device location the first time the Location step opens. */
+  /**
+   * Auto-request device location after the city catalog is ready so a GPS match
+   * can select a chip immediately (and the “outside supported area” hint does
+   * not appear under the CTA while cities are still loading).
+   * Skip when the user already has a city (draft restore or manual pick).
+   */
   useEffect(() => {
     if (step !== 1) return;
     if (!persistReadyRef.current) return;
     if (autoGeoAttemptedRef.current) return;
+    if (locationsLoading || locationsError) return;
+    if (locationChoices.length === 0) return;
     if (geoLoading) return;
     if (locationGranted) return;
+    if (selectedLocalityIds.length > 0) {
+      autoGeoAttemptedRef.current = true;
+      return;
+    }
     if (typeof navigator === 'undefined' || !navigator.geolocation) return;
     autoGeoAttemptedRef.current = true;
     requestGeo();
-  }, [step, locationGranted, geoLoading, requestGeo]);
+  }, [
+    step,
+    locationGranted,
+    geoLoading,
+    locationsLoading,
+    locationsError,
+    locationChoices.length,
+    selectedLocalityIds.length,
+    requestGeo,
+  ]);
 
   const onNextFromLocation = useCallback(async () => {
     if (selectedLocalityIds.length === 0) {
@@ -1469,6 +1558,26 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
                       t={t}
                     />
                     <OrDivider label={t('pages.onboarding.location.or_pick_city')} />
+                    {(err === 'gps_outside_supported' || err === 'gps_resolve_failed') &&
+                    !locationsLoading &&
+                    !locationsError &&
+                    locationChoices.length > 0 ? (
+                      <Alert
+                        severity="info"
+                        variant="outlined"
+                        role="status"
+                        sx={{
+                          px: { xs: 0.5, sm: 1 },
+                          py: 1.25,
+                          fontWeight: 600,
+                          lineHeight: 1.55,
+                          width: '100%',
+                          '& .MuiAlert-message': { width: 1 },
+                        }}
+                      >
+                        {onboardingErrorMessage(err, t)}
+                      </Alert>
+                    ) : null}
                   </Stack>
                 </Box>
                 {locationsLoading ? (
@@ -1845,7 +1954,7 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
                         const following = c.userId && followIds.has(c.userId);
                         return (
                           <Stack
-                            key={c.userId || c.name}
+                            key={c.userId || `creator-${idx}-${c.name || 'unknown'}`}
                             component={m.div}
                             initial={{ opacity: 0, y: 12 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -2040,7 +2149,11 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
               variant="contained"
               onClick={onNextFromLocation}
               disabled={
-                busy || locationsLoading || !!locationsError || selectedLocalityIds.length === 0
+                busy ||
+                geoLoading ||
+                locationsLoading ||
+                !!locationsError ||
+                selectedLocalityIds.length === 0
               }
               aria-busy={busy}
               startIcon={
@@ -2075,7 +2188,7 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
               size="large"
               variant="contained"
               onClick={onFinish}
-              disabled={busy || creatorsLoading}
+              disabled={busy}
               aria-busy={busy}
               startIcon={
                 busy ? <CircularProgress size={22} color="inherit" thickness={5} /> : undefined
@@ -2087,9 +2200,9 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
             </Button>
           )}
         </Stack>
-        {err ? (
+        {err && err !== 'gps_outside_supported' && err !== 'gps_resolve_failed' ? (
           <Alert
-            severity={err === 'gps_outside_supported' ? 'info' : 'error'}
+            severity="error"
             variant="outlined"
             role="alert"
             sx={{
