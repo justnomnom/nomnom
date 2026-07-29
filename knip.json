@@ -1,0 +1,65 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    "src/app/**/global-error.{js,jsx,ts,tsx}",
+    "src/sections/home/home-below-fold.js",
+    "src/sections/map/view/dashboard-map-canvas.js",
+    "src/sections/lists/save-to-list-sheet.js",
+    "src/sections/lists/google-maps-import-modal.js",
+    "src/components/restaurant-tag-preference-picker/index.js",
+    "src/components/upload/upload.js",
+    "src/components/upload/upload-avatar.js",
+    "src/components/upload/upload-box.js",
+    "src/components/lightbox/lightbox.js"
+  ],
+  "project": [
+    "src/**/*.{js,jsx,ts,tsx}"
+  ],
+  "paths": {
+    "src/*": [
+      "./src/*"
+    ],
+    "@/*": [
+      "./src/*"
+    ]
+  },
+  "ignore": [
+    "src/libs/supabase/types.ts"
+  ],
+  "ignoreDependencies": [
+    "@capacitor/haptics",
+    "@mui/icons-material",
+    "@mui/lab",
+    "@mui/x-data-grid",
+    "@next/third-parties",
+    "@next/eslint-plugin-next",
+    "@svgr/webpack",
+    "@typescript-eslint/eslint-plugin",
+    "@typescript-eslint/parser",
+    "eslint-config-airbnb",
+    "eslint-config-prettier",
+    "eslint-plugin-jsx-a11y",
+    "eslint-plugin-perfectionist",
+    "eslint-plugin-prettier",
+    "eslint-plugin-react",
+    "eslint-plugin-react-hooks",
+    "eslint-plugin-unused-imports",
+    "lucide-react",
+    "sharp",
+    "tailwindcss",
+    "@vercel/analytics",
+    "@vercel/speed-insights"
+  ],
+  "rules": {
+    "exports": "warn",
+    "types": "warn",
+    "duplicates": "warn"
+  },
+  "ignoreBinaries": [
+    "cross-env",
+    "supabase",
+    "env-cmd",
+    "stripe",
+    "where"
+  ]
+}

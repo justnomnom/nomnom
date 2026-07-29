@@ -1,0 +1,62 @@
+/*
+ * Scope Tailwind's automatic content detection to `src/` (this file lives at
+ * src/components/ui/, so `../../` = src). Without this, Tailwind v4 crawls the
+ * whole repo on every CSS rebuild — including ~180MB of `supabase/migrations`
+ * SQL geo-data and `export-html/` — which takes ~5 min and blows past
+ * Turbopack's PostCSS-loader IPC deadline, panicking the dev server (every
+ * route 500s). All Tailwind class usage lives under `src/`.
+ */
+@import "tailwindcss" source("../..");
+
+/* Tokens aligned with `src/theme/palette.js` (warm parchment neutrals, #ff6b35 primary, 1rem radius) */
+
+@theme {
+  /* Warm editorial neutrals (aligned with `theme.palette.marketing.*` and warm grey ramp, not pure #fff) */
+  --color-background: #faf9f5;
+  --color-foreground: #15130f;
+  --color-card: #fdfcfa;
+  --color-card-foreground: #15130f;
+  --color-popover: #fdfcfa;
+  --color-popover-foreground: #15130f;
+  --color-primary: #ff6b35;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #edeae0;
+  --color-secondary-foreground: #15130f;
+  --color-muted: #f5f4ed;
+  /* grey[600] in warm ramp; ≥4.5:1 on parchment (#faf9f5) */
+  --color-muted-foreground: #6e6657;
+  --color-accent: #edeae0;
+  --color-accent-foreground: #15130f;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+  --color-border: #e2ddd0;
+  --color-input: #f1ede4;
+  --color-ring: #ff6b35;
+  --radius: 1rem;
+}
+
+/*
+ * Dark tokens: driven by MUI `themeMode` via `document.documentElement.dataset.theme` (see ThemeProvider),
+ * not OS `prefers-color-scheme`, so marketing Tailwind utilities stay aligned with in-app theme.
+ */
+html[data-theme='dark'] {
+  --color-background: #15130f;
+  --color-foreground: #f8f7f2;
+  --color-card: #25221c;
+  --color-card-foreground: #f8f7f2;
+  --color-popover: #25221c;
+  --color-popover-foreground: #f8f7f2;
+  --color-primary: #ff6b35;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #4d473c;
+  --color-secondary-foreground: #f8f7f2;
+  --color-muted: #25221c;
+  --color-muted-foreground: #ccc6b6;
+  --color-accent: #4d473c;
+  --color-accent-foreground: #f8f7f2;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+  --color-border: #4d473c;
+  --color-input: #4d473c;
+  --color-ring: #ff8560;
+}

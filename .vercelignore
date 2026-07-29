@@ -1,0 +1,14 @@
+# Geography seed SQL and local tooling — not needed for Next.js production build.
+supabase/migrations
+android
+.cursor
+.claude
+.design-tmp
+playwright-report
+test-results
+terminals
+
+# Portugal geography generators (prebuild only uses generate-content-sitemap-urls + build-iconify-bundle).
+scripts/generate-portugal-*
+scripts/audit-portugal-adm3.mjs
+scripts/lib/portugal-*

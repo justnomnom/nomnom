@@ -1,0 +1,104 @@
+/* Tailwind CSS for shadcn UI components */
+@import './components/ui/globals.css';
+
+/* scrollbar */
+@import 'simplebar-react/dist/simplebar.min.css';
+
+/* lazy image */
+@import 'react-lazy-load-image-component/src/effects/blur.css';
+
+/* loading skeletons (Skeleton / SkeletonTheme) */
+@import 'react-loading-skeleton/dist/skeleton.css';
+
+/*
+ * Calmer, consistent shimmer across every skeleton (overrides the library's
+ * 1.5s default via the shared class variable). Slower sweep reads as less busy
+ * on heavy list/route skeletons and pairs with the breathing splash cadence.
+ * Reduced-motion is already handled by the library CSS (disables ::after).
+ */
+.react-loading-skeleton {
+  --animation-duration: 1.8s;
+}
+
+/* Respect notched devices and home-indicator safe area on scroll layouts. */
+html {
+  padding-left: env(safe-area-inset-left, 0);
+  padding-right: env(safe-area-inset-right, 0);
+}
+
+/*
+ * Native scrollbars stay visible for discoverability (WCAG-adjacent UX).
+ * Hide scrollbars only on horizontal chip/map strips via `scrollableChipStripScrollerSx`
+ * and similar scoped rules — not globally.
+ */
+
+/*
+ * App Router view transitions (experimental.viewTransition + RouterLink / router.push).
+ * - `fade` — default soft crossfade
+ * - `nav-forward` / `nav-back` — directional slides (go deeper / go back)
+ */
+@keyframes nomnom-vt-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes nomnom-vt-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes nomnom-vt-slide {
+  from {
+    translate: var(--nomnom-vt-slide-offset, 0);
+  }
+  to {
+    translate: 0;
+  }
+}
+
+:active-view-transition-type(fade)::view-transition-old(root) {
+  animation: 160ms ease-out both nomnom-vt-fade-out;
+}
+
+:active-view-transition-type(fade)::view-transition-new(root) {
+  animation: 220ms ease-in both nomnom-vt-fade-in;
+}
+
+:active-view-transition-type(nav-forward)::view-transition-old(root) {
+  --nomnom-vt-slide-offset: -48px;
+  animation:
+    140ms ease-in both nomnom-vt-fade-out,
+    320ms ease-in-out both nomnom-vt-slide reverse;
+}
+
+:active-view-transition-type(nav-forward)::view-transition-new(root) {
+  --nomnom-vt-slide-offset: 48px;
+  animation:
+    200ms ease-out 120ms both nomnom-vt-fade-in,
+    320ms ease-in-out both nomnom-vt-slide;
+}
+
+:active-view-transition-type(nav-back)::view-transition-old(root) {
+  --nomnom-vt-slide-offset: 48px;
+  animation:
+    140ms ease-in both nomnom-vt-fade-out,
+    320ms ease-in-out both nomnom-vt-slide reverse;
+}
+
+:active-view-transition-type(nav-back)::view-transition-new(root) {
+  --nomnom-vt-slide-offset: -48px;
+  animation:
+    200ms ease-out 120ms both nomnom-vt-fade-in,
+    320ms ease-in-out both nomnom-vt-slide;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}

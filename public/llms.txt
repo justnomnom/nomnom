@@ -1,0 +1,37 @@
+# NomNom
+
+> Discover where to eat from people you trust — creators and locals you choose to follow.
+
+NomNom is a restaurant discovery platform built around curated lists from food creators and locals. Unlike Google Maps or TripAdvisor, every restaurant recommendation on NomNom is tied to a real person whose taste you can follow and trust.
+
+## What it does
+
+- Food creators publish curated restaurant lists — every place they personally recommend, organized in one link
+- Users browse picks from creators they follow instead of anonymous star averages
+- Snapshots (one-time purchase) and Subscriptions (monthly) unlock paid creator lists and updates
+- Maps, filters, and collections let users explore by city, country, cuisine type, and creator
+
+## Who it's for
+
+- **Foodies**: Find your next restaurant from a creator whose taste matches yours, not from a generic ranked list
+- **Creators**: Build and monetize your restaurant recommendations as curated lists your followers can access
+- **Restaurants**: Get discovered through authentic creator recommendations, or boost reach with clearly labeled sponsored placements
+
+## Key pages
+
+- Homepage: https://nomnom.app/
+- About: https://nomnom.app/about
+- Countries & city guides: https://nomnom.app/countries
+- Use cases: https://nomnom.app/use-cases
+- Pricing: https://nomnom.app/pricing
+- FAQs: https://nomnom.app/faqs
+
+## Pricing
+
+- **Free**: Core discovery, lists, and maps — no payment required
+- **Premium**: More saves, lists, and advanced discovery features — price shown in app before purchase
+
+## Contact
+
+- Support: https://nomnom.app/contact-us
+- Email: hello@nomnom.app

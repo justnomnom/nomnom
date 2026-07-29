@@ -1,0 +1,5 @@
+const { Config } = require('@remotion/cli/config');
+
+Config.setEntryPoint('src/index.js');
+Config.setVideoImageFormat('jpeg');
+Config.setOverwriteOutput(true);

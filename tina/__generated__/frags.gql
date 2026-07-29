@@ -1,0 +1,43 @@
+fragment Seo_collectionParts on Seo_collection {
+  __typename
+  title
+  description
+  date
+  tags
+  relatedRestaurantSlugs
+  relatedInfluencerSlugs
+  relatedCollectionSlugs
+  draft
+  body
+}
+
+fragment InfluencerParts on Influencer {
+  __typename
+  title
+  description
+  country
+  tags
+  relatedRestaurantSlugs
+  relatedCollectionSlugs
+  draft
+  body
+}
+
+fragment ResourceParts on Resource {
+  __typename
+  title
+  description
+  date
+  tags
+  draft
+  body
+}
+
+fragment FeatureParts on Feature {
+  __typename
+  title
+  description
+  tags
+  draft
+  body
+}

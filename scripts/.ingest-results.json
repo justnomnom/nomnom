@@ -1,0 +1,1770 @@
+[
+  {
+    "idx": 1,
+    "place_id": "ChIJ-R6VlIUzGQ0RX8x1jtg9lh0",
+    "title": "Restaurant - Cervejaria Ramiro",
+    "status": 200,
+    "ms": 6864,
+    "body": {
+      "id": "5d8b26c3-987c-4b2e-b968-4ecd6b15cba0",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "seafood",
+        "casual",
+        "outdoor_seating",
+        "portuguese",
+        "great_beer_selection"
+      ]
+    }
+  },
+  {
+    "idx": 0,
+    "place_id": "ChIJm6yAdTYzGQ0RgS-9VVLRhZ0",
+    "title": "Lisbonita Restaurante 🇮🇹",
+    "status": 200,
+    "ms": 10325,
+    "body": {
+      "id": "9d481750-ff88-4983-99a4-65d3ff5996cc",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "upscale",
+        "italian",
+        "pizza",
+        "seafood",
+        "vegan_friendly"
+      ]
+    }
+  },
+  {
+    "idx": 3,
+    "place_id": "ChIJh09ud4MzGQ0R7m_86aFuZkY",
+    "title": "Lisbon Sekuwa Corner",
+    "status": 200,
+    "ms": 8231,
+    "body": {
+      "id": "64346591-5faa-4139-8443-704ea0c7d6f9",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "moderate",
+        "casual",
+        "outdoor_seating",
+        "family_friendly",
+        "vegetarian_friendly"
+      ]
+    }
+  },
+  {
+    "idx": 2,
+    "place_id": "ChIJPUqD-mIzGQ0RtFrmDzrKHBA",
+    "title": "Maria Food Hub",
+    "status": 200,
+    "ms": 15372,
+    "body": {
+      "id": "115a149b-f495-40d0-899a-4ab728b0bbf9",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "moderate",
+        "portuguese",
+        "tapas",
+        "brunch",
+        "casual",
+        "outdoor_seating",
+        "romantic",
+        "tasting_menu",
+        "seafood",
+        "sushi",
+        "wine_bar",
+        "cozy",
+        "date_night",
+        "private_dining",
+        "live_music",
+        "family_friendly"
+      ]
+    }
+  },
+  {
+    "idx": 4,
+    "place_id": "ChIJ-aZhRHU0GQ0RU45DdYW7dgg",
+    "title": "Taberna Sal Grosso Alfama",
+    "status": 200,
+    "ms": 11992,
+    "body": {
+      "id": "ad8ddddc-a380-4b6e-95a1-dc9a1dda8319",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "upscale",
+        "portuguese",
+        "casual",
+        "seafood",
+        "outdoor_seating",
+        "romantic",
+        "private_dining",
+        "tasting_menu",
+        "live_music",
+        "great_cocktails",
+        "great_dessert",
+        "family_friendly",
+        "reservations_recommended",
+        "solo_friendly",
+        "quiet"
+      ]
+    }
+  },
+  {
+    "idx": 5,
+    "place_id": "ChIJ7ULZ440zGQ0R1hKsjFru_1U",
+    "title": "Trinca",
+    "status": 200,
+    "ms": 7465,
+    "body": {
+      "id": "99da3ce0-f6b0-49e5-9a81-057ee2973470",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "upscale",
+        "portuguese",
+        "seafood",
+        "casual",
+        "outdoor_seating",
+        "tasting_menu",
+        "romantic",
+        "date_night",
+        "cozy",
+        "lively",
+        "private_dining",
+        "sushi",
+        "tapas",
+        "wine_bar",
+        "great_cocktails",
+        "great_dessert"
+      ]
+    }
+  },
+  {
+    "idx": 6,
+    "place_id": "ChIJ-eF6FJAzGQ0Rw7x6BQU7P5w",
+    "title": "Sushi TOKYO Ramen Restaurant",
+    "status": 200,
+    "ms": 7588,
+    "body": {
+      "id": "6d357699-37d0-45f7-aaea-28c8781a46e7",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "moderate",
+        "portuguese",
+        "casual",
+        "outdoor_seating",
+        "seafood",
+        "tasting_menu",
+        "romantic",
+        "quiet",
+        "sushi",
+        "lively",
+        "family_friendly",
+        "private_dining",
+        "takeout",
+        "delivery",
+        "brunch",
+        "date_night"
+      ]
+    }
+  },
+  {
+    "idx": 7,
+    "place_id": "ChIJz-X1W6MzGQ0RLpAjCwyKvCA",
+    "title": "Sabor do Nepal",
+    "status": 200,
+    "ms": 5041,
+    "body": {
+      "id": "cf49937b-34c0-4a01-b8b7-a1a4a3ef2164",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "budget",
+        "portuguese",
+        "casual",
+        "seafood",
+        "outdoor_seating",
+        "tasting_menu",
+        "romantic",
+        "quiet",
+        "lively",
+        "family_friendly",
+        "solo_friendly",
+        "private_dining",
+        "reservations_recommended",
+        "walk_ins_welcome",
+        "great_cocktails",
+        "great_dessert"
+      ]
+    }
+  },
+  {
+    "idx": 8,
+    "place_id": "ChIJcVPiRjk1GQ0R4E4ckO3whcA",
+    "title": "A Nossa Casa",
+    "status": 200,
+    "ms": 6381,
+    "body": {
+      "id": "227abe3a-4b63-4afa-b9d9-e439e3b388fa",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "upscale",
+        "casual",
+        "seafood",
+        "cozy",
+        "portuguese",
+        "outdoor_seating",
+        "tasting_menu",
+        "wine_bar",
+        "romantic",
+        "date_night",
+        "private_dining",
+        "lively",
+        "great_cocktails",
+        "great_dessert",
+        "solo_friendly"
+      ]
+    }
+  },
+  {
+    "idx": 11,
+    "place_id": "ChIJCWmvZEUzGQ0RhTdUpryWdfE",
+    "title": "Cozinha Caseira",
+    "status": 200,
+    "ms": 7336,
+    "body": {
+      "id": "a82ac89a-b839-4a59-8f49-ee8cf072a087",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "moderate",
+        "portuguese",
+        "casual",
+        "seafood",
+        "outdoor_seating",
+        "tasting_menu",
+        "romantic",
+        "quiet",
+        "solo_friendly",
+        "private_dining",
+        "reservations_recommended",
+        "great_cocktails",
+        "great_dessert",
+        "family_friendly",
+        "hidden_gem"
+      ]
+    }
+  },
+  {
+    "idx": 9,
+    "place_id": "ChIJK28t2n0zGQ0RYMqW_EO5Mns",
+    "title": "El Clan - Restaurante Português",
+    "status": 200,
+    "ms": 15277,
+    "body": {
+      "id": "956e5e38-654c-4b02-a810-d2aa6fc50a36",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "moderate",
+        "portuguese",
+        "casual",
+        "outdoor_seating",
+        "seafood",
+        "tasting_menu",
+        "romantic",
+        "date_night",
+        "private_dining",
+        "reservations_recommended",
+        "solo_friendly",
+        "quiet",
+        "lively",
+        "family_friendly",
+        "kids_menu",
+        "takeout"
+      ]
+    }
+  },
+  {
+    "idx": 10,
+    "place_id": "ChIJdTVGvYM0GQ0RWjKJ5nUblhg",
+    "title": "Frade dos Mares",
+    "status": 200,
+    "ms": 12083,
+    "body": {
+      "id": "7b2e7380-8be5-4461-9f88-4610de6a748c",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "upscale",
+        "portuguese",
+        "seafood",
+        "casual",
+        "outdoor_seating",
+        "tasting_menu",
+        "romantic",
+        "date_night",
+        "lively",
+        "great_cocktails",
+        "private_dining",
+        "sophisticated"
+      ]
+    }
+  },
+  {
+    "idx": 12,
+    "place_id": "ChIJC4TV14gzGQ0RA16aZsaXYqI",
+    "title": "Estaminé art food drink",
+    "status": 200,
+    "ms": 13607,
+    "body": {
+      "id": "5a9df7c5-f7b5-4cfd-ad86-b1ceb2525520",
+      "created": true,
+      "updated": false,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "upscale",
+        "portuguese",
+        "casual",
+        "outdoor_seating",
+        "seafood",
+        "tasting_menu",
+        "romantic",
+        "quiet",
+        "solo_friendly",
+        "family_friendly",
+        "live_music",
+        "takeout",
+        "delivery",
+        "private_dining",
+        "reservations_recommended",
+        "walk_ins_welcome"
+      ]
+    }
+  },
+  {
+    "idx": 14,
+    "place_id": "ChIJW6ghfH80GQ0R34gWg15uaOc",
+    "title": "Casa dos Pecados",
+    "status": 200,
+    "ms": 11785,
+    "body": {
+      "id": "027b069c-744a-46ab-a6cc-dfd155294125",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "upscale",
+        "portuguese",
+        "casual",
+        "wine_bar",
+        "outdoor_seating",
+        "tasting_menu",
+        "seafood",
+        "romantic",
+        "private_dining",
+        "great_cocktails",
+        "solo_friendly",
+        "quiet",
+        "family_friendly",
+        "takeout",
+        "delivery",
+        "reservations_recommended"
+      ]
+    }
+  },
+  {
+    "idx": 16,
+    "place_id": "ChIJQd-B2WczGQ0R9c_JuoGfHnE",
+    "title": "Indian Fusion Cuisine - Halal",
+    "status": 200,
+    "ms": 8153,
+    "body": {
+      "id": "3caf7492-4e3a-4324-a116-ee84e2abb9c6",
+      "created": true,
+      "updated": false,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "indian",
+        "casual",
+        "outdoor_seating",
+        "takeout",
+        "delivery",
+        "family_friendly",
+        "romantic",
+        "quiet",
+        "lively",
+        "solo_friendly",
+        "private_dining",
+        "reservations_recommended",
+        "walk_ins_welcome",
+        "tasting_menu",
+        "great_cocktails"
+      ]
+    }
+  },
+  {
+    "idx": 15,
+    "place_id": "ChIJx1QGVdwzGQ0RtF4z2rwgLw0",
+    "title": "El Paso Cantina Mexicana y Cocktail Bar",
+    "status": 200,
+    "ms": 9565,
+    "body": {
+      "id": "e76a4d04-aca9-4dde-809a-a1504735e260",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "moderate",
+        "mexican",
+        "casual",
+        "outdoor_seating",
+        "tacos",
+        "seafood",
+        "family_friendly",
+        "quick_bite",
+        "takeout",
+        "live_music",
+        "romantic",
+        "solo_friendly",
+        "private_dining",
+        "reservations_recommended",
+        "walk_ins_welcome",
+        "waterfront"
+      ]
+    }
+  },
+  {
+    "idx": 18,
+    "place_id": "ChIJfdVbOHc0GQ0Rf-x1kKZ2QAE",
+    "title": "Lisboa Tu & Eu 2",
+    "status": 200,
+    "ms": 7058,
+    "body": {
+      "id": "e0c2ea44-46fb-414d-9720-4cc734b38655",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "moderate",
+        "portuguese",
+        "casual",
+        "seafood",
+        "outdoor_seating",
+        "tasting_menu",
+        "romantic",
+        "date_night",
+        "private_dining",
+        "lively",
+        "cozy",
+        "family_friendly",
+        "solo_friendly",
+        "quiet",
+        "reservations_recommended",
+        "walk_ins_welcome"
+      ]
+    }
+  },
+  {
+    "idx": 17,
+    "place_id": "ChIJPXHFU0MzGQ0RC5onFW4Y4Y0",
+    "title": "Tasca Pete",
+    "status": 200,
+    "ms": 10285,
+    "body": {
+      "id": "0f51f2fb-1ba0-48c1-91a4-2de3bd0c17ea",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "upscale",
+        "portuguese",
+        "wine_bar",
+        "casual",
+        "outdoor_seating",
+        "tasting_menu",
+        "seafood",
+        "romantic",
+        "quiet",
+        "sophisticated",
+        "private_dining",
+        "reservations_recommended",
+        "great_cocktails",
+        "great_dessert",
+        "lively",
+        "family_friendly"
+      ]
+    }
+  },
+  {
+    "idx": 13,
+    "place_id": "ChIJVV-IIwQzGQ0RskObH-RRdwk",
+    "title": "Salta",
+    "status": 200,
+    "ms": 31784,
+    "body": {
+      "id": "30fc6e3c-75ca-45db-b3de-c26ae59989fc",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "fine_dining"
+      ]
+    }
+  },
+  {
+    "idx": 19,
+    "place_id": "ChIJA6gayH80GQ0RPiOdMyiJInE",
+    "title": "As Salgadeiras",
+    "status": 200,
+    "ms": 5704,
+    "body": {
+      "id": "7882fa35-f3b9-4ab7-b0e6-3fc9754941fd",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "upscale",
+        "portuguese",
+        "bakery",
+        "casual",
+        "outdoor_seating",
+        "seafood",
+        "tasting_menu",
+        "romantic",
+        "quiet",
+        "sophisticated",
+        "cozy",
+        "date_night",
+        "lively",
+        "family_friendly",
+        "private_dining",
+        "reservations_recommended"
+      ]
+    }
+  },
+  {
+    "idx": 20,
+    "place_id": "ChIJK4Uf5VMzGQ0RAXsFF4Sx9y4",
+    "title": "Papa Chidera Nigerian Restaurant",
+    "status": 200,
+    "ms": 5362,
+    "body": {
+      "id": "0f189394-da78-4c44-998c-7f85ac4423e0",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "moderate",
+        "african",
+        "casual",
+        "portuguese",
+        "seafood",
+        "outdoor_seating",
+        "tasting_menu",
+        "romantic",
+        "family_friendly",
+        "quiet",
+        "sophisticated",
+        "lively",
+        "hidden_gem",
+        "great_cocktails",
+        "great_dessert"
+      ]
+    }
+  },
+  {
+    "idx": 21,
+    "place_id": "ChIJ9Uz0X9ozGQ0Rk1M3Ve5Onrc",
+    "title": "Santa Marta",
+    "status": 200,
+    "ms": 10340,
+    "body": {
+      "id": "a2dd3f7f-8a81-4081-9986-a299d238e83d",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "upscale",
+        "portuguese",
+        "casual",
+        "seafood",
+        "outdoor_seating",
+        "tasting_menu",
+        "romantic",
+        "lively",
+        "family_friendly",
+        "private_dining",
+        "great_cocktails",
+        "great_dessert",
+        "sushi",
+        "tapas",
+        "wine_bar",
+        "michelin_bib"
+      ]
+    }
+  },
+  {
+    "idx": 23,
+    "place_id": "ChIJY0JF-I8zGQ0RCsOWIUgx1j4",
+    "title": "Jhol Mo Mo Restaurant & Bar",
+    "status": 200,
+    "ms": 11575,
+    "body": {
+      "id": "be4b44e5-f702-4e14-8440-36fa0d3f66b8",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "budget",
+        "casual",
+        "outdoor_seating",
+        "family_friendly",
+        "vegetarian_friendly"
+      ]
+    }
+  },
+  {
+    "idx": 22,
+    "place_id": "ChIJVSsnboAzGQ0RSo3Ov57GPos",
+    "title": "Taberna Minhota",
+    "status": 200,
+    "ms": 17554,
+    "body": {
+      "id": "821c64ad-aa87-4f7a-9ba9-0fc0be2b6580",
+      "created": true,
+      "updated": false,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "budget",
+        "portuguese",
+        "seafood",
+        "casual",
+        "outdoor_seating",
+        "tasting_menu",
+        "romantic",
+        "lively",
+        "private_dining",
+        "wine_bar",
+        "great_cocktails",
+        "great_dessert",
+        "sushi",
+        "tapas",
+        "steakhouse",
+        "brunch"
+      ]
+    }
+  },
+  {
+    "idx": 25,
+    "place_id": "ChIJh2DaUIYzGQ0R4yTegoAslUM",
+    "title": "Love Lisbon Restaurant & Bar",
+    "status": 200,
+    "ms": 9580,
+    "body": {
+      "id": "a3b0ef27-4807-4cf3-a463-9c8742a50318",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "moderate",
+        "portuguese",
+        "casual",
+        "outdoor_seating",
+        "seafood",
+        "tasting_menu",
+        "romantic",
+        "lively",
+        "family_friendly",
+        "private_dining",
+        "takeout",
+        "delivery",
+        "quick_bite",
+        "sushi",
+        "tapas",
+        "wine_bar"
+      ]
+    }
+  },
+  {
+    "idx": 24,
+    "place_id": "ChIJx31Ab3g0GQ0RIQY9rn3J0QA",
+    "title": "Floresta das Escadinhas",
+    "status": 200,
+    "ms": 18357,
+    "body": {
+      "id": "d00ac12d-61e7-40b9-af6c-10fc0afb3735",
+      "created": true,
+      "updated": false,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "moderate"
+      ]
+    }
+  },
+  {
+    "idx": 26,
+    "place_id": "ChIJ4dg6oo4zGQ0RN0KW1slv-as",
+    "title": "RD's",
+    "status": 200,
+    "ms": 9512,
+    "body": {
+      "id": "8f005eab-5572-4fdb-a3f0-10f4179db42c",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "moderate",
+        "casual",
+        "outdoor_seating",
+        "family_friendly",
+        "vegetarian_friendly",
+        "gluten_free_options",
+        "kids_menu",
+        "takeout",
+        "delivery",
+        "quick_bite",
+        "lively",
+        "romantic",
+        "solo_friendly",
+        "private_dining",
+        "reservations_recommended"
+      ]
+    }
+  },
+  {
+    "idx": 27,
+    "place_id": "ChIJYYw4OvQzGQ0RMLuaXQqLJNg",
+    "title": "Yambu Restaurant",
+    "status": 200,
+    "ms": 10239,
+    "body": {
+      "id": "dddf9adb-f693-4fa1-b8c8-963de6306079",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "moderate",
+        "casual",
+        "outdoor_seating",
+        "family_friendly",
+        "vegetarian_friendly"
+      ]
+    }
+  },
+  {
+    "idx": 28,
+    "place_id": "ChIJDaxL06czGQ0RKhrQksYaySg",
+    "title": "Han Table Barbecue - Anjos (Lisboa)",
+    "status": 200,
+    "ms": 7855,
+    "body": {
+      "id": "dccf1033-4e02-412d-98f4-a436980c0f8f",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "upscale",
+        "korean",
+        "casual",
+        "bbq",
+        "outdoor_seating",
+        "table_service",
+        "seafood"
+      ]
+    }
+  },
+  {
+    "idx": 29,
+    "place_id": "ChIJJbh9i6czGQ0RRItSd6na2-o",
+    "title": "Wel Well",
+    "status": 200,
+    "ms": 10346,
+    "body": {
+      "id": "e8f31392-3337-4b55-b4a5-718cd1f226df",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "moderate",
+        "portuguese",
+        "casual",
+        "outdoor_seating",
+        "seafood",
+        "tasting_menu",
+        "romantic",
+        "quiet",
+        "solo_friendly",
+        "private_dining",
+        "great_cocktails",
+        "great_dessert",
+        "family_friendly",
+        "reservations_recommended",
+        "lively",
+        "waterfront"
+      ]
+    }
+  },
+  {
+    "idx": 30,
+    "place_id": "ChIJF9dIsQIzGQ0RjaAtxfLwaeM",
+    "title": "Pastaria",
+    "status": 200,
+    "ms": 10207,
+    "body": {
+      "id": "0f0bcfc4-f43d-495e-9bfb-caf5b2d515a6",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "moderate",
+        "portuguese",
+        "casual",
+        "outdoor_seating",
+        "tasting_menu",
+        "seafood",
+        "romantic",
+        "quiet",
+        "solo_friendly",
+        "private_dining",
+        "live_music",
+        "great_cocktails",
+        "great_dessert",
+        "family_friendly",
+        "wheelchair_accessible",
+        "step_free_entrance"
+      ]
+    }
+  },
+  {
+    "idx": 32,
+    "place_id": "ChIJS0myB38zGQ0Rys_Lh4PSIxQ",
+    "title": "Mercearia do Século",
+    "status": 200,
+    "ms": 7872,
+    "body": {
+      "id": "dad03706-1dbe-44ad-8f1d-61260e81b2c4",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "upscale",
+        "portuguese",
+        "casual",
+        "outdoor_seating",
+        "seafood",
+        "tasting_menu",
+        "romantic",
+        "quiet",
+        "solo_friendly",
+        "private_dining",
+        "live_music",
+        "great_cocktails",
+        "great_dessert",
+        "family_friendly",
+        "reservations_recommended",
+        "waterfront"
+      ]
+    }
+  },
+  {
+    "idx": 31,
+    "place_id": "ChIJl83pK3g0GQ0RxvsIGuchlTc",
+    "title": "Santa Rita - Portugal’s Best Restaurants",
+    "status": 200,
+    "ms": 12349,
+    "body": {
+      "id": "fae14afb-64ff-4371-8e8d-6ca0777b7b01",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "moderate",
+        "portuguese",
+        "seafood",
+        "casual",
+        "brunch",
+        "outdoor_seating",
+        "tasting_menu",
+        "romantic",
+        "private_dining",
+        "great_cocktails",
+        "great_dessert",
+        "sophisticated",
+        "family_friendly",
+        "reservations_recommended"
+      ]
+    }
+  },
+  {
+    "idx": 34,
+    "place_id": "ChIJkdzML9gzGQ0RcSyVeSZj67A",
+    "title": "O Gambuzino",
+    "status": 200,
+    "ms": 4611,
+    "body": {
+      "id": "2c211c2e-5db1-44e5-916f-94632a37e3ed",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "upscale",
+        "vegan_friendly",
+        "vegetarian_friendly",
+        "casual",
+        "craft_cocktails",
+        "outdoor_seating"
+      ]
+    }
+  },
+  {
+    "idx": 35,
+    "place_id": "ChIJ6-Ib1lszGQ0R9OtPK2LDmOc",
+    "title": "Espressolab Castilho",
+    "status": 200,
+    "ms": 4631,
+    "body": {
+      "id": "508c1275-c77a-4b6f-ba29-c47a577ada97",
+      "created": true,
+      "updated": false,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "moderate",
+        "brunch",
+        "coffee",
+        "casual",
+        "portuguese",
+        "outdoor_seating",
+        "takeout",
+        "delivery",
+        "quick_bite",
+        "family_friendly",
+        "kids_menu",
+        "romantic",
+        "lively",
+        "solo_friendly",
+        "private_dining",
+        "tasting_menu"
+      ]
+    }
+  },
+  {
+    "idx": 33,
+    "place_id": "ChIJWZBFh-4zGQ0RDIbhgAyH_-c",
+    "title": "Banzé na petiscaria",
+    "status": 200,
+    "ms": 9374,
+    "body": {
+      "id": "313c3899-857b-4cb9-8327-7f1564d5e568",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "upscale",
+        "portuguese",
+        "casual",
+        "seafood",
+        "outdoor_seating",
+        "tasting_menu",
+        "romantic",
+        "quiet",
+        "lively",
+        "family_friendly",
+        "solo_friendly",
+        "private_dining",
+        "reservations_recommended",
+        "walk_ins_welcome",
+        "great_cocktails",
+        "great_dessert"
+      ]
+    }
+  },
+  {
+    "idx": 36,
+    "place_id": "ChIJJStwMoLFHg0RhfE--nb54aU",
+    "title": "Classika Pizzaria",
+    "status": 200,
+    "ms": 6170,
+    "body": {
+      "id": "80dd9f7f-3335-4398-8e70-2b5301f2b2ca",
+      "created": true,
+      "updated": false,
+      "municipality_id": "4fd605e3-bf44-487e-8e89-dadb6810d229",
+      "ingest_tag_slugs": [
+        "pizza",
+        "portuguese",
+        "casual",
+        "outdoor_seating",
+        "tasting_menu",
+        "seafood",
+        "romantic",
+        "quiet",
+        "family_friendly",
+        "takeout",
+        "delivery",
+        "reservations_recommended",
+        "solo_friendly",
+        "private_dining",
+        "lively"
+      ]
+    }
+  },
+  {
+    "idx": 39,
+    "place_id": "ChIJ58_K6380GQ0R3B-eCkNHNrI",
+    "title": "Versículo d'O Faia",
+    "status": 200,
+    "ms": 8604,
+    "body": {
+      "id": "9de49c11-96b1-4781-a94e-b51d3e4eef23",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "moderate",
+        "portuguese",
+        "seafood",
+        "romantic",
+        "outdoor_seating"
+      ]
+    }
+  },
+  {
+    "idx": 38,
+    "place_id": "ChIJwerZ9zwzGQ0Rf-bBT1V1gPo",
+    "title": "La Villa",
+    "status": 200,
+    "ms": 16059,
+    "body": {
+      "id": "2e242d7b-5f5b-42c0-a159-a71847b6eae3",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "moderate",
+        "italian",
+        "casual",
+        "outdoor_seating",
+        "seafood",
+        "tasting_menu",
+        "romantic",
+        "private_dining",
+        "sushi",
+        "tapas",
+        "wine_bar",
+        "lively",
+        "family_friendly",
+        "quick_bite",
+        "reservations_recommended",
+        "pet_friendly"
+      ]
+    }
+  },
+  {
+    "idx": 40,
+    "place_id": "ChIJAzLgQIM0GQ0R4gOw5mmFGsg",
+    "title": "Invicta Madragoa",
+    "status": 200,
+    "ms": 8348,
+    "body": {
+      "id": "b52c99ed-61d9-4155-9bbd-adcc9b8db6ad",
+      "created": true,
+      "updated": false,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "seafood",
+        "portuguese",
+        "casual",
+        "outdoor_seating",
+        "tasting_menu",
+        "romantic",
+        "quiet",
+        "sophisticated",
+        "private_dining",
+        "reservations_recommended",
+        "great_cocktails",
+        "great_dessert",
+        "hidden_gem",
+        "women_owned"
+      ]
+    }
+  },
+  {
+    "idx": 41,
+    "place_id": "ChIJJ4khwGozGQ0RPuoqeqqvZuQ",
+    "title": "Oyster & Margarita Príncipe Real",
+    "status": 200,
+    "ms": 4319,
+    "body": {
+      "id": "43a1d110-abab-4058-9b49-cc31b972a068",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "upscale",
+        "seafood",
+        "portuguese",
+        "casual",
+        "outdoor_seating",
+        "tasting_menu",
+        "live_music",
+        "romantic",
+        "private_dining",
+        "reservations_recommended",
+        "great_cocktails",
+        "sushi",
+        "tapas",
+        "wine_bar"
+      ]
+    }
+  },
+  {
+    "idx": 42,
+    "place_id": "ChIJVQ7LuYM0GQ0R1JQddqmgHOc",
+    "title": "Restaurante Pastanaga",
+    "status": 200,
+    "ms": 9349,
+    "body": {
+      "id": "d0147884-fbec-4eff-a142-c874e6c4f868",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "moderate",
+        "portuguese",
+        "casual",
+        "seafood",
+        "outdoor_seating",
+        "tasting_menu",
+        "romantic",
+        "date_night",
+        "quiet",
+        "sophisticated",
+        "private_dining",
+        "reservations_recommended",
+        "lively",
+        "family_friendly",
+        "kids_menu",
+        "takeout"
+      ]
+    }
+  },
+  {
+    "idx": 37,
+    "place_id": "ChIJFT21SXMzGQ0Rg9nL4Vs-1Yg",
+    "title": "LUKA LISBOA",
+    "status": 200,
+    "ms": 32071,
+    "body": {
+      "id": "95c160a0-380b-4236-bcc0-acadb5f52adf",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "upscale"
+      ]
+    }
+  },
+  {
+    "idx": 43,
+    "place_id": "ChIJjW3LwRczGQ0Ry0UdPam4Zkg",
+    "title": "Santa Joana",
+    "status": 200,
+    "ms": 9318,
+    "body": {
+      "id": "4b40ed8f-90ba-4152-be4f-4caafe118eeb",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "portuguese",
+        "seafood",
+        "casual",
+        "outdoor_seating",
+        "tasting_menu",
+        "romantic",
+        "lively",
+        "cozy",
+        "date_night",
+        "brunch",
+        "wine_bar"
+      ]
+    }
+  },
+  {
+    "idx": 45,
+    "place_id": "ChIJkQeWPbYzGQ0ROdcyv83CrJE",
+    "title": "O Compadre",
+    "status": 200,
+    "ms": 9562,
+    "body": {
+      "id": "6bde5f9e-9898-481a-8245-75c8cf31cb03",
+      "created": true,
+      "updated": false,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "moderate",
+        "portuguese",
+        "casual",
+        "seafood",
+        "outdoor_seating",
+        "tasting_menu",
+        "romantic",
+        "private_dining",
+        "lively",
+        "great_cocktails",
+        "great_dessert",
+        "family_friendly",
+        "solo_friendly",
+        "reservations_recommended",
+        "walk_ins_welcome",
+        "hidden_gem"
+      ]
+    }
+  },
+  {
+    "idx": 44,
+    "place_id": "ChIJPXoQwHg0GQ0RnsR9SktyH98",
+    "title": "Taverna Alfacinha",
+    "status": 200,
+    "ms": 10559,
+    "body": {
+      "id": "e434037b-64ba-4f68-996c-750671ed903d",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "portuguese",
+        "casual",
+        "outdoor_seating",
+        "seafood",
+        "tasting_menu",
+        "romantic",
+        "quiet",
+        "solo_friendly",
+        "family_friendly",
+        "private_dining",
+        "live_music",
+        "great_cocktails",
+        "great_dessert",
+        "wheelchair_accessible",
+        "pet_friendly"
+      ]
+    }
+  },
+  {
+    "idx": 46,
+    "place_id": "ChIJi5F5sXk0GQ0R-eCoywTBcms",
+    "title": "Em Alta Na Baixa",
+    "status": 200,
+    "ms": 10287,
+    "body": {
+      "id": "d87bea41-b2bb-4144-8fa3-987c53e9012d",
+      "created": true,
+      "updated": false,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "upscale",
+        "portuguese",
+        "casual",
+        "seafood",
+        "outdoor_seating",
+        "tasting_menu",
+        "romantic",
+        "quiet",
+        "sophisticated",
+        "private_dining",
+        "reservations_recommended",
+        "lively",
+        "family_friendly",
+        "kids_menu",
+        "takeout",
+        "delivery"
+      ]
+    }
+  },
+  {
+    "idx": 47,
+    "place_id": "ChIJgVZPx641GQ0RNvMNthOjyF4",
+    "title": "Taberna Do Castelo",
+    "status": 200,
+    "ms": 10609,
+    "body": {
+      "id": "f88d0bae-4d73-4df9-a9a5-2297d83ec80a",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "moderate",
+        "portuguese",
+        "pizza",
+        "casual",
+        "outdoor_seating",
+        "tasting_menu",
+        "seafood",
+        "romantic",
+        "lively",
+        "family_friendly",
+        "private_dining",
+        "reservations_recommended",
+        "great_cocktails",
+        "great_dessert",
+        "sushi",
+        "tapas"
+      ]
+    }
+  },
+  {
+    "idx": 49,
+    "place_id": "ChIJS4zoEIAzGQ0R8pHUT6kL_zg",
+    "title": "Taberna do Bairro alto",
+    "status": 200,
+    "ms": 9889,
+    "body": {
+      "id": "0aaad870-4d7f-417b-865f-77e870baffd9",
+      "created": true,
+      "updated": false,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "upscale",
+        "portuguese",
+        "casual",
+        "seafood",
+        "outdoor_seating",
+        "tasting_menu",
+        "romantic",
+        "quiet",
+        "solo_friendly",
+        "private_dining",
+        "reservations_recommended",
+        "great_cocktails",
+        "great_dessert",
+        "family_friendly",
+        "kids_menu",
+        "pet_friendly"
+      ]
+    }
+  },
+  {
+    "idx": 48,
+    "place_id": "ChIJPXvFgC0zGQ0R11UlQplpZPg",
+    "title": "Saikai Izakaya",
+    "status": 200,
+    "ms": 13186,
+    "body": {
+      "id": "f8c1a0c9-8b22-4c99-95e7-de66992c8971",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "upscale",
+        "japanese",
+        "seafood",
+        "casual",
+        "outdoor_seating",
+        "tasting_menu",
+        "romantic",
+        "sushi",
+        "private_dining",
+        "reservations_recommended",
+        "quiet",
+        "lively",
+        "sophisticated",
+        "michelin_bib",
+        "hidden_gem"
+      ]
+    }
+  },
+  {
+    "idx": 51,
+    "place_id": "ChIJqQFcEHo0GQ0RvCnL-bpescs",
+    "title": "Can the Can Lisboa",
+    "status": 200,
+    "ms": 5382,
+    "body": {
+      "id": "f178f3a0-c104-41be-88a7-5f626b2d9e3b",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "upscale",
+        "portuguese",
+        "seafood",
+        "casual",
+        "romantic",
+        "outdoor_seating",
+        "waterfront",
+        "tasting_menu",
+        "cozy",
+        "date_night",
+        "private_dining",
+        "sophisticated",
+        "craft_cocktails",
+        "live_music",
+        "great_cocktails",
+        "great_dessert"
+      ]
+    }
+  },
+  {
+    "idx": 50,
+    "place_id": "ChIJpTP9qNw1GQ0REUCANKrSDTU",
+    "title": "Grau Douro Tapas & Wine Bar (Portuguese Tapas and Wine)",
+    "status": 200,
+    "ms": 6184,
+    "body": {
+      "id": "9223a02e-2823-4369-8561-fd198a2a23e1",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "upscale",
+        "wine_bar",
+        "casual",
+        "portuguese",
+        "outdoor_seating",
+        "romantic",
+        "date_night",
+        "tasting_menu",
+        "great_cocktails",
+        "live_music",
+        "private_dining",
+        "solo_friendly",
+        "quiet",
+        "family_friendly",
+        "reservations_recommended"
+      ]
+    }
+  },
+  {
+    "idx": 52,
+    "place_id": "ChIJrXXWqQ4zGQ0RcUM64QOvxsM",
+    "title": "SakulThai-สกุลไทย",
+    "status": 200,
+    "ms": 8327,
+    "body": {
+      "id": "88d0c0eb-9a78-4cca-ae0b-74be0b5fe6b7",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "moderate",
+        "thai",
+        "casual",
+        "outdoor_seating",
+        "takeout",
+        "delivery",
+        "family_friendly",
+        "quiet",
+        "romantic",
+        "solo_friendly",
+        "private_dining",
+        "lively",
+        "cozy",
+        "great_cocktails",
+        "great_dessert",
+        "great_beer_selection"
+      ]
+    }
+  },
+  {
+    "idx": 54,
+    "place_id": "ChIJyeSwza41GQ0RCM-J-yIYBiQ",
+    "title": "Rico Sabor",
+    "status": 200,
+    "ms": 8192,
+    "body": {
+      "id": "5a26e24f-5489-43e3-ad5c-0145c5306658",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "upscale",
+        "portuguese",
+        "casual",
+        "outdoor_seating",
+        "seafood",
+        "tasting_menu",
+        "romantic",
+        "lively",
+        "cozy",
+        "date_night",
+        "brunch",
+        "family_friendly",
+        "private_dining",
+        "sushi",
+        "tapas",
+        "wine_bar"
+      ]
+    }
+  },
+  {
+    "idx": 53,
+    "place_id": "ChIJuw2nlY4zGQ0RVEKdWKA0XIU",
+    "title": "Estrela d'Ouro",
+    "status": 200,
+    "ms": 9328,
+    "body": {
+      "id": "d44cc218-9597-4e85-9e62-0b301e253d18",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "moderate",
+        "portuguese",
+        "seafood",
+        "casual",
+        "outdoor_seating",
+        "tasting_menu",
+        "romantic",
+        "quiet",
+        "sushi",
+        "tapas",
+        "wine_bar",
+        "lively",
+        "family_friendly",
+        "pet_friendly",
+        "private_dining",
+        "reservations_recommended"
+      ]
+    }
+  },
+  {
+    "idx": 55,
+    "place_id": "ChIJPd0kVd4zGQ0RZIatLQHu-i4",
+    "title": "Black Pavilion Restaurant",
+    "status": 200,
+    "ms": 8195,
+    "body": {
+      "id": "7423c089-aa53-434b-97a6-76c345a38564",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "fine_dining",
+        "portuguese",
+        "seafood",
+        "casual",
+        "outdoor_seating",
+        "tasting_menu",
+        "romantic",
+        "lively",
+        "great_cocktails",
+        "private_dining",
+        "sushi",
+        "tapas",
+        "wine_bar",
+        "family_friendly",
+        "quick_bite",
+        "date_night"
+      ]
+    }
+  },
+  {
+    "idx": 56,
+    "place_id": "ChIJrZq5opYzGQ0RqbZDA9VQpCI",
+    "title": "Sacco",
+    "status": 200,
+    "ms": 7053,
+    "body": {
+      "id": "f699048a-db98-438c-9078-cb441190ac5b",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "upscale",
+        "portuguese",
+        "seafood",
+        "casual",
+        "outdoor_seating",
+        "tasting_menu",
+        "romantic",
+        "lively",
+        "family_friendly",
+        "quick_bite",
+        "sushi",
+        "tapas",
+        "wine_bar",
+        "private_dining",
+        "reservations_recommended",
+        "great_cocktails"
+      ]
+    }
+  },
+  {
+    "idx": 59,
+    "place_id": "ChIJtx4y4YkzGQ0RJADhVgp16xc",
+    "title": "Augusto Lisboa",
+    "status": 429,
+    "ms": 138,
+    "body": {
+      "error": "Too many requests"
+    }
+  },
+  {
+    "idx": 60,
+    "place_id": "ChIJw3ne3H00GQ0RQLsXrqXi0KQ",
+    "title": "Restaurante Rio Grande",
+    "status": 429,
+    "ms": 93,
+    "body": {
+      "error": "Too many requests"
+    }
+  },
+  {
+    "idx": 61,
+    "place_id": "ChIJWWwc2Fw1GQ0RAsBpdyzNAYI",
+    "title": "Skizzo",
+    "status": 429,
+    "ms": 86,
+    "body": {
+      "error": "Too many requests"
+    }
+  },
+  {
+    "idx": 62,
+    "place_id": "ChIJs7hPy4czGQ0Rb3Z2JgcsrKI",
+    "title": "BaniGala RESTAURANTE Lisbon",
+    "status": 429,
+    "ms": 130,
+    "body": {
+      "error": "Too many requests"
+    }
+  },
+  {
+    "idx": 63,
+    "place_id": "ChIJlVvIadwzGQ0RdTiuL1t3kvI",
+    "title": "Cultivate - Japanese Brazilian Sushi Fusion & Cultural Space in Lisbon",
+    "status": 429,
+    "ms": 84,
+    "body": {
+      "error": "Too many requests"
+    }
+  },
+  {
+    "idx": 64,
+    "place_id": "ChIJCxwzRIIzGQ0RC3wjGWOmGKw",
+    "title": "A Cozinha - Sr. Lisboa",
+    "status": 429,
+    "ms": 101,
+    "body": {
+      "error": "Too many requests"
+    }
+  },
+  {
+    "idx": 65,
+    "place_id": "ChIJ78hYidQzGQ0Rtivx-hgDqM8",
+    "title": "Minhal's Kitchen",
+    "status": 429,
+    "ms": 381,
+    "body": {
+      "error": "Too many requests"
+    }
+  },
+  {
+    "idx": 57,
+    "place_id": "ChIJ8UB4wVwzGQ0R7T_Voa5fMSE",
+    "title": "Casa de Dura",
+    "status": 200,
+    "ms": 7733,
+    "body": {
+      "id": "1fe59dff-a7da-44be-b975-3783a5006e75",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "moderate",
+        "portuguese",
+        "seafood",
+        "brunch",
+        "casual"
+      ]
+    }
+  },
+  {
+    "idx": 58,
+    "place_id": "ChIJwctaDKQ1GQ0RtnOmvxB4LKQ",
+    "title": "Gunpowder Lisboa",
+    "status": 200,
+    "ms": 7485,
+    "body": {
+      "id": "d20a03cb-139d-491b-a6b0-3b81e19145a6",
+      "created": false,
+      "updated": true,
+      "municipality_id": "860887d7-82c8-4819-aa7e-e6f1893ef128",
+      "ingest_tag_slugs": [
+        "portuguese",
+        "casual",
+        "outdoor_seating",
+        "seafood",
+        "tasting_menu",
+        "romantic",
+        "quiet",
+        "lively",
+        "family_friendly",
+        "kids_menu",
+        "pet_friendly",
+        "solo_friendly",
+        "private_dining",
+        "reservations_recommended",
+        "walk_ins_welcome"
+      ]
+    }
+  },
+  {
+    "idx": 0,
+    "place_id": "ChIJVeMt8m41GQ0R94H3ukNEaI8",
+    "title": "ESTRELA DO BAIRRO",
+    "error": "fetch failed"
+  },
+  {
+    "idx": 0,
+    "place_id": "ChIJD6ZOjwO1GA0RsLV3wd8hEMM",
+    "title": "Restaurante Retiro dos Cubanos",
+    "error": "fetch failed"
+  },
+  {
+    "idx": 1,
+    "place_id": "ChIJWwt6hoyzGA0Rm8rScAwmRLc",
+    "title": "WOAK SUSHI",
+    "error": "fetch failed"
+  },
+  {
+    "idx": 3,
+    "place_id": "ChIJNy1LdUmyGA0RXwSHnb_lUSo",
+    "title": "Paraíso do Coto",
+    "error": "fetch failed"
+  },
+  {
+    "idx": 2,
+    "place_id": "ChIJV1WlHKWzGA0RihEz3q0HKeE",
+    "title": "Taskinha Do B3co",
+    "error": "fetch failed"
+  },
+  {
+    "idx": 4,
+    "place_id": "ChIJU--5G-ayGA0RbpfwHZtZDKA",
+    "title": "Restaurante Lisboa XL",
+    "error": "fetch failed"
+  }
+]

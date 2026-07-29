@@ -1,0 +1,29 @@
+{
+  "name": "nomnom-reels",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NomNom Remotion video templates — restaurant & list reels",
+  "scripts": {
+    "dev": "remotion studio",
+    "render": "remotion render RestaurantReviewsReel out/restaurant-reviews-reel.mp4",
+    "render:volta": "remotion render RestaurantReviewsReel out/volta-dos-sabores.mp4 --props=./props/volta-dos-sabores.json --codec h264 --crf 18",
+    "render:spotlight": "remotion render RestaurantSpotlight out/restaurant-spotlight.mp4 --codec h264 --crf 18",
+    "render:list": "remotion render ListShowcase out/list-showcase.mp4 --props=./props/caldas-must-gos.json --codec h264 --crf 18",
+    "still": "remotion still RestaurantReviewsReel",
+    "still:volta": "remotion still RestaurantReviewsReel out/volta-still.png --props=./props/volta-dos-sabores.json --frame=90",
+    "still:spotlight": "remotion still RestaurantSpotlight out/restaurant-spotlight-still.png --frame=45",
+    "still:list": "remotion still ListShowcase out/list-showcase-still.png --props=./props/caldas-must-gos.json --frame=60",
+    "fetch": "node scripts/fetch-restaurant-props.mjs"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.246",
+    "@remotion/google-fonts": "^4.0.246",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.246"
+  },
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "dotenv": "^17.4.1"
+  }
+}

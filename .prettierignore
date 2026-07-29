@@ -1,0 +1,12 @@
+build/*
+dist/*
+public/*
+**/out/*
+**/.next/*
+**/node_modules/*
+
+package-lock.json
+yarn.lock
+
+# Auto-generated Supabase types (TypeScript; do not format as JS)
+src/libs/supabase/types.ts

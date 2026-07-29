@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-label="No image available">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f4f1ec"/>
+      <stop offset="100%" stop-color="#e9e3d8"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <g transform="translate(400 300)" fill="none" stroke="#a8997f" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="0" cy="0" r="120" opacity="0.9"/>
+    <circle cx="0" cy="0" r="86" opacity="0.55"/>
+    <path d="M-160 -130 v140 a20 20 0 0 0 20 20 h6 v90" opacity="0.9"/>
+    <path d="M-140 -130 v90" opacity="0.6"/>
+    <path d="M-120 -130 v90" opacity="0.6"/>
+    <path d="M140 -130 c30 0 40 30 40 70 c0 30 -15 50 -30 55 v75" opacity="0.9"/>
+  </g>
+  <text x="400" y="490" text-anchor="middle" fill="#8a7c66" font-family="system-ui,-apple-system,Segoe UI,sans-serif" font-size="22" letter-spacing="2">NO IMAGE</text>
+</svg>
