@@ -1,0 +1,69 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+node_modules
+.pnp
+.pnp.js
+
+# testing
+coverage
+playwright-report
+test-results
+tests/e2e/.auth
+
+# production
+.next
+.swc
+_static
+out
+dist
+build
+
+# Capacitor — `capacitor-www/` is a committed minimal stub (see capacitor.config.ts webDir).
+# Native `assets/public` copies are gitignored under android/ and ios/.
+
+# environment variables
+.env
+.env.local
+.env.development.local
+.env.dev
+.env.test.local
+.env.production.local
+.env.production
+
+# Next.js — regenerated locally (do not commit)
+next-env.d.ts
+
+# misc
+.DS_Store
+.vercel
+.netlify
+.unimportedrc.json
+tsconfig.tsbuildinfo
+.vscode
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+.idea/
+
+# geoBoundaries cache for Portugal geography generators (regenerate locally)
+scripts/.cache/
+
+# Generated SQL batches (geo:pt:reseed writes here; apply then delete)
+.tmp/
+
+# TinaCMS admin SPA (regenerate with `npm run tina:build`)
+public/admin/
+.gstack/
+
+# Supabase migrations are untracked from git (geo-data dumps were ~180MB and
+# Tailwind v4 + Vercel NFT crawled them; the rest removed per request). Files
+# stay on disk so local `supabase db reset` still applies them. `.gitkeep`
+# keeps the directory present in fresh clones. See memory: tailwind-v4-turbopack-scan-panic.
+supabase/migrations/*.sql
+
+# Stray graphify AST cache written under src/ (cache_root) — not the real output
+src/graphify-out/
+.env*
