@@ -13,10 +13,13 @@
  * Callers should treat null as "no signal" and skip persistence.
  */
 
-import { QWEN_API } from 'src/config-global';
+import * as Sentry from '@sentry/nextjs';
+
+import { QWEN_API, SENTRY_API, INTEGRATION_FLAGS } from 'src/config-global';
 
 const DEFAULT_TIMEOUT_MS = 25_000;
 const RETRY_DELAY_MS = 500;
+const SPAN_TEXT_MAX = 8_000;
 
 /**
  * @param {number} ms
@@ -28,7 +31,17 @@ const sleep = (ms) =>
   });
 
 /**
- * @typedef {{ ok: true, data: Record<string, unknown> }
+ * @param {unknown} value
+ * @returns {string}
+ */
+function truncateForSpan(value) {
+  const s = typeof value === 'string' ? value : JSON.stringify(value);
+  if (typeof s !== 'string') return '';
+  return s.length > SPAN_TEXT_MAX ? `${s.slice(0, SPAN_TEXT_MAX)}…` : s;
+}
+
+/**
+ * @typedef {{ ok: true, data: Record<string, unknown>, usage?: Record<string, number>, responseId?: string, responseModel?: string }
  *   | { ok: false, retriable: boolean }} AttemptResult
  */
 
@@ -68,8 +81,24 @@ async function attemptQwenCall({ url, key, body, timeoutMs, logTag }) {
     const content = respBody?.choices?.[0]?.message?.content;
     if (typeof content !== 'string') return { ok: false, retriable: false };
 
+    /** @type {Record<string, number> | undefined} */
+    let usage;
+    if (respBody?.usage && typeof respBody.usage === 'object') {
+      usage = {
+        prompt_tokens: Number(respBody.usage.prompt_tokens) || 0,
+        completion_tokens: Number(respBody.usage.completion_tokens) || 0,
+        total_tokens: Number(respBody.usage.total_tokens) || 0,
+      };
+    }
+
     try {
-      return { ok: true, data: JSON.parse(content) };
+      return {
+        ok: true,
+        data: JSON.parse(content),
+        usage,
+        responseId: typeof respBody?.id === 'string' ? respBody.id : undefined,
+        responseModel: typeof respBody?.model === 'string' ? respBody.model : undefined,
+      };
     } catch {
       console.error(`[${logTag}] JSON parse failed`);
       return { ok: false, retriable: false };
@@ -86,6 +115,22 @@ async function attemptQwenCall({ url, key, body, timeoutMs, logTag }) {
   } finally {
     clearTimeout(to);
   }
+}
+
+/**
+ * @param {import('@sentry/core').Span | undefined} span
+ * @param {Extract<AttemptResult, { ok: true }>} result
+ */
+function applySuccessAttributes(span, result) {
+  if (!span) return;
+  if (result.responseId) span.setAttribute('gen_ai.response.id', result.responseId);
+  if (result.responseModel) span.setAttribute('gen_ai.response.model', result.responseModel);
+  if (result.usage) {
+    span.setAttribute('gen_ai.usage.input_tokens', result.usage.prompt_tokens);
+    span.setAttribute('gen_ai.usage.output_tokens', result.usage.completion_tokens);
+    span.setAttribute('gen_ai.usage.total_tokens', result.usage.total_tokens);
+  }
+  span.setAttribute('gen_ai.output.messages', truncateForSpan(result.data));
 }
 
 /**
@@ -112,23 +157,68 @@ export async function qwenJsonChat({
   const { key, model, baseUrl } = QWEN_API;
   if (!key || typeof key !== 'string') return null;
 
+  const resolvedModel = modelOverride?.trim() || model?.trim() || 'qwen-turbo';
   const url = `${baseUrl}/chat/completions`;
+  const userContent = typeof user === 'string' ? user : JSON.stringify(user);
   const body = JSON.stringify({
-    model: modelOverride?.trim() || model?.trim() || 'qwen-turbo',
+    model: resolvedModel,
     temperature,
     max_tokens: maxTokens,
     response_format: { type: 'json_object' },
     messages: [
       { role: 'system', content: system },
-      { role: 'user', content: typeof user === 'string' ? user : JSON.stringify(user) },
+      { role: 'user', content: userContent },
     ],
   });
 
-  const first = await attemptQwenCall({ url, key, body, timeoutMs, logTag });
-  if (first.ok) return first.data;
-  if (!first.retriable) return null;
+  /**
+   * @param {import('@sentry/core').Span | undefined} [span]
+   * @returns {Promise<Record<string, unknown> | null>}
+   */
+  const run = async (span) => {
+    const first = await attemptQwenCall({ url, key, body, timeoutMs, logTag });
+    if (first.ok) {
+      applySuccessAttributes(span, first);
+      return first.data;
+    }
+    if (!first.retriable) {
+      span?.setStatus({ code: 2, message: 'internal_error' });
+      return null;
+    }
 
-  await sleep(RETRY_DELAY_MS);
-  const second = await attemptQwenCall({ url, key, body, timeoutMs, logTag });
-  return second.ok ? second.data : null;
+    await sleep(RETRY_DELAY_MS);
+    const second = await attemptQwenCall({ url, key, body, timeoutMs, logTag });
+    if (second.ok) {
+      applySuccessAttributes(span, second);
+      span?.setAttribute('gen_ai.request.retried', true);
+      return second.data;
+    }
+    span?.setStatus({ code: 2, message: 'internal_error' });
+    return null;
+  };
+
+  const sentryOn = INTEGRATION_FLAGS.sentry && !!SENTRY_API.dsn;
+  if (!sentryOn || typeof Sentry.startSpan !== 'function') {
+    return run();
+  }
+
+  return Sentry.startSpan(
+    {
+      name: `chat ${resolvedModel}`,
+      op: 'gen_ai.chat',
+      attributes: {
+        'gen_ai.operation.name': 'chat',
+        'gen_ai.system': 'qwen',
+        'gen_ai.request.model': resolvedModel,
+        'gen_ai.request.temperature': temperature,
+        'gen_ai.request.max_tokens': maxTokens,
+        'gen_ai.agent.name': logTag,
+        'gen_ai.input.messages': truncateForSpan([
+          { role: 'system', content: system },
+          { role: 'user', content: userContent },
+        ]),
+      },
+    },
+    (span) => run(span)
+  );
 }

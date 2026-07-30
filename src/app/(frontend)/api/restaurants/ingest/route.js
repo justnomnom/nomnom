@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { rateLimitTake } from 'src/libs/email/rate-limit';
 import { RESTAURANT_INGEST_SECRET } from 'src/config-global';
+import { setConversationId } from 'src/libs/sentry/sentry-service';
 import { isValidSecret } from 'src/libs/crypto/timing-safe-secret';
 import { supabaseAdminClient } from 'src/libs/supabase/supabase-admin';
 import { extractReviewConsensus } from 'src/libs/restaurant-ingest/review-consensus-ai';
@@ -206,6 +207,11 @@ export async function POST(request) {
         { status: 422 }
       );
     }
+
+    // Group about-tags + review-consensus LLM spans for this place ingest
+    const placeId =
+      typeof mapped.row?.external_place_id === 'string' ? mapped.row.external_place_id : null;
+    setConversationId(placeId ? `restaurant-ingest:${placeId}` : `restaurant-ingest:${Date.now()}`);
 
     const { data: municipalityRows, error: rpcErr } = await supabaseAdminClient.rpc(
       'municipality_for_point',

@@ -5,14 +5,6 @@ import { randomUUID } from 'crypto';
 import { fetchRestaurantTagsCatalog } from 'src/auth/actions/location-actions';
 import { RESTAURANT_SEARCH_AI_PROVIDERS } from 'src/lib/restaurant-search-llm';
 import {
-  logError,
-  logInfo,
-  logWarn,
-  setConversationId,
-  setIsolationAttributes,
-  setUser,
-} from 'src/libs/sentry/sentry-service';
-import {
   getSupabaseAuthUser,
   createSupabaseServerClient,
 } from 'src/libs/supabase/supabase-server-client';
@@ -21,6 +13,14 @@ import {
   mapUserQueryToSearchPlan,
   fetchLastResortRestaurants,
 } from 'src/lib/restaurant-search-agent';
+import {
+  logInfo,
+  logWarn,
+  setUser,
+  logError,
+  setConversationId,
+  setIsolationAttributes,
+} from 'src/libs/sentry/sentry-service';
 
 const ALLOWED_PROVIDERS = new Set(RESTAURANT_SEARCH_AI_PROVIDERS);
 
