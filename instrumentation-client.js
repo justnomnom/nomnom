@@ -3,6 +3,7 @@
 import * as Sentry from "@sentry/nextjs";
 
 import { SENTRY_API, INTEGRATION_FLAGS } from "./src/config-global";
+import { beforeSendLog } from "./src/libs/sentry/before-send-log";
 
 // Skip Sentry initialization in development for faster compilation
 const isDev = process.env.NODE_ENV === 'development';
@@ -11,16 +12,29 @@ if (!isDev && INTEGRATION_FLAGS.sentry && SENTRY_API.dsn) {
     Sentry.init({
         dsn: SENTRY_API.dsn,
         sendDefaultPii: true,
+        // Adjust in production via NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE
         tracesSampleRate: SENTRY_API.tracesSampleRate,
         debug: SENTRY_API.debug,
         environment: SENTRY_API.environment,
+        enableLogs: true,
+        beforeSendLog,
+
+        // Propagate trace headers to same-origin / API hosts (avoids CORS issues)
+        tracePropagationTargets: [
+            'localhost',
+            /^https:\/\/justnomnom\.com\/api/,
+            /^https:\/\/.*\.vercel\.app\/api/,
+        ],
 
         // Replay may only be enabled for the client-side
         integrations: [
+            Sentry.browserTracingIntegration(),
             Sentry.replayIntegration({
                 maskAllText: true,
                 blockAllMedia: true,
             }),
+            // Forward console.warn/error as structured Sentry logs
+            Sentry.consoleLoggingIntegration({ levels: ["warn", "error"] }),
         ],
 
         // Capture Replay for 10% of all sessions,

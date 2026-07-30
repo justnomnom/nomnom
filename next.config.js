@@ -303,8 +303,8 @@ const nextConfig = {
 
 const sentryWebpackPluginOptions = {
   silent: true,
-  org: process.env.SENTRY_ORG || 'nomnom',
-  project: process.env.SENTRY_PROJECT || 'frontend',
+  org: process.env.SENTRY_ORG || 'nomnom-ek',
+  project: process.env.SENTRY_PROJECT || 'nomnom',
   authToken: process.env.SENTRY_AUTH_TOKEN,
   reactComponentAnnotation: {
     enabled: true,

@@ -180,8 +180,8 @@ export const WEB_PUSH = {
 export const SENTRY_API = {
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
   authToken: process.env.SENTRY_AUTH_TOKEN,
-  org: process.env.SENTRY_ORG || 'nomnom',
-  project: process.env.SENTRY_PROJECT || 'frontend',
+  org: process.env.SENTRY_ORG || 'nomnom-ek',
+  project: process.env.SENTRY_PROJECT || 'nomnom',
   environment: process.env.NODE_ENV || 'development',
   debug: process.env.NEXT_PUBLIC_SENTRY_DEBUG === 'true',
   tracesSampleRate: parseFloat(process.env.NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE) || 1.0,

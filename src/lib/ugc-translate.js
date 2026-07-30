@@ -102,6 +102,12 @@ async function translateWithLlm(text, sourceLocale, targetLocale) {
       model,
       prompt: `Translate this restaurant dish or ingredient name from ${src} to ${tgt}. Use the wording diners would see on a menu in the target language (plain name: e.g. rice, bacalhau, nata — not a sentence). Reply with ONLY that name, no quotes or explanation.\n\n${text}`,
       maxOutputTokens: 120,
+      experimental_telemetry: {
+        isEnabled: true,
+        functionId: 'ugc_translate',
+        recordInputs: true,
+        recordOutputs: true,
+      },
     });
     const trimmed = (out ?? '').trim();
     return trimmed.length ? trimmed : text;

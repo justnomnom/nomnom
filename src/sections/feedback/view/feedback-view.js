@@ -26,8 +26,17 @@ import {
   sectionLabelSx,
   dashboardSubsectionStackProps,
   dashboardPageSectionStackProps,
-  dashboardMobileStretchButtonSx,
 } from 'src/sections/profile/view/settings-shell-shared';
+
+const feedbackActionsRowSx = {
+  width: 1,
+  '& .MuiButton-root': {
+    flex: 1,
+    minWidth: 0,
+    minHeight: 44,
+    px: { xs: 1, sm: 2 },
+  },
+};
 
 // ----------------------------------------------------------------------
 
@@ -93,21 +102,11 @@ export default function FeedbackView() {
         {t('pages.dashboard.feedback.description')}
       </Typography>
       <Box sx={{ ...hubCardShellSx(theme), p: 2 }}>
-        <Stack spacing={1.5}>
-          <Button
-            variant="contained"
-            color="inherit"
-            onClick={handleShareIdea}
-            sx={dashboardMobileStretchButtonSx}
-          >
+        <Stack direction="row" spacing={1} sx={feedbackActionsRowSx}>
+          <Button variant="contained" color="inherit" onClick={handleShareIdea}>
             {t('pages.dashboard.feedback.actions.share_idea')}
           </Button>
-          <Button
-            variant="outlined"
-            color="inherit"
-            onClick={handleOpenBoard}
-            sx={dashboardMobileStretchButtonSx}
-          >
+          <Button variant="outlined" color="inherit" onClick={handleOpenBoard}>
             {t('pages.dashboard.feedback.actions.browse_board')}
           </Button>
           {portalUrl ? (
@@ -118,7 +117,6 @@ export default function FeedbackView() {
               rel="noopener noreferrer"
               variant="text"
               color="inherit"
-              sx={dashboardMobileStretchButtonSx}
             >
               {t('pages.dashboard.feedback.actions.open_portal')}
             </Button>

@@ -1,7 +1,17 @@
 'use server';
 
+import { randomUUID } from 'crypto';
+
 import { fetchRestaurantTagsCatalog } from 'src/auth/actions/location-actions';
 import { RESTAURANT_SEARCH_AI_PROVIDERS } from 'src/lib/restaurant-search-llm';
+import {
+  logError,
+  logInfo,
+  logWarn,
+  setConversationId,
+  setIsolationAttributes,
+  setUser,
+} from 'src/libs/sentry/sentry-service';
 import {
   getSupabaseAuthUser,
   createSupabaseServerClient,
@@ -97,6 +107,15 @@ export async function searchRestaurantsFromNaturalLanguage({
     return { restaurants: [], plan: null, error: 'unauthorized', usedFallback: false };
   }
 
+  // Sentry agent monitoring: identify user + group this search's LLM spans
+  setUser({ id: user.id, email: user.email ?? undefined });
+  setConversationId(`restaurant-search:${user.id}:${randomUUID()}`);
+  // Per-request log attributes (isolation scope — never use global on the server)
+  setIsolationAttributes({
+    'nomnom.feature': 'restaurant_search',
+    'nomnom.scope_type': scope.type,
+  });
+
   if (scope.type === 'locality' && !scope.localityId) {
     return { restaurants: [], plan: null, error: 'missing_locality', usedFallback: false };
   }
@@ -121,13 +140,23 @@ export async function searchRestaurantsFromNaturalLanguage({
     fallbackScope = null;
   }
 
+  const startedAt = Date.now();
   const { tags: catalog, error: catErr } = await fetchRestaurantTagsCatalog();
   if (catErr || !catalog?.length) {
     try {
       const restaurants = await fetchLastResortRestaurants({ supabase, scope, userLat, userLng });
+      logWarn('Restaurant search used catalog fallback', {
+        'nomnom.result_count': restaurants.length,
+        'nomnom.duration_ms': Date.now() - startedAt,
+        'nomnom.reason': catErr || 'no_tag_catalog',
+      });
       return { restaurants, plan: null, error: null, usedFallback: true };
     } catch (e) {
       console.error('[searchRestaurantsFromNaturalLanguage] last-resort after catalog error', e);
+      logError('Restaurant search catalog fallback failed', {
+        'nomnom.reason': catErr || 'no_tag_catalog',
+        'nomnom.duration_ms': Date.now() - startedAt,
+      });
       return {
         restaurants: [],
         plan: null,
@@ -153,6 +182,7 @@ export async function searchRestaurantsFromNaturalLanguage({
       allowedSlugs,
       bboxSort,
     });
+    let widenedScope = false;
 
     // Too few matches in the tight primary scope → re-run the SAME plan against the wider
     // fallback (no second LLM call) and keep whichever produced more places.
@@ -164,7 +194,10 @@ export async function searchRestaurantsFromNaturalLanguage({
         allowedSlugs,
         bboxSort,
       });
-      if (widened.length > restaurants.length) restaurants = widened;
+      if (widened.length > restaurants.length) {
+        restaurants = widened;
+        widenedScope = true;
+      }
     }
 
     let usedFallback = false;
@@ -180,14 +213,33 @@ export async function searchRestaurantsFromNaturalLanguage({
       usedFallback = true;
     }
 
+    // One wide event with full outcome context (prefer this over fragmented logs)
+    logInfo('Restaurant search completed', {
+      'nomnom.result_count': restaurants.length,
+      'nomnom.used_fallback': usedFallback,
+      'nomnom.widened_scope': widenedScope,
+      'nomnom.provider': normalizedProvider || 'default',
+      'nomnom.query_length': q.length,
+      'nomnom.duration_ms': Date.now() - startedAt,
+    });
+
     return { restaurants, plan, error: null, usedFallback };
   } catch (e) {
     console.error('[searchRestaurantsFromNaturalLanguage]', e);
     try {
       const restaurants = await fetchLastResortRestaurants({ supabase, scope, userLat, userLng });
+      logWarn('Restaurant search recovered via last-resort', {
+        'nomnom.result_count': restaurants.length,
+        'nomnom.duration_ms': Date.now() - startedAt,
+        'nomnom.reason': e instanceof Error ? e.message : 'unknown',
+      });
       return { restaurants, plan: null, error: null, usedFallback: true };
     } catch (e2) {
       console.error('[searchRestaurantsFromNaturalLanguage] last-resort failed', e2);
+      logError('Restaurant search failed', {
+        'nomnom.duration_ms': Date.now() - startedAt,
+        'nomnom.reason': e2 instanceof Error ? e2.message : 'llm_or_search_failed',
+      });
       return {
         restaurants: [],
         plan: null,

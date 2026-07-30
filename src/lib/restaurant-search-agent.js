@@ -455,6 +455,12 @@ Return valid JSON matching the schema.`;
       schema: restaurantSearchPlanSchema,
       system,
       prompt,
+      experimental_telemetry: {
+        isEnabled: true,
+        functionId: 'restaurant_search_plan',
+        recordInputs: true,
+        recordOutputs: true,
+      },
     }));
   }
 
