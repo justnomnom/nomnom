@@ -1199,6 +1199,11 @@
         "description": "Tell us what broke, what’s confusing, or what you’d like to see next.",
         "section_embed": "Feedback & requests",
         "section_help": "More help",
+        "actions": {
+          "share_idea": "Share an idea",
+          "browse_board": "Browse feedback",
+          "open_portal": "Open full board"
+        },
         "reportBug": {
           "iframeTitle": "Bug report form"
         }

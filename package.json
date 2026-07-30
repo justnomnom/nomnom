@@ -73,6 +73,8 @@
     "geo:pt:reseed": "node scripts/reseed-portugal-geography.mjs",
     "geo:pt:apply": "node scripts/apply-sql-batches.mjs",
     "tags:reseed": "node scripts/reseed-tags-catalog.mjs",
+    "db:audit-grants": "node scripts/audit-api-table-grants.mjs",
+    "db:apply-grants": "node scripts/audit-api-table-grants.mjs --apply",
     "analyze": "ANALYZE=true next build"
   },
   "dependencies": {

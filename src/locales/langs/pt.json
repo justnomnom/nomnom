@@ -1199,6 +1199,11 @@
         "description": "Diz-nos o que falhou, o que não ficou claro ou o que gostavas de ver a seguir.",
         "section_embed": "Feedback e pedidos",
         "section_help": "Mais ajuda",
+        "actions": {
+          "share_idea": "Partilhar uma ideia",
+          "browse_board": "Ver feedback",
+          "open_portal": "Abrir o quadro completo"
+        },
         "reportBug": {
           "iframeTitle": "Formulário de reporte de bug"
         }

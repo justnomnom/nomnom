@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
 import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 
@@ -13,7 +14,10 @@ import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import * as ConfigGlobal from 'src/config-global';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
-import { getSleekplanFeedbackUrl } from 'src/libs/sleekplan/sleekplan-service';
+import {
+  openSleekplanWidget,
+  getSleekplanFeedbackUrl,
+} from 'src/libs/sleekplan/sleekplan-service';
 
 import { HubNavRow } from 'src/sections/profile/view/settings-hub-view';
 import SettingsDrillShell from 'src/sections/profile/view/settings-drill-shell';
@@ -22,12 +26,14 @@ import {
   sectionLabelSx,
   dashboardSubsectionStackProps,
   dashboardPageSectionStackProps,
+  dashboardMobileStretchButtonSx,
 } from 'src/sections/profile/view/settings-shell-shared';
 
 // ----------------------------------------------------------------------
 
 /**
- * Feedback — Sleekplan iframe and links; layout matches other settings drill pages.
+ * Feedback — Sleekplan widget CTAs and help links; layout matches other settings drill pages.
+ * Hosted portal embeds are blocked by Sleekplan X-Frame-Options: SAMEORIGIN.
  */
 export default function FeedbackView() {
   const theme = useTheme();
@@ -38,8 +44,19 @@ export default function FeedbackView() {
     trackEvent('feedback_opened');
   }, [trackEvent]);
 
-  const getFeedbackUrl = () =>
-    getSleekplanFeedbackUrl({ productId: ConfigGlobal.SLEEKPLAN_API.productId });
+  const portalUrl = getSleekplanFeedbackUrl({
+    productId: ConfigGlobal.SLEEKPLAN_API.productId,
+  });
+
+  const handleOpenBoard = () => {
+    trackEvent('feedback_widget_opened', { view: 'home' });
+    openSleekplanWidget('home');
+  };
+
+  const handleShareIdea = () => {
+    trackEvent('feedback_widget_opened', { view: 'feedback.add' });
+    openSleekplanWidget('feedback.add');
+  };
 
   const helpLinks = (
     <Stack {...dashboardSubsectionStackProps}>
@@ -75,27 +92,38 @@ export default function FeedbackView() {
       <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.55, px: 0.5 }}>
         {t('pages.dashboard.feedback.description')}
       </Typography>
-      <Box sx={hubCardShellSx(theme)}>
-        <Box
-          sx={{
-            width: '100%',
-            height: { xs: 'min(72vh, 800px)', md: 720 },
-            overflow: 'hidden',
-          }}
-        >
-          <iframe
-            src={getFeedbackUrl()}
-            width="100%"
-            height="100%"
-            style={{
-              border: 'none',
-              display: 'block',
-              minHeight: 480,
-            }}
-            title={t('pages.dashboard.feedback.reportBug.iframeTitle')}
-            loading="lazy"
-          />
-        </Box>
+      <Box sx={{ ...hubCardShellSx(theme), p: 2 }}>
+        <Stack spacing={1.5}>
+          <Button
+            variant="contained"
+            color="inherit"
+            onClick={handleShareIdea}
+            sx={dashboardMobileStretchButtonSx}
+          >
+            {t('pages.dashboard.feedback.actions.share_idea')}
+          </Button>
+          <Button
+            variant="outlined"
+            color="inherit"
+            onClick={handleOpenBoard}
+            sx={dashboardMobileStretchButtonSx}
+          >
+            {t('pages.dashboard.feedback.actions.browse_board')}
+          </Button>
+          {portalUrl ? (
+            <Button
+              component="a"
+              href={portalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="text"
+              color="inherit"
+              sx={dashboardMobileStretchButtonSx}
+            >
+              {t('pages.dashboard.feedback.actions.open_portal')}
+            </Button>
+          ) : null}
+        </Stack>
       </Box>
     </Stack>
   );

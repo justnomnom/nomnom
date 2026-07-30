@@ -279,6 +279,9 @@ export async function saveOnboardingLocation(input) {
   // Follows first so a failed sync never leaves home_locality_id set with empty follows.
   const followResult = await syncUserLocalityFollows(supabase, user.id, dbIds);
   if (followResult.error) {
+    if (followResult.error !== 'invalid_location') {
+      console.error('[saveOnboardingLocation] syncUserLocalityFollows', followResult.error);
+    }
     return {
       error: followResult.error === 'invalid_location' ? 'invalid_location' : 'save_failed',
     };

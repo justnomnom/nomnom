@@ -17,6 +17,8 @@
 | Capacitor sync (release) | `CAPACITOR_SERVER_URL=https://… npm run cap:sync:release` |
 | Open Android Studio | `npm run cap:open:android` |
 | Portugal geography audit | `npm run geo:pt:audit` |
+| API table grants audit | `npm run db:audit-grants` |
+| Apply API table grants | `npm run db:apply-grants` |
 | Portugal geography generators | `npm run geo:pt:adm2`, `geo:pt:concelhos`, `geo:pt:adm3` (see `.cursor/prompts/geography-database-seed.md`) |
 
 ### Dev server

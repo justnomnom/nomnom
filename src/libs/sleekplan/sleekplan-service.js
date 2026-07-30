@@ -123,16 +123,37 @@ export const shutdownSleekplan = () => {
 };
 
 /**
- * Build the Sleekplan hosted feedback portal URL for iframe embedding
+ * Build the Sleekplan hosted feedback portal URL (open in a new tab).
+ * Note: GET responses currently send X-Frame-Options: SAMEORIGIN, so this
+ * URL must not be used inside an iframe — use openSleekplanWidget() in-app.
  * @param {Object} options
  * @param {string} [options.productId] - Optional product ID override
- * @returns {string} URL to embed in an iframe
+ * @returns {string} Portal URL
  */
 export const getSleekplanFeedbackUrl = ({ productId } = {}) => {
   if (!INTEGRATION_FLAGS.sleekplan) {
     return '';
   }
   const pid = productId || SLEEKPLAN_API.productId;
-  // Use the embeddable portal URL that supports iframe integration
-  return `https://embed-${pid}.sleekplan.app/?full=true#/feedback/`;
+  return `https://embed-${pid}.sleekplan.app/feedback?full=true`;
+};
+
+/**
+ * Open the Sleekplan JS widget to a specific view (in-app feedback).
+ * Prefer this over iframe embeds — the hosted portal blocks framing.
+ * @param {string} [view='home'] - Widget view (e.g. 'home', 'feedback.add')
+ */
+export const openSleekplanWidget = (view = 'home') => {
+  if (typeof window === 'undefined' || !INTEGRATION_FLAGS.sleekplan) return;
+
+  try {
+    if (window.$sleek && typeof window.$sleek.open === 'function') {
+      window.$sleek.open(view);
+      return;
+    }
+    window.$sleek = window.$sleek || [];
+    window.$sleek.push(['open', view]);
+  } catch (error) {
+    logger.error('Failed to open Sleekplan widget', { error: error.message, view });
+  }
 };
