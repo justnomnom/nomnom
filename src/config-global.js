@@ -204,29 +204,22 @@ export const POSTHOG_API = {
     (process.env.NODE_ENV === 'development' && !process.env.NEXT_PUBLIC_POSTHOG_DEV_MODE),
 };
 
-const POSTHOG_JS_PRESETS = {
-  analyticsClient: {
-    capture_pageview: true,
-    capture_pageleave: true,
-    respect_dnt: true,
-    bootstrap: {
-      featureFlags: {},
-    },
-  },
-  init: {
-    // PostHog recommended defaults bundle (see SDK defaults docs)
-    defaults: '2026-05-30',
-    capture_pageview: true,
-    capture_pageleave: true,
-    autocapture: true,
-    disable_session_recording: false,
+/**
+ * Passed to `posthog.init` besides `api_key` / `api_host`.
+ * Do not set `capture_pageview: true` — that overrides App Router soft-nav
+ * tracking. With `defaults: '2026-05-30'`, pageviews use `history_change`.
+ * `tracing_headers` is applied at init time in `posthog-service.js`.
+ */
+export const POSTHOG_JS_INIT_OPTIONS = {
+  defaults: '2026-05-30',
+  autocapture: true,
+  disable_session_recording: false,
+  respect_dnt: true,
+  person_profiles: 'identified_only',
+  session_recording: {
+    maskAllInputs: true,
   },
 };
-
-/** Merged into provider `options` (not the same shape as `posthog.init` args) */
-export const POSTHOG_CLIENT_OPTIONS = POSTHOG_JS_PRESETS.analyticsClient;
-/** Passed to `posthog.init` besides `api_key` / `api_host` */
-export const POSTHOG_JS_INIT_OPTIONS = POSTHOG_JS_PRESETS.init;
 
 // =============================================================================
 // Embeds (feedback widget, GTM)

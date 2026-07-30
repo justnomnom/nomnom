@@ -5,12 +5,16 @@ import PropTypes from 'prop-types';
 import * as Sentry from '@sentry/nextjs';
 
 import { INTEGRATION_FLAGS } from 'src/config-global';
+import { captureException as capturePostHogException } from 'src/libs/posthog/posthog-service';
 
 import Error500View from 'src/sections/error/500-view';
 
-const captureSentry = (error, extraPayload) => {
+const captureError = (error, extraPayload) => {
   if (INTEGRATION_FLAGS.sentry) {
     Sentry.captureException(error, extraPayload ? { extra: extraPayload } : undefined);
+  }
+  if (INTEGRATION_FLAGS.posthog) {
+    capturePostHogException(error, extraPayload || {});
   }
 };
 
@@ -33,17 +37,17 @@ export default class SentryErrorBoundary extends React.Component {
     // extensions) reach these listeners while the app is still fully working;
     // only React render errors (getDerivedStateFromError) show the fallback.
     this._handleError = (errorEvent) => {
-      captureSentry(errorEvent.error, { source: 'window.error' });
+      captureError(errorEvent.error, { source: 'window.error' });
     };
     this._handleUnhandledRejection = (event) => {
-      captureSentry(event.reason, { source: 'unhandledrejection' });
+      captureError(event.reason, { source: 'unhandledrejection' });
     };
     window.addEventListener('error', this._handleError);
     window.addEventListener('unhandledrejection', this._handleUnhandledRejection);
   }
 
   componentDidCatch(error, errorInfo) {
-    captureSentry(error, errorInfo);
+    captureError(error, errorInfo);
   }
 
   componentWillUnmount() {

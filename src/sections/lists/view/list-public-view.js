@@ -163,7 +163,7 @@ export default function ListPublicView({
     user,
     supabase
   );
-  const { trackEvent } = useAnalytics();
+  const { trackEvent, setGroup } = useAnalytics();
   const restaurantAnalytics = useRestaurantAnalytics();
   /** Which async action is in flight (for per-button loading). */
   const [busyKey, setBusyKey] = useState(null);
@@ -284,8 +284,10 @@ export default function ListPublicView({
   }, []);
 
   useEffect(() => {
-    if (listId) trackEvent('list_viewed', { list_id: listId });
-  }, [listId, trackEvent]);
+    if (!listId) return;
+    setGroup('list', listId);
+    trackEvent('list_viewed', { list_id: listId });
+  }, [listId, setGroup, trackEvent]);
 
   const needsPaidSubscribe =
     list?.visibility === 'public_subscribers' &&

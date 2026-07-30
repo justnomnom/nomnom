@@ -13,9 +13,9 @@ export const dynamic = 'force-dynamic';
 
 /** Best-effort PostHog capture — never blocks Stripe webhook processing. */
 function captureWebhookAnalytics(eventName, properties = {}) {
+  // Distinct id resolves from buyer/subscriber/user properties; never pool on a shared literal.
   return captureServerEvent(eventName, properties, {
     source: 'stripe_webhook',
-    distinctId: 'stripe_webhook',
   });
 }
 

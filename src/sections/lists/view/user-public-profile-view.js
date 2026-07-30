@@ -201,7 +201,7 @@ export default function UserPublicProfileView({
   const { t, currentLang } = useTranslate();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { trackEvent } = useAnalytics();
+  const { trackEvent, setGroup } = useAnalytics();
   const [following, setFollowing] = useState(initialFollowing);
   const [followBusy, setFollowBusy] = useState(false);
   const followInFlightRef = useRef(false);
@@ -226,8 +226,10 @@ export default function UserPublicProfileView({
   const [pendingOwnLists, setPendingOwnLists] = useState([]);
 
   useEffect(() => {
-    if (profile?.id) trackEvent('creator_profile_viewed', { creator_id: profile.id });
-  }, [profile?.id, trackEvent]);
+    if (!profile?.id) return;
+    setGroup('creator', profile.id);
+    trackEvent('creator_profile_viewed', { creator_id: profile.id });
+  }, [profile?.id, setGroup, trackEvent]);
 
   useEffect(() => {
     setPendingOwnLists([]);

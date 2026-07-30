@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import React, { useState, useEffect, useContext, createContext } from 'react';
 
 import {
+  setGroup,
   resetUser,
   trackEvent,
   initPostHog,
@@ -11,6 +12,7 @@ import {
   getFeatureFlag,
   getPostHogClient,
   setUserProperties,
+  captureException,
 } from 'src/libs/posthog/posthog-service';
 
 // Create PostHog context
@@ -36,6 +38,7 @@ export function PostHogProvider({ children }) {
       resetPH: resetUser,
       setPHUserProperties: setUserProperties,
       getPHFeatureFlag: getFeatureFlag,
+      setPHGroup: setGroup,
 
       // Common event tracking helpers
       trackPHFormSubmit: (formName, properties = {}) => {
@@ -43,11 +46,7 @@ export function PostHogProvider({ children }) {
       },
 
       trackPHError: (error, context = {}) => {
-        trackEvent('error_occurred', {
-          error_message: error.message,
-          error_stack: error.stack,
-          ...context,
-        });
+        captureException(error, context);
       },
 
       trackPHSignIn: (method, userId) => {
@@ -89,6 +88,7 @@ export function useAnalytics() {
       resetPH: () => {},
       setPHUserProperties: () => {},
       getPHFeatureFlag: () => false,
+      setPHGroup: () => {},
       // trackPHPageView removed - PostHog handles page views automatically
       trackPHFormSubmit: () => {},
       trackPHError: () => {},

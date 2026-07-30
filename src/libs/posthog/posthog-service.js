@@ -18,7 +18,10 @@ let loadPromise = null;
 const pendingOps = [];
 
 const posthogEnabled = () =>
-  typeof window !== 'undefined' && INTEGRATION_FLAGS.posthog && Boolean(POSTHOG_API.key);
+  typeof window !== 'undefined' &&
+  INTEGRATION_FLAGS.posthog &&
+  Boolean(POSTHOG_API.key) &&
+  !POSTHOG_API.disabled;
 
 function flushPending() {
   while (pendingOps.length) {
@@ -55,6 +58,8 @@ export const initPostHog = () => {
       ph.init(POSTHOG_API.key, {
         api_host: POSTHOG_API.host,
         ...POSTHOG_JS_INIT_OPTIONS,
+        // Hostname only — links client session/distinct id to same-origin API fetches.
+        tracing_headers: [window.location.hostname, 'localhost', '127.0.0.1'],
         loaded: () => {
           // Silent logging - no console output
         },
@@ -88,11 +93,41 @@ export const setUserProperties = (properties) => {
   withClient((ph) => ph.setPersonProperties(properties));
 };
 
+/**
+ * Associate the current person with a PostHog group (e.g. creator / list).
+ * @param {string} groupType
+ * @param {string} groupKey
+ * @param {Record<string, unknown>} [groupProperties]
+ */
+export const setGroup = (groupType, groupKey, groupProperties = {}) => {
+  if (typeof groupType !== 'string' || !groupType.trim()) return;
+  if (typeof groupKey !== 'string' || !groupKey.trim()) return;
+  withClient((ph) => ph.group(groupType.trim(), groupKey.trim(), groupProperties));
+};
+
 export const getFeatureFlag = (flagKey, defaultValue = false) => {
   if (posthogClient) {
     return posthogClient.isFeatureEnabled(flagKey, defaultValue);
   }
   return defaultValue;
+};
+
+/** Capture an exception for PostHog Error Tracking (`$exception`). */
+export const captureException = (error, additionalProperties = {}) => {
+  withClient((ph) => {
+    if (typeof ph.captureException === 'function') {
+      ph.captureException(error, additionalProperties);
+      return;
+    }
+    // Older SDKs: fall back to manual $exception shape
+    const err = error instanceof Error ? error : new Error(String(error));
+    ph.capture('$exception', {
+      $exception_message: err.message,
+      $exception_type: err.name,
+      $exception_stack_trace_raw: err.stack,
+      ...additionalProperties,
+    });
+  });
 };
 
 /** Raw client accessor for advanced usage (null until loaded). */

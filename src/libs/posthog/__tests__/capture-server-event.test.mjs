@@ -12,38 +12,47 @@ describe('resolveServerAnalyticsDistinctId', () => {
       resolveServerAnalyticsDistinctId({
         subscriber_user_id: 'sub',
         buyer_user_id: 'buyer',
-        user_id: 'user',
-      }),
+        user_id: 'user-1',
+      }).distinctId,
       'sub'
     );
     assert.equal(
       resolveServerAnalyticsDistinctId({
         buyer_user_id: 'buyer',
-        user_id: 'user',
-      }),
+        user_id: 'user-1',
+      }).distinctId,
       'buyer'
     );
-    assert.equal(resolveServerAnalyticsDistinctId({ user_id: 'user' }), 'user');
+    assert.equal(resolveServerAnalyticsDistinctId({ user_id: 'user-1' }).distinctId, 'user-1');
   });
 
-  test('uses list_id before explicit fallback', () => {
-    assert.equal(
-      resolveServerAnalyticsDistinctId({ list_id: 'list' }, 'explicit'),
-      'list'
-    );
-    assert.equal(resolveServerAnalyticsDistinctId({}, 'explicit'), 'explicit');
+  test('ignores list_id and uses explicit fallback when present', () => {
+    const resolved = resolveServerAnalyticsDistinctId({ list_id: 'list' }, 'explicit-user');
+    assert.equal(resolved.distinctId, 'explicit-user');
+    assert.equal(resolved.processPersonProfile, true);
   });
 
   test('trims and ignores empty strings', () => {
     assert.equal(
-      resolveServerAnalyticsDistinctId({ user_id: '  ', list_id: '  list  ' }),
-      'list'
+      resolveServerAnalyticsDistinctId({ user_id: '  ', buyer_user_id: '  buyer  ' }).distinctId,
+      'buyer'
     );
   });
 
-  test('falls back to server when nothing usable is present', () => {
-    assert.equal(resolveServerAnalyticsDistinctId({}), 'server');
-    assert.equal(resolveServerAnalyticsDistinctId({ user_id: 42 }), 'server');
+  test('rejects pooled literals and falls back to unique anon id', () => {
+    const resolved = resolveServerAnalyticsDistinctId({}, 'server');
+    assert.match(resolved.distinctId, /^anon_/);
+    assert.equal(resolved.processPersonProfile, false);
+
+    const pooled = resolveServerAnalyticsDistinctId({ user_id: 'stripe_webhook' });
+    assert.match(pooled.distinctId, /^anon_/);
+    assert.equal(pooled.processPersonProfile, false);
+  });
+
+  test('never uses list_id as distinct_id', () => {
+    const resolved = resolveServerAnalyticsDistinctId({ list_id: 'list-only' });
+    assert.notEqual(resolved.distinctId, 'list-only');
+    assert.match(resolved.distinctId, /^anon_/);
   });
 });
 

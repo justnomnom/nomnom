@@ -220,25 +220,17 @@ export function AnalyticsProvider({ children }) {
         // GA removed; GTM handles GA via tags
       },
 
-      // Error tracking - calls both PostHog and GTM
+      // Error tracking — PostHog Error Tracking (`captureException`) + GTM
       trackError: (error, context = {}) => {
-        // Build context for PostHog only; GTM is not used for errors per container
-        const errorContext = {
-          error_message: error.message,
-          error_stack: error.stack,
-          ...context,
-        };
-
-        // PostHog error tracking
         if (posthogAnalytics.trackPHError) {
-          posthogAnalytics.trackPHError(error, errorContext);
+          posthogAnalytics.trackPHError(error, context);
         }
 
         // GTM: emit custom error event
         if (gtmAnalytics.trackGTMEvent) {
           gtmAnalytics.trackGTMEvent('error', {
-            error_message: error.message,
-            error_stack: error.stack,
+            error_message: error?.message,
+            error_stack: error?.stack,
             page_location: typeof window !== 'undefined' ? window.location.href : '',
             page_title: typeof window !== 'undefined' ? document.title : '',
             ...context,
@@ -371,6 +363,13 @@ export function AnalyticsProvider({ children }) {
         return false;
       },
 
+      // Groups - PostHog specific (creator / list / etc.)
+      setGroup: (groupType, groupKey, groupProperties = {}) => {
+        if (posthogAnalytics.setPHGroup) {
+          posthogAnalytics.setPHGroup(groupType, groupKey, groupProperties);
+        }
+      },
+
       // Utility functions
       isInitialized: () => {
         const posthogInitialized = posthogAnalytics.isPHInitialized
@@ -416,6 +415,7 @@ export function useAnalytics() {
       setUserProperties: () => {},
       resetUser: () => {},
       getFeatureFlag: () => false,
+      setGroup: () => {},
       isInitialized: () => ({ posthog: false, gtm: false }),
       getPostHogInstance: () => null,
     };

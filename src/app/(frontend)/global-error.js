@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import * as Sentry from '@sentry/nextjs';
 
 import { INTEGRATION_FLAGS } from 'src/config-global';
+import { initPostHog, captureException } from 'src/libs/posthog/posthog-service';
 
 import { MotionLazy } from 'src/components/animate/motion-lazy';
 
@@ -16,6 +17,11 @@ export default function GlobalError({ error, reset }) {
   useEffect(() => {
     if (INTEGRATION_FLAGS.sentry) {
       Sentry.captureException(error);
+    }
+    if (INTEGRATION_FLAGS.posthog) {
+      // Root layout (and PostHogProvider) is unmounted here — init before capture.
+      initPostHog();
+      captureException(error, { source: 'global-error' });
     }
   }, [error]);
 

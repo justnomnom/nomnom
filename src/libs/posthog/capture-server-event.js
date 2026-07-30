@@ -1,29 +1,56 @@
+import { randomUUID } from 'crypto';
+
+import { PostHog } from 'posthog-node';
+
 import { POSTHOG_API, INTEGRATION_FLAGS } from 'src/config-global';
+
+/** Shared literals that must never become a PostHog person `distinct_id`. */
+const POOLED_DISTINCT_IDS = new Set(['server', 'stripe_webhook', 'anonymous', 'user', 'anon']);
+
+/** Reused across route handlers in the same isolate. */
+let posthogNodeClient = null;
+
+function getPostHogNodeClient(key, host) {
+  if (!posthogNodeClient) {
+    posthogNodeClient = new PostHog(key, {
+      host,
+      // Short-lived serverless handlers: flush immediately.
+      flushAt: 1,
+      flushInterval: 0,
+    });
+  }
+  return posthogNodeClient;
+}
 
 /**
  * Pick a stable PostHog `distinct_id` from common server property shapes.
- * Prefers authenticated user ids over list/resource ids.
+ * Prefers authenticated user ids only — never resource ids (list_id) or shared
+ * literals that would merge unrelated people.
  *
  * @param {Record<string, unknown>} [properties]
  * @param {string} [fallbackDistinctId]
- * @returns {string}
+ * @returns {{ distinctId: string; processPersonProfile: boolean }}
  */
 export function resolveServerAnalyticsDistinctId(properties = {}, fallbackDistinctId) {
   const candidates = [
     properties.subscriber_user_id,
     properties.buyer_user_id,
     properties.user_id,
-    properties.list_id,
     fallbackDistinctId,
   ];
 
   for (const value of candidates) {
-    if (typeof value === 'string' && value.trim()) {
-      return value.trim();
-    }
+    if (typeof value !== 'string') continue;
+    const trimmed = value.trim();
+    if (!trimmed || POOLED_DISTINCT_IDS.has(trimmed)) continue;
+    return { distinctId: trimmed, processPersonProfile: true };
   }
 
-  return 'server';
+  // No known user: unique anon id so events are not pooled onto one person.
+  return {
+    distinctId: `anon_${randomUUID()}`,
+    processPersonProfile: false,
+  };
 }
 
 /**
@@ -44,7 +71,10 @@ export async function captureServerEvent(eventName, properties = {}, options = {
   const host = POSTHOG_API.host || process.env.NEXT_PUBLIC_POSTHOG_HOST;
   if (!key || !host) return false;
 
-  const distinctId = resolveServerAnalyticsDistinctId(properties, options.distinctId);
+  const { distinctId, processPersonProfile } = resolveServerAnalyticsDistinctId(
+    properties,
+    options.distinctId
+  );
   const source =
     typeof options.source === 'string' && options.source.trim()
       ? options.source.trim()
@@ -53,19 +83,17 @@ export async function captureServerEvent(eventName, properties = {}, options = {
         : 'server';
 
   try {
-    await fetch(`${String(host).replace(/\/+$/, '')}/capture/`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        api_key: key,
-        event: eventName.trim(),
-        distinct_id: distinctId,
-        properties: {
-          ...properties,
-          source,
-        },
-      }),
+    const client = getPostHogNodeClient(String(key), String(host).replace(/\/+$/, ''));
+    client.capture({
+      distinctId,
+      event: eventName.trim(),
+      properties: {
+        ...properties,
+        source,
+        ...(processPersonProfile ? {} : { $process_person_profile: false }),
+      },
     });
+    await client.flush();
     return true;
   } catch {
     return false;
