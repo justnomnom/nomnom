@@ -67,3 +67,8 @@ supabase/migrations/*.sql
 # Stray graphify AST cache written under src/ (cache_root) — not the real output
 src/graphify-out/
 .env*
+
+# Agent git worktrees. A worktree here was once committed as a bare gitlink
+# (mode 160000, no .gitmodules entry), which made every Vercel build warn
+# "Failed to fetch one or more git submodules". Keep them out of the index.
+.claude/worktrees/
