@@ -15,21 +15,30 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
 const SQL_PATH = path.join(ROOT, 'docs', 'db', 'reseed-tags-catalog.sql');
 
-/** @returns {string} */
-function buildDbUrl() {
-  const envPath = path.join(ROOT, '.env.local');
+/** @returns {{ connectionString: string }} */
+function buildDbConfig() {
+  const envFile = process.env.ENV_FILE || '.env.local';
+  const envPath = path.isAbsolute(envFile) ? envFile : path.join(ROOT, envFile);
   const txt = fs.readFileSync(envPath, 'utf8');
   const match = txt.match(/^POSTGRES_PASSWORD=(.*)$/m);
-  if (!match) throw new Error('POSTGRES_PASSWORD missing in .env.local');
+  if (!match) throw new Error(`POSTGRES_PASSWORD missing in ${envFile}`);
   const pwd = encodeURIComponent(match[1].trim());
   const ref = process.env.SUPABASE_PROJECT_REF || 'jxknitagufcuyeozlazc';
-  return `postgresql://postgres:${pwd}@db.${ref}.supabase.co:5432/postgres`;
+  const poolerHost = process.env.SUPABASE_POOLER_HOST;
+  if (poolerHost) {
+    return {
+      connectionString: `postgresql://postgres.${ref}:${pwd}@${poolerHost}:6543/postgres`,
+    };
+  }
+  return {
+    connectionString: `postgresql://postgres:${pwd}@db.${ref}.supabase.co:5432/postgres`,
+  };
 }
 
 async function main() {
   const sql = fs.readFileSync(SQL_PATH, 'utf8');
   const client = new pg.Client({
-    connectionString: buildDbUrl(),
+    ...buildDbConfig(),
     ssl: { rejectUnauthorized: false },
   });
 
