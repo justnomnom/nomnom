@@ -214,6 +214,8 @@ const POSTHOG_JS_PRESETS = {
     },
   },
   init: {
+    // PostHog recommended defaults bundle (see SDK defaults docs)
+    defaults: '2026-05-30',
     capture_pageview: true,
     capture_pageleave: true,
     autocapture: true,
