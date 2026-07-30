@@ -220,4 +220,17 @@ describe('attachOpeningStatusToRows', () => {
     // Same instant is 21:00 in Tokyo — long shut.
     assert.equal(b.openingStatus.status, 'closed');
   });
+
+  test('prefers SQL opening_status over deriving from slim metadata', () => {
+    const rows = [
+      {
+        id: 'r1',
+        metadata: { rating: 4.5 },
+        opening_status: { status: 'open', closesAt: '22:00' },
+      },
+    ];
+    const [out] = attachOpeningStatusToRows(rows, MON_1300);
+    assert.deepEqual(out.openingStatus, { status: 'open', closesAt: '22:00' });
+    assert.equal('opening_status' in out, false);
+  });
 });

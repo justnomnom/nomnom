@@ -4,6 +4,7 @@ import { generateObject } from 'ai';
 import { runTieredTagSearch } from 'src/lib/restaurant-search-tiers';
 import { qwenJsonChat } from 'src/libs/restaurant-ingest/qwen-json-chat';
 import { scoreRow, filterSlugs } from 'src/lib/restaurant-search-scoring';
+import { attachOpeningStatusToRows } from 'src/libs/restaurant/opening-hours';
 import { promoteExactQueryTags } from 'src/lib/restaurant-search-promote-tags';
 import { slimRestaurantRowsMetadata } from 'src/lib/slim-restaurant-card-metadata';
 import {
@@ -122,7 +123,9 @@ async function rpcHomeLocality(supabase, localityId, p) {
     p_open_now: p.openNow === true ? true : null,
   });
   if (error) throw new Error(error.message);
-  return /** @type {Array<Record<string, unknown>>} */ (slimRestaurantRowsMetadata(data));
+  return /** @type {Array<Record<string, unknown>>} */ (
+    slimRestaurantRowsMetadata(attachOpeningStatusToRows(data))
+  );
 }
 
 /**
@@ -154,7 +157,9 @@ async function rpcBbox(supabase, bbox, p) {
     p_open_now: p.openNow === true ? true : null,
   });
   if (error) throw new Error(error.message);
-  return /** @type {Array<Record<string, unknown>>} */ (slimRestaurantRowsMetadata(data));
+  return /** @type {Array<Record<string, unknown>>} */ (
+    slimRestaurantRowsMetadata(attachOpeningStatusToRows(data))
+  );
 }
 
 /**

@@ -8,10 +8,10 @@
  * `slim-restaurant-card-metadata.js` drops `hours_parsed` and `open_hours` from every
  * row because the full metadata blob averages ~7.7 KB and the map refetches on each pan.
  *
- * So the rule here is: resolve to a **small derived object** on the server, before
- * slimming, and ship that instead of the hours themselves. `resolveOpeningStatus()`
- * returns a few dozen bytes rather than a few KB, which keeps the payload discipline
- * that slimming exists to protect.
+ * Map/feed RPCs resolve hours in SQL (`restaurant_opening_status`) and return
+ * `opening_status` alongside already-slim `metadata`. `attachOpeningStatusToRows`
+ * prefers that column; `resolveOpeningStatus()` remains for detail SSR / tests
+ * that still see full hours in metadata.
  */
 
 /** Google's day keys are capitalised English names — index matches `Date#getDay()`. */
@@ -164,11 +164,41 @@ export function resolveOpeningStatus(metadata, now = new Date()) {
 }
 
 /**
- * Attach `openingStatus` to rows **before** `slimRestaurantRowsMetadata` drops the hours.
- * Order matters: slim first and there is nothing left to resolve from.
+ * Normalize a SQL `opening_status` jsonb (or camelCase) into the client `openingStatus` shape.
+ * Returns null when absent / unknown so callers can omit the field from the payload.
  *
- * Only worth calling on the heavy row fetches (spot list, feed) — map *pins* number in the
- * thousands and render no hours, so they should stay untouched.
+ * @param {unknown} value
+ * @returns {{ status: OpeningStatus, closesAt?: string, opensAt?: string } | null}
+ */
+export function normalizeOpeningStatus(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const src = /** @type {Record<string, unknown>} */ (value);
+  const {status} = src;
+  if (
+    status !== 'open' &&
+    status !== 'closed' &&
+    status !== 'temporarily_closed' &&
+    status !== 'permanently_closed'
+  ) {
+    return null;
+  }
+  /** @type {{ status: OpeningStatus, closesAt?: string, opensAt?: string }} */
+  const out = { status };
+  if (typeof src.closesAt === 'string' && src.closesAt) out.closesAt = src.closesAt;
+  else if (typeof src.closes_at === 'string' && src.closes_at) out.closesAt = src.closes_at;
+  if (typeof src.opensAt === 'string' && src.opensAt) out.opensAt = src.opensAt;
+  else if (typeof src.opens_at === 'string' && src.opens_at) out.opensAt = src.opens_at;
+  return out;
+}
+
+/**
+ * Attach `openingStatus` to restaurant rows.
+ *
+ * Prefer SQL `opening_status` from map/feed RPCs (already resolved server-side; metadata is
+ * card-slim and no longer carries `hours_parsed`). Fall back to deriving from `metadata` for
+ * paths that still ship full hours (detail SSR, tests).
+ *
+ * Map *pins* stay untouched — they omit hours and never render an open/closed badge.
  *
  * @template {Record<string, unknown>} T
  * @param {T[] | null | undefined} rows
@@ -179,6 +209,12 @@ export function attachOpeningStatusToRows(rows, now = new Date()) {
   if (!Array.isArray(rows)) return [];
   return rows.map((row) => {
     if (!row || typeof row !== 'object') return row;
+    const sqlStatus = row.opening_status ?? row.openingStatus;
+    const fromSql = normalizeOpeningStatus(sqlStatus);
+    if (fromSql) {
+      const { opening_status: _drop, ...rest } = /** @type {Record<string, unknown>} */ (row);
+      return /** @type {T} */ ({ ...rest, openingStatus: fromSql });
+    }
     const openingStatus = openingStatusForRow(row.metadata, now);
     return openingStatus ? { ...row, openingStatus } : row;
   });

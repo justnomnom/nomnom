@@ -228,9 +228,7 @@ export async function fetchRestaurantsInBbox(
       return { restaurants: [], error: error.message };
     }
 
-    // Resolve opening state before slimming strips `hours_parsed`. Bounded by the caller's
-    // detail limit (80, ceiling 500), so the cost is negligible — unlike the pin fetch below,
-    // which stays untouched because pins render no hours.
+    // SQL returns card-slim metadata + opening_status; normalize to openingStatus.
     return { restaurants: slimRestaurantRowsMetadata(attachOpeningStatusToRows(data)) };
   } catch (e) {
     console.error('[fetchRestaurantsInBbox]', e);

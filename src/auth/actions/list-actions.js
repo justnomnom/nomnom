@@ -6,6 +6,7 @@ import { supabaseAdminClient } from 'src/libs/supabase/supabase-admin';
 import { attachMustTryDisplayToListItems } from 'src/lib/ugc-translate';
 import { normalizeListVisibility } from 'src/libs/lists/list-visibility';
 import { normalizeFollowCircle } from 'src/libs/restaurant/follow-circle';
+import { normalizeOpeningStatus } from 'src/libs/restaurant/opening-hours';
 import { getMyStripeConnectStatus } from 'src/auth/actions/stripe-list-actions';
 import { insertNotifications } from 'src/libs/notifications/create-notification';
 import { slimRestaurantCardMetadata } from 'src/lib/slim-restaurant-card-metadata';
@@ -1057,6 +1058,7 @@ export async function fetchSavedRestaurantsForMap(options = {}) {
       const lat = row.latitude != null ? Number(row.latitude) : NaN;
       const lng = row.longitude != null ? Number(row.longitude) : NaN;
       if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+      const openingStatus = normalizeOpeningStatus(row.opening_status ?? row.openingStatus);
       return {
         id: String(row.id),
         name: String(row.name ?? ''),
@@ -1069,6 +1071,7 @@ export async function fetchSavedRestaurantsForMap(options = {}) {
         // Time the restaurant was saved to the list, when the RPC surfaces it — powers the
         // "Last added" sort in the map sheet. Absent columns leave it null (sort falls back).
         added_at: row.added_at ?? row.saved_at ?? row.created_at ?? null,
+        ...(openingStatus ? { openingStatus } : {}),
       };
     })
     .filter(Boolean);
@@ -1151,6 +1154,7 @@ export async function fetchFollowingRestaurantsForMap(options = {}) {
       const lat = row.latitude != null ? Number(row.latitude) : NaN;
       const lng = row.longitude != null ? Number(row.longitude) : NaN;
       if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+      const openingStatus = normalizeOpeningStatus(row.opening_status ?? row.openingStatus);
       return {
         id: String(row.id),
         name: String(row.name ?? ''),
@@ -1163,6 +1167,7 @@ export async function fetchFollowingRestaurantsForMap(options = {}) {
         // Time the restaurant was saved to the list, when the RPC surfaces it — powers the
         // "Last added" sort in the map sheet. Absent columns leave it null (sort falls back).
         added_at: row.added_at ?? row.saved_at ?? row.created_at ?? null,
+        ...(openingStatus ? { openingStatus } : {}),
       };
     })
     .filter(Boolean);

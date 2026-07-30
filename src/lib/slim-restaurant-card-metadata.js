@@ -3,17 +3,14 @@
  * reads for a map marker, list card, or detail page.
  *
  * `restaurants.metadata` is a full ingest blob — averaging ~7.7 KB/row live, of
- * which `user_reviews` alone is ~99% (raw scraped review text). The five map/
- * search RPCs (`restaurants_in_bbox`, `restaurants_for_municipality`,
- * `saved_restaurants_for_map`, `following_restaurants_for_map`,
- * `search_restaurants_by_name`) return that whole blob, and their callers hand
- * the rows to client components, so Next serializes the blob into the RSC/browser
- * payload on every map pan and feed load even though nothing renders it.
+ * which `user_reviews` alone is ~99% (raw scraped review text). Map/search RPCs
+ * slim via `public.restaurant_card_metadata()` in SQL; this helper is the shared
+ * allowlist for any path that still touches raw metadata (detail SSR, ingest
+ * previews, tests) so client payloads never grow the full ingest blob again.
  *
  * The allowlist below is the *complete* set of restaurant-metadata keys read
  * anywhere in the client — verified by sweeping `src/` for `metadata.<key>`
- * accesses. It is identical to the set the restaurant detail page was already
- * slimming to inline; this is the shared version so every path agrees.
+ * accesses.
  *
  * Keys deliberately dropped: user_reviews, about, popular_times,
  * mentioned_in_reviews, hours_parsed, open_hours, owner, reviews_link,
