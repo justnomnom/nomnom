@@ -14,6 +14,8 @@ export function SleekplanProvider({ children }) {
       return undefined;
     }
 
+    // initializeSleekplan is idempotent — safe under Strict Mode remounts and
+    // repeated dashboard navigations (double SDK inject breaks the widget).
     if ('requestIdleCallback' in window) {
       const idleId = window.requestIdleCallback(() => {
         initializeSleekplan();

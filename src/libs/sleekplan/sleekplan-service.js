@@ -3,11 +3,38 @@
  */
 import { SLEEKPLAN_API, INTEGRATION_FLAGS } from 'src/config-global';
 
+/** Prevents injecting client.sleekplan.com/sdk/e.js more than once (double load breaks the widget). */
+let sleekplanSdkInjected = false;
+
+// Logger helper - matches the pattern from auth actions
+const logger = {
+  error: (message, data = {}) => {
+    console.error('[sleekplan-service.js]', message, data);
+  },
+  debug: (message, data = {}) => {
+    if (process.env.NODE_ENV === 'development') {
+      console.debug('[sleekplan-service.js]', message, data);
+    }
+  },
+};
+
 /**
- * Initialize Sleekplan SDK and global variables
+ * Returns true when a usable numeric Sleekplan product id is configured.
+ * @returns {boolean}
+ */
+const hasValidSleekplanProductId = () => /^\d+$/.test(String(SLEEKPLAN_API.productId || ''));
+
+/**
+ * Initialize Sleekplan SDK and global variables (idempotent — safe to call on every dashboard route).
  */
 export const initializeSleekplan = () => {
   if (typeof window === 'undefined' || !INTEGRATION_FLAGS.sleekplan) return;
+  if (!hasValidSleekplanProductId()) {
+    logger.error('Sleekplan product id missing or invalid', {
+      productId: SLEEKPLAN_API.productId,
+    });
+    return;
+  }
 
   try {
     // Ensure Sleekplan command queue exists
@@ -27,28 +54,23 @@ export const initializeSleekplan = () => {
       mode: 'widget',
     };
 
-    // Load SDK script
+    const existingScript = document.querySelector(`script[src="${SLEEKPLAN_API.sdkUrl}"]`);
+    if (sleekplanSdkInjected || existingScript || typeof window.$sleek.open === 'function') {
+      sleekplanSdkInjected = true;
+      return;
+    }
+
+    sleekplanSdkInjected = true;
+
+    // Load SDK script once
     const script = document.createElement('script');
     script.src = SLEEKPLAN_API.sdkUrl;
     script.async = true;
     document.getElementsByTagName('head')[0].appendChild(script);
-
-    // Sleekplan SDK initialization completed
   } catch (error) {
+    sleekplanSdkInjected = false;
     logger.error('Failed to initialize Sleekplan SDK', { error: error.message });
   }
-};
-
-// Logger helper - matches the pattern from auth actions
-const logger = {
-  error: (message, data = {}) => {
-    console.error('[sleekplan-service.js]', message, data);
-  },
-  debug: (message, data = {}) => {
-    if (process.env.NODE_ENV === 'development') {
-      console.debug('[sleekplan-service.js]', message, data);
-    }
-  },
 };
 
 /**
