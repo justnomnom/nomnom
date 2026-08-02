@@ -824,6 +824,7 @@
         "gallery_image_aria": "Ver foto {{current}} de {{total}} — {{name}}",
         "save_aria": "Guardar na lista",
         "share_copied": "Ligação copiada.",
+      "share_message_copied": "Copiado para a área de transferência.",
         "share_failed": "Não foi possível copiar a ligação.",
         "public_meta_description": "Descobre este sítio no NomNom — listas guardadas, críticas e sugestões de pessoas em quem confias.",
         "public_guest_prompt_title": "Queres a experiência completa?",

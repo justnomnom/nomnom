@@ -2191,8 +2191,10 @@
   "2189": "_sections.md",
   "2190": "CTA Optimization",
   "2191": "Preemptive Objection Handling",
+  "2192": "Rolling Deployment",
   "2193": "Clear Value Proposition",
   "2194": "Forms of Information Leakage",
+  "2195": "8. Aesthetic and Minimalist Design",
   "2196": "The Discovery Call Structure",
   "2197": "Framework",
   "2198": "Team Topologies",
@@ -2372,6 +2374,7 @@
   "2372": "Wave 1: Competitive Alternatives & Customer Context",
   "2373": "Wave 2: Market Frame & Trends",
   "2374": "Monitoring AI Visibility",
+  "2375": "group-list-items-by-restaurant.js",
   "2376": "HEREDOC Patterns",
   "2377": "Document Format Contracts",
   "2378": "Advanced: Multi-Touch Attribution",
@@ -2439,5 +2442,7 @@
   "2440": "size",
   "2441": "contentType",
   "2442": "size",
-  "2446": "@ai-sdk/google"
+  "2443": "join-share-text-and-url.js",
+  "2444": "Anti-Patterns",
+  "2445": "ai"
 }

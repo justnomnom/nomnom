@@ -57,7 +57,10 @@ function clampSentence(value) {
  * @param {object} input
  * @param {unknown} input.name
  * @param {unknown} [input.area] locality line, e.g. `Caldas da Rainha · Leiria`.
- * @param {unknown} [input.ratingText] pre-formatted rating, e.g. `4.9`.
+ * @param {unknown} [input.ratingText] pre-formatted rating, e.g. `4.9`. A zero rating is
+ *   dropped: a freshly ingested venue with no reviews should not be shared as `★ 0`, which
+ *   reads as a bad review rather than an absent one. Matches the `rating > 0` guard the OG
+ *   card uses.
  * @param {unknown} [input.priceLevel] Google-style 1–4.
  * @param {unknown} [input.consensus] `metadata.review_consensus.summary` — what reviewers
  *   agree on. Quoted with the same curly quotes the detail page renders it in.
@@ -76,7 +79,9 @@ export function buildRestaurantShareText({
   const title = clean(name);
   if (!title) return '';
 
-  const stats = [clean(ratingText) ? `★ ${clean(ratingText)}` : '', priceSymbols(priceLevel)]
+  const ratingLabel = clean(ratingText);
+  const hasRating = ratingLabel !== '' && Number.parseFloat(ratingLabel.replace(',', '.')) > 0;
+  const stats = [hasRating ? `★ ${ratingLabel}` : '', priceSymbols(priceLevel)]
     .filter(Boolean)
     .join(' · ');
   const facts = [title, clean(area), stats].filter(Boolean).join('\n');
@@ -91,14 +96,3 @@ export function buildRestaurantShareText({
   return [facts, quoted].join('\n\n');
 }
 
-/**
- * Join the overview and the link for clipboard fallback, where the share sheet is unavailable
- * and the two would otherwise be sent as separate values.
- *
- * @param {unknown} text
- * @param {unknown} url
- * @returns {string}
- */
-export function joinShareTextAndUrl(text, url) {
-  return [clean(text) ? String(text).trim() : '', clean(url)].filter(Boolean).join('\n\n');
-}

@@ -2465,8 +2465,8 @@
     "semantic_hash": ""
   },
   "src/hooks/use-share-link.js": {
-    "mtime": 1785693225.3745427,
-    "ast_hash": "b05cae007270b2f8f47edc7f7d9bf695",
+    "mtime": 1785704571.7326324,
+    "ast_hash": "dd0217dc8f181c30567c8d6f08096d9a",
     "semantic_hash": ""
   },
   "src/layouts/auth/modern-compact.js": {
@@ -3140,13 +3140,13 @@
     "semantic_hash": ""
   },
   "src/locales/langs/en.json": {
-    "mtime": 1785691638.8893726,
-    "ast_hash": "40f266ade79037ed3957424c7d5ac299",
+    "mtime": 1785704580.1552222,
+    "ast_hash": "ef46ab9e9ae1f8bef35b73d6310a2d1e",
     "semantic_hash": ""
   },
   "src/locales/langs/pt.json": {
-    "mtime": 1785691638.8913865,
-    "ast_hash": "da849de6d4f1e0d0a4dfc668876da0cf",
+    "mtime": 1785704580.1605773,
+    "ast_hash": "4675afff12e893a7a003fd95f9736fa9",
     "semantic_hash": ""
   },
   "src/locales/localization-provider.js": {
@@ -3975,8 +3975,8 @@
     "semantic_hash": ""
   },
   "src/sections/restaurant/view/restaurant-detail-view.js": {
-    "mtime": 1785695533.923383,
-    "ast_hash": "6172978d27e453cb0e50d79c355febc0",
+    "mtime": 1785697482.856386,
+    "ast_hash": "32c834f7fe2f53a51abd44bf28bbe9a7",
     "semantic_hash": ""
   },
   "src/sections/roulette/constants.js": {
@@ -13530,13 +13530,23 @@
     "semantic_hash": ""
   },
   "src/libs/restaurant/__tests__/build-restaurant-share-text.test.mjs": {
-    "mtime": 1785695549.1381903,
-    "ast_hash": "104f5829de50e9d793afc13022a0132d",
+    "mtime": 1785704514.6728084,
+    "ast_hash": "99cccb01ad1a29be70251f3d889d0f86",
     "semantic_hash": ""
   },
   "src/libs/restaurant/build-restaurant-share-text.js": {
-    "mtime": 1785695525.1612897,
-    "ast_hash": "85f11e901a15c2595aa84f90992d0c10",
+    "mtime": 1785704505.3662083,
+    "ast_hash": "b890b7965cc8aec93e85dda29e78a837",
+    "semantic_hash": ""
+  },
+  "src/libs/share/__tests__/join-share-text-and-url.test.mjs": {
+    "mtime": 1785704475.5229228,
+    "ast_hash": "96628560ee75930436aa8a6e175ced83",
+    "semantic_hash": ""
+  },
+  "src/libs/share/join-share-text-and-url.js": {
+    "mtime": 1785704452.2122836,
+    "ast_hash": "6d61082021b7cf6d4c39ec3bceafdfc6",
     "semantic_hash": ""
   }
 }

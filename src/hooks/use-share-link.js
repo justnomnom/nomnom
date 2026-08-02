@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 
 import { useTranslate } from 'src/locales';
-import { joinShareTextAndUrl } from 'src/libs/restaurant/build-restaurant-share-text';
+import { joinShareTextAndUrl } from 'src/libs/share/join-share-text-and-url';
 
 import { useCopyToClipboard } from './use-copy-to-clipboard';
 
@@ -16,6 +16,8 @@ import { useCopyToClipboard } from './use-copy-to-clipboard';
  *
  * @param {object} [options]
  * @param {string} [options.copiedKey] i18n key for the copy-success message.
+ * @param {string} [options.messageCopiedKey] i18n key used when the fallback copied an
+ *   overview plus the link rather than a bare link.
  * @param {string} [options.failedKey] i18n key for the failure message.
  * @param {number} [options.autoHideMs] how long feedback stays before auto-clearing.
  * @returns {{
@@ -27,6 +29,7 @@ import { useCopyToClipboard } from './use-copy-to-clipboard';
  */
 export function useShareLink({
   copiedKey = 'pages.dashboard.restaurant.share_copied',
+  messageCopiedKey = 'pages.dashboard.restaurant.share_message_copied',
   failedKey = 'pages.dashboard.restaurant.share_failed',
   autoHideMs = 2500,
 } = {}) {
@@ -58,18 +61,23 @@ export function useShareLink({
     [autoHideMs]
   );
 
-  /** Copy without offering the native share sheet (explicit "Copy link" actions). */
-  const copyLink = useCallback(
-    async (url) => {
-      const ok = await copy(url);
+  const copyWithFeedback = useCallback(
+    async (value, successKey) => {
+      const ok = await copy(value);
       if (ok) {
-        showFeedback('success', t(copiedKey));
+        showFeedback('success', t(successKey));
         return 'copied';
       }
       showFeedback('error', t(failedKey));
       return 'failed';
     },
-    [copy, showFeedback, t, copiedKey, failedKey]
+    [copy, showFeedback, t, failedKey]
+  );
+
+  /** Copy without offering the native share sheet (explicit "Copy link" actions). */
+  const copyLink = useCallback(
+    (url) => copyWithFeedback(url, copiedKey),
+    [copyWithFeedback, copiedKey]
   );
 
   /**
@@ -78,7 +86,8 @@ export function useShareLink({
    * link. Callers that pass `text` get the overview in the message itself, which also
    * survives clients that render no link preview.
    *
-   * The clipboard fallback joins the two, since there is no sheet to keep them apart.
+   * The clipboard fallback joins the two, since there is no sheet to keep them apart — and
+   * reports "copied" rather than "link copied", because by then it is a whole message.
    */
   const share = useCallback(
     async ({ url, title, text }) => {
@@ -92,9 +101,10 @@ export function useShareLink({
         showFeedback('error', t(failedKey));
         return 'failed';
       }
-      return copyLink(joinShareTextAndUrl(text, url));
+      const composed = joinShareTextAndUrl(text, url);
+      return copyWithFeedback(composed, text ? messageCopiedKey : copiedKey);
     },
-    [copyLink, showFeedback, t, failedKey]
+    [copyWithFeedback, showFeedback, t, failedKey, copiedKey, messageCopiedKey]
   );
 
   return { share, copyLink, feedback, dismissFeedback };

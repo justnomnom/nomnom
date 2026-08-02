@@ -824,6 +824,7 @@
         "gallery_image_aria": "View photo {{current}} of {{total}} for {{name}}",
         "save_aria": "Save to list",
         "share_copied": "Link copied.",
+      "share_message_copied": "Copied to clipboard.",
         "share_failed": "Could not copy link.",
         "public_meta_description": "Discover this spot on NomNom — save lists, reviews, and picks from people you trust.",
         "public_guest_prompt_title": "Want the full experience?",

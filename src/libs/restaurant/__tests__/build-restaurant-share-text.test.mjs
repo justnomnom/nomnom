@@ -1,10 +1,7 @@
 import assert from 'node:assert/strict';
 import { test, describe } from 'node:test';
 
-import {
-  joinShareTextAndUrl,
-  buildRestaurantShareText,
-} from '../build-restaurant-share-text.js';
+import { buildRestaurantShareText } from '../build-restaurant-share-text.js';
 
 describe('buildRestaurantShareText', () => {
   test('builds the full three-line overview', () => {
@@ -37,6 +34,23 @@ describe('buildRestaurantShareText', () => {
 
   test('keeps a locale-formatted rating verbatim, so pt gets a comma', () => {
     assert.match(buildRestaurantShareText({ name: 'A', ratingText: '4,9' }), /★ 4,9$/);
+  });
+
+  test('drops a zero rating rather than shipping "★ 0"', () => {
+    // A freshly ingested venue with no reviews reads as a bad review, not an absent one.
+    assert.equal(buildRestaurantShareText({ name: 'A', ratingText: '0' }), 'A');
+    assert.equal(buildRestaurantShareText({ name: 'A', ratingText: '0.0' }), 'A');
+    assert.equal(buildRestaurantShareText({ name: 'A', ratingText: '0,0' }), 'A');
+    assert.equal(buildRestaurantShareText({ name: 'A', ratingText: '0', priceLevel: 2 }), 'A\n€€');
+  });
+
+  test('keeps a low but real rating', () => {
+    assert.equal(buildRestaurantShareText({ name: 'A', ratingText: '0.5' }), 'A\n★ 0.5');
+    assert.equal(buildRestaurantShareText({ name: 'A', ratingText: '0,5' }), 'A\n★ 0,5');
+  });
+
+  test('drops a rating that is not a number at all', () => {
+    assert.equal(buildRestaurantShareText({ name: 'A', ratingText: 'n/a' }), 'A');
   });
 
   test('maps price level 1-4 to euro symbols', () => {
@@ -142,24 +156,5 @@ describe('buildRestaurantShareText — community consensus', () => {
       buildRestaurantShareText({ name: 'A', consensus: 'Good\n\nfood.', consensusBasis: 'x' }),
       'A\n\n“Good food.”\nx'
     );
-  });
-});
-
-describe('joinShareTextAndUrl', () => {
-  test('separates the overview from the link with a blank line', () => {
-    assert.equal(joinShareTextAndUrl('A\n★ 4.6', 'https://x.test/r/1'), 'A\n★ 4.6\n\nhttps://x.test/r/1');
-  });
-
-  test('falls back to the url alone when there is no overview', () => {
-    assert.equal(joinShareTextAndUrl('', 'https://x.test/r/1'), 'https://x.test/r/1');
-    assert.equal(joinShareTextAndUrl(null, 'https://x.test/r/1'), 'https://x.test/r/1');
-  });
-
-  test('returns the overview alone when there is no url', () => {
-    assert.equal(joinShareTextAndUrl('A', ''), 'A');
-  });
-
-  test('is empty when given nothing', () => {
-    assert.equal(joinShareTextAndUrl('', ''), '');
   });
 });
