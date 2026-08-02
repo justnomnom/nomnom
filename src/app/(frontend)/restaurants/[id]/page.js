@@ -36,13 +36,23 @@ export async function generateMetadata({ params }) {
       ...noIndex,
     };
   }
+  const description = getDefaultTranslation('pages.dashboard.restaurant.public_meta_description');
   return {
     title: restaurant.name,
-    description: getDefaultTranslation('pages.dashboard.restaurant.public_meta_description'),
+    description,
     ...noIndex,
     openGraph: {
       title: restaurant.name,
-      description: getDefaultTranslation('pages.dashboard.restaurant.public_meta_description'),
+      description,
+      type: 'website',
+      // No `images`: the colocated `opengraph-image.tsx` supplies the card.
+    },
+    // Without this block Twitter fell through to the root layout's metadata, so a shared spot
+    // previewed as "NomNom" with the generic tagline instead of the restaurant's own name.
+    twitter: {
+      card: 'summary_large_image',
+      title: restaurant.name,
+      description,
     },
   };
 }

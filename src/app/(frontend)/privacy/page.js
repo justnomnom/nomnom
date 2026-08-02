@@ -1,14 +1,14 @@
-import { getSiteUrl } from 'src/libs/site-url';
+import { pageMetadata } from 'src/content-platform/page-metadata';
 
 import { PrivacyView } from 'src/sections/legal/view';
 
 // ----------------------------------------------------------------------
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: 'Privacy Policy',
   description: 'How NomNom collects, uses, and protects your personal information.',
-  alternates: { canonical: `${getSiteUrl()}/privacy` },
-};
+  path: '/privacy',
+});
 
 export default function PrivacyPage() {
   return <PrivacyView />;

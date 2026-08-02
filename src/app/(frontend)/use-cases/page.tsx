@@ -4,19 +4,19 @@ import Link from 'next/link';
 import { ContentPageShell } from '@/components/content-platform/sections/content-page-shell';
 import { contentUseCaseStoryRowLinkClassName } from 'src/components/content-platform/ui/content-inline-link-classname';
 import { readMdxFilesInDir } from '@/content-platform/fs-content';
-import { getSiteUrl } from '@/content-platform/site-url';
+import { pageMetadata } from '@/content-platform/page-metadata';
 
 export const revalidate = 60;
 
 const SLUG_ORDER = ['foodies', 'creators', 'restaurants'];
 const TITLE_SEP = ' — ';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Use cases: foodies, creators, and restaurants',
   description:
     'See how foodies, creators, and restaurants use NomNom — restaurant picks from people you trust, with lists, roulette, and map and AI search.',
-  alternates: { canonical: `${getSiteUrl()}/use-cases` },
-};
+  path: '/use-cases',
+});
 
 function sortUseCaseDocs<T extends { slug: string }>(docs: T[]): T[] {
   return [...docs].sort((a, b) => {

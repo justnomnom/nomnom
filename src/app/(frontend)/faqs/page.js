@@ -1,4 +1,4 @@
-import { getSiteUrl } from 'src/libs/site-url';
+import { pageMetadata } from 'src/content-platform/page-metadata';
 import { getDefaultTranslation } from 'src/locales/default-translations';
 
 import { DynamicTitle } from 'src/components/dynamic-title';
@@ -20,11 +20,11 @@ const FAQ_IDS = [
   { category: 'getting_started', id: 'getting_started-3' },
 ];
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: getDefaultTranslation('pages.faqs.title'),
   description: getDefaultTranslation('pages.faqs.metaDescription'),
-  alternates: { canonical: `${getSiteUrl()}/faqs` },
-};
+  path: '/faqs',
+});
 
 export default function FaqsPage() {
   const faqLd = {

@@ -117,6 +117,15 @@
       "badge_published": "Publicada",
       "spot_count_one": "{{count}} sítio",
       "spot_count_other": "{{count}} sítios",
+      "og_followers_one": "{{count}} seguidor",
+      "og_followers_other": "{{count}} seguidores",
+      "og_lists_one": "{{count}} lista",
+      "og_lists_other": "{{count}} listas",
+      "og_profile_tagline": "Sugestões de restaurantes de quem confias",
+      "og_profile_description": "Listas e sugestões de restaurantes de {{name}} no NomNom.",
+      "og_list_kicker": "Lista NomNom",
+      "og_list_by_prefix": "de",
+      "og_list_fallback_name": "Uma lista NomNom",
       "profile_list_nom_count_one": "{{count}} NomNom",
       "profile_list_nom_count_other": "{{count}} NomNoms",
       "open_public_link": "Ver lista",
@@ -1362,7 +1371,8 @@
           "scope_footer": "Sítios na Grande Lisboa",
           "signup_prompt": "Queres as tuas próprias escolhas e listas?",
           "signup_cta": "Criar conta grátis",
-          "result_badge": "A tua escolha da roleta de Lisboa"
+          "result_badge": "A tua escolha da roleta de Lisboa",
+          "og_no_account": "Grátis, sem precisar de conta"
         }
       }
     },

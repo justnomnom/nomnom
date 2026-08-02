@@ -117,6 +117,15 @@
       "badge_published": "Published",
       "spot_count_one": "{{count}} spot",
       "spot_count_other": "{{count}} spots",
+      "og_followers_one": "{{count}} follower",
+      "og_followers_other": "{{count}} followers",
+      "og_lists_one": "{{count}} list",
+      "og_lists_other": "{{count}} lists",
+      "og_profile_tagline": "Restaurant picks from people you trust",
+      "og_profile_description": "Restaurant lists and picks from {{name}} on NomNom.",
+      "og_list_kicker": "NomNom List",
+      "og_list_by_prefix": "by",
+      "og_list_fallback_name": "A NomNom list",
       "profile_list_nom_count_one": "{{count}} NomNom",
       "profile_list_nom_count_other": "{{count}} NomNoms",
       "open_public_link": "View list",
@@ -1362,7 +1371,8 @@
           "scope_footer": "Spots in Greater Lisbon",
           "signup_prompt": "Want your own picks and lists?",
           "signup_cta": "Create a free account",
-          "result_badge": "Your Lisbon roulette pick"
+          "result_badge": "Your Lisbon roulette pick",
+          "og_no_account": "Free, no account needed"
         }
       }
     },

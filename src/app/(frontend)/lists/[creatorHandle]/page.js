@@ -39,15 +39,14 @@ export async function generateMetadata({ params }) {
       description,
       url: pageUrl,
       type: 'website',
-      ...(meta.coverImageUrl
-        ? { images: [{ url: meta.coverImageUrl, width: 1200, height: 630 }] }
-        : { images: [{ url: '/opengraph-image', width: 1200, height: 630 }] }),
+      // No `images`: the colocated `opengraph-image.tsx` renders the list's own name, owner
+      // and spot count. Setting `images` here would override it — and a list without a cover
+      // photo used to fall back to the generic brand card, which named nothing.
     },
     twitter: {
       card: 'summary_large_image',
       title: meta.name,
       description,
-      images: [meta.coverImageUrl || '/opengraph-image'],
     },
   };
 }

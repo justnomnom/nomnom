@@ -310,8 +310,8 @@
     "semantic_hash": ""
   },
   "instrumentation-client.js": {
-    "mtime": 1785421497.5553708,
-    "ast_hash": "bfe8660f1500a9e183a6fffc7b821721",
+    "mtime": 1785421713.3983293,
+    "ast_hash": "d5f287040ad00555d837527fee33b96d",
     "semantic_hash": ""
   },
   "instrumentation.js": {
@@ -360,13 +360,13 @@
     "semantic_hash": ""
   },
   "next.config.js": {
-    "mtime": 1785421450.0187519,
-    "ast_hash": "fa67cd169724342eb12173e8ed7db203",
+    "mtime": 1785681816.78831,
+    "ast_hash": "575d2962dd37f109363a8eb4b8c70576",
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1785418840.2846134,
-    "ast_hash": "8bce2d5c698540a14781783050f71770",
+    "mtime": 1785450550.466655,
+    "ast_hash": "ea35a55e6f52b9d7f2c2cd6a69d09312",
     "semantic_hash": ""
   },
   "postcss.config.js": {
@@ -620,13 +620,13 @@
     "semantic_hash": ""
   },
   "sentry.edge.config.js": {
-    "mtime": 1785421331.57437,
-    "ast_hash": "e10cfb7186ec60b9a8c9ae9090d36cc2",
+    "mtime": 1785421720.6442137,
+    "ast_hash": "da12fa1d268445902b99aa9d46d58658",
     "semantic_hash": ""
   },
   "sentry.server.config.js": {
-    "mtime": 1785421330.7235818,
-    "ast_hash": "a3ba969c8b2c411910c47f9210d21be5",
+    "mtime": 1785421720.2955024,
+    "ast_hash": "ae0d8d88e98a35fd655269c9d8c316df",
     "semantic_hash": ""
   },
   "skills-lock.json": {
@@ -720,8 +720,8 @@
     "semantic_hash": ""
   },
   "src/app/(frontend)/about/page.tsx": {
-    "mtime": 1781733736.2668822,
-    "ast_hash": "ffb9fb66677a0de8de74969bd6eba73b",
+    "mtime": 1785685956.9446077,
+    "ast_hash": "c3f6a9bc2eedf4d82742b4d40ed3bab4",
     "semantic_hash": ""
   },
   "src/app/(frontend)/api/auth/session-setup/route.js": {
@@ -780,8 +780,8 @@
     "semantic_hash": ""
   },
   "src/app/(frontend)/api/restaurants/ingest/route.js": {
-    "mtime": 1784852459.2426538,
-    "ast_hash": "42f44c95b93d8928e399b830096b67ee",
+    "mtime": 1785421850.1709056,
+    "ast_hash": "1fa1dab2d243ffac07a84631e8429355",
     "semantic_hash": ""
   },
   "src/app/(frontend)/api/stripe/checkout/list/route.js": {
@@ -805,8 +805,8 @@
     "semantic_hash": ""
   },
   "src/app/(frontend)/api/webhooks/stripe/route.js": {
-    "mtime": 1785367743.4096427,
-    "ast_hash": "5b478420497937a7e6bed494245c0198",
+    "mtime": 1785450653.4326823,
+    "ast_hash": "a9aaa110b2b5e7881d148016f96fe918",
     "semantic_hash": ""
   },
   "src/app/(frontend)/auth/callback/route.js": {
@@ -890,8 +890,8 @@
     "semantic_hash": ""
   },
   "src/app/(frontend)/contact-us/page.js": {
-    "mtime": 1784155103.4147325,
-    "ast_hash": "aed369f022bac92015fb87deebc41c46",
+    "mtime": 1785685956.9587874,
+    "ast_hash": "e71c6c79984401a3dace3025bea4d97a",
     "semantic_hash": ""
   },
   "src/app/(frontend)/countries/[country]/[city]/collections/[slug]/page.tsx": {
@@ -935,8 +935,8 @@
     "semantic_hash": ""
   },
   "src/app/(frontend)/countries/page.tsx": {
-    "mtime": 1779231680.1968086,
-    "ast_hash": "215a53b633c9ae109adb907dd8f64b59",
+    "mtime": 1785685956.9506106,
+    "ast_hash": "4a21a1a2e86b6190e37da90f1d9abc38",
     "semantic_hash": ""
   },
   "src/app/(frontend)/dashboard/admin/layout.js": {
@@ -1220,8 +1220,8 @@
     "semantic_hash": ""
   },
   "src/app/(frontend)/faqs/page.js": {
-    "mtime": 1780829002.5994768,
-    "ast_hash": "1909ce9ea772f8940aa1fd688d59703c",
+    "mtime": 1785685956.9527833,
+    "ast_hash": "b6bd48d0593293b408431073d5555b4c",
     "semantic_hash": ""
   },
   "src/app/(frontend)/features/[slug]/page.tsx": {
@@ -1230,8 +1230,8 @@
     "semantic_hash": ""
   },
   "src/app/(frontend)/global-error.js": {
-    "mtime": 1783276757.9748344,
-    "ast_hash": "5e5ab1e9e1151f0c4cdf45992b69bbe4",
+    "mtime": 1785450807.9501712,
+    "ast_hash": "c2a9d23a1e4bdd2b44b9ac4aa65c778c",
     "semantic_hash": ""
   },
   "src/app/(frontend)/lists/[creatorHandle]/[listSlug]/loading.js": {
@@ -1240,8 +1240,8 @@
     "semantic_hash": ""
   },
   "src/app/(frontend)/lists/[creatorHandle]/[listSlug]/page.js": {
-    "mtime": 1784323802.7267127,
-    "ast_hash": "4ad2c6e1993aaa2968e1583764c47af5",
+    "mtime": 1785674363.437566,
+    "ast_hash": "1355bbe161c636baec6c3a8ff5082410",
     "semantic_hash": ""
   },
   "src/app/(frontend)/lists/[creatorHandle]/loading.js": {
@@ -1250,8 +1250,8 @@
     "semantic_hash": ""
   },
   "src/app/(frontend)/lists/[creatorHandle]/page.js": {
-    "mtime": 1784323816.6740706,
-    "ast_hash": "15acbd3f714a1ba7f87c5fa2ff153107",
+    "mtime": 1785674360.4166148,
+    "ast_hash": "ff95b10075131da0408f5fe6fb08ec25",
     "semantic_hash": ""
   },
   "src/app/(frontend)/lists/layout.js": {
@@ -1310,13 +1310,13 @@
     "semantic_hash": ""
   },
   "src/app/(frontend)/pricing/page.tsx": {
-    "mtime": 1785336391.6175117,
-    "ast_hash": "ca24c9762f9299e6deb2bdb59abbd000",
+    "mtime": 1785685956.9426086,
+    "ast_hash": "87b7deadb4cc99c654bcd1fdcf23a5b2",
     "semantic_hash": ""
   },
   "src/app/(frontend)/privacy/page.js": {
-    "mtime": 1785336393.7404778,
-    "ast_hash": "5d0fab5d1a5b5d3c9581f2f107015cbc",
+    "mtime": 1785685956.9537842,
+    "ast_hash": "ad472d961a498980073ccbc2b325ad16",
     "semantic_hash": ""
   },
   "src/app/(frontend)/resources/[slug]/page.tsx": {
@@ -1330,8 +1330,8 @@
     "semantic_hash": ""
   },
   "src/app/(frontend)/restaurants/[id]/page.js": {
-    "mtime": 1785336399.210185,
-    "ast_hash": "80fe1bba4543a218946ac3fc1d77a55f",
+    "mtime": 1785674369.959307,
+    "ast_hash": "7e00e3dec3cd831f95829ff14e66f5fa",
     "semantic_hash": ""
   },
   "src/app/(frontend)/restaurants/[id]/public-restaurant-share-client.js": {
@@ -1365,8 +1365,8 @@
     "semantic_hash": ""
   },
   "src/app/(frontend)/terms/page.js": {
-    "mtime": 1785336411.7944477,
-    "ast_hash": "62ea06df6c4411cc6c33480f20dc51e0",
+    "mtime": 1785685956.9547915,
+    "ast_hash": "f516f036640c19c02c2ea1d66e310973",
     "semantic_hash": ""
   },
   "src/app/(frontend)/u/[username]/loading.js": {
@@ -1375,8 +1375,8 @@
     "semantic_hash": ""
   },
   "src/app/(frontend)/u/[username]/page.js": {
-    "mtime": 1785336415.9579382,
-    "ast_hash": "f266b9c3e65987d8d42040e18bbd6483",
+    "mtime": 1785672459.1914535,
+    "ast_hash": "5d116aae1147da05ab5405c51afb60b7",
     "semantic_hash": ""
   },
   "src/app/(frontend)/u/layout.js": {
@@ -1390,8 +1390,8 @@
     "semantic_hash": ""
   },
   "src/app/(frontend)/use-cases/page.tsx": {
-    "mtime": 1785336423.938235,
-    "ast_hash": "36b82c22847bbfcf05689fab14f3d942",
+    "mtime": 1785685956.9486125,
+    "ast_hash": "d894a1d8f107eb6bb13064134f39dd2f",
     "semantic_hash": ""
   },
   "src/app/layout.js": {
@@ -1545,8 +1545,8 @@
     "semantic_hash": ""
   },
   "src/auth/actions/restaurant-search-agent-actions.js": {
-    "mtime": 1785421343.9734385,
-    "ast_hash": "b925316a1975857a5dac3978b33ad0ac",
+    "mtime": 1785422038.9370718,
+    "ast_hash": "0af521f53db01b3aa7db4686d7b1c0d2",
     "semantic_hash": ""
   },
   "src/auth/actions/sponsored-placement-actions.js": {
@@ -1850,8 +1850,8 @@
     "semantic_hash": ""
   },
   "src/components/error-boundary/sentry-error-boundary.js": {
-    "mtime": 1785336551.7382956,
-    "ast_hash": "9f83d8b3711c2dda267d687e3819641d",
+    "mtime": 1785450680.6786942,
+    "ast_hash": "94e8d5b33d318fd6e2de6a4a58adae11",
     "semantic_hash": ""
   },
   "src/components/file-thumbnail/download-button.js": {
@@ -2145,8 +2145,8 @@
     "semantic_hash": ""
   },
   "src/components/pwa-install-prompt/pwa-install-prompt.jsx": {
-    "mtime": 1785336604.3373618,
-    "ast_hash": "65e4f943f1f6a3eca5cabd33cb1f3cd7",
+    "mtime": 1785669365.5649137,
+    "ast_hash": "bc59f12fcc00fe2c4b44488fb481c558",
     "semantic_hash": ""
   },
   "src/components/restaurant-tag-preference-picker/index.js": {
@@ -2325,8 +2325,8 @@
     "semantic_hash": ""
   },
   "src/config-global.js": {
-    "mtime": 1785421444.364571,
-    "ast_hash": "621c9eebc647ab3429101d51424e9c7c",
+    "mtime": 1785450742.2464294,
+    "ast_hash": "aa9b3fa27858255a068c83959dc3f8ca",
     "semantic_hash": ""
   },
   "src/config/onboarding-content.js": {
@@ -2680,8 +2680,8 @@
     "semantic_hash": ""
   },
   "src/libs/analytics/analytics-provider.js": {
-    "mtime": 1785336704.1553843,
-    "ast_hash": "ab87f369597cb9efd45bb7c37a1de149",
+    "mtime": 1785450651.0456088,
+    "ast_hash": "c33a9e2e8ef30277b5e1c30b942ae0fc",
     "semantic_hash": ""
   },
   "src/libs/analytics/restaurant-analytics.js": {
@@ -2925,13 +2925,13 @@
     "semantic_hash": ""
   },
   "src/libs/posthog/posthog-provider.js": {
-    "mtime": 1785336762.2148395,
-    "ast_hash": "ba366cf413ce001e174fa415b308aad6",
+    "mtime": 1785450647.6587825,
+    "ast_hash": "380e985ec5a884c0083f3af8db21e969",
     "semantic_hash": ""
   },
   "src/libs/posthog/posthog-service.js": {
-    "mtime": 1785336764.4638398,
-    "ast_hash": "1c37a90764c8a39813db0e303c0a9d53",
+    "mtime": 1785450743.5969145,
+    "ast_hash": "3147c6293530db6cdf089bcfeba6f9b4",
     "semantic_hash": ""
   },
   "src/libs/restaurant-ingest/__tests__/persist-restaurant-images.test.mjs": {
@@ -2960,8 +2960,8 @@
     "semantic_hash": ""
   },
   "src/libs/restaurant-ingest/qwen-json-chat.js": {
-    "mtime": 1785336789.5108976,
-    "ast_hash": "b49213b2ba33b2e385019f87bccc60d8",
+    "mtime": 1785421902.823538,
+    "ast_hash": "03f923d93bcd546857497b75fdc07e20",
     "semantic_hash": ""
   },
   "src/libs/restaurant-ingest/review-consensus-ai.js": {
@@ -3020,8 +3020,8 @@
     "semantic_hash": ""
   },
   "src/libs/sentry/sentry-service.js": {
-    "mtime": 1785421382.963781,
-    "ast_hash": "e54b6aa90d0cbc5abd947b8732688b38",
+    "mtime": 1785421791.137189,
+    "ast_hash": "29dadf61cb1dbaad7e48814a14c899e1",
     "semantic_hash": ""
   },
   "src/libs/site-url.js": {
@@ -3140,13 +3140,13 @@
     "semantic_hash": ""
   },
   "src/locales/langs/en.json": {
-    "mtime": 1785419371.9045646,
-    "ast_hash": "68c5e3e5e7e924bb0cd1036bfae0ef00",
+    "mtime": 1785683652.1919427,
+    "ast_hash": "40f266ade79037ed3957424c7d5ac299",
     "semantic_hash": ""
   },
   "src/locales/langs/pt.json": {
-    "mtime": 1785419382.5081627,
-    "ast_hash": "66c20c18cfad826b0fe7b2dbd917dd05",
+    "mtime": 1785683652.2011251,
+    "ast_hash": "da849de6d4f1e0d0a4dfc668876da0cf",
     "semantic_hash": ""
   },
   "src/locales/localization-provider.js": {
@@ -3470,8 +3470,8 @@
     "semantic_hash": ""
   },
   "src/sections/feedback/view/feedback-view.js": {
-    "mtime": 1785419370.9026155,
-    "ast_hash": "500e33eaff2cc19c689204eef319bd77",
+    "mtime": 1785421671.1595783,
+    "ast_hash": "930e297072746cc076ad1bb388862f22",
     "semantic_hash": ""
   },
   "src/sections/feedback/view/index.js": {
@@ -3595,8 +3595,8 @@
     "semantic_hash": ""
   },
   "src/sections/lists/view/list-public-view.js": {
-    "mtime": 1784144600.78307,
-    "ast_hash": "e9e91cd694e95fd75c5925d89776417d",
+    "mtime": 1785450687.6371977,
+    "ast_hash": "7e4f9c6b3b878bbcbf11db33d4c81eee",
     "semantic_hash": ""
   },
   "src/sections/lists/view/public-list-page-skeleton.js": {
@@ -3620,8 +3620,8 @@
     "semantic_hash": ""
   },
   "src/sections/lists/view/user-public-profile-view.js": {
-    "mtime": 1783100249.109223,
-    "ast_hash": "1568a1d6a60d4a7972746d837ef10501",
+    "mtime": 1785450721.5708547,
+    "ast_hash": "2624a826e4b26f446e58943e06d8805c",
     "semantic_hash": ""
   },
   "src/sections/maintenance/view.js": {
@@ -7315,13 +7315,13 @@
     "semantic_hash": ""
   },
   "src/app/opengraph-image.tsx": {
-    "mtime": 1785336430.4103243,
-    "ast_hash": "ae81a147b78fcd8191494cce22c7cb59",
+    "mtime": 1785681875.629174,
+    "ast_hash": "d3b0d6c3a17fc75bc82b78189fb0726a",
     "semantic_hash": ""
   },
   "src/app/twitter-image.tsx": {
-    "mtime": 1785336434.5611339,
-    "ast_hash": "a15ca26c1f2e8758b3a5aa22016acbe9",
+    "mtime": 1785684310.658024,
+    "ast_hash": "0407434d8db42c49de3251f2d2a7d0e5",
     "semantic_hash": ""
   },
   "src/libs/restaurant-ingest/__tests__/map-google-place-payload.test.mjs": {
@@ -13375,13 +13375,13 @@
     "semantic_hash": ""
   },
   "src/libs/posthog/__tests__/capture-server-event.test.mjs": {
-    "mtime": 1785367743.448911,
-    "ast_hash": "f816c95128fac092cf24f365b363111d",
+    "mtime": 1785450691.5579953,
+    "ast_hash": "4fdce19d7b19b7bd0f291a9a3fa42650",
     "semantic_hash": ""
   },
   "src/libs/posthog/capture-server-event.js": {
-    "mtime": 1785367743.450908,
-    "ast_hash": "3200cd390ec61a4ebb8697550e863eac",
+    "mtime": 1785450630.586801,
+    "ast_hash": "69120bc70aacf8e2db7798184c54655f",
     "semantic_hash": ""
   },
   "docs/db/api-table-grants.sql": {
@@ -13402,6 +13402,131 @@
   "src/lib/api-table-grants.js": {
     "mtime": 1785419357.1246798,
     "ast_hash": "da6851de77e38478b49435d219d97ecf",
+    "semantic_hash": ""
+  },
+  "src/app/(frontend)/roleta/lisboa/opengraph-image.tsx": {
+    "mtime": 1785681875.6281738,
+    "ast_hash": "ca3dce0657be06fec6bc90878e674250",
+    "semantic_hash": ""
+  },
+  "src/app/(frontend)/roleta/lisboa/twitter-image.tsx": {
+    "mtime": 1785673441.39265,
+    "ast_hash": "08e9a3312a986bf12e1facb014c94757",
+    "semantic_hash": ""
+  },
+  "src/app/(frontend)/u/[username]/opengraph-image.tsx": {
+    "mtime": 1785690243.1438348,
+    "ast_hash": "696d59a97d55a9340a6bf86d9b40aa31",
+    "semantic_hash": ""
+  },
+  "src/app/(frontend)/u/[username]/twitter-image.tsx": {
+    "mtime": 1785673438.9318092,
+    "ast_hash": "620b1678b252302cfa503c2b337a0b12",
+    "semantic_hash": ""
+  },
+  "src/libs/og/__tests__/load-remote-image.test.mjs": {
+    "mtime": 1785673177.0369134,
+    "ast_hash": "ffc039a578db32da7f12867b0d6705e0",
+    "semantic_hash": ""
+  },
+  "src/libs/og/fetch-og-profile.js": {
+    "mtime": 1785672414.3750215,
+    "ast_hash": "8951e33a3d2af46539ae8bb8d5deeec8",
+    "semantic_hash": ""
+  },
+  "src/libs/og/load-remote-image.js": {
+    "mtime": 1785673146.3281546,
+    "ast_hash": "2eceb99f810fceea2b5be7a3ea8966d3",
+    "semantic_hash": ""
+  },
+  "src/libs/og/og-card.tsx": {
+    "mtime": 1785690228.2497725,
+    "ast_hash": "1bf0caf921aefa95cb431b2af8bee176",
+    "semantic_hash": ""
+  },
+  "src/libs/og/og-text.js": {
+    "mtime": 1785690428.921589,
+    "ast_hash": "520a093a3dddbffe704d9f43ff13a059",
+    "semantic_hash": ""
+  },
+  "src/libs/sentry/before-send-log.js": {
+    "mtime": 1785421791.7328398,
+    "ast_hash": "dd858c7fb249140a82067d703b0c2768",
+    "semantic_hash": ""
+  },
+  "src/app/(frontend)/lists/[creatorHandle]/[listSlug]/opengraph-image.tsx": {
+    "mtime": 1785674331.2270944,
+    "ast_hash": "c174e09dd23502e6a0237d4f7763a00b",
+    "semantic_hash": ""
+  },
+  "src/app/(frontend)/lists/[creatorHandle]/[listSlug]/twitter-image.tsx": {
+    "mtime": 1785674333.1583226,
+    "ast_hash": "f273ddd534a64cf9c4a8cc8cf5b24f0a",
+    "semantic_hash": ""
+  },
+  "src/app/(frontend)/lists/[creatorHandle]/opengraph-image.tsx": {
+    "mtime": 1785674322.8854842,
+    "ast_hash": "ba4b42291c29073cd2832784cfbb126e",
+    "semantic_hash": ""
+  },
+  "src/app/(frontend)/lists/[creatorHandle]/twitter-image.tsx": {
+    "mtime": 1785674325.0122807,
+    "ast_hash": "af42273375d4792bb4c7a1ad68c6450c",
+    "semantic_hash": ""
+  },
+  "src/app/(frontend)/restaurants/[id]/opengraph-image.tsx": {
+    "mtime": 1785690243.1387522,
+    "ast_hash": "4fbdd54ee33e28c8451bd08e2c263715",
+    "semantic_hash": ""
+  },
+  "src/app/(frontend)/restaurants/[id]/twitter-image.tsx": {
+    "mtime": 1785674352.5200405,
+    "ast_hash": "ca91a8a35bd37da278f9340fa3e8b0ee",
+    "semantic_hash": ""
+  },
+  "src/libs/og/fetch-og-list-item-count.js": {
+    "mtime": 1785674295.3729973,
+    "ast_hash": "fa341a43e635ec6f9a9a018d3bfb324b",
+    "semantic_hash": ""
+  },
+  "src/libs/og/list-og-image.tsx": {
+    "mtime": 1785690243.1377556,
+    "ast_hash": "c2a25e0f3fc01d5446c3d3980a533199",
+    "semantic_hash": ""
+  },
+  "src/libs/og/og-fonts.js": {
+    "mtime": 1785682583.7004404,
+    "ast_hash": "097e450dccf02ea0e170ea380c2122d4",
+    "semantic_hash": ""
+  },
+  "src/content-platform/page-metadata.js": {
+    "mtime": 1785685856.8781037,
+    "ast_hash": "307f10750ad74e729105c2c151781007",
+    "semantic_hash": ""
+  },
+  "src/libs/og/__tests__/og-locale-parity.test.mjs": {
+    "mtime": 1785690292.5286148,
+    "ast_hash": "853b98615a0fcee32208b1698c9a315a",
+    "semantic_hash": ""
+  },
+  "src/libs/og/__tests__/og-text.test.mjs": {
+    "mtime": 1785690437.0061138,
+    "ast_hash": "e4935ed9d4005ce236bff740fe49c47a",
+    "semantic_hash": ""
+  },
+  "src/libs/og/__tests__/truncate.test.mjs": {
+    "mtime": 1785690337.764307,
+    "ast_hash": "aae0afdf3a67635d1d8e5e8d6df0d849",
+    "semantic_hash": ""
+  },
+  "src/libs/og/og-text-format.js": {
+    "mtime": 1785690418.6129315,
+    "ast_hash": "f79c753f892542f61723a105ad089e82",
+    "semantic_hash": ""
+  },
+  "src/libs/og/truncate.js": {
+    "mtime": 1785690222.5429215,
+    "ast_hash": "b4827fd481020bbb774ddc99d16574d1",
     "semantic_hash": ""
   }
 }

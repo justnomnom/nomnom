@@ -1,14 +1,14 @@
-import { getSiteUrl } from 'src/libs/site-url';
+import { pageMetadata } from 'src/content-platform/page-metadata';
 
 import { TermsView } from 'src/sections/legal/view';
 
 // ----------------------------------------------------------------------
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: 'Terms of Service',
   description: 'The terms and conditions that govern your use of NomNom.',
-  alternates: { canonical: `${getSiteUrl()}/terms` },
-};
+  path: '/terms',
+});
 
 export default function TermsPage() {
   return <TermsView />;

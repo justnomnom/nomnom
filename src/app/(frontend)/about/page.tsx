@@ -1,17 +1,17 @@
 import type { Metadata } from 'next';
 
-import { getSiteUrl } from '@/content-platform/site-url';
+import { pageMetadata } from '@/content-platform/page-metadata';
 
 import { AboutView } from 'src/sections/about/view';
 
 export const revalidate = 60;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'About',
   description:
     'NomNom helps you find restaurants through creators and locals you trust—real opinions and shortlists, not generic rankings.',
-  alternates: { canonical: `${getSiteUrl()}/about` },
-};
+  path: '/about',
+});
 
 /**
  * Company / product story aligned with APP + homepage positioning.

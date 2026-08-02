@@ -1,4 +1,4 @@
-import { getSiteUrl } from 'src/libs/site-url';
+import { pageMetadata } from 'src/content-platform/page-metadata';
 import { getDefaultTranslation } from 'src/locales/default-translations';
 
 import { DynamicTitle } from 'src/components/dynamic-title';
@@ -7,11 +7,11 @@ import { ContactView } from 'src/sections/contact/view';
 
 // ----------------------------------------------------------------------
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: getDefaultTranslation('pages.contact_us.title'),
   description: getDefaultTranslation('pages.contact_us.metaDescription'),
-  alternates: { canonical: `${getSiteUrl()}/contact-us` },
-};
+  path: '/contact-us',
+});
 
 export default function ContactPage() {
   return (

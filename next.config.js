@@ -60,7 +60,13 @@ const nextConfig = {
    * (Top-level in Next.js 15+; was `experimental.outputFileTracingIncludes`.)
    */
   outputFileTracingIncludes: {
-    '/**': ['./content/**/*.mdx', './content/**/*.json'],
+    '/**': [
+      './content/**/*.mdx',
+      './content/**/*.json',
+      // Share-card typefaces, read through a process.cwd() path for the same reason.
+      // Without this the OG routes render in satori's fallback face. See src/libs/og/og-fonts.js.
+      './src/libs/og/fonts/**',
+    ],
   },
   /**
    * Carve build cache and repo junk out of the serverless function trace.
