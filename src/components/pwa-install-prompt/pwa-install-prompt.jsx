@@ -84,7 +84,8 @@ export default function PWAInstallPrompt() {
       e.preventDefault();
       if (cancelled) return;
       setDeferredPrompt(e);
-      setOpen(true);
+      // Upgrade an already-open instructional sheet with one-tap Install, or open now.
+      if (!wasRecentlyDismissed()) setOpen(true);
     };
 
     const onInstalled = () => {
@@ -96,12 +97,13 @@ export default function PWAInstallPrompt() {
     window.addEventListener('beforeinstallprompt', onBeforeInstall);
     window.addEventListener('appinstalled', onInstalled);
 
-    // iOS has no beforeinstallprompt — show instructions after a short delay.
-    if (platform.ios) {
-      timer = window.setTimeout(() => {
-        if (!cancelled) setOpen(true);
-      }, SHOW_DELAY_MS);
-    }
+    // Always show on mobile after a short delay. Chromium's beforeinstallprompt is
+    // unreliable (engagement heuristics, race before mount, missing installability
+    // criteria) — without a fallback Android never opens the sheet. When the event
+    // does fire, onBeforeInstall upgrades the sheet with a one-tap Install button.
+    timer = window.setTimeout(() => {
+      if (!cancelled && !wasRecentlyDismissed()) setOpen(true);
+    }, SHOW_DELAY_MS);
 
     return () => {
       cancelled = true;
@@ -109,7 +111,7 @@ export default function PWAInstallPrompt() {
       window.removeEventListener('appinstalled', onInstalled);
       if (timer) window.clearTimeout(timer);
     };
-  }, [platform.mobile, platform.ios]);
+  }, [platform.mobile]);
 
   const handleClose = () => {
     setOpen(false);
