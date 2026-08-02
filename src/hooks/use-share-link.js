@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 
 import { useTranslate } from 'src/locales';
+import { joinShareTextAndUrl } from 'src/libs/restaurant/build-restaurant-share-text';
 
 import { useCopyToClipboard } from './use-copy-to-clipboard';
 
@@ -18,7 +19,7 @@ import { useCopyToClipboard } from './use-copy-to-clipboard';
  * @param {string} [options.failedKey] i18n key for the failure message.
  * @param {number} [options.autoHideMs] how long feedback stays before auto-clearing.
  * @returns {{
- *   share: (input: { url: string, title?: string }) => Promise<'shared' | 'copied' | 'failed' | 'cancelled'>,
+ *   share: (input: { url: string, title?: string, text?: string }) => Promise<'shared' | 'copied' | 'failed' | 'cancelled'>,
  *   copyLink: (url: string) => Promise<'copied' | 'failed'>,
  *   feedback: { severity: 'success' | 'error', text: string } | null,
  *   dismissFeedback: () => void,
@@ -71,11 +72,19 @@ export function useShareLink({
     [copy, showFeedback, t, copiedKey, failedKey]
   );
 
+  /**
+   * `text` becomes the message body. Most targets — WhatsApp included — ignore `title`
+   * entirely and send `text` + `url`, so a share carrying only a title arrives as a bare
+   * link. Callers that pass `text` get the overview in the message itself, which also
+   * survives clients that render no link preview.
+   *
+   * The clipboard fallback joins the two, since there is no sheet to keep them apart.
+   */
   const share = useCallback(
-    async ({ url, title }) => {
+    async ({ url, title, text }) => {
       try {
         if (typeof navigator !== 'undefined' && navigator.share) {
-          await navigator.share({ title: title || undefined, url });
+          await navigator.share({ title: title || undefined, text: text || undefined, url });
           return 'shared';
         }
       } catch (e) {
@@ -83,7 +92,7 @@ export function useShareLink({
         showFeedback('error', t(failedKey));
         return 'failed';
       }
-      return copyLink(url);
+      return copyLink(joinShareTextAndUrl(text, url));
     },
     [copyLink, showFeedback, t, failedKey]
   );

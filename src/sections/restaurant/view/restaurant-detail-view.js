@@ -39,6 +39,7 @@ import { useSkeletonThemeColors } from 'src/theme/use-skeleton-theme';
 import { dedupeMustTryDishesByDisplayLabel } from 'src/lib/must-try-dedupe';
 import { RADIUS, tabularNumsSx, TOUCH_TARGET_SIZE } from 'src/theme/spacing';
 import { galleryUrlsForRestaurant } from 'src/libs/restaurant/restaurant-gallery-urls';
+import { buildRestaurantShareText } from 'src/libs/restaurant/build-restaurant-share-text';
 import {
   RESTAURANT_SURFACE,
   useRestaurantAnalytics,
@@ -1160,12 +1161,35 @@ export default function RestaurantDetailView({
     return '';
   }, [mapSheetMode, restaurant.id]);
 
+  /** Overview that rides along in the message body — see `buildRestaurantShareText`. */
+  const shareTextForRestaurant = useMemo(
+    () =>
+      buildRestaurantShareText({
+        name: restaurant.name,
+        area: areaLine,
+        ratingText: rating != null ? fRating(rating, currentLang) : '',
+        priceLevel: restaurant.price_level,
+        consensus: reviewConsensus?.summary,
+        consensusBasis:
+          reviewConsensus?.summary && reviewConsensus.reviewsAnalyzed != null
+            ? t('pages.dashboard.restaurant.consensus_basis', {
+                count: reviewConsensus.reviewsAnalyzed,
+              })
+            : '',
+      }),
+    [restaurant.name, restaurant.price_level, areaLine, rating, currentLang, reviewConsensus, t]
+  );
+
   const handleShare = async () => {
     restaurantAnalytics.trackShareClicked({
       restaurant_id: String(restaurant.id),
       surface: analyticsSurfaceResolved,
     });
-    await shareLink({ url: shareUrlForRestaurant, title: restaurant.name });
+    await shareLink({
+      url: shareUrlForRestaurant,
+      title: restaurant.name,
+      text: shareTextForRestaurant,
+    });
   };
 
   const handleSave = () => {
