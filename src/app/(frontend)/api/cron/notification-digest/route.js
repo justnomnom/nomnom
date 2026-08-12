@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { CRON_SECRET } from 'src/config-global';
+import { isAuthorizedCronRequest } from 'src/libs/notifications/notification-cron-auth';
 import { sendListUpdateDigests } from 'src/libs/notifications/send-list-update-digests';
 import { deleteOldNotifications } from 'src/libs/notifications/cleanup-old-notifications';
 
@@ -10,15 +11,14 @@ export const maxDuration = 300;
 
 /**
  * Daily email digest of new spots on lists a user follows/subscribes to.
- * Triggered by Vercel Cron (see vercel.json). Protected by CRON_SECRET:
+ * Triggered by Vercel Cron (see vercel.json). Always requires CRON_SECRET:
  * Vercel Cron sends `Authorization: Bearer <CRON_SECRET>` automatically.
+ * Missing/mismatched secret → 401 (never open).
  */
 export async function GET(request) {
-  if (CRON_SECRET) {
-    const auth = request.headers.get('authorization');
-    if (auth !== `Bearer ${CRON_SECRET}`) {
-      return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-    }
+  const auth = request.headers.get('authorization');
+  if (!isAuthorizedCronRequest(auth, CRON_SECRET)) {
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 
   const result = await sendListUpdateDigests({ windowHours: 24 });

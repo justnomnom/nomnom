@@ -51,12 +51,6 @@ test.describe('public home and marketing', () => {
     await expectAppShellMainVisible(page);
   });
 
-  test('post index loads', async ({ page }) => {
-    await page.goto('/post');
-    await expect(page).toHaveURL(/\/post$/);
-    await expectAppShellMainVisible(page);
-  });
-
   test('maintenance page loads', async ({ page }) => {
     await page.goto('/maintenance');
     await expect(page).toHaveURL(/\/maintenance/);

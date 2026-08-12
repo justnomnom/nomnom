@@ -1,4 +1,4 @@
-import { resolveListSlug } from 'src/auth/actions/list-actions';
+import { resolveListSlug } from 'src/libs/lists/actions';
 
 import { OG_SIZE, OG_CONTENT_TYPE } from 'src/libs/og/og-card';
 import { renderListOgImage } from 'src/libs/og/list-og-image';

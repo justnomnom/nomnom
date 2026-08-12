@@ -7,7 +7,7 @@ import { isWellFormedUuid, netCentsAfterPlatformFee } from 'src/libs/stripe/list
 import {
   fetchAllSupabasePages,
   SUPABASE_DEFAULT_PAGE_SIZE,
-} from 'src/lib/supabase-fetch-all-pages';
+} from 'src/libs/supabase/supabase-fetch-all-pages';
 import {
   getSupabaseAuthUser,
   createSupabaseServerClient,

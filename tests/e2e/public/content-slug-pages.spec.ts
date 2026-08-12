@@ -12,10 +12,6 @@ import { expectAppShellMainVisible } from '../support/page-assertions';
  * ships only `content/use-cases`, which marketing-routes.spec.ts covers) and starts running
  * automatically the moment content lands. Bogus-slug behavior for these same routes is
  * covered by dynamic-route-not-found.spec.ts.
- *
- * /post/[title] real-slug render is intentionally absent: the posts API
- * (src/app/(frontend)/api/posts) is a stub returning an empty list until a CMS is wired,
- * and its empty/404 shapes are covered by api-edge-cases.spec.ts.
  */
 
 const CONTENT_ROOT = path.resolve(__dirname, '..', '..', '..', 'content');

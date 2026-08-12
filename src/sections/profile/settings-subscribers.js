@@ -20,7 +20,7 @@ import { fDate } from 'src/utils/format-time';
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import { getMyFollowers } from 'src/auth/actions/profile-actions';
-import { getMyStripeConnectStatus } from 'src/auth/actions/stripe-list-actions';
+import { useMyStripeConnectStatus } from 'src/api/stripe-connect-status';
 import {
   getCreatorListStats,
   getMyPaidListSubscribers,
@@ -224,10 +224,11 @@ export default function SettingsSubscribers({
   );
   const [followerRows, setFollowerRows] = useState(() => initialFollowers?.rows ?? []);
   const [loadError, setLoadError] = useState(() => initialSubscribers?.error ?? null);
+  const { chargesEnabled: payoutReady } = useMyStripeConnectStatus({
+    fallbackData: initialConnectStatus,
+  });
+
   const [loading, setLoading] = useState(!hasInitialData);
-  const [payoutReady, setPayoutReady] = useState(
-    () => !initialConnectStatus?.error && Boolean(initialConnectStatus?.chargesEnabled)
-  );
   const [confirmRow, setConfirmRow] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [actionError, setActionError] = useState(null);
@@ -238,13 +239,11 @@ export default function SettingsSubscribers({
     setLoadError(null);
     setLoading(true);
     try {
-      const [connectRes, subsRes, statsRes, followersRes] = await Promise.all([
-        getMyStripeConnectStatus(),
+      const [subsRes, statsRes, followersRes] = await Promise.all([
         getMyPaidListSubscribers(),
         getCreatorListStats(),
         getMyFollowers(),
       ]);
-      setPayoutReady(!connectRes.error && Boolean(connectRes.chargesEnabled));
       if (subsRes.error) {
         setLoadError(subsRes.error);
         setSubscriberRows([]);

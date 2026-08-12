@@ -59,13 +59,31 @@ export async function POST(request) {
   }
 
   const supabase = await createSupabaseServerClient();
-  const { data: listRow, error: lErr } = await supabase
+
+  const listQuery = supabase
     .from('lists')
     .select(
       'id, user_id, name, paid_access_enabled, stripe_price_id, monthly_amount_cents, currency'
     )
     .eq('id', listId)
     .maybeSingle();
+
+  /** @type {{ data: { id: string } | null } | null} */
+  let existingSnapResult = null;
+  let listResult;
+  if (purchaseType === 'snapshot') {
+    const existingSnapQuery = supabaseAdminClient
+      .from('list_snapshot_purchases')
+      .select('id')
+      .eq('buyer_user_id', user.id)
+      .eq('list_id', listId)
+      .maybeSingle();
+    [listResult, existingSnapResult] = await Promise.all([listQuery, existingSnapQuery]);
+  } else {
+    listResult = await listQuery;
+  }
+
+  const { data: listRow, error: lErr } = listResult;
 
   if (lErr) {
     console.error('[stripe checkout] list', lErr);
@@ -105,14 +123,8 @@ export async function POST(request) {
   const fee = getPlatformFeePercent();
 
   if (purchaseType === 'snapshot') {
-    // Check for existing snapshot purchase
-    const { data: existingSnap } = await supabaseAdminClient
-      .from('list_snapshot_purchases')
-      .select('id')
-      .eq('buyer_user_id', user.id)
-      .eq('list_id', listId)
-      .maybeSingle();
-    if (existingSnap) {
+    // Check for existing snapshot purchase (started in parallel with list load above)
+    if (existingSnapResult?.data) {
       return NextResponse.json({ error: 'already_purchased' }, { status: 400 });
     }
 

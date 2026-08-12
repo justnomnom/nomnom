@@ -41,8 +41,8 @@ import { hoverable } from 'src/theme/overrides/hoverable';
 import { isCapacitorNative } from 'src/libs/capacitor/platform';
 import { SPACE, RADIUS, TOUCH_TARGET_SIZE } from 'src/theme/spacing';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
+import { listIdsByRestaurantIdsForUser } from 'src/libs/lists/actions';
 import { useRestaurantTagsCatalog } from 'src/api/restaurant-tags-catalog';
-import { listIdsByRestaurantIdsForUser } from 'src/auth/actions/list-actions';
 import {
   RESTAURANT_SURFACE,
   useRestaurantAnalytics,
@@ -300,7 +300,12 @@ export default function DiscoverView({
   /** Filters the feed to spots open right now, using the status resolved server-side. */
   const [openNowOnly, setOpenNowOnly] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [prevSavedByRestaurant, setPrevSavedByRestaurant] = useState(savedListIdsByRestaurant);
   const [savedByRestaurant, setSavedByRestaurant] = useState(savedListIdsByRestaurant);
+  if (savedListIdsByRestaurant !== prevSavedByRestaurant) {
+    setPrevSavedByRestaurant(savedListIdsByRestaurant);
+    setSavedByRestaurant(savedListIdsByRestaurant);
+  }
   const [marketDialogOpen, setMarketDialogOpen] = useState(false);
   const [marketOptions, setMarketOptions] = useState(
     /** @type {Array<Record<string, unknown>>} */ ([])
@@ -311,7 +316,12 @@ export default function DiscoverView({
   const [marketSaveError, setMarketSaveError] = useState(/** @type {string | null} */ (null));
   const [useLocationBusy, setUseLocationBusy] = useState(false);
   const [useLocationError, setUseLocationError] = useState(/** @type {string | null} */ (null));
+  const [prevMarketLabel, setPrevMarketLabel] = useState(marketLabel);
   const [activeMarketLabel, setActiveMarketLabel] = useState(marketLabel);
+  if (marketLabel !== prevMarketLabel) {
+    setPrevMarketLabel(marketLabel);
+    setActiveMarketLabel(marketLabel);
+  }
   const activeMarketLabelRef = useRef(activeMarketLabel);
   activeMarketLabelRef.current = activeMarketLabel;
 
@@ -619,14 +629,6 @@ export default function DiscoverView({
       setLocResolving(false);
     }
   }, [homeLocalityId]);
-
-  useEffect(() => {
-    setActiveMarketLabel(marketLabel);
-  }, [marketLabel]);
-
-  useEffect(() => {
-    setSavedByRestaurant(savedListIdsByRestaurant);
-  }, [savedListIdsByRestaurant]);
 
   useEffect(() => {
     if (!user?.id) {

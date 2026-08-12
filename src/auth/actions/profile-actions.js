@@ -3,6 +3,7 @@
 import { supabaseAdminClient } from 'src/libs/supabase/supabase-admin';
 import { insertNotifications } from 'src/libs/notifications/create-notification';
 import { shouldNotifyNewFollower } from 'src/libs/notifications/filter-notification-recipients';
+import { buildNewFollowerNotificationData } from 'src/libs/notifications/social-notification-payloads';
 import {
   getSupabaseAuthUser,
   createSupabaseServerClient,
@@ -23,11 +24,11 @@ async function notifyNewFollower(supabase, actorId, recipientId) {
     .select('display_name, username')
     .eq('id', actorId)
     .maybeSingle();
-  await insertNotifications([recipientId], 'new_follower', {
-    actor_id: actorId,
-    actor_username: actor?.username ?? null,
-    actor_name: actor?.display_name || actor?.username || 'Someone',
-  });
+  await insertNotifications(
+    [recipientId],
+    'new_follower',
+    buildNewFollowerNotificationData({ id: actorId, ...actor })
+  );
 }
 
 function emptyToNull(v) {

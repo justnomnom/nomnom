@@ -90,15 +90,8 @@ export const INTEGRATION_FLAGS = {
 };
 
 // =============================================================================
-// Backends & assets
+// AI / ingest backends
 // =============================================================================
-
-export const HOST_API = process.env.NEXT_PUBLIC_HOST_API;
-export const ASSETS_API = process.env.NEXT_PUBLIC_ASSETS_API;
-
-export const BACKEND_API = {
-  host: process.env.NEXT_PUBLIC_BACKEND_API_HOST,
-};
 
 /**
  * Alibaba Qwen via DashScope's OpenAI-compatible endpoint. Used for cheap

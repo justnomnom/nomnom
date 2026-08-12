@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { notFound } from 'next/navigation';
 
 import { getServerViewerLang } from 'src/libs/i18n-server';
-import { fetchListForManage, fetchListMembershipForViewer } from 'src/auth/actions/list-actions';
+import { fetchListForManage, fetchListMembershipForViewer } from 'src/libs/lists/actions';
 
 import { DynamicTitle } from 'src/components/dynamic-title';
 
@@ -18,8 +18,9 @@ export default async function DashboardListManagePage({ params }) {
     notFound();
   }
 
-  // Lang overlaps membership check (async-parallel).
+  // Lang + manage payload overlap membership gate (async-parallel).
   const viewerLangPromise = getServerViewerLang();
+  const dataPromise = fetchListForManage(id, { viewerLang: viewerLangPromise });
   const membership = await fetchListMembershipForViewer(id);
   const canManageList = membership.isOwner || membership.isEditor || membership.isMember;
 
@@ -27,7 +28,7 @@ export default async function DashboardListManagePage({ params }) {
     notFound();
   }
 
-  const data = await fetchListForManage(id, { viewerLang: viewerLangPromise });
+  const data = await dataPromise;
   if (!data.list) {
     notFound();
   }

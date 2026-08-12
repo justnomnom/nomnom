@@ -38,10 +38,13 @@ import {
   updateSponsoredPlacementAction,
 } from 'src/auth/actions/sponsored-placement-actions';
 
-import DateRangePicker from 'src/components/date-range-picker';
+import dynamic from 'next/dynamic';
+
 import DeleteDialog from 'src/components/custom-dialog/delete-dialog';
 
 import { SettingsDrillShell } from 'src/sections/profile/view';
+
+const DateRangePicker = dynamic(() => import('src/components/date-range-picker'), { ssr: false });
 
 // ----------------------------------------------------------------------
 

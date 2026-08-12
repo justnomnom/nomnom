@@ -7,7 +7,7 @@ import {
   fetchMyOwnedListsForMapDropdown,
   fetchFollowingListsForMapDropdown,
   fetchMyCollaboratorListsForMapDropdown,
-} from 'src/auth/actions/list-actions';
+} from 'src/libs/lists/actions';
 
 // ----------------------------------------------------------------------
 

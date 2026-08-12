@@ -21,7 +21,8 @@ export function groupListUpdatesByUserForDigest(notifs) {
 }
 
 /**
- * Keep only users who explicitly opted into list-update email digests.
+ * Keep only users who explicitly opted into list-update emails
+ * (daily digest and Live List emails share this opt-in).
  *
  * @param {Iterable<string>} userIds
  * @param {Array<{ user_id: string, list_updates_email?: boolean }>} [prefRows]
@@ -34,4 +35,34 @@ export function filterDigestRecipientsByEmailPreference(userIds, prefRows) {
       .map((p) => String(p.user_id))
   );
   return new Set([...userIds].filter((id) => enabled.has(String(id))));
+}
+
+/**
+ * Drop digest list entries the user is an active/trialing paid subscriber of.
+ * Those lists are covered by the Live List email path — including them here
+ * would double-email opted-in subscribers.
+ *
+ * Mutates and returns the same Map for chaining; users left with zero lists
+ * are removed.
+ *
+ * @param {Map<string, Map<string, { listName: string, count: number }>>} byUser
+ * @param {Array<{ user_id?: string, list_id?: string, subscriber_user_id?: string }> | null | undefined} subscriptionEdges
+ * @returns {Map<string, Map<string, { listName: string, count: number }>>}
+ */
+export function omitActiveSubscriptionsFromDigest(byUser, subscriptionEdges) {
+  if (!(byUser instanceof Map)) return new Map();
+  const subscribed = new Set();
+  (Array.isArray(subscriptionEdges) ? subscriptionEdges : []).forEach((row) => {
+    const uid = row?.user_id ?? row?.subscriber_user_id;
+    const listId = row?.list_id;
+    if (!uid || !listId) return;
+    subscribed.add(`${String(uid)}|${String(listId)}`);
+  });
+  for (const [uid, lists] of byUser) {
+    for (const listId of [...lists.keys()]) {
+      if (subscribed.has(`${uid}|${listId}`)) lists.delete(listId);
+    }
+    if (lists.size === 0) byUser.delete(uid);
+  }
+  return byUser;
 }

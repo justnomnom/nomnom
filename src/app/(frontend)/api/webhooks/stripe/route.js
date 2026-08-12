@@ -5,6 +5,10 @@ import { supabaseAdminClient } from 'src/libs/supabase/supabase-admin';
 import { isWellFormedUuid } from 'src/libs/stripe/list-stripe-constants';
 import { captureServerEvent } from 'src/libs/posthog/capture-server-event';
 import { insertNotifications } from 'src/libs/notifications/create-notification';
+import {
+  buildListSocialNotificationData,
+  resolveOwnerRecipientExcludingActor,
+} from 'src/libs/notifications/social-notification-payloads';
 import { upsertListSnapshotPurchase } from 'src/libs/stripe/upsert-list-snapshot-purchase';
 import { fetchListItemIdsForSnapshotCapture } from 'src/libs/stripe/fetch-list-item-ids-for-snapshot-capture';
 
@@ -273,15 +277,18 @@ async function notifyListSubscribed(sub) {
       .eq('id', subscriberUserId)
       .maybeSingle(),
   ]);
-  if (!list?.user_id || list.user_id === subscriberUserId) return;
+  const ownerId = resolveOwnerRecipientExcludingActor(list?.user_id, subscriberUserId);
+  if (!ownerId) return;
 
-  await insertNotifications([list.user_id], 'list_subscribed', {
-    actor_id: subscriberUserId,
-    actor_username: subscriber?.username ?? null,
-    actor_name: subscriber?.display_name || subscriber?.username || 'Someone',
-    list_id: listId,
-    list_name: list.name ?? null,
-  });
+  await insertNotifications(
+    [ownerId],
+    'list_subscribed',
+    buildListSocialNotificationData({
+      actor: { id: subscriberUserId, ...subscriber },
+      listId,
+      listName: list?.name,
+    })
+  );
 }
 
 async function syncSubscriptionRecord(stripe, sub, connectAccountId) {

@@ -2,12 +2,13 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import dynamic from 'next/dynamic';
 import * as Sentry from '@sentry/nextjs';
 
 import { INTEGRATION_FLAGS } from 'src/config-global';
 import { captureException as capturePostHogException } from 'src/libs/posthog/posthog-service';
 
-import Error500View from 'src/sections/error/500-view';
+const Error500View = dynamic(() => import('src/sections/error/500-view'), { ssr: false });
 
 const captureError = (error, extraPayload) => {
   if (INTEGRATION_FLAGS.sentry) {

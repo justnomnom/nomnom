@@ -1,7 +1,7 @@
 'use client';
 
 import PropTypes from 'prop-types';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useRef, useMemo, useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
@@ -31,9 +31,9 @@ import { useTranslate } from 'src/locales';
 import { tabularNumsSx } from 'src/theme/spacing';
 import { setFollowUser } from 'src/auth/actions/profile-actions';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
-import { fetchPublicProfileActivityPage } from 'src/auth/actions/list-actions';
-import { PROFILE_ACTIVITY_PAGE_SIZE } from 'src/lib/public-profile-activity-constants';
+import { fetchPublicProfileActivityPage } from 'src/libs/lists/actions';
 import { cancelMyCreatorSubscription } from 'src/auth/actions/creator-subscribers-actions';
+import { PROFILE_ACTIVITY_PAGE_SIZE } from 'src/libs/profile/public-profile-activity-constants';
 
 import Iconify from 'src/components/iconify';
 import DeleteDialog from 'src/components/custom-dialog/delete-dialog';
@@ -200,8 +200,8 @@ export default function UserPublicProfileView({
   const theme = useTheme();
   const { t, currentLang } = useTranslate();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { trackEvent, setGroup } = useAnalytics();
+  const [prevInitialFollowing, setPrevInitialFollowing] = useState(initialFollowing);
   const [following, setFollowing] = useState(initialFollowing);
   const [followBusy, setFollowBusy] = useState(false);
   const followInFlightRef = useRef(false);
@@ -224,6 +224,11 @@ export default function UserPublicProfileView({
   );
   /** Newly created lists until server `lists` includes them (same pattern as save-to-list sheet). */
   const [pendingOwnLists, setPendingOwnLists] = useState([]);
+
+  if (initialFollowing !== prevInitialFollowing) {
+    setPrevInitialFollowing(initialFollowing);
+    setFollowing(initialFollowing);
+  }
 
   useEffect(() => {
     if (!profile?.id) return;
@@ -285,14 +290,9 @@ export default function UserPublicProfileView({
     return rows.filter((row) => row?.kind === activityFilter);
   }, [activityRows, activityFilter]);
 
-  useEffect(() => {
-    setFollowing(initialFollowing);
-  }, [initialFollowing]);
-
-  const checkoutParam = searchParams.get('checkout');
-
   /** Stripe Checkout return: strip query params and refresh RSC so subscription state updates. */
   useEffect(() => {
+    const checkoutParam = new URLSearchParams(window.location.search).get('checkout');
     if (!checkoutParam) return undefined;
     const cleanUrl = window.location.pathname;
     let cancelled = false;
@@ -312,7 +312,7 @@ export default function UserPublicProfileView({
     return () => {
       cancelled = true;
     };
-  }, [checkoutParam, profile?.id, router, trackEvent]);
+  }, [profile?.id, router, trackEvent]);
 
   const isOwnProfile = Boolean(viewerUserId && profile?.id && viewerUserId === profile.id);
   const subscribeListId = profile?.subscribe_list_id ?? null;

@@ -1,5 +1,5 @@
-import { toCanonicalEnglishLabel } from 'src/lib/ugc-translate';
-import { dishTagSlugFromCanonical } from 'src/lib/dish-tag-slug';
+import { toCanonicalEnglishLabel } from 'src/libs/ugc/ugc-translate';
+import { dishTagSlugFromCanonical } from 'src/libs/dish-tags/dish-tag-slug';
 
 import { signatureDishLabelsFromConsensus } from './signature-dish-labels';
 

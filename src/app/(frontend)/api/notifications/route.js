@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 
+import { parseNotificationListOffset } from 'src/libs/notifications/notification-api-helpers';
 import { getSupabaseAuthUser } from 'src/libs/supabase/supabase-server-client';
 
 export const runtime = 'nodejs';
@@ -22,7 +23,7 @@ export async function GET(request) {
   const { supabaseAdminClient } = await import('src/libs/supabase/supabase-admin');
 
   const { searchParams } = new URL(request.url);
-  const offset = Math.max(0, Number.parseInt(searchParams.get('offset') ?? '0', 10) || 0);
+  const offset = parseNotificationListOffset(searchParams.get('offset'));
 
   const [{ data: rows, error }, { count }] = await Promise.all([
     supabaseAdminClient

@@ -28,16 +28,12 @@ import { svgIcon } from './components/svg-icon';
 import { skeleton } from './components/skeleton';
 import { backdrop } from './components/backdrop';
 import { progress } from './components/progress';
-import { timeline } from './components/timeline';
 import { checkbox } from './components/checkbox';
-import { dataGrid } from './components/data-grid';
-import { treeView } from './components/tree-view';
 import { textField } from './components/textfield';
 import { accordion } from './components/accordion';
 import { typography } from './components/typography';
 import { pagination } from './components/pagination';
 import { iconButton } from './components/icon-button';
-import { datePicker } from './components/date-picker';
 import { breadcrumbs } from './components/breadcrumbs';
 import { cssBaseline } from './components/css-baseline';
 import { buttonGroup } from './components/button-group';
@@ -77,17 +73,13 @@ export function componentsOverrides(theme) {
     svgIcon(theme),
     switches(theme),
     checkbox(theme),
-    dataGrid(theme),
     skeleton(theme),
-    timeline(theme),
-    treeView(theme),
     backdrop(theme),
     progress(theme),
     textField(theme),
     accordion(theme),
     typography(theme),
     pagination(theme),
-    datePicker(theme),
     buttonGroup(theme),
     breadcrumbs(theme),
     cssBaseline(theme),

@@ -17,7 +17,7 @@ import { buildListUpdateRecipients } from '../notifications/build-list-update-re
 import {
   filterListMentionsToFollowsOnly,
   filterListMentionsToSelfOrReviewBacked,
-} from '../list/filter-list-mentions-to-follows-only.js';
+} from '../lists/filter-list-mentions-to-follows-only.js';
 import { isAdminUserId, getAdminUserIdSet } from '../auth/admin-allowlist.js';
 
 const GUEST = null;

@@ -26,13 +26,9 @@ if (!isDev && INTEGRATION_FLAGS.sentry && SENTRY_API.dsn) {
             /^https:\/\/.*\.vercel\.app\/api/,
         ],
 
-        // Replay may only be enabled for the client-side
+        // Replay is lazy-loaded below to avoid bloating the initial client bundle
         integrations: [
             Sentry.browserTracingIntegration(),
-            Sentry.replayIntegration({
-                maskAllText: true,
-                blockAllMedia: true,
-            }),
             // Forward console.warn/error as structured Sentry logs
             Sentry.consoleLoggingIntegration({ levels: ["warn", "error"] }),
         ],
@@ -42,6 +38,22 @@ if (!isDev && INTEGRATION_FLAGS.sentry && SENTRY_API.dsn) {
         replaysSessionSampleRate: SENTRY_API.replaysSessionSampleRate,
         replaysOnErrorSampleRate: SENTRY_API.replaysOnErrorSampleRate,
     });
+
+    // Defer Session Replay via CDN lazyLoadIntegration when available
+    if (typeof Sentry.lazyLoadIntegration === 'function') {
+        Sentry.lazyLoadIntegration('replayIntegration')
+            .then((replayIntegration) => {
+                Sentry.addIntegration(
+                    replayIntegration({
+                        maskAllText: true,
+                        blockAllMedia: true,
+                    })
+                );
+            })
+            .catch(() => {
+                // Ad blockers / network failures — tracing still works without Replay
+            });
+    }
 }
 
 // This export will instrument router navigations, and is only relevant if you enable tracing.

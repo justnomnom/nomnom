@@ -10,7 +10,7 @@ import { fetchRestaurantReviews } from 'src/auth/actions/restaurant-review-actio
 import {
   filterListMentionsToFollowsOnly,
   filterListMentionsToSelfOrReviewBacked,
-} from 'src/libs/list/filter-list-mentions-to-follows-only';
+} from 'src/libs/lists/filter-list-mentions-to-follows-only';
 import {
   fetchViewerSavedListMap,
   fetchViewerFollowingIds,
@@ -21,7 +21,7 @@ import {
   fetchFollowCircleForRestaurant,
   fetchPublicListItemsForRestaurant,
   fetchFollowingListOwnersForRestaurants,
-} from 'src/auth/actions/list-actions';
+} from 'src/libs/lists/actions';
 
 import { spotIdEq, buildSheetRestaurantFromMapPlace } from './map-sheet-restaurant-builders';
 

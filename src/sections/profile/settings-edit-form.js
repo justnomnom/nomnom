@@ -22,9 +22,10 @@ import { RouterLink } from 'src/routes/components';
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import { useAuthContext } from 'src/auth/hooks';
+import { useMyProfile } from 'src/api/my-profile';
+import { updateMyProfile } from 'src/auth/actions/profile-actions';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
 import { useSkeletonThemeColors } from 'src/theme/use-skeleton-theme';
-import { getMyProfile, updateMyProfile } from 'src/auth/actions/profile-actions';
 
 import Iconify from 'src/components/iconify';
 
@@ -66,6 +67,9 @@ export default function SettingsEditForm({
   const editSkeletonTheme = useSkeletonThemeColors();
 
   const hasInitialProfile = Boolean(initialProfile);
+  const { mutate: mutateMyProfile } = useMyProfile({
+    fallbackData: hasInitialProfile ? { profile: initialProfile } : undefined,
+  });
   const [loading, setLoading] = useState(!hasInitialProfile);
   const [saving, setSaving] = useState(false);
   const [displayName, setDisplayName] = useState(() => profileToState(initialProfile).displayName);
@@ -95,7 +99,9 @@ export default function SettingsEditForm({
       const { showLoading = true } = options;
       if (showLoading) setLoading(true);
       try {
-        const { profile, error } = await getMyProfile();
+        const result = await mutateMyProfile();
+        const profile = result?.profile;
+        const error = result?.error;
         if (error || !profile) {
           setLoadError(error || t('pages.dashboard.settings.edit.load_error'));
           return;
@@ -116,7 +122,7 @@ export default function SettingsEditForm({
         if (showLoading) setLoading(false);
       }
     },
-    [t]
+    [mutateMyProfile, t]
   );
 
   useEffect(() => {

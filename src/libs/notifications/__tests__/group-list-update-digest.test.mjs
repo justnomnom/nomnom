@@ -4,6 +4,7 @@ import { test } from 'node:test';
 import {
   filterDigestRecipientsByEmailPreference,
   groupListUpdatesByUserForDigest,
+  omitActiveSubscriptionsFromDigest,
 } from '../group-list-update-digest.js';
 
 test('groupListUpdatesByUserForDigest aggregates spots per user and list', () => {
@@ -76,4 +77,14 @@ test('digest: only opted-in users among many notification recipients', () => {
     { user_id: 'u3', list_updates_email: true },
   ]);
   assert.deepEqual([...enabled].sort(), ['u1', 'u3']);
+});
+
+test('digest: omitActiveSubscriptionsFromDigest removes paid lists only', () => {
+  const byUser = groupListUpdatesByUserForDigest([
+    { user_id: 'u1', data: { list_id: 'L1', list_name: 'Paid' } },
+    { user_id: 'u1', data: { list_id: 'L2', list_name: 'Follow' } },
+  ]);
+  omitActiveSubscriptionsFromDigest(byUser, [{ subscriber_user_id: 'u1', list_id: 'L1' }]);
+  assert.equal(byUser.get('u1').has('L1'), false);
+  assert.equal(byUser.get('u1').get('L2').count, 1);
 });

@@ -28,7 +28,7 @@ type ContentPageShellProps = {
 };
 
 /**
- * Article layout for MDX and marketing content — matches /post chrome (MainLayout header + blog column width).
+ * Article layout for MDX and marketing content — MainLayout header + readable column width.
  */
 export function ContentPageShell({
   title,

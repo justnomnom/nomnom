@@ -17,13 +17,13 @@ import {
 import {
   filterListMentionsToFollowsOnly,
   filterListMentionsToSelfOrReviewBacked,
-} from 'src/libs/list/filter-list-mentions-to-follows-only';
+} from 'src/libs/lists/filter-list-mentions-to-follows-only';
 import {
   restaurantInMyLists,
   fetchViewerFollowingIds,
   fetchRestaurantListMentions,
   fetchPublicListItemsForRestaurant,
-} from 'src/auth/actions/list-actions';
+} from 'src/libs/lists/actions';
 
 import { DynamicTitle } from 'src/components/dynamic-title';
 

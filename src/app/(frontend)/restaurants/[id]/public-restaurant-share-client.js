@@ -15,7 +15,7 @@ import RestaurantPublicAuthPrompt from 'src/sections/restaurant/restaurant-publi
 
 const AUTO_PROMPT_DELAY_MS = 10_000;
 
-export default function PublicRestaurantShareClient({ restaurant, restaurantId }) {
+export default function PublicRestaurantShareClient({ restaurant }) {
   const { t } = useTranslate();
   const searchParams = useSearchParams();
   const { authenticated, loading } = useAuthContext();
@@ -57,7 +57,7 @@ export default function PublicRestaurantShareClient({ restaurant, restaurantId }
         onGuestSaveClick={openAuthPrompt}
       />
       <RestaurantPublicAuthPrompt
-        restaurantId={restaurantId}
+        restaurantId={restaurant.id}
         open={authPromptOpen}
         onClose={closeAuthPrompt}
       />
@@ -67,5 +67,4 @@ export default function PublicRestaurantShareClient({ restaurant, restaurantId }
 
 PublicRestaurantShareClient.propTypes = {
   restaurant: PropTypes.object.isRequired,
-  restaurantId: PropTypes.string.isRequired,
 };

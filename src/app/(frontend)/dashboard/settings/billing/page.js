@@ -1,5 +1,5 @@
 import { getDefaultTranslation } from 'src/locales/default-translations';
-import { fetchOwnedListsForBilling } from 'src/auth/actions/list-actions';
+import { fetchOwnedListsForBilling } from 'src/libs/lists/actions';
 import { getMyStripeConnectStatus } from 'src/auth/actions/stripe-list-actions';
 
 import { DynamicTitle } from 'src/components/dynamic-title';

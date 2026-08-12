@@ -2,7 +2,7 @@ import { supabaseAdminClient } from 'src/libs/supabase/supabase-admin';
 import {
   fetchAllSupabasePages,
   SUPABASE_DEFAULT_PAGE_SIZE,
-} from 'src/lib/supabase-fetch-all-pages';
+} from 'src/libs/supabase/supabase-fetch-all-pages';
 
 import { mapListItemRowsToIds } from './map-list-item-rows-to-ids';
 

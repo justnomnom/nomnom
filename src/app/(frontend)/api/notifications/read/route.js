@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 
+import { resolveNotificationMutationTarget } from 'src/libs/notifications/notification-api-helpers';
 import {
   getSupabaseAuthUser,
   createSupabaseServerClient,
@@ -27,17 +28,20 @@ export async function POST(request) {
     return NextResponse.json({ error: 'invalid_json' }, { status: 400 });
   }
 
+  const target = resolveNotificationMutationTarget(body);
+  if (target.mode === 'error') {
+    return NextResponse.json({ error: target.error }, { status: 400 });
+  }
+
   const supabase = await createSupabaseServerClient();
   const now = new Date().toISOString();
 
   let query = supabase.from('notifications').update({ read_at: now }).eq('user_id', user.id);
 
-  if (body?.all === true) {
+  if (target.mode === 'all') {
     query = query.is('read_at', null);
-  } else if (typeof body?.id === 'string' && body.id) {
-    query = query.eq('id', body.id);
   } else {
-    return NextResponse.json({ error: 'missing_target' }, { status: 400 });
+    query = query.eq('id', target.id);
   }
 
   const { error } = await query;

@@ -1,6 +1,10 @@
 import { insertNotifications } from 'src/libs/notifications/create-notification';
 import { buildListUpdateRecipients } from 'src/libs/notifications/build-list-update-recipients';
 import { resolveListUpdateNotificationAudiences } from 'src/libs/notifications/filter-notification-recipients';
+import {
+  buildListUpdateNotificationData,
+  shouldFanOutListUpdate,
+} from 'src/libs/notifications/list-update-notify-helpers';
 
 /**
  * Notify a creator's followers and a list's paid subscribers that a new
@@ -30,7 +34,7 @@ export async function notifyListFollowers(supabase, listId, restaurantId, acting
     if (!list) return;
 
     // Nothing to do for private lists (collaborators are out of scope).
-    if (list.visibility !== 'public' && list.visibility !== 'public_subscribers') return;
+    if (!shouldFanOutListUpdate(list.visibility)) return;
 
     // Followers of the creator (only relevant for fully public lists).
     let followerIds = [];
@@ -96,19 +100,14 @@ export async function notifyListFollowers(supabase, listId, restaurantId, acting
         .maybeSingle(),
     ]);
 
-    const creatorName =
-      creatorProfile?.display_name || creatorProfile?.username || 'A creator you follow';
-    const restaurantName = restaurant?.name || 'a new spot';
-
-    const data = {
-      list_id: list.id,
-      list_name: list.name ?? null,
-      creator_id: list.user_id,
-      creator_username: creatorProfile?.username ?? null,
-      creator_name: creatorName,
-      restaurant_id: restaurantId,
-      restaurant_name: restaurantName,
-    };
+    const data = buildListUpdateNotificationData({
+      list,
+      restaurantId,
+      restaurant,
+      creatorProfile,
+    });
+    const creatorName = data.creator_name;
+    const restaurantName = data.restaurant_name;
 
     if (inAppRecipients.length > 0) {
       await insertNotifications(inAppRecipients, 'list_update', data);

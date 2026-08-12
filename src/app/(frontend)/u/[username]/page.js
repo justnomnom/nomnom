@@ -5,7 +5,7 @@ import { ogText } from 'src/libs/og/og-text';
 import { getSiteUrl } from 'src/libs/site-url';
 import { fetchOgProfile } from 'src/libs/og/fetch-og-profile';
 import { fetchViewerFollowsUser } from 'src/auth/actions/profile-actions';
-import { fetchPublicProfileByUsername } from 'src/auth/actions/list-actions';
+import { fetchPublicProfileByUsername } from 'src/libs/lists/actions';
 import { getSupabaseAuthUser } from 'src/libs/supabase/supabase-server-client';
 
 import { DynamicTitle } from 'src/components/dynamic-title';

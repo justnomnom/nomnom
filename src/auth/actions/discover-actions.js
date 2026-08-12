@@ -8,7 +8,7 @@ import { paths } from 'src/routes/paths';
 import { wireSlugFromText } from 'src/utils/wire-slug';
 
 import { saveOnboardingLocation } from 'src/auth/actions/onboarding-actions';
-import { listIdsByRestaurantIdsForUser } from 'src/auth/actions/list-actions';
+import { listIdsByRestaurantIdsForUser } from 'src/libs/lists/actions';
 import { syncUserPrimaryLocalityFollow } from 'src/auth/actions/location-follow-sync';
 import {
   getSupabaseAuthUser,

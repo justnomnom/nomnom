@@ -46,7 +46,7 @@ import {
   restaurantInMyLists,
   addRestaurantToLists,
   removeRestaurantFromList,
-} from 'src/auth/actions/list-actions';
+} from 'src/libs/lists/actions';
 import {
   fetchRestaurantDishSuggestions,
   fetchMyMustTryDraftForRestaurant,

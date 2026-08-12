@@ -22,7 +22,6 @@ const ROUTES: Array<{ path: string; label: string }> = [
   { path: `/features/${BOGUS}`, label: 'features/[slug]' },
   { path: `/resources/${BOGUS}`, label: 'resources/[slug]' },
   { path: `/use-cases/${BOGUS}`, label: 'use-cases/[slug]' },
-  { path: `/post/${BOGUS}`, label: 'post/[title]' },
   { path: `/restaurants/${BOGUS}`, label: 'restaurants/[id] (non-uuid)' },
   { path: `/lists/${BOGUS}`, label: 'lists/[creatorHandle]' },
   { path: `/lists/${BOGUS}/${BOGUS}`, label: 'lists/[creatorHandle]/[listSlug]' },

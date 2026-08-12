@@ -119,15 +119,11 @@ const nextConfig = {
     // Optimize for faster dev compilation
     optimizePackageImports: [
       '@mui/material',
-      '@mui/icons-material',
-      '@mui/lab',
-      '@mui/x-data-grid',
-      '@mui/x-date-pickers',
+      'antd',
       'lodash',
       'date-fns',
       '@iconify/react',
       'framer-motion',
-      'lucide-react',
     ],
   },
   // Next.js 16: Turbopack is the default bundler; use `next dev --webpack` / `next build --webpack` if you need custom webpack-only plugins.
@@ -194,14 +190,8 @@ const nextConfig = {
     ];
   },
   modularizeImports: {
-    '@mui/icons-material': {
-      transform: '@mui/icons-material/{{member}}',
-    },
     '@mui/material': {
       transform: '@mui/material/{{member}}',
-    },
-    '@mui/lab': {
-      transform: '@mui/lab/{{member}}',
     },
   },
   // Webpack configuration (only used when NOT using Turbopack)

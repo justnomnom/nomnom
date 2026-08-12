@@ -1,6 +1,8 @@
+import { cache } from 'react';
+
 import { openingStatusForRow } from 'src/libs/restaurant/opening-hours';
 import { RESTAURANT_ID_UUID_RE } from 'src/libs/restaurant/restaurant-id-uuid';
-import { slimRestaurantCardMetadata } from 'src/lib/slim-restaurant-card-metadata';
+import { slimRestaurantCardMetadata } from 'src/libs/restaurant/slim-restaurant-card-metadata';
 import { createSupabaseServerClient } from 'src/libs/supabase/supabase-server-client';
 
 export { RESTAURANT_ID_UUID_RE };
@@ -16,10 +18,11 @@ function flattenRestaurantTagsFromRow(row) {
 
 /**
  * Load a single restaurant row for server-rendered pages (dashboard detail, public share).
+ * Deduped per request via React.cache (e.g. generateMetadata + page).
  * @param {string} id
  * @returns {Promise<object | null>}
  */
-export async function fetchRestaurantByIdForSsr(id) {
+export const fetchRestaurantByIdForSsr = cache(async (id) => {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from('restaurants')
@@ -81,4 +84,4 @@ export async function fetchRestaurantByIdForSsr(id) {
     openingStatus: openingStatusForRow(rest.metadata),
     metadata: slimRestaurantCardMetadata(rest.metadata),
   };
-}
+});

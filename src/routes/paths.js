@@ -17,7 +17,7 @@ export const paths = {
   privacy: '/privacy',
   terms: '/terms',
 
-  /** Public SEO / editorial (MainLayout — no dashboard prefix). */
+  /** Public SEO roulette (PT path kept for Lisbon SEO). Product UI: `dashboard.roulette`. */
   site: {
     countries: '/countries',
     about: '/about',
@@ -28,6 +28,7 @@ export const paths = {
     useCaseRestaurants: '/use-cases/restaurants',
     portugal: '/countries/portugal',
     lisbon: '/countries/portugal/lisbon',
+    /** Public PT SEO URL — do not rename; pairs with `dashboard.roulette`. */
     rouletteLisboa: '/roleta/lisboa',
     lisbonRestaurants: '/countries/portugal/lisbon/restaurants',
     portugalInfluencers: '/countries/portugal/influencers',
@@ -39,11 +40,6 @@ export const paths = {
   page500: '/error/500',
   /** Post-auth multi-step wizard (single route). */
   onboarding: '/onboarding',
-  // POST
-  post: {
-    root: '/post',
-    details: (title) => `/post/${title}`,
-  },
   /** Published list (share / SEO). Pass { username, slug } to get the human-readable URL. */
   listPublic: (id, opts) =>
     opts?.username && opts?.slug ? `/lists/${opts.username}/${opts.slug}` : `/lists/${id}`,
@@ -68,10 +64,9 @@ export const paths = {
     /** Section prefix; use `discover` for the signed-in home. */
     root: ROOTS.DASHBOARD,
     discover: `${ROOTS.DASHBOARD}/discover`,
-    blank: `${ROOTS.DASHBOARD}/blank`,
     map: `${ROOTS.DASHBOARD}/map`,
     restaurant: (id) => `${ROOTS.DASHBOARD}/restaurants/${id}`,
-    /** My NomNom lists index (not list detail — that is `listDetails`). */
+    /** My NomNom lists hub (was historically called “Saved”; `/dashboard/saved` redirects here). */
     lists: `${ROOTS.DASHBOARD}/lists`,
     settings: `${ROOTS.DASHBOARD}/settings`,
     settingsEdit: `${ROOTS.DASHBOARD}/settings/profile/edit`,
@@ -95,6 +90,7 @@ export const paths = {
     userPublic: (username) => `${ROOTS.DASHBOARD}/u/${String(username ?? '').replace(/^@/, '')}`,
     feedback: `${ROOTS.DASHBOARD}/feedback`,
     notifications: `${ROOTS.DASHBOARD}/notifications`,
+    /** In-app roulette (EN). Public SEO twin: `site.rouletteLisboa` (`/roleta/lisboa`). */
     roulette: `${ROOTS.DASHBOARD}/roulette`,
     listDetails: (id) => `${ROOTS.DASHBOARD}/lists/${id}`,
     /** Edit list (metadata, members, places) — owners, editors, and members. */

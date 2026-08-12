@@ -1,7 +1,10 @@
 import {
   groupListUpdatesByUserForDigest,
   filterDigestRecipientsByEmailPreference,
+  omitActiveSubscriptionsFromDigest,
 } from 'src/libs/notifications/group-list-update-digest';
+import { digestWindowSinceIso } from 'src/libs/notifications/list-update-notify-helpers';
+import { chunkArray } from 'src/libs/notifications/chunk';
 
 /**
  * Build and send the "new spots on lists you follow" email digest.
@@ -9,6 +12,10 @@ import {
  * Aggregates `list_update` notifications created in the last `windowHours`, groups
  * them per recipient and per list, and emails a single summary to each recipient
  * who has opted into email updates (`notification_preferences.list_updates_email`).
+ *
+ * Active/trialing paid subscriptions are omitted from each user's digest — those
+ * lists are covered by Live List emails (same opt-in), so we never double-email.
+ *
  * Intended to run once per day from a cron route. Best-effort; never throws.
  *
  * @param {{ windowHours?: number }} [opts]
@@ -24,7 +31,7 @@ export async function sendListUpdateDigests({ windowHours = 24 } = {}) {
 
     if (!RESEND_API.key || !RESEND_API.from) return { sent: 0, recipients: 0 };
 
-    const since = new Date(Date.now() - windowHours * 60 * 60 * 1000).toISOString();
+    const since = digestWindowSinceIso(windowHours);
 
     const { data: notifs } = await supabaseAdminClient
       .from('notifications')
@@ -38,7 +45,7 @@ export async function sendListUpdateDigests({ windowHours = 24 } = {}) {
     const userIds = [...byUser.keys()];
     if (userIds.length === 0) return { sent: 0, recipients: 0 };
 
-    // Only users who opted into the email digest.
+    // Only users who opted into list-update emails.
     const { data: prefs } = await supabaseAdminClient
       .from('notification_preferences')
       .select('user_id, list_updates_email')
@@ -47,12 +54,37 @@ export async function sendListUpdateDigests({ windowHours = 24 } = {}) {
     const enabled = filterDigestRecipientsByEmailPreference(userIds, prefs);
     if (enabled.size === 0) return { sent: 0, recipients: 0 };
 
+    // Drop lists the recipient already pays for (Live List email covers those).
+    const listIds = [
+      ...new Set(
+        [...enabled].flatMap((uid) => [...(byUser.get(uid)?.keys() ?? [])])
+      ),
+    ];
+    const subscriptionEdges = [];
+    if (listIds.length > 0) {
+      await Promise.all(
+        chunkArray([...enabled], 200).map(async (userBatch) => {
+          const { data } = await supabaseAdminClient
+            .from('list_subscriptions')
+            .select('subscriber_user_id, list_id')
+            .in('subscriber_user_id', userBatch)
+            .in('list_id', listIds)
+            .in('status', ['active', 'trialing']);
+          if (data?.length) subscriptionEdges.push(...data);
+        })
+      );
+    }
+    omitActiveSubscriptionsFromDigest(byUser, subscriptionEdges);
+
+    const digestUserIds = [...enabled].filter((uid) => (byUser.get(uid)?.size ?? 0) > 0);
+    if (digestUserIds.length === 0) return { sent: 0, recipients: 0 };
+
     const siteUrl = getSiteUrl();
     const manageUrl = `${siteUrl}/dashboard/settings/notifications`;
 
     let sent = 0;
     await Promise.allSettled(
-      [...enabled].map(async (uid) => {
+      digestUserIds.map(async (uid) => {
         const lists = byUser.get(uid);
         if (!lists || lists.size === 0) return;
 
@@ -85,7 +117,7 @@ export async function sendListUpdateDigests({ windowHours = 24 } = {}) {
       })
     );
 
-    return { sent, recipients: enabled.size };
+    return { sent, recipients: digestUserIds.length };
   } catch (e) {
     console.error('[sendListUpdateDigests]', e);
     return { sent: 0, recipients: 0 };

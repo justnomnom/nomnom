@@ -921,7 +921,7 @@
         "hours_permanently_closed": "Fechado permanentemente",
         "hours_temporarily_closed": "Fechado temporariamente"
       },
-      "saved": {
+      "lists": {
         "title": "Listas",
         "page_heading": "Listas NomNom",
         "lists_filter_aria": "Filtrar listas",
@@ -1681,6 +1681,7 @@
       "enable_device_hint": "Recebe um aviso quando criadores que segues adicionam novos spots.",
       "enable_device_blocked": "As notificações estão bloqueadas. Ativa-as nas definições do navegador.",
       "enable_device_ios_hint": "Adiciona esta app ao ecrã inicial para ativar as notificações.",
+      "enable_device_unsupported": "As notificações push não são suportadas neste navegador.",
       "enabled_device": "Notificações ativadas neste dispositivo",
       "pref_title": "Atualizações de listas",
       "pref_in_app": "Mostrar na app",

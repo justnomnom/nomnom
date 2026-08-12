@@ -1,19 +1,23 @@
 import { filterMutedRecipients } from 'src/libs/notifications/filter-notification-recipients';
-
-/** Minimum hours between subscriber notification emails for the same list. */
-const NOTIFY_COOLDOWN_HOURS = 24;
+import { filterDigestRecipientsByEmailPreference } from 'src/libs/notifications/group-list-update-digest';
+import { isWithinLiveListNotifyCooldown } from 'src/libs/notifications/live-list-notify-cooldown';
 
 /**
- * Notify active Live List subscribers when a creator updates their list.
- * Sends at most one email per list per NOTIFY_COOLDOWN_HOURS to prevent spam
- * when a creator makes multiple edits in one session.
- * Called fire-and-forget from list mutation server actions — errors are logged but not thrown.
+ * Notify opted-in Live List (paid) subscribers by email when new spots are added.
+ * - Respects `notification_preferences.list_updates_email` (opt-in, same as digest).
+ * - Respects list/creator mutes.
+ * - At most one email per list per 24h cooldown.
+ * - Stamps `last_notified_at` only after at least one send attempt with a recipient email.
+ *
+ * Fire-and-forget from list add actions — errors are logged but not thrown.
  *
  * @param {import('@supabase/supabase-js').SupabaseClient} supabase  — user-scoped client
  * @param {string} listId
  */
 export async function notifyLiveListSubscribers(supabase, listId) {
   try {
+    if (!listId) return;
+
     const { supabaseAdminClient } = await import('src/libs/supabase/supabase-admin');
     const { getSiteUrl } = await import('src/libs/site-url');
     const { sendResendEmail } = await import('src/libs/email/resend-server-send');
@@ -31,12 +35,7 @@ export async function notifyLiveListSubscribers(supabase, listId) {
       .maybeSingle();
     if (lErr || !list) return;
 
-    // Cooldown: at most one email per 24 hours per list
-    if (list.last_notified_at) {
-      const hoursSinceLast =
-        (Date.now() - new Date(list.last_notified_at).getTime()) / (1000 * 60 * 60);
-      if (hoursSinceLast < NOTIFY_COOLDOWN_HOURS) return;
-    }
+    if (isWithinLiveListNotifyCooldown(list.last_notified_at)) return;
 
     const { data: creatorProfile } = await supabaseAdminClient
       .from('users')
@@ -53,15 +52,26 @@ export async function notifyLiveListSubscribers(supabase, listId) {
     if (sErr || !subs?.length) return;
 
     const subscriberIds = subs.map((s) => s.subscriber_user_id).filter(Boolean);
-    const { data: muteRows } = await supabaseAdminClient
-      .from('notification_mutes')
-      .select('user_id, target_type, target_id')
-      .in('user_id', subscriberIds)
-      .or(
-        `and(target_type.eq.list,target_id.eq.${listId}),and(target_type.eq.creator,target_id.eq.${list.user_id})`
-      );
+    if (subscriberIds.length === 0) return;
+
+    const [{ data: muteRows }, { data: prefRows }] = await Promise.all([
+      supabaseAdminClient
+        .from('notification_mutes')
+        .select('user_id, target_type, target_id')
+        .in('user_id', subscriberIds)
+        .or(
+          `and(target_type.eq.list,target_id.eq.${listId}),and(target_type.eq.creator,target_id.eq.${list.user_id})`
+        ),
+      supabaseAdminClient
+        .from('notification_preferences')
+        .select('user_id, list_updates_email')
+        .in('user_id', subscriberIds)
+        .eq('list_updates_email', true),
+    ]);
+
+    const emailOptInIds = filterDigestRecipientsByEmailPreference(subscriberIds, prefRows);
     const activeSubscriberIds = new Set(
-      filterMutedRecipients(subscriberIds, muteRows, {
+      filterMutedRecipients([...emailOptInIds], muteRows, {
         listId,
         creatorId: list.user_id,
       })
@@ -71,7 +81,7 @@ export async function notifyLiveListSubscribers(supabase, listId) {
     // Fetch each subscriber's email individually — listUsers() only returns 50 rows
     // by default and has no filter, so it would miss most users in any real database.
     const emailEntries = await Promise.all(
-      subscriberIds.map(async (id) => {
+      [...activeSubscriberIds].map(async (id) => {
         try {
           const { data } = await supabaseAdminClient.auth.admin.getUserById(id);
           return [id, data.user?.email ?? null];
@@ -81,22 +91,14 @@ export async function notifyLiveListSubscribers(supabase, listId) {
       })
     );
     const emailById = Object.fromEntries(emailEntries.filter(([, email]) => email));
+    if (Object.keys(emailById).length === 0) return;
 
     const listUrl = `${siteUrl}/lists/${listId}`;
-    const manageUrl = `${siteUrl}/dashboard/settings/my-subscriptions`;
+    const manageUrl = `${siteUrl}/dashboard/settings/notifications`;
     const listName = list.name ?? 'this list';
 
-    // Stamp before sending so concurrent mutations don't double-fire
-    await supabaseAdminClient
-      .from('lists')
-      .update({ last_notified_at: new Date().toISOString() })
-      .eq('id', listId);
-
-    await Promise.allSettled(
-      subs.map(async (sub) => {
-        if (!activeSubscriberIds.has(sub.subscriber_user_id)) return;
-        const email = emailById[sub.subscriber_user_id];
-        if (!email) return;
+    const sendResults = await Promise.allSettled(
+      Object.entries(emailById).map(async ([, email]) => {
         const html = liveListUpdateHtml({ listName, creatorName, listUrl, manageUrl });
         await sendResendEmail({
           to: email,
@@ -105,6 +107,15 @@ export async function notifyLiveListSubscribers(supabase, listId) {
         });
       })
     );
+
+    const anySent = sendResults.some((r) => r.status === 'fulfilled');
+    if (!anySent) return;
+
+    // Stamp only after a successful send so a total failure can retry.
+    await supabaseAdminClient
+      .from('lists')
+      .update({ last_notified_at: new Date().toISOString() })
+      .eq('id', listId);
   } catch (e) {
     console.error('[notifyLiveListSubscribers]', listId, e);
   }

@@ -28,9 +28,6 @@
   ],
   "ignoreDependencies": [
     "@capacitor/haptics",
-    "@mui/icons-material",
-    "@mui/lab",
-    "@mui/x-data-grid",
     "@next/third-parties",
     "@next/eslint-plugin-next",
     "@svgr/webpack",
@@ -44,7 +41,6 @@
     "eslint-plugin-react",
     "eslint-plugin-react-hooks",
     "eslint-plugin-unused-imports",
-    "lucide-react",
     "sharp",
     "tailwindcss",
     "@vercel/analytics",

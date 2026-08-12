@@ -605,6 +605,8 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
   const locationsFetchGenRef = useRef(0);
   /** Ignores stale `getCurrentPosition` / resolve callbacks after Clear or a newer request. */
   const geoRequestGenRef = useRef(0);
+  /** True when the in-flight GPS request was started by auto-geo (not an explicit tap). */
+  const geoFromAutoRef = useRef(false);
   /** Ignores stale suggested-creators responses when slug changes / Retry overlaps. */
   const creatorsFetchGenRef = useRef(0);
 
@@ -654,6 +656,8 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
   dbLocationsRef.current = dbLocations;
   const locationsErrorRef = useRef(locationsError);
   locationsErrorRef.current = locationsError;
+  const selectedLocalityIdsRef = useRef(selectedLocalityIds);
+  selectedLocalityIdsRef.current = selectedLocalityIds;
 
   const loadLocations = useCallback(() => {
     const gen = ++locationsFetchGenRef.current;
@@ -980,7 +984,11 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
 
   useEffect(() => {
     if (!creatorsFetchSettled || creatorsLoading || creatorsError) return;
-    const allowed = new Set(creators.map((c) => c.userId).filter(Boolean));
+    const allowed = new Set(
+      creators
+        .map((c) => (c.userId != null ? String(c.userId).trim().toLowerCase() : ''))
+        .filter((id) => DRAFT_TAG_ID_RE.test(id))
+    );
     setFollowIds((prev) => {
       let changed = false;
       const next = new Set();
@@ -1012,10 +1020,12 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
 
   const toggleFollow = useCallback((userId) => {
     if (!userId) return;
+    const id = String(userId).trim().toLowerCase();
+    if (!DRAFT_TAG_ID_RE.test(id)) return;
     setFollowIds((prev) => {
       const next = new Set(prev);
-      if (next.has(userId)) next.delete(userId);
-      else next.add(userId);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   }, []);
@@ -1032,6 +1042,9 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
       trackEvent('onboarding_completed', { path: 'skip', from_step: step });
       clearOnboardingDraftStorage(draftUserId);
       router.replace(paths.dashboard.discover);
+    } catch (e) {
+      devWarn('[OnboardingWizard] skip/complete failed', e);
+      setErr('save_failed');
     } finally {
       setBusy(false);
     }
@@ -1061,6 +1074,9 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
         return;
       }
       setStep(3);
+    } catch (e) {
+      devWarn('[OnboardingWizard] save tag prefs failed', e);
+      setErr('tag_prefs_save_failed');
     } finally {
       setBusy(false);
     }
@@ -1107,19 +1123,30 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
   /** Turns off the GPS "location is on" state (hint: Tap to turn off). Keeps manual city picks. */
   const clearGeo = useCallback(() => {
     geoRequestGenRef.current += 1;
+    geoFromAutoRef.current = false;
+    // Prevent auto-geo from immediately re-requesting after an explicit clear.
+    autoGeoAttemptedRef.current = true;
     setLocationGranted(false);
     setGeoLoading(false);
     pendingGeoLocalityRef.current = '';
     setErr(null);
   }, []);
 
-  const requestGeo = useCallback(() => {
+  /**
+   * Request device geolocation and map coords → locality chip.
+   * @param {{ fromAuto?: boolean }} [options] - `fromAuto: true` for the one-shot
+   *   Location-step prompt; when the user already picked a city while GPS was in
+   *   flight, auto results are ignored so we never override their primary.
+   */
+  const requestGeo = useCallback((options = {}) => {
     if (!navigator.geolocation) {
       setLocationGranted(false);
       pendingGeoLocalityRef.current = '';
       return;
     }
+    const fromAuto = Boolean(options?.fromAuto);
     const gen = ++geoRequestGenRef.current;
+    geoFromAutoRef.current = fromAuto;
     setErr(null);
     setGeoLoading(true);
     navigator.geolocation.getCurrentPosition(
@@ -1127,13 +1154,18 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
         if (gen !== geoRequestGenRef.current) return;
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
-        setLocationGranted(true);
         try {
           const { location: matched, error } = await resolveLocalityFromCoordinates(lng, lat);
           if (gen !== geoRequestGenRef.current) return;
+          // Auto-geo lost the race to a manual city pick — leave their selection alone.
+          if (geoFromAutoRef.current && selectedLocalityIdsRef.current.length > 0) {
+            return;
+          }
+          // Coords obtained (permission granted). Keep "Location is on" even when
+          // resolve fails / is outside coverage so the user can clear or pick manually.
+          setLocationGranted(true);
           if (error) {
             // Network/RPC failure — not the same as "coords outside supported area".
-            // Keep "Location is on"; user can still pick a city manually.
             devWarn('[OnboardingWizard] resolve locality:', error);
             setErr('gps_resolve_failed');
             return;
@@ -1173,14 +1205,21 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
     if (locationsLoading || locationsError) return;
     if (locationChoices.length === 0) return;
     if (geoLoading) return;
-    if (locationGranted) return;
+    if (locationGranted) {
+      // Draft restored "Location is on" — do not re-prompt on clear later.
+      autoGeoAttemptedRef.current = true;
+      return;
+    }
     if (selectedLocalityIds.length > 0) {
       autoGeoAttemptedRef.current = true;
       return;
     }
-    if (typeof navigator === 'undefined' || !navigator.geolocation) return;
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      autoGeoAttemptedRef.current = true;
+      return;
+    }
     autoGeoAttemptedRef.current = true;
-    requestGeo();
+    requestGeo({ fromAuto: true });
   }, [
     step,
     locationGranted,
@@ -1208,6 +1247,9 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
         return;
       }
       setStep(2);
+    } catch (e) {
+      devWarn('[OnboardingWizard] save location failed', e);
+      setErr('save_failed');
     } finally {
       setBusy(false);
     }
@@ -1233,6 +1275,9 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
       // layout (which redirects when completed) — a client-only "Done" step would
       // flash for a moment then get yanked away.
       router.replace(paths.dashboard.discover);
+    } catch (e) {
+      devWarn('[OnboardingWizard] finish failed', e);
+      setErr('save_failed');
     } finally {
       setBusy(false);
     }
@@ -1241,6 +1286,9 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
   let gpsState = 'idle';
   if (geoLoading) gpsState = 'getting';
   else if (locationGranted) gpsState = 'on';
+
+  /** True while creators are loading or waiting for the city slug before the first fetch. */
+  const creatorsPending = creatorsLoading || (!creatorsFetchSettled && !creatorsError);
 
   return (
     <Box
@@ -1813,7 +1861,7 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
                     {t('pages.onboarding.creators.body')}
                   </Typography>
                 </Box>
-                {creatorsLoading ? (
+                {creatorsPending ? (
                   <Box
                     sx={(muiTheme) => ({
                       mt: 0,
@@ -1884,7 +1932,7 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
                     </SkeletonTheme>
                   </Box>
                 ) : null}
-                {!creatorsLoading && creatorsError ? (
+                {!creatorsPending && creatorsError ? (
                   <Stack spacing={1}>
                     <Alert severity="error" variant="outlined" role="alert">
                       {t('pages.onboarding.creators.fetch_error')}
@@ -1899,7 +1947,7 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
                     </Button>
                   </Stack>
                 ) : null}
-                {!creatorsLoading &&
+                {!creatorsPending &&
                 !creatorsError &&
                 creatorsFetchSettled &&
                 creators.length === 0 ? (
@@ -1946,15 +1994,17 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
                     </Box>
                   </Stack>
                 ) : null}
-                {!creatorsLoading && !creatorsError && creators.length > 0 ? (
+                {!creatorsPending && !creatorsError && creators.length > 0 ? (
                   <Box component={m.div} variants={stepChildVariants}>
                     <Stack spacing={2.25}>
                       {creators.map((c, idx) => {
-                        const canFollow = Boolean(c.userId);
-                        const following = c.userId && followIds.has(c.userId);
+                        const followKey =
+                          c.userId != null ? String(c.userId).trim().toLowerCase() : '';
+                        const canFollow = DRAFT_TAG_ID_RE.test(followKey);
+                        const following = canFollow && followIds.has(followKey);
                         return (
                           <Stack
-                            key={c.userId || `creator-${idx}-${c.name || 'unknown'}`}
+                            key={followKey || `creator-${idx}-${c.name || 'unknown'}`}
                             component={m.div}
                             initial={{ opacity: 0, y: 12 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -2069,7 +2119,7 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
                               variant={following ? 'outlined' : 'contained'}
                               disabled={!canFollow}
                               fullWidth
-                              onClick={() => c.userId && toggleFollow(c.userId)}
+                              onClick={() => canFollow && toggleFollow(followKey)}
                               sx={{
                                 minHeight: { xs: 48, sm: 44 },
                                 flexShrink: 0,
@@ -2150,7 +2200,9 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
               onClick={onNextFromLocation}
               disabled={
                 busy ||
-                geoLoading ||
+                // Don't block Continue on in-flight GPS once the user already picked a city
+                // (auto-geo can take up to the geolocation timeout).
+                (geoLoading && selectedLocalityIds.length === 0) ||
                 locationsLoading ||
                 !!locationsError ||
                 selectedLocalityIds.length === 0
@@ -2188,7 +2240,11 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
               size="large"
               variant="contained"
               onClick={onFinish}
-              disabled={busy}
+              disabled={
+                busy ||
+                // Wait for the first creators fetch so users don't finish before cards appear.
+                creatorsPending
+              }
               aria-busy={busy}
               startIcon={
                 busy ? <CircularProgress size={22} color="inherit" thickness={5} /> : undefined

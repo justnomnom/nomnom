@@ -3,7 +3,7 @@
 import { randomUUID } from 'crypto';
 
 import { fetchRestaurantTagsCatalog } from 'src/auth/actions/location-actions';
-import { RESTAURANT_SEARCH_AI_PROVIDERS } from 'src/lib/restaurant-search-llm';
+import { RESTAURANT_SEARCH_AI_PROVIDERS } from 'src/libs/restaurant-search/restaurant-search-llm';
 import {
   getSupabaseAuthUser,
   createSupabaseServerClient,
@@ -12,7 +12,7 @@ import {
   executeSearchPlan,
   mapUserQueryToSearchPlan,
   fetchLastResortRestaurants,
-} from 'src/lib/restaurant-search-agent';
+} from 'src/libs/restaurant-search/restaurant-search-agent';
 import {
   logInfo,
   logWarn,
@@ -98,6 +98,8 @@ export async function searchRestaurantsFromNaturalLanguage({
     normalizedProvider = p;
   }
 
+  // Start catalog before auth so tag fetch overlaps the session check (async-parallel).
+  const catalogPromise = fetchRestaurantTagsCatalog();
   const supabase = await createSupabaseServerClient();
   const {
     data: { user },
@@ -141,7 +143,7 @@ export async function searchRestaurantsFromNaturalLanguage({
   }
 
   const startedAt = Date.now();
-  const { tags: catalog, error: catErr } = await fetchRestaurantTagsCatalog();
+  const { tags: catalog, error: catErr } = await catalogPromise;
   if (catErr || !catalog?.length) {
     try {
       const restaurants = await fetchLastResortRestaurants({ supabase, scope, userLat, userLng });

@@ -23,13 +23,3 @@ test.describe('public restaurant share link', () => {
     await expectAppShellMainVisible(page, { timeout: 45_000 });
   });
 });
-
-test.describe('blog post detail (public)', () => {
-  test('missing slug shows post not found empty state', async ({ page }) => {
-    const slug = `e2e-missing-post-${Date.now()}`;
-    await page.goto(`/post/${slug}`, { waitUntil: 'domcontentloaded' });
-    await expect(page).toHaveURL(new RegExp(`/post/${slug}`));
-    await expectAppShellMainVisible(page, { timeout: 45_000 });
-    await expect(page.getByText('Post Not Found')).toBeVisible({ timeout: 30_000 });
-  });
-});

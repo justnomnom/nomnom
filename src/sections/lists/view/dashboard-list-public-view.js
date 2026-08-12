@@ -30,7 +30,6 @@ import ListPublicView from './list-public-view';
 
 /** Public list content inside the signed-in dashboard shell (e.g. `/dashboard/lists/:id`). */
 export default function DashboardListPublicView({
-  listId,
   list,
   items,
   owner,
@@ -41,6 +40,7 @@ export default function DashboardListPublicView({
   const theme = useTheme();
   const { t } = useTranslate();
   const tIcon = minimalIconButtonSx(theme);
+  const listId = list?.id;
 
   const canOpenListManage = membership?.isOwner || membership?.isEditor || membership?.isMember;
 
@@ -64,7 +64,7 @@ export default function DashboardListPublicView({
       >
         <Iconify icon={ic.shareLinear} width={SHELL_TOOLBAR_ICON} />
       </IconButton>
-      {canOpenListManage ? (
+      {canOpenListManage && listId ? (
         <IconButton
           component={RouterLink}
           href={paths.dashboard.listManage(listId)}
@@ -89,7 +89,6 @@ export default function DashboardListPublicView({
     >
       <ListPublicView
         variant="dashboard"
-        listId={listId}
         list={list}
         items={items}
         owner={owner}
@@ -108,7 +107,6 @@ export default function DashboardListPublicView({
 }
 
 DashboardListPublicView.propTypes = {
-  listId: PropTypes.string.isRequired,
   list: PropTypes.object,
   items: PropTypes.array,
   owner: PropTypes.object,

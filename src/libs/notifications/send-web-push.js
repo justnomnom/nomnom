@@ -1,6 +1,10 @@
 import webpush from 'web-push';
 
 import { WEB_PUSH } from 'src/config-global';
+import {
+  isDeadWebPushStatus,
+  shouldAttemptWebPush,
+} from 'src/libs/notifications/list-update-notify-helpers';
 
 let configured = false;
 
@@ -22,7 +26,7 @@ function ensureConfigured() {
 export async function sendWebPushToUsers(userIds, payload) {
   try {
     if (!ensureConfigured()) return;
-    if (!Array.isArray(userIds) || userIds.length === 0) return;
+    if (!shouldAttemptWebPush(userIds)) return;
 
     const { supabaseAdminClient } = await import('src/libs/supabase/supabase-admin');
     const { chunkArray } = await import('src/libs/notifications/chunk');
@@ -53,7 +57,7 @@ export async function sendWebPushToUsers(userIds, payload) {
         );
       } catch (err) {
         const status = err?.statusCode;
-        if (status === 404 || status === 410) deadIds.push(sub.id);
+        if (isDeadWebPushStatus(status)) deadIds.push(sub.id);
       }
     };
     // Process batches sequentially (bounded concurrency per batch) without a loop.

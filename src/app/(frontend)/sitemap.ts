@@ -3,7 +3,7 @@ import type { MetadataRoute } from 'next';
 import { getContentSitemapEntries } from '@/content-platform/sitemap-data';
 import { supabaseAdminClient } from 'src/libs/supabase/supabase-admin';
 import { getSiteUrl } from 'src/libs/site-url';
-import { fetchAllSupabasePages } from 'src/lib/supabase-fetch-all-pages';
+import { fetchAllSupabasePages } from 'src/libs/supabase/supabase-fetch-all-pages';
 
 export const revalidate = 3600; // regenerate hourly
 

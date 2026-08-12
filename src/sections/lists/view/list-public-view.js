@@ -44,7 +44,7 @@ import { getLocaleBodyMaxWidthCh } from 'src/theme/locale-prose';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
 import { getPaywallRelativeDate } from 'src/libs/paywall/paywall-recency';
 import { isPlacesView, sortListItemsByMode } from 'src/libs/lists/sort-list-items';
-import { acceptListInvite, declineListInvite } from 'src/auth/actions/list-actions';
+import { acceptListInvite, declineListInvite } from 'src/libs/lists/actions';
 import {
   RESTAURANT_SURFACE,
   useRestaurantAnalytics,
@@ -118,7 +118,7 @@ function formatListMoney(amountCents, currency) {
 
 export default function ListPublicView({
   variant = 'page',
-  listId,
+  listId: listIdProp,
   list,
   items,
   owner,
@@ -126,6 +126,7 @@ export default function ListPublicView({
   membership: initialMembership,
   paidAccess = null,
 }) {
+  const listId = list?.id ?? listIdProp;
   const theme = useTheme();
   const { t } = useTranslate();
   const { currentLang } = useLocales();
@@ -1846,7 +1847,7 @@ export default function ListPublicView({
 
 ListPublicView.propTypes = {
   variant: PropTypes.oneOf(['page', 'dashboard']),
-  listId: PropTypes.string.isRequired,
+  listId: PropTypes.string,
   list: PropTypes.object,
   items: PropTypes.array,
   owner: PropTypes.object,

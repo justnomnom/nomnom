@@ -531,7 +531,7 @@ export function NomNomListLinkTile({ list, href, t, subtitle: subtitleProp, comp
   const spotsLabel = listSpotsVisibilitySubtitle(t, list);
   const pendingLabel =
     list.member_status === 'pending_invite'
-      ? t('pages.dashboard.saved.list_shared_pending_invite')
+      ? t('pages.dashboard.lists.list_shared_pending_invite')
       : null;
   const combinedSubtitle =
     subtitleProp ?? (ownerLabel ? `${ownerLabel} · ${spotsLabel}` : spotsLabel);

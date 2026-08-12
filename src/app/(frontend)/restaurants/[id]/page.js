@@ -90,7 +90,7 @@ export default async function PublicRestaurantSharePage({ params, searchParams }
         titleValues={{ name: restaurant.name }}
       />
       <Box sx={{ position: 'relative', zIndex: 1 }}>
-        <PublicRestaurantShareClient restaurant={restaurant} restaurantId={id} />
+        <PublicRestaurantShareClient restaurant={restaurant} />
       </Box>
     </>
   );

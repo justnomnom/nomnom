@@ -36,7 +36,7 @@ import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import { useAuthContext } from 'src/auth/hooks';
 import { useSkeletonThemeColors } from 'src/theme/use-skeleton-theme';
-import { dedupeMustTryDishesByDisplayLabel } from 'src/lib/must-try-dedupe';
+import { dedupeMustTryDishesByDisplayLabel } from 'src/libs/ugc/must-try-dedupe';
 import { RADIUS, tabularNumsSx, TOUCH_TARGET_SIZE } from 'src/theme/spacing';
 import { galleryUrlsForRestaurant } from 'src/libs/restaurant/restaurant-gallery-urls';
 import { buildRestaurantShareText } from 'src/libs/restaurant/build-restaurant-share-text';

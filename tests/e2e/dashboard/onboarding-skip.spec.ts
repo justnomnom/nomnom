@@ -19,7 +19,7 @@ import { E2E_DASHBOARD_AUTH_SETUP_HINT } from '../support/test-credentials';
  */
 
 const baseURL = process.env.E2E_BASE_URL || 'http://localhost:3032';
-const CTA_WELCOME = 'Let’s Nom Nom!';
+const CTA_WELCOME = 'Let’s NomNom!';
 
 test.describe('onboarding wizard — skip completes with optional steps empty (O5)', () => {
   test.beforeEach(({}, testInfo) => {

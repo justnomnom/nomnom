@@ -40,10 +40,11 @@ test.describe('dashboard routes — extended', () => {
   });
 
   const paths = [
-    '/dashboard/blank',
     '/dashboard/settings/profile/edit',
     '/dashboard/settings/appearance',
     '/dashboard/settings/preferences',
+    '/dashboard/settings/notifications',
+    '/dashboard/notifications',
     '/dashboard/settings/billing',
     '/dashboard/settings/subscribers',
     '/dashboard/settings/delete-account',

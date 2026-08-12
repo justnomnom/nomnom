@@ -10,7 +10,7 @@ import { dedupeMapDropdownLists } from '../lists/dedupe-map-dropdown-lists.js';
 import {
   resolveRestaurantSearchProvider,
   RESTAURANT_SEARCH_AI_PROVIDERS,
-} from '../../lib/restaurant-search-llm.js';
+} from '../restaurant-search/restaurant-search-llm.js';
 import { getSupabaseAuthCookiePrefix } from '../supabase/supabase-cookie-helpers.js';
 import { htmlLangFromUiLocaleCookie, UI_LOCALE_COOKIE } from '../ui-locale.js';
 import { isValidTagSlug, buildSlugToIdMap, resolveTagIds } from '../restaurant-ingest/about-tags-ai.js';

@@ -2,7 +2,7 @@
 
 import PropTypes from 'prop-types';
 import dynamic from 'next/dynamic';
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
@@ -24,9 +24,9 @@ import { translateListCollaborationError } from 'src/utils/list-collaboration-er
 
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
-import { createList } from 'src/auth/actions/list-actions';
+import { createList } from 'src/libs/lists/actions';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
-import { getMyStripeConnectStatus } from 'src/auth/actions/stripe-list-actions';
+import { useMyStripeConnectStatus } from 'src/api/stripe-connect-status';
 
 import Iconify from 'src/components/iconify';
 import {
@@ -58,15 +58,11 @@ export default function CreateListModal({ open, onClose, onCreated }) {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState(null);
   const errText = useMemo(() => translateListCollaborationError(t, err), [err, t]);
-  const [stripeChargesEnabled, setStripeChargesEnabled] = useState(null);
   const [importOpen, setImportOpen] = useState(false);
-
-  useEffect(() => {
-    if (!open) return;
-    getMyStripeConnectStatus().then((res) => {
-      setStripeChargesEnabled(!res.error && Boolean(res.chargesEnabled));
-    });
-  }, [open]);
+  const { status: stripeConnectStatus, chargesEnabled } = useMyStripeConnectStatus({
+    enabled: open,
+  });
+  const stripeChargesEnabled = stripeConnectStatus == null ? null : chargesEnabled;
 
   const reset = useCallback(() => {
     setName('');

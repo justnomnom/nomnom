@@ -26,7 +26,7 @@ import { E2E_DASHBOARD_AUTH_SETUP_HINT } from '../support/test-credentials';
  */
 
 const baseURL = process.env.E2E_BASE_URL || 'http://localhost:3032';
-const CTA_WELCOME = 'Let’s Nom Nom!';
+const CTA_WELCOME = 'Let’s NomNom!';
 const LISBON = { latitude: 38.7223, longitude: -9.1393 };
 
 async function openLocationStep(page: Page): Promise<void> {

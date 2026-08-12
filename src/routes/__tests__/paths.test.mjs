@@ -38,8 +38,16 @@ test('restaurantPublic and site roulette', () => {
   assert.equal(paths.site.rouletteLisboa, '/roleta/lisboa');
 });
 
-test('post.details interpolates title', () => {
-  assert.equal(paths.post.details('hello-world'), '/post/hello-world');
+
+test('dashboard roulette (EN) pairs with public roleta SEO path', () => {
+  assert.equal(paths.dashboard.roulette, '/dashboard/roulette');
+  assert.notEqual(paths.dashboard.roulette, paths.site.rouletteLisboa);
+});
+
+test('lists hub path; blank template route removed from registry', () => {
+  assert.equal(paths.dashboard.lists, '/dashboard/lists');
+  assert.equal('blank' in paths.dashboard, false);
+  assert.equal('post' in paths, false);
 });
 
 test('listManage and admin ops destinations', () => {

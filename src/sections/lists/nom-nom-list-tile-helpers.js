@@ -26,7 +26,7 @@ export function listHubOwnerPrefix(t, list) {
   const show = handle || list?.owner_display_name?.trim();
   if (!show) return null;
   const name = handle ? `@${handle}` : list.owner_display_name.trim();
-  return t('pages.dashboard.saved.list_owner_line', { name });
+  return t('pages.dashboard.lists.list_owner_line', { name });
 }
 
 /** Portrait list tile thumbnail — keep profile skeletons and create tiles in sync. */

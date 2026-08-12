@@ -27,7 +27,7 @@ import { E2E_DASHBOARD_AUTH_SETUP_HINT } from '../support/test-credentials';
 const baseURL = process.env.E2E_BASE_URL || 'http://localhost:3032';
 
 /** Wizard step CTAs / headings (en.json → pages.onboarding). */
-const CTA_WELCOME = "Let’s Nom Nom!";
+const CTA_WELCOME = "Let’s NomNom!";
 const CTA_LOCATION = 'Almost there';
 const CTA_TAGS = 'Keep going';
 const CTA_CREATORS = 'Start exploring!';

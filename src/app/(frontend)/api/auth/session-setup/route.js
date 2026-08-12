@@ -14,6 +14,8 @@ export const dynamic = 'force-dynamic';
  * Identity comes from the session cookie; the optional body only carries display names.
  */
 export async function POST(request) {
+  // Overlap body parse with auth; still await auth first for early 401.
+  const bodyPromise = request.json();
   const {
     data: { user },
   } = await getSupabaseAuthUser();
@@ -23,7 +25,7 @@ export async function POST(request) {
 
   let body = {};
   try {
-    body = await request.json();
+    body = await bodyPromise;
   } catch {
     // Body is optional — names fall back to empty strings.
   }

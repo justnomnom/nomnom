@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { APP } from 'src/config-global';
 import { getDefaultTranslation } from 'src/locales/default-translations';
 import { fetchViewerFollowsUser } from 'src/auth/actions/profile-actions';
-import { fetchPublicProfileByUsername } from 'src/auth/actions/list-actions';
+import { fetchPublicProfileByUsername } from 'src/libs/lists/actions';
 import { getSupabaseAuthUser } from 'src/libs/supabase/supabase-server-client';
 
 import { DynamicTitle } from 'src/components/dynamic-title';

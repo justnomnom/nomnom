@@ -17,12 +17,10 @@ import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 import { useTranslate } from 'src/locales';
-import { fetchOwnedListsForBilling } from 'src/auth/actions/list-actions';
+import { fetchOwnedListsForBilling } from 'src/libs/lists/actions';
+import { useMyStripeConnectStatus } from 'src/api/stripe-connect-status';
+import { syncSubscriberListsBundlePrice } from 'src/auth/actions/stripe-list-actions';
 import { LIST_PRICE_MAX_CENTS, LIST_PRICE_MIN_CENTS } from 'src/libs/stripe/list-stripe-constants';
-import {
-  getMyStripeConnectStatus,
-  syncSubscriberListsBundlePrice,
-} from 'src/auth/actions/stripe-list-actions';
 
 import { hubCardShellSx } from './view/settings-shell-shared';
 import { SettingsBillingPaidListsCardSkeleton } from './settings-billing-skeleton';
@@ -55,9 +53,12 @@ export default function SettingsBillingPaidLists({ initialConnectStatus, initial
   const theme = useTheme();
   const { t } = useTranslate();
 
-  const hasInitialData = Boolean(initialConnectStatus && initialPaidListsData);
+  const hasInitialLists = Boolean(initialPaidListsData);
+  const { chargesEnabled: connectReady } = useMyStripeConnectStatus({
+    fallbackData: initialConnectStatus,
+  });
 
-  const [loading, setLoading] = useState(!hasInitialData);
+  const [loading, setLoading] = useState(!hasInitialLists);
   const [loadErr, setLoadErr] = useState(() => {
     if (!initialPaidListsData?.error) return null;
     return initialPaidListsData.error === 'unauthorized' ? null : initialPaidListsData.error;
@@ -65,27 +66,21 @@ export default function SettingsBillingPaidLists({ initialConnectStatus, initial
   const [lists, setLists] = useState(() =>
     initialPaidListsData?.error ? [] : (initialPaidListsData?.lists ?? [])
   );
-  const [connectReady, setConnectReady] = useState(
-    () => !initialConnectStatus?.error && Boolean(initialConnectStatus?.chargesEnabled)
-  );
   const initialPrice = derivePriceFromLists(
     initialPaidListsData?.error ? [] : (initialPaidListsData?.lists ?? [])
   );
   const [bundleMonthlyEuros, setBundleMonthlyEuros] = useState(
-    hasInitialData ? initialPrice.bundleMonthlyEuros : '4.99'
+    hasInitialLists ? initialPrice.bundleMonthlyEuros : '4.99'
   );
   /** Last synced price from server (after load or successful save), in cents. */
   const [savedMonthlyAmountCents, setSavedMonthlyAmountCents] = useState(
-    hasInitialData ? initialPrice.savedMonthlyAmountCents : null
+    hasInitialLists ? initialPrice.savedMonthlyAmountCents : null
   );
   const [saving, setSaving] = useState(false);
 
   const load = useCallback(async () => {
     setLoadErr(null);
-    const [listsRes, conn] = await Promise.all([
-      fetchOwnedListsForBilling(),
-      getMyStripeConnectStatus(),
-    ]);
+    const listsRes = await fetchOwnedListsForBilling();
     if (listsRes.error) {
       setLoadErr(listsRes.error === 'unauthorized' ? null : listsRes.error);
       setLists([]);
@@ -97,16 +92,13 @@ export default function SettingsBillingPaidLists({ initialConnectStatus, initial
       setBundleMonthlyEuros(euros);
       setSavedMonthlyAmountCents(cents);
     }
-    if (!conn.error) {
-      setConnectReady(Boolean(conn.chargesEnabled));
-    }
     setLoading(false);
   }, []);
 
   useEffect(() => {
-    if (hasInitialData) return;
+    if (hasInitialLists) return;
     load();
-  }, [hasInitialData, load]);
+  }, [hasInitialLists, load]);
 
   // Both freemium (public) and full-gate (public_subscribers) lists are monetizable.
   const monetizable = lists.filter(

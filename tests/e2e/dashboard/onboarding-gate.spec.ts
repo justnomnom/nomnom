@@ -1,18 +1,41 @@
 import { expect, test } from '@playwright/test';
 
+import { loadE2EEnv } from '../load-env';
 import { expectSignedInDashboardShell } from '../support/page-assertions';
 import { dashboardTestsDisabled } from '../support/skip-dashboard';
-import { E2E_DASHBOARD_AUTH_SETUP_HINT } from '../support/test-credentials';
+import { hasServiceRoleCredentials } from '../support/service-role';
+import { getUserIdByEmail, getServiceRoleClient } from '../support/supabase-service';
+import {
+  E2E_DASHBOARD_AUTH_SETUP_HINT,
+  getE2ETestUserEmailForDb,
+} from '../support/test-credentials';
 
 /**
  * Onboarding completion gate (TEST-PLAN O2) and the settings route missing from
  * navigation-extended (my-subscriptions).
+ *
+ * Ensures the shared dashboard user is marked complete up front — other suites
+ * (or manual DB edits) can clear `onboarding_completed_at` and strand this gate.
  */
 test.describe('onboarding gate — completed user', () => {
   test.beforeEach(({}, testInfo) => {
     if (dashboardTestsDisabled()) {
       testInfo.skip(true, E2E_DASHBOARD_AUTH_SETUP_HINT);
     }
+  });
+
+  test.beforeAll(async () => {
+    if (dashboardTestsDisabled() || !hasServiceRoleCredentials()) return;
+    loadE2EEnv();
+    const email = await getE2ETestUserEmailForDb();
+    const userId = await getUserIdByEmail(email);
+    if (!userId) return;
+    const admin = getServiceRoleClient();
+    const { error } = await admin
+      .from('users')
+      .update({ onboarding_completed_at: new Date().toISOString() })
+      .eq('id', userId);
+    if (error) throw new Error(`ensure shared e2e user onboarding-complete: ${error.message}`);
   });
 
   test('/onboarding redirects a completed user to discover', async ({ page }) => {

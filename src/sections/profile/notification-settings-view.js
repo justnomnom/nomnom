@@ -77,8 +77,12 @@ export default function NotificationSettingsView() {
   }, []);
 
   const savePref = async (key, value) => {
+    const previous = prefs[key];
     setPrefs((prev) => ({ ...prev, [key]: value }));
-    await updateMyNotificationPreferences({ [key]: value });
+    const res = await updateMyNotificationPreferences({ [key]: value });
+    if (res?.error) {
+      setPrefs((prev) => ({ ...prev, [key]: previous }));
+    }
   };
 
   const renderEnableControl = () => {
@@ -86,7 +90,9 @@ export default function NotificationSettingsView() {
       return <Alert severity="info">{t('components.notifications.enable_device_ios_hint')}</Alert>;
     }
     if (!supported) {
-      return <Alert severity="info">{t('components.notifications.enable_device_ios_hint')}</Alert>;
+      return (
+        <Alert severity="info">{t('components.notifications.enable_device_unsupported')}</Alert>
+      );
     }
     if (permission === 'denied') {
       return (

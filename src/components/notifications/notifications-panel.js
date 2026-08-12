@@ -23,6 +23,16 @@ import { ic } from 'src/assets/icons';
 import { useLocales, useTranslate } from 'src/locales';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
 import { groupNotifications } from 'src/libs/notifications/group-notifications';
+import {
+  NOTIFICATION_LIST_FILTER_ALL,
+  buildNotificationListFilterChips,
+  canMuteNotificationList,
+  filterNotificationsByListId,
+} from 'src/libs/notifications/notification-feed-helpers';
+import {
+  resolveNotificationActorFields,
+  resolveNotificationSentenceKind,
+} from 'src/libs/notifications/social-notification-payloads';
 
 import Iconify from 'src/components/iconify';
 import { ScrollableChipRow } from 'src/components/horizontal-scroll-row';
@@ -31,8 +41,6 @@ import { scrollableChipPillButtonSx } from 'src/components/scrollable-chip-selec
 import NotificationsPanelSkeleton from 'src/sections/notifications/notifications-panel-skeleton';
 
 // ----------------------------------------------------------------------
-
-const FILTER_ALL = '__all__';
 
 function relativeTime(iso, isPt) {
   if (!iso) return '';
@@ -74,23 +82,17 @@ export default function NotificationsPanel({
   const { trackEvent } = useAnalytics();
   const isPt = currentLang?.value === 'pt';
 
-  const [listFilter, setListFilter] = useState(FILTER_ALL);
+  const [listFilter, setListFilter] = useState(NOTIFICATION_LIST_FILTER_ALL);
 
-  const listChips = useMemo(() => {
-    const seen = new Map();
-    notifications.forEach((n) => {
-      const id = n?.data?.list_id;
-      if (id && !seen.has(id)) {
-        seen.set(id, n?.data?.list_name || t('components.notifications.title'));
-      }
-    });
-    return [...seen.entries()].map(([id, name]) => ({ id, name }));
-  }, [notifications, t]);
+  const listChips = useMemo(
+    () => buildNotificationListFilterChips(notifications, t('components.notifications.title')),
+    [notifications, t]
+  );
 
-  const visible = useMemo(() => {
-    if (listFilter === FILTER_ALL) return notifications;
-    return notifications.filter((n) => n?.data?.list_id === listFilter);
-  }, [notifications, listFilter]);
+  const visible = useMemo(
+    () => filterNotificationsByListId(notifications, listFilter),
+    [notifications, listFilter]
+  );
 
   const grouped = useMemo(() => groupNotifications(visible), [visible]);
 
@@ -119,7 +121,7 @@ export default function NotificationsPanel({
       return (
         <Box sx={{ p: 4, textAlign: 'center' }}>
           <Typography variant="body2" color="text.secondary">
-            {listFilter === FILTER_ALL
+            {listFilter === NOTIFICATION_LIST_FILTER_ALL
               ? emptyLabel || t('components.notifications.empty')
               : t('components.notifications.empty_filtered')}
           </Typography>
@@ -147,9 +149,11 @@ export default function NotificationsPanel({
             <Button
               size="small"
               disableRipple
-              aria-pressed={listFilter === FILTER_ALL}
-              onClick={() => setListFilter(FILTER_ALL)}
-              sx={scrollableChipPillButtonSx(theme, { selected: listFilter === FILTER_ALL })}
+              aria-pressed={listFilter === NOTIFICATION_LIST_FILTER_ALL}
+              onClick={() => setListFilter(NOTIFICATION_LIST_FILTER_ALL)}
+              sx={scrollableChipPillButtonSx(theme, {
+                selected: listFilter === NOTIFICATION_LIST_FILTER_ALL,
+              })}
             >
               {t('components.notifications.filter_all')}
             </Button>
@@ -305,12 +309,12 @@ function NotificationRow({
   const router = useRouter();
   const data = notification?.data ?? {};
   const type = notification?.type;
+  const sentenceKind = resolveNotificationSentenceKind(type);
   const isUnread = !notification.read_at;
-  const canMute = type === 'list_update' && data.list_id && onMuteList;
+  const canMute = canMuteNotificationList(notification) && onMuteList;
 
   // Unify actor fields across types (list_update uses creator_*, others actor_*).
-  const actorName = data.creator_name || data.actor_name || '';
-  const actorUsername = data.creator_username || data.actor_username || null;
+  const { name: actorName, username: actorUsername } = resolveNotificationActorFields(data);
   const actorHref = actorUsername ? paths.dashboard.userPublic(actorUsername) : null;
   const listName = data.list_name || '';
   const listHref = data.list_id ? paths.dashboard.listDetails(data.list_id) : null;
@@ -341,31 +345,31 @@ function NotificationRow({
   );
 
   let sentence;
-  if (type === 'new_follower') {
+  if (sentenceKind === 'new_follower') {
     sentence = (
       <>
         {actorLink} {t('components.notifications.new_follower_body')}
       </>
     );
-  } else if (type === 'list_invite') {
+  } else if (sentenceKind === 'list_invite') {
     sentence = (
       <>
         {actorLink} {t('components.notifications.list_invite_verb')} {listLink}
       </>
     );
-  } else if (type === 'list_subscribed') {
+  } else if (sentenceKind === 'list_subscribed') {
     sentence = (
       <>
         {actorLink} {t('components.notifications.list_subscribed_verb')} {listLink}
       </>
     );
-  } else if (type === 'invite_accepted') {
+  } else if (sentenceKind === 'invite_accepted') {
     sentence = (
       <>
         {actorLink} {t('components.notifications.invite_accepted_verb')} {listLink}
       </>
     );
-  } else if (type === 'join_approved') {
+  } else if (sentenceKind === 'join_approved') {
     sentence = (
       <>
         {actorLink} {t('components.notifications.join_approved_verb')} {listLink}

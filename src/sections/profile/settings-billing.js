@@ -1,7 +1,6 @@
 'use client';
 
 import PropTypes from 'prop-types';
-import { useSearchParams } from 'next/navigation';
 import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
@@ -16,7 +15,7 @@ import { paths } from 'src/routes/paths';
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
-import { getMyStripeConnectStatus } from 'src/auth/actions/stripe-list-actions';
+import { useMyStripeConnectStatus } from 'src/api/stripe-connect-status';
 
 import { HubNavRow } from './view/settings-hub-view';
 import SettingsBillingPaidLists from './settings-billing-paid-lists';
@@ -34,51 +33,38 @@ export default function SettingsBilling({ initialConnectStatus, initialPaidLists
   const theme = useTheme();
   const { t } = useTranslate();
   const { trackEvent } = useAnalytics();
-  const searchParams = useSearchParams();
 
-  const hasInitialConnect = Boolean(initialConnectStatus);
+  const {
+    status,
+    chargesEnabled: connectReady,
+    payoutsEnabled,
+    isLoading,
+    mutate,
+  } = useMyStripeConnectStatus({
+    fallbackData: initialConnectStatus,
+  });
 
-  const [connectReady, setConnectReady] = useState(
-    () => !initialConnectStatus?.error && Boolean(initialConnectStatus?.chargesEnabled)
-  );
-  const [payoutsWithoutCharges, setPayoutsWithoutCharges] = useState(
-    () =>
-      !initialConnectStatus?.error &&
-      Boolean(initialConnectStatus?.payoutsEnabled && !initialConnectStatus?.chargesEnabled)
-  );
+  const payoutsWithoutCharges = Boolean(payoutsEnabled && !connectReady);
+  const connectStatusReady = status != null || !isLoading;
+
   const [connectLoading, setConnectLoading] = useState(false);
   const [connectErr, setConnectErr] = useState(null);
-  const [connectStatusReady, setConnectStatusReady] = useState(hasInitialConnect);
-
-  const loadConnect = useCallback(async () => {
-    setConnectErr(null);
-    const r = await getMyStripeConnectStatus();
-    if (!r.error) {
-      setConnectReady(Boolean(r.chargesEnabled));
-      setPayoutsWithoutCharges(Boolean(r.payoutsEnabled && !r.chargesEnabled));
-    }
-    setConnectStatusReady(true);
-  }, []);
 
   useEffect(() => {
-    if (hasInitialConnect) return;
-    loadConnect();
-  }, [hasInitialConnect, loadConnect]);
-
-  useEffect(() => {
-    const c = searchParams.get('connect');
+    const params = new URLSearchParams(window.location.search);
+    const c = params.get('connect');
     if (c === 'return' || c === 'refresh') {
-      loadConnect();
+      mutate();
     }
-  }, [searchParams, loadConnect]);
+  }, [mutate]);
 
   const handleConnectStripe = useCallback(async () => {
     setConnectLoading(true);
     setConnectErr(null);
-    let status = 'link';
-    if (connectReady) status = 'manage';
-    else if (payoutsWithoutCharges) status = 'update';
-    trackEvent('stripe_connect_started', { status });
+    let statusKey = 'link';
+    if (connectReady) statusKey = 'manage';
+    else if (payoutsWithoutCharges) statusKey = 'update';
+    trackEvent('stripe_connect_started', { status: statusKey });
     try {
       const res = await fetch('/api/stripe/connect/onboard', { method: 'POST' });
       const data = await res.json();

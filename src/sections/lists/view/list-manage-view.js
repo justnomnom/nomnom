@@ -60,7 +60,7 @@ import {
   resolveUsernameToUserId,
   removeRestaurantFromList,
   searchRestaurantsForPicker,
-} from 'src/auth/actions/list-actions';
+} from 'src/libs/lists/actions';
 
 import Iconify from 'src/components/iconify';
 import DeleteDialog from 'src/components/custom-dialog/delete-dialog';
@@ -155,6 +155,9 @@ export default function ListManageView({ listId, isOwner, canEditItems, initial 
   const [description, setDescription] = useState(initial?.list?.description ?? '');
   const [visibility, setVisibility] = useState(initial?.list?.visibility ?? 'private');
   const [coverUrl, setCoverUrl] = useState(initial?.list?.cover_image_url ?? '');
+  const [prevListSyncKey, setPrevListSyncKey] = useState(() =>
+    initial?.list ? `${initial.list.id}:${initial.list.updated_at ?? ''}` : ''
+  );
   /** Which async action is running (for per-control loading); null when idle. */
   const [busyOp, setBusyOp] = useState(null);
   const [optimisticRoles, setOptimisticRoles] = useState({});
@@ -233,15 +236,21 @@ export default function ListManageView({ listId, isOwner, canEditItems, initial 
     setListSortLocationError(false);
   }, [listId]);
 
+  const listSyncKey = data?.list ? `${data.list.id}:${data.list.updated_at ?? ''}` : '';
+  if (listSyncKey !== prevListSyncKey) {
+    setPrevListSyncKey(listSyncKey);
+    if (data?.list) {
+      setName(data.list.name ?? '');
+      setDescription(data.list.description ?? '');
+      setVisibility(data.list.visibility ?? 'private');
+      setCoverUrl(data.list.cover_image_url ?? '');
+      setCoverUploadError(null);
+    }
+  }
+
   useEffect(() => {
     if (data?.error) setErr(data.error);
-    if (!data?.list) return;
-    setName(data.list.name ?? '');
-    setDescription(data.list.description ?? '');
-    setVisibility(data.list.visibility ?? 'private');
-    setCoverUrl(data.list.cover_image_url ?? '');
-    setCoverUploadError(null);
-  }, [data]);
+  }, [data?.error]);
 
   const handleCoverFileChange = useCallback(
     async (event) => {
@@ -628,7 +637,7 @@ export default function ListManageView({ listId, isOwner, canEditItems, initial 
     trackEvent('list_deleted', { list_id: listId });
     setDeleteOpen(false);
     // Use replace so the back button can't return to the now-deleted list's
-    // manage page. The lists index (SavedView) fetches fresh data on mount, so
+    // manage page. The lists index (ListsHubView) fetches fresh data on mount, so
     // no router.refresh() is needed — calling it here would re-render the
     // just-deleted manage route and interrupt the navigation.
     router.replace(paths.dashboard.lists);

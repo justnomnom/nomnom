@@ -921,7 +921,7 @@
         "hours_permanently_closed": "Permanently closed",
         "hours_temporarily_closed": "Temporarily closed"
       },
-      "saved": {
+      "lists": {
         "title": "Lists",
         "page_heading": "NomNom Lists",
         "lists_filter_aria": "Filter lists",
@@ -1681,6 +1681,7 @@
       "enable_device_hint": "Get notified when creators you follow add new spots.",
       "enable_device_blocked": "Notifications are blocked. Enable them in your browser settings.",
       "enable_device_ios_hint": "Add this app to your Home Screen to enable notifications.",
+      "enable_device_unsupported": "Push notifications aren't supported in this browser.",
       "enabled_device": "Notifications enabled on this device",
       "pref_title": "List updates",
       "pref_in_app": "Show in the app",

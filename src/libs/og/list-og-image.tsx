@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 import { SPACE } from 'src/theme/spacing';
-import { fetchListMetadata } from 'src/auth/actions/list-actions';
+import { fetchListMetadata } from 'src/libs/lists/actions';
 
 import { truncate } from './truncate';
 import { ogText, ogPlural } from './og-text';

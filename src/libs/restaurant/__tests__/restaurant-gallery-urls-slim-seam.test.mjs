@@ -25,7 +25,7 @@ import {
 import {
   slimRestaurantCardMetadata,
   slimRestaurantRowsMetadata,
-} from 'src/lib/slim-restaurant-card-metadata';
+} from 'src/libs/restaurant/slim-restaurant-card-metadata';
 
 /** A blob shaped like a real ingest row: gallery keys buried in heavy junk. */
 const fullIngestBlob = {

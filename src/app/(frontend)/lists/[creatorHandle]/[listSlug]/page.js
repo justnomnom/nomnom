@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 
 import { getSiteUrl } from 'src/libs/site-url';
 import { getServerViewerLang } from 'src/libs/i18n-server';
-import { fetchListPage, resolveListSlug, fetchListMetadata } from 'src/auth/actions/list-actions';
+import { fetchListPage, resolveListSlug, fetchListMetadata } from 'src/libs/lists/actions';
 
 import { DynamicTitle } from 'src/components/dynamic-title';
 
@@ -64,7 +64,6 @@ export default async function SlugListPage({ params }) {
     <>
       <DynamicTitle titleKey="pages.lists.document_title" titleValues={{ name: data.list.name }} />
       <ListPublicView
-        listId={listId}
         list={data.list}
         items={data.items}
         owner={data.owner}

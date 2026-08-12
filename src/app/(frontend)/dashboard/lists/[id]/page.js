@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { notFound } from 'next/navigation';
 
 import { getServerViewerLang } from 'src/libs/i18n-server';
-import { fetchListPage } from 'src/auth/actions/list-actions';
+import { fetchListPage } from 'src/libs/lists/actions';
 
 import { DynamicTitle } from 'src/components/dynamic-title';
 
@@ -31,7 +31,6 @@ export default async function DashboardListPage({ params }) {
         titleValues={{ name: publicData.list.name }}
       />
       <DashboardListPublicView
-        listId={id}
         list={publicData.list}
         items={publicData.items}
         owner={publicData.owner}

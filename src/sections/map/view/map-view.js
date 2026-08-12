@@ -50,7 +50,7 @@ import {
   fetchFollowingRestaurantsForMap,
   fetchSavedRestaurantsForMapByListIds,
   fetchFollowingRestaurantsForMapByListIds,
-} from 'src/auth/actions/list-actions';
+} from 'src/libs/lists/actions';
 
 import Iconify from 'src/components/iconify';
 import SearchAiToggleAdornment from 'src/components/search-ai-toggle';

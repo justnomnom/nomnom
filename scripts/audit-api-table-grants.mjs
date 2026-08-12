@@ -24,7 +24,7 @@ import {
   findMissingCriticalServiceRoleWriteGrants,
   findUngrantedPublicTables,
   parseApiTableGrantSql,
-} from '../src/lib/api-table-grants.js';
+} from '../src/libs/db/api-table-grants.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');

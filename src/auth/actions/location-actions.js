@@ -4,14 +4,14 @@ import { unstable_rethrow } from 'next/navigation';
 
 import { RESTAURANT_TAG_CATEGORY_ORDER } from 'src/utils/restaurant-tag-groups';
 
-import { fetchDishTagsCatalog } from 'src/lib/dish-tag-resolve';
+import { fetchDishTagsCatalog } from 'src/libs/dish-tags/dish-tag-resolve';
 import { attachOpeningStatusToRows } from 'src/libs/restaurant/opening-hours';
-import { slimRestaurantRowsMetadata } from 'src/lib/slim-restaurant-card-metadata';
+import { slimRestaurantRowsMetadata } from 'src/libs/restaurant/slim-restaurant-card-metadata';
 import { RESTAURANT_ID_UUID_RE } from 'src/libs/restaurant/fetch-restaurant-by-id-for-ssr';
 import {
   fetchAllSupabasePages,
   SUPABASE_DEFAULT_PAGE_SIZE,
-} from 'src/lib/supabase-fetch-all-pages';
+} from 'src/libs/supabase/supabase-fetch-all-pages';
 import {
   getSupabaseAuthUser,
   createSupabaseServerClient,

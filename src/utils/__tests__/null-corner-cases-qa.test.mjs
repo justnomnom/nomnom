@@ -8,7 +8,7 @@ import { filterE2eTestListsForDisplay } from '../filter-e2e-test-lists.js';
 import { paramCase, snakeCase } from '../change-case.js';
 import { flattenArray } from '../flatten-array.js';
 import { fCurrency, fNumber, fPercent, fShortenNumber } from '../format-number.js';
-import { dedupeMustTryDishesByDisplayLabel } from '../../lib/must-try-dedupe.js';
+import { dedupeMustTryDishesByDisplayLabel } from '../../libs/ugc/must-try-dedupe.js';
 import { mapListItemRowsToIds } from '../../libs/stripe/map-list-item-rows-to-ids.js';
 import { groupListItemsByRestaurant } from '../../libs/lists/group-list-items-by-restaurant.js';
 import { buildListItemRows } from '../../libs/lists/build-list-item-rows.js';

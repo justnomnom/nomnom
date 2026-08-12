@@ -1,3 +1,5 @@
+import { notificationCleanupCutoffIso } from 'src/libs/notifications/list-update-notify-helpers';
+
 /**
  * Delete read notifications older than `days` to keep the table lean.
  * Unread notifications are always kept. Best-effort; never throws.
@@ -8,7 +10,7 @@
 export async function deleteOldNotifications({ days = 60 } = {}) {
   try {
     const { supabaseAdminClient } = await import('src/libs/supabase/supabase-admin');
-    const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+    const cutoff = notificationCleanupCutoffIso(days);
     await supabaseAdminClient
       .from('notifications')
       .delete()

@@ -1,11 +1,10 @@
 'use server';
 
+import { isValidNotificationMuteTarget } from 'src/libs/notifications/notification-preference-helpers';
 import {
   getSupabaseAuthUser,
   createSupabaseServerClient,
 } from 'src/libs/supabase/supabase-server-client';
-
-const VALID_TYPES = new Set(['list', 'creator']);
 
 /**
  * Mute or unmute list-update notifications from a specific list or creator.
@@ -18,7 +17,7 @@ export async function setNotificationMute(targetType, targetId, muted) {
     data: { user },
   } = await getSupabaseAuthUser();
   if (!user?.id) return { error: 'unauthorized' };
-  if (!VALID_TYPES.has(targetType) || !targetId) return { error: 'invalid' };
+  if (!isValidNotificationMuteTarget(targetType, targetId)) return { error: 'invalid' };
 
   const supabase = await createSupabaseServerClient();
 

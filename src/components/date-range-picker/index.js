@@ -3,7 +3,9 @@
 import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 import { useMemo, useState, useEffect } from 'react';
-import { theme, DatePicker, ConfigProvider } from 'antd';
+import theme from 'antd/es/theme';
+import DatePicker from 'antd/es/date-picker';
+import ConfigProvider from 'antd/es/config-provider';
 
 import { alpha, useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
