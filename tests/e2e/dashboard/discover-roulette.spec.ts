@@ -67,6 +67,24 @@ test.describe('dashboard discover + roulette', () => {
     await expect(page.getByPlaceholder(/Ask AI/i)).toBeVisible({ timeout: 15_000 });
   });
 
+  test('discover: Decide + Tonight + Roulette promos are visible and link out', async ({ page }) => {
+    test.setTimeout(180_000);
+    await gotoDashboard(page, '/dashboard/discover');
+    await expect(page.getByTestId('e2e-discover-view')).toBeVisible({ timeout: 45_000 });
+
+    const decide = page.getByRole('link', { name: /Share → Decide|Partilhar → Decidir/i });
+    const tonight = page.getByRole('link', { name: /Plan Tonight|Planear esta noite/i });
+    const roulette = page.getByRole('link', { name: /NomNom Roulette|Roleta NomNom/i });
+
+    await expect(decide).toBeVisible({ timeout: 45_000 });
+    await expect(tonight).toBeVisible({ timeout: 20_000 });
+    await expect(roulette).toBeVisible({ timeout: 20_000 });
+
+    await expect(decide).toHaveAttribute('href', /\/dashboard\/lists/);
+    await expect(tonight).toHaveAttribute('href', /\/dashboard\/lists/);
+    await expect(roulette).toHaveAttribute('href', /\/dashboard\/roulette/);
+  });
+
   // ---- D3: name typeahead (Search mode) --------------------------------------------------------
   // Resolve a query that the shared `search_restaurants_by_name` RPC returns rows for, using the
   // exact Portugal bbox the UI uses — so the browser typeahead is guaranteed to have suggestions.

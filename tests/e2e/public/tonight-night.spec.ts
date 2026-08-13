@@ -92,11 +92,16 @@ test.describe('tonight night flow', () => {
     const g1 = await guest1.newPage();
     await g1.goto(tonightPath, { waitUntil: 'domcontentloaded' });
     await expect(g1.getByText(/E2E Tonight/i).first()).toBeVisible({ timeout: 45_000 });
+    // Open page shows Decide chrome before join (votes stay disabled until join).
+    await expect(g1.getByText(/decide|decidir|vote|votar/i).first()).toBeVisible({
+      timeout: 20_000,
+    });
     await g1.getByRole('textbox').first().fill('Guest One');
-    await g1.getByRole('button', { name: /join/i }).click();
+    await g1.getByRole('button', { name: /join|entrar/i }).click();
     await expect(g1.getByText(/Guest One/i).first()).toBeVisible({ timeout: 20_000 });
-    const up1 = g1.getByRole('button', { name: /upvote/i }).first();
-    if (await up1.isVisible().catch(() => false)) await up1.click();
+    const up1 = g1.getByRole('button', { name: /upvote|votar a favor/i }).first();
+    await expect(up1).toBeEnabled({ timeout: 20_000 });
+    await up1.click();
 
     const guest2 = await browser.newContext();
     const g2 = await guest2.newPage();

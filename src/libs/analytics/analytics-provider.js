@@ -94,6 +94,8 @@ const EVENT_SCHEMAS = {
   night_share_copied: { required: ['night_id', 'list_id'] },
   night_open: { required: ['night_id'] },
   night_join: { required: ['night_id'] },
+  // Discover feature promos (Decide / Tonight / Roulette)
+  discover_promo_clicked: { required: ['promo'] },
   // List management
   list_created: { required: ['list_id'] },
   list_details_saved: { required: ['list_id'] },

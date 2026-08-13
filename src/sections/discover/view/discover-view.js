@@ -69,6 +69,7 @@ import DashboardSearchFilterRow from 'src/components/dashboard-search-filter-row
 import MapSheetSortMenu from 'src/sections/map/map-sheet-sort-menu';
 import MapSearchSuggestions from 'src/sections/map/map-search-suggestions';
 import { MapSpotSheetListRow } from 'src/sections/map/map-spot-sheet-inner';
+import DiscoverFeaturePromo from 'src/sections/discover/discover-feature-promo';
 import DiscoverListsLeaderboard from 'src/sections/discover/discover-lists-leaderboard';
 import DiscoverLocatingSkeleton from 'src/sections/discover/discover-locating-skeleton';
 import DiscoverMarketListSkeleton from 'src/sections/discover/discover-market-list-skeleton';
@@ -1573,189 +1574,25 @@ export default function DiscoverView({
               <Box sx={{ flex: 1, height: '1px', bgcolor: 'divider' }} />
             </Stack>
 
-            <Button
-              component={RouterLink}
+            <DiscoverFeaturePromo
               href={paths.dashboard.lists}
-              fullWidth
-              sx={{
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                gap: 1,
-                borderRadius: 4,
-                px: { xs: 1.5, sm: 2 },
-                py: { xs: 1.25, sm: 1.5 },
-                minHeight: { xs: 56, sm: undefined },
-                textAlign: 'left',
-                border: (tt) => `2px solid ${alpha(tt.palette.primary.main, 0.15)}`,
-                bgcolor: (tt) => alpha(tt.palette.primary.main, 0.06),
-                color: 'text.primary',
-                transition: (tt) =>
-                  tt.transitions.create(['background-color', 'border-color', 'transform'], {
-                    duration: tt.transitions.duration.shorter,
-                  }),
-                '&:hover': {
-                  bgcolor: (tt) => alpha(tt.palette.primary.main, 0.1),
-                  borderColor: (tt) => alpha(tt.palette.primary.main, 0.28),
-                  '& .discover-decide-icon': {
-                    transform: 'rotate(-4deg) scale(1.06)',
-                  },
-                },
-                '@media (prefers-reduced-motion: reduce)': {
-                  '&:hover .discover-decide-icon': {
-                    transform: 'none',
-                  },
-                },
-              }}
-            >
-              <Stack
-                direction="row"
-                spacing={2}
-                alignItems="center"
-                sx={{ minWidth: 0, flex: 1, textAlign: 'left' }}
-              >
-                <Box
-                  className="discover-decide-icon"
-                  sx={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 2,
-                    bgcolor: 'primary.main',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transform: 'rotate(3deg)',
-                    flexShrink: 0,
-                    boxShadow: (tt) => `0 8px 20px ${alpha(tt.palette.primary.main, 0.25)}`,
-                    transition: (tt) =>
-                      tt.transitions.create('transform', {
-                        duration: tt.transitions.duration.shorter,
-                      }),
-                    '@media (prefers-reduced-motion: reduce)': {
-                      transform: 'none',
-                      transition: 'none',
-                    },
-                  }}
-                >
-                  <Iconify icon={ic.likeBold} width={28} sx={{ color: 'primary.contrastText' }} />
-                </Box>
-                <Box sx={{ minWidth: 0 }}>
-                  <Typography
-                    sx={{
-                      fontWeight: 800,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                    }}
-                  >
-                    {t('pages.dashboard.discover.decide_promo_title')}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
-                    {t('pages.dashboard.discover.decide_promo_sub')}
-                  </Typography>
-                </Box>
-              </Stack>
-              <Iconify
-                icon={ic.arrowRightBold}
-                width={22}
-                sx={{ color: 'primary.main', flexShrink: 0 }}
-              />
-            </Button>
+              icon={ic.likeBold}
+              iconClassName="discover-decide-icon"
+              title={t('pages.dashboard.discover.decide_promo_title')}
+              subtitle={t('pages.dashboard.discover.decide_promo_sub')}
+              rotateDeg={3}
+              onNavigate={() => trackEvent('discover_promo_clicked', { promo: 'decide' })}
+            />
 
-            <Button
-              component={RouterLink}
+            <DiscoverFeaturePromo
               href={paths.dashboard.lists}
-              fullWidth
-              sx={{
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                gap: 1,
-                borderRadius: 4,
-                px: { xs: 1.5, sm: 2 },
-                py: { xs: 1.25, sm: 1.5 },
-                minHeight: { xs: 56, sm: undefined },
-                textAlign: 'left',
-                border: (tt) => `2px solid ${alpha(tt.palette.primary.main, 0.15)}`,
-                bgcolor: (tt) => alpha(tt.palette.primary.main, 0.06),
-                color: 'text.primary',
-                transition: (tt) =>
-                  tt.transitions.create(['background-color', 'border-color', 'transform'], {
-                    duration: tt.transitions.duration.shorter,
-                  }),
-                '&:hover': {
-                  bgcolor: (tt) => alpha(tt.palette.primary.main, 0.1),
-                  borderColor: (tt) => alpha(tt.palette.primary.main, 0.28),
-                  '& .discover-tonight-icon': {
-                    transform: 'rotate(-4deg) scale(1.06)',
-                  },
-                },
-                '@media (prefers-reduced-motion: reduce)': {
-                  '&:hover .discover-tonight-icon': {
-                    transform: 'none',
-                  },
-                },
-              }}
-            >
-              <Stack
-                direction="row"
-                spacing={2}
-                alignItems="center"
-                sx={{ minWidth: 0, flex: 1, textAlign: 'left' }}
-              >
-                <Box
-                  className="discover-tonight-icon"
-                  sx={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 2,
-                    bgcolor: 'primary.main',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transform: 'rotate(-3deg)',
-                    flexShrink: 0,
-                    boxShadow: (tt) => `0 8px 20px ${alpha(tt.palette.primary.main, 0.25)}`,
-                    transition: (tt) =>
-                      tt.transitions.create('transform', {
-                        duration: tt.transitions.duration.shorter,
-                      }),
-                    '@media (prefers-reduced-motion: reduce)': {
-                      transform: 'none',
-                      transition: 'none',
-                    },
-                  }}
-                >
-                  <Iconify
-                    icon={ic.usersGroupTwoRoundedBold}
-                    width={28}
-                    sx={{ color: 'primary.contrastText' }}
-                  />
-                </Box>
-                <Box sx={{ minWidth: 0 }}>
-                  <Typography
-                    sx={{
-                      fontWeight: 800,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                    }}
-                  >
-                    {t('pages.dashboard.discover.tonight_promo_title')}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
-                    {t('pages.dashboard.discover.tonight_promo_sub')}
-                  </Typography>
-                </Box>
-              </Stack>
-              <Iconify
-                icon={ic.arrowRightBold}
-                width={22}
-                sx={{ color: 'primary.main', flexShrink: 0 }}
-              />
-            </Button>
+              icon={ic.usersGroupTwoRoundedBold}
+              iconClassName="discover-tonight-icon"
+              title={t('pages.dashboard.discover.tonight_promo_title')}
+              subtitle={t('pages.dashboard.discover.tonight_promo_sub')}
+              rotateDeg={-3}
+              onNavigate={() => trackEvent('discover_promo_clicked', { promo: 'tonight' })}
+            />
           </Stack>
 
           <Stack {...dashboardSubsectionStackProps}>
@@ -1767,95 +1604,15 @@ export default function DiscoverView({
               <Box sx={{ flex: 1, height: '1px', bgcolor: 'divider' }} />
             </Stack>
 
-            <Button
-              component={RouterLink}
+            <DiscoverFeaturePromo
               href={paths.dashboard.roulette}
-              fullWidth
-              sx={{
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                gap: 1,
-                borderRadius: 4,
-                px: { xs: 1.5, sm: 2 },
-                py: { xs: 1.25, sm: 1.5 },
-                minHeight: { xs: 56, sm: undefined },
-                textAlign: 'left',
-                border: (tt) => `2px solid ${alpha(tt.palette.primary.main, 0.15)}`,
-                bgcolor: (tt) => alpha(tt.palette.primary.main, 0.06),
-                color: 'text.primary',
-                transition: (tt) =>
-                  tt.transitions.create(['background-color', 'border-color', 'transform'], {
-                    duration: tt.transitions.duration.shorter,
-                  }),
-                '&:hover': {
-                  bgcolor: (tt) => alpha(tt.palette.primary.main, 0.1),
-                  borderColor: (tt) => alpha(tt.palette.primary.main, 0.28),
-                  '& .discover-roulette-dice': {
-                    transform: 'rotate(-4deg) scale(1.06)',
-                  },
-                },
-                '@media (prefers-reduced-motion: reduce)': {
-                  '&:hover .discover-roulette-dice': {
-                    transform: 'none',
-                  },
-                },
-              }}
-            >
-              <Stack
-                direction="row"
-                spacing={2}
-                alignItems="center"
-                sx={{ minWidth: 0, flex: 1, textAlign: 'left' }}
-              >
-                <Box
-                  className="discover-roulette-dice"
-                  sx={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 2,
-                    bgcolor: 'primary.main',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transform: 'rotate(3deg)',
-                    flexShrink: 0,
-                    boxShadow: (tt) => `0 8px 20px ${alpha(tt.palette.primary.main, 0.25)}`,
-                    transition: (tt) =>
-                      tt.transitions.create('transform', {
-                        duration: tt.transitions.duration.shorter,
-                      }),
-                    '@media (prefers-reduced-motion: reduce)': {
-                      transform: 'none',
-                      transition: 'none',
-                    },
-                  }}
-                >
-                  <Iconify icon={ic.dice5} width={28} sx={{ color: 'primary.contrastText' }} />
-                </Box>
-                <Box sx={{ minWidth: 0 }}>
-                  <Typography
-                    sx={{
-                      fontWeight: 800,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                    }}
-                  >
-                    {t('pages.dashboard.roulette.nav_promo_title')}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
-                    {t('pages.dashboard.discover.roulette_sub')}
-                  </Typography>
-                </Box>
-              </Stack>
-              <Iconify
-                icon={ic.arrowRightBold}
-                width={22}
-                sx={{ color: 'primary.main', flexShrink: 0 }}
-              />
-            </Button>
+              icon={ic.dice5}
+              iconClassName="discover-roulette-dice"
+              title={t('pages.dashboard.roulette.nav_promo_title')}
+              subtitle={t('pages.dashboard.discover.roulette_sub')}
+              rotateDeg={3}
+              onNavigate={() => trackEvent('discover_promo_clicked', { promo: 'roulette' })}
+            />
           </Stack>
 
           <Stack {...dashboardSubsectionStackProps}>

@@ -243,6 +243,44 @@ describe('Share → Decide analytics', () => {
     );
     assert.match(provider, /list_result_locked: \{ required: \['list_id', 'session_id'\] \}/);
   });
+
+  test('Tonight night analytics events are registered', () => {
+    const nightAnalytics = read('src/libs/analytics/night-analytics.js');
+    const provider = read('src/libs/analytics/analytics-provider.js');
+    for (const name of ['night_created', 'night_share_copied', 'night_open', 'night_join']) {
+      assert.match(nightAnalytics, new RegExp(`'${name}'`));
+      assert.match(provider, new RegExp(`${name}: \\{ required:`));
+    }
+    assert.match(provider, /night_created: \{ required: \['night_id', 'list_id'\] \}/);
+    assert.match(provider, /night_open: \{ required: \['night_id'\] \}/);
+  });
+
+  test('DecideSessionPanel forwards optional night_id on list decide events', () => {
+    const panel = read('src/sections/lists/decide-session-panel.js');
+    assert.match(panel, /analyticsProps/);
+    assert.match(panel, /\.\.\.extras/);
+    assert.match(panel, /nightId/);
+  });
+
+  test('Discover promotes Decide + Tonight with click analytics', () => {
+    const view = read('src/sections/discover/view/discover-view.js');
+    const promo = read('src/sections/discover/discover-feature-promo.js');
+    const provider = read('src/libs/analytics/analytics-provider.js');
+    const en = JSON.parse(read('src/locales/langs/en.json'));
+    const pt = JSON.parse(read('src/locales/langs/pt.json'));
+    assert.match(view, /DiscoverFeaturePromo/);
+    assert.match(view, /promo: 'decide'/);
+    assert.match(view, /promo: 'tonight'/);
+    assert.match(view, /promo: 'roulette'/);
+    assert.match(promo, /onNavigate/);
+    assert.match(provider, /discover_promo_clicked: \{ required: \['promo'\] \}/);
+    for (const lang of [en, pt]) {
+      const d = lang.pages.dashboard.discover;
+      assert.ok(d.decide_promo_title);
+      assert.ok(d.tonight_promo_title);
+      assert.ok(d.tonight_kicker);
+    }
+  });
 });
 
 describe('pickOgListRestaurantThumbUrls', () => {
