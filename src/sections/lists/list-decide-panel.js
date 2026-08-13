@@ -1,7 +1,7 @@
 'use client';
 
 import PropTypes from 'prop-types';
-import { useRef, useMemo, useState, useEffect, useCallback } from 'react';
+import { useRef, useMemo, useState, useEffect, useCallback, useLayoutEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -34,6 +34,7 @@ import ShareFeedbackSnackbar from 'src/components/share/share-feedback-snackbar'
 
 const VOTER_KEY_STORAGE = 'nomnom:list-decide-voter-key:v1';
 const LOCK_TOKEN_PREFIX = 'nomnom:list-decide-lock:';
+const SESSION_CACHE_PREFIX = 'nomnom:list-decide-session:';
 const POLL_MS = 4000;
 
 /**
@@ -79,6 +80,51 @@ function readLockToken(sessionId) {
     return window.sessionStorage.getItem(`${LOCK_TOKEN_PREFIX}${sessionId}`);
   } catch {
     return null;
+  }
+}
+
+/**
+ * Prefer the prop, then the live ?d= query (useSearchParams can lag on remount).
+ * @param {string | null | undefined} initialSessionId
+ * @returns {string | null}
+ */
+function resolveDecideSessionId(initialSessionId) {
+  if (initialSessionId) return String(initialSessionId);
+  if (typeof window === 'undefined') return null;
+  try {
+    return new URLSearchParams(window.location.search).get('d');
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * @param {string | null | undefined} sessionId
+ * @returns {object | null}
+ */
+function readCachedSession(sessionId) {
+  if (typeof window === 'undefined' || !sessionId) return null;
+  try {
+    const raw = window.sessionStorage.getItem(`${SESSION_CACHE_PREFIX}${sessionId}`);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Keep the last known session payload so auth remounts do not flash the idle CTA.
+ * @param {object | null | undefined} session
+ */
+function persistCachedSession(session) {
+  const id = session?.session_id;
+  if (typeof window === 'undefined' || !id) return;
+  try {
+    window.sessionStorage.setItem(`${SESSION_CACHE_PREFIX}${id}`, JSON.stringify(session));
+  } catch {
+    // ignore
   }
 }
 
@@ -147,6 +193,7 @@ export default function ListDecidePanel({
   const openedTracked = useRef(false);
   const resultTracked = useRef(false);
   const voterKeyRef = useRef(null);
+  const loadGenRef = useRef(0);
 
   const sessionId = session?.session_id ? String(session.session_id) : null;
   const locked = session?.status === 'locked';
@@ -162,28 +209,46 @@ export default function ListDecidePanel({
     window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
   }, []);
 
-  const refreshSession = useCallback(async (id) => {
-    if (!id) return null;
-    const { session: next, error } = await fetchListDecideSession(id);
-    if (error) {
-      setErr(error);
-      return null;
-    }
+  const applySession = useCallback((next) => {
+    if (!next) return;
     setSession(next);
+    persistCachedSession(next);
     setErr(null);
-    return next;
   }, []);
+
+  const refreshSession = useCallback(
+    async (id) => {
+      if (!id) return null;
+      const { session: next, error } = await fetchListDecideSession(id);
+      if (error) {
+        setErr(error);
+        return null;
+      }
+      applySession(next);
+      return next;
+    },
+    [applySession]
+  );
 
   useEffect(() => {
     voterKeyRef.current = getOrCreateVoterKey();
   }, []);
 
+  // Restore cached session before paint so auth remounts do not flash the idle CTA.
+  useLayoutEffect(() => {
+    const fromUrl = resolveDecideSessionId(initialSessionId);
+    if (!fromUrl) return;
+    const cached = readCachedSession(fromUrl);
+    if (cached) setSession(cached);
+  }, [initialSessionId]);
+
   useEffect(() => {
-    if (!initialSessionId) return undefined;
-    let cancelled = false;
+    const fromUrl = resolveDecideSessionId(initialSessionId);
+    if (!fromUrl) return undefined;
+    const gen = ++loadGenRef.current;
     (async () => {
-      const next = await refreshSession(initialSessionId);
-      if (cancelled || !next) return;
+      const next = await refreshSession(fromUrl);
+      if (loadGenRef.current !== gen || !next) return;
       syncSessionUrl(String(next.session_id));
       if (!openedTracked.current) {
         openedTracked.current = true;
@@ -194,9 +259,7 @@ export default function ListDecidePanel({
         });
       }
     })();
-    return () => {
-      cancelled = true;
-    };
+    return undefined;
   }, [initialSessionId, refreshSession, syncSessionUrl, analytics, listId]);
 
   useEffect(() => {
@@ -237,6 +300,12 @@ export default function ListDecidePanel({
       persistLockToken(String(created.session_id), String(created.lock_token));
     }
     const next = (await refreshSession(String(created.session_id))) || created;
+    if (!next?.session_id) {
+      setBusy(false);
+      setErr('unknown');
+      return;
+    }
+    applySession(next);
     setBusy(false);
     syncSessionUrl(String(next.session_id || created.session_id));
     openedTracked.current = true;
@@ -245,7 +314,7 @@ export default function ListDecidePanel({
       session_id: String(next.session_id || created.session_id),
       status: next.status || 'open',
     });
-  }, [isOwner, canStart, busy, listId, syncSessionUrl, analytics, refreshSession]);
+  }, [isOwner, canStart, busy, listId, syncSessionUrl, analytics, refreshSession, applySession]);
 
   const handleShareDecide = useCallback(async () => {
     if (!sessionId) return;
@@ -273,7 +342,7 @@ export default function ListDecidePanel({
         setErr(error || 'unknown');
         return;
       }
-      setSession(next);
+      applySession(next);
       analytics.trackVoteCast({
         list_id: listId,
         session_id: sessionId,
@@ -281,7 +350,7 @@ export default function ListDecidePanel({
         vote,
       });
     },
-    [sessionId, locked, busy, listId, analytics]
+    [sessionId, locked, busy, listId, analytics, applySession]
   );
 
   const handleRoulette = useCallback(() => {
@@ -310,13 +379,13 @@ export default function ListDecidePanel({
       setErr(error || 'unknown');
       return;
     }
-    setSession(next);
+    applySession(next);
     analytics.trackResultLocked({
       list_id: listId,
       session_id: sessionId,
       restaurant_id: next.winner_restaurant_id ? String(next.winner_restaurant_id) : null,
     });
-  }, [sessionId, locked, busy, tallies, restaurantIds, listId, analytics]);
+  }, [sessionId, locked, busy, tallies, restaurantIds, listId, analytics, applySession]);
 
   const winnerId = locked
     ? session?.winner_restaurant_id

@@ -885,6 +885,7 @@ export default function ListPublicView({
         error !== 'login_required' &&
         (items?.length ?? 0) > 0 && (
           <ListDecidePanel
+            key={searchParams.get('d') || 'decide-idle'}
             listId={listId}
             listName={list.name}
             items={items}
