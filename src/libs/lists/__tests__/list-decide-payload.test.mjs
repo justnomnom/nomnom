@@ -23,6 +23,12 @@ describe('mapDecideError', () => {
     assert.equal(mapDecideError('invalid_vote'), 'invalid_vote');
     assert.equal(mapDecideError('rate_limited'), 'rate_limited');
     assert.equal(mapDecideError('not_authorized_to_lock'), 'not_authorized_to_lock');
+    assert.equal(mapDecideError('restaurant_not_allowed'), 'restaurant_not_allowed');
+    assert.equal(mapDecideError('night_not_found'), 'night_not_found');
+    assert.equal(mapDecideError('not_joined'), 'not_joined');
+    assert.equal(mapDecideError('invalid_display_name'), 'invalid_display_name');
+    assert.equal(mapDecideError('too_many_places'), 'too_many_places');
+    assert.equal(mapDecideError('invalid_restaurant_id'), 'invalid_restaurant_id');
   });
 
   it('hides Postgres / PostgREST internals as unknown', () => {

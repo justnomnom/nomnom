@@ -89,6 +89,11 @@ const EVENT_SCHEMAS = {
   list_roulette_spin: { required: ['list_id', 'restaurant_id'] },
   list_result_shown: { required: ['list_id', 'session_id', 'restaurant_id'] },
   list_result_locked: { required: ['list_id', 'session_id'] },
+  // Tonight (Night object)
+  night_created: { required: ['night_id', 'list_id'] },
+  night_share_copied: { required: ['night_id', 'list_id'] },
+  night_open: { required: ['night_id'] },
+  night_join: { required: ['night_id'] },
   // List management
   list_created: { required: ['list_id'] },
   list_details_saved: { required: ['list_id'] },

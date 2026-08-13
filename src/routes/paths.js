@@ -43,6 +43,8 @@ export const paths = {
   /** Published list (share / SEO). Pass { username, slug } to get the human-readable URL. */
   listPublic: (id, opts) =>
     opts?.username && opts?.slug ? `/lists/${opts.username}/${opts.slug}` : `/lists/${id}`,
+  /** Tonight Night share page (auth-free join + Decide). */
+  tonight: (id) => `/tonight/${id}`,
   /** Supabase restaurant (share link; readable without signing in). */
   restaurantPublic: (id) => `/restaurants/${id}`,
   /** Public profile by @handle. */

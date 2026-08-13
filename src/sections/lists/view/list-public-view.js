@@ -39,7 +39,7 @@ import { useAuthContext } from 'src/auth/hooks';
 import { NAV, MAPBOX_API } from 'src/config-global';
 import { useLocales, useTranslate } from 'src/locales';
 import { hoverable } from 'src/theme/overrides/hoverable';
-import { SPACE, TOUCH_TARGET_SIZE } from 'src/theme/spacing';
+import { SPACE, TOUCH_TARGET_SIZE, touchTargetSx } from 'src/theme/spacing';
 import { getLocaleBodyMaxWidthCh } from 'src/theme/locale-prose';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
 import { getPaywallRelativeDate } from 'src/libs/paywall/paywall-recency';
@@ -54,6 +54,7 @@ import Iconify from 'src/components/iconify';
 import ShareFeedbackSnackbar from 'src/components/share/share-feedback-snackbar';
 
 import ListDecidePanel from 'src/sections/lists/list-decide-panel';
+import PlanTonightSheet from 'src/sections/lists/plan-tonight-sheet';
 import MapSheetSortMenu from 'src/sections/map/map-sheet-sort-menu';
 import { useMapMobileSpotSheet } from 'src/sections/map/use-map-mobile-spot-sheet';
 import { MapMobileSpotSheetShell } from 'src/sections/map/map-mobile-spot-sheet-shell';
@@ -189,6 +190,7 @@ export default function ListPublicView({
   const [saveSheetRestaurantId, setSaveSheetRestaurantId] = useState(null);
   const [guestAuthPromptOpen, setGuestAuthPromptOpen] = useState(false);
   const [guestAuthPromptRestaurantId, setGuestAuthPromptRestaurantId] = useState(null);
+  const [planTonightOpen, setPlanTonightOpen] = useState(false);
 
   // Deep-link: `?spot=<restaurantId>` (e.g. from a notification) highlights that
   // spot in the list and scrolls it into view.
@@ -884,16 +886,37 @@ export default function ListPublicView({
         !showPaidPaywall &&
         error !== 'login_required' &&
         (items?.length ?? 0) > 0 && (
-          <ListDecidePanel
-            key={searchParams.get('d') || 'decide-idle'}
-            listId={listId}
-            listName={list.name}
-            items={items}
-            isOwner={Boolean(initialMembership?.isOwner)}
-            ownerUsername={owner?.username || null}
-            listSlug={list.slug || null}
-            initialSessionId={searchParams.get('d') || null}
-          />
+          <Stack spacing={SPACE.sm} sx={{ width: 1 }}>
+            <ListDecidePanel
+              key={searchParams.get('d') || 'decide-idle'}
+              listId={listId}
+              listName={list.name}
+              items={items}
+              isOwner={Boolean(initialMembership?.isOwner)}
+              ownerUsername={owner?.username || null}
+              listSlug={list.slug || null}
+              initialSessionId={searchParams.get('d') || null}
+            />
+            {Boolean(initialMembership?.isOwner) && (items?.length ?? 0) >= 3 ? (
+              <Button
+                fullWidth
+                size="small"
+                variant="outlined"
+                color="primary"
+                onClick={() => setPlanTonightOpen(true)}
+                sx={touchTargetSx}
+              >
+                {t('pages.lists.plan_tonight_cta')}
+              </Button>
+            ) : null}
+            <PlanTonightSheet
+              open={planTonightOpen}
+              onClose={() => setPlanTonightOpen(false)}
+              listId={listId}
+              items={items}
+              isOwner={Boolean(initialMembership?.isOwner)}
+            />
+          </Stack>
         )}
 
       {paidAccess?.listUpdatedAt && !isDashboardEmbed && !showPaidPaywall && (

@@ -1,0 +1,7 @@
+-- Tonight Night tables + RPCs.
+-- Canonical: supabase/migrations/20260813180000_nights_tonight.sql
+-- Depends on: supabase/migrations/20260813140000_list_decide.sql
+--
+-- Tables: nights, night_places, night_guests (service_role only).
+-- RPCs: create_night, get_night, get_night_decide, join_night, cast_night_vote.
+-- Also extends Decide: allowed_restaurant_ids + session coupling with nights.

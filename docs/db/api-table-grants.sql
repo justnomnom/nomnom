@@ -70,8 +70,12 @@ GRANT DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE ON TABLE pub
 
 -- Share → Decide: no direct client DML/SELECT (voter_key privacy). Reads/writes via RPCs.
 -- RPC bodies + EXECUTE grants: supabase/migrations/20260813140000_list_decide.sql
+-- Night tables: supabase/migrations/20260813180000_nights_tonight.sql
 GRANT DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE ON TABLE public.list_decide_sessions TO service_role;
 GRANT DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE ON TABLE public.list_decide_votes TO service_role;
+GRANT DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE ON TABLE public.nights TO service_role;
+GRANT DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE ON TABLE public.night_places TO service_role;
+GRANT DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE ON TABLE public.night_guests TO service_role;
 
 GRANT SELECT ON TABLE public.list_item_must_try_dishes TO anon;
 GRANT DELETE, INSERT, SELECT, UPDATE ON TABLE public.list_item_must_try_dishes TO authenticated;

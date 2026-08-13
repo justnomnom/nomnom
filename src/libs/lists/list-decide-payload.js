@@ -20,6 +20,12 @@ export function mapDecideError(message) {
   if (m.includes('invalid_vote')) return 'invalid_vote';
   if (m.includes('rate_limited')) return 'rate_limited';
   if (m.includes('not_authorized_to_lock')) return 'not_authorized_to_lock';
+  if (m.includes('restaurant_not_allowed')) return 'restaurant_not_allowed';
+  if (m.includes('night_not_found')) return 'night_not_found';
+  if (m.includes('not_joined')) return 'not_joined';
+  if (m.includes('invalid_display_name')) return 'invalid_display_name';
+  if (m.includes('too_many_places')) return 'too_many_places';
+  if (m.includes('invalid_restaurant_id')) return 'invalid_restaurant_id';
   // Hide raw Postgres internals (e.g. missing extension) behind a stable key.
   if (/gen_random_bytes|permission denied|PGRST|postgres/i.test(m)) return 'unknown';
   return m || 'unknown';

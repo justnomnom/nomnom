@@ -43,6 +43,7 @@ const DECIDE_I18N_KEYS = [
   'pages.lists.decide_upvote_aria',
   'pages.lists.decide_downvote_aria',
   'pages.lists.decide_unnamed_place',
+  'pages.lists.decide_join_to_vote_hint',
   'pages.lists.decide_error_generic',
   'pages.lists.decide_error_unauthorized',
   'pages.lists.decide_error_only_owner',
@@ -55,6 +56,12 @@ const DECIDE_I18N_KEYS = [
   'pages.lists.decide_error_invalid_vote',
   'pages.lists.decide_error_rate_limited',
   'pages.lists.decide_error_not_authorized_to_lock',
+  'pages.lists.decide_error_restaurant_not_allowed',
+  'pages.lists.decide_error_night_not_found',
+  'pages.lists.decide_error_not_joined',
+  'pages.lists.decide_error_invalid_display_name',
+  'pages.lists.decide_error_too_many_places',
+  'pages.lists.decide_error_invalid_restaurant_id',
 ];
 
 describe('Share → Decide i18n', () => {
@@ -118,6 +125,9 @@ describe('Share → Decide wiring', () => {
     const wipe = read('docs/db/empty-all-application-data.sql');
     assert.match(wipe, /public\.list_decide_votes/);
     assert.match(wipe, /public\.list_decide_sessions/);
+    assert.match(wipe, /public\.nights/);
+    assert.match(wipe, /public\.night_places/);
+    assert.match(wipe, /public\.night_guests/);
     const pointer = read('docs/db/list-decide-schema.sql');
     assert.match(pointer, /supabase\/migrations\/20260813140000_list_decide\.sql/);
   });
@@ -125,6 +135,9 @@ describe('Share → Decide wiring', () => {
   test('decide tables are service_role only in grants allowlist', () => {
     assert.ok(API_GRANT_SERVICE_ROLE_ONLY_TABLES.includes('list_decide_sessions'));
     assert.ok(API_GRANT_SERVICE_ROLE_ONLY_TABLES.includes('list_decide_votes'));
+    assert.ok(API_GRANT_SERVICE_ROLE_ONLY_TABLES.includes('nights'));
+    assert.ok(API_GRANT_SERVICE_ROLE_ONLY_TABLES.includes('night_places'));
+    assert.ok(API_GRANT_SERVICE_ROLE_ONLY_TABLES.includes('night_guests'));
   });
 
   test('schema encodes vote ±1, open/locked status, and composite PK', () => {
@@ -147,22 +160,24 @@ describe('Share → Decide wiring', () => {
 
   test('panel hydrates from sessionStorage, polls while open, and remounts on ?d=', () => {
     const panel = read('src/sections/lists/list-decide-panel.js');
-    assert.match(panel, /const POLL_MS = 4000/);
+    const sessionPanel = read('src/sections/lists/decide-session-panel.js');
+    assert.match(sessionPanel, /const POLL_MS = 4000/);
     assert.match(panel, /useLayoutEffect/);
     assert.match(panel, /readCachedSession\(fromUrl\)/);
     assert.match(panel, /resolveDecideSessionId\(initialSessionId\)/);
-    assert.match(panel, /window\.setInterval\(tick, POLL_MS\)/);
-    assert.match(panel, /if \(!sessionId \|\| locked\) return undefined/);
-    assert.match(panel, /if \(!isOwner \|\| !canStart \|\| busy\) return/);
-    assert.match(panel, /if \(!sessionId \|\| locked \|\| busy\) return/);
-    assert.match(panel, /if \(!restaurantIds\.length \|\| locked\) return/);
+    assert.match(sessionPanel, /window\.setInterval\(tick, POLL_MS\)/);
+    assert.match(sessionPanel, /if \(!sessionId \|\| locked\) return undefined/);
+    assert.match(sessionPanel, /if \(!showStart \|\| !onStart \|\| !isOwner \|\| !canStart \|\| busy\) return/);
+    assert.match(sessionPanel, /if \(!sessionId \|\| locked \|\| busy\) return/);
+    assert.match(sessionPanel, /if \(!restaurantIds\.length \|\| locked\) return/);
     assert.match(panel, /persistLockToken/);
+    assert.match(sessionPanel, /trackDecideOpen|trackVoteCast/);
+    assert.match(sessionPanel, /trackVoteCast/);
+    assert.match(sessionPanel, /trackRouletteSpin/);
+    assert.match(sessionPanel, /trackResultLocked/);
+    assert.match(sessionPanel, /trackResultShown/);
+    assert.match(sessionPanel, /trackShareCopied/);
     assert.match(panel, /trackDecideOpen/);
-    assert.match(panel, /trackVoteCast/);
-    assert.match(panel, /trackRouletteSpin/);
-    assert.match(panel, /trackResultLocked/);
-    assert.match(panel, /trackResultShown/);
-    assert.match(panel, /trackShareCopied/);
 
     const view = read('src/sections/lists/view/list-public-view.js');
     assert.match(view, /key=\{searchParams\.get\('d'\) \|\| 'decide-idle'\}/);
@@ -172,22 +187,24 @@ describe('Share → Decide wiring', () => {
 
   test('panel idle / locked / guest branches and URL sync are wired', () => {
     const panel = read('src/sections/lists/list-decide-panel.js');
-    assert.match(panel, /if \(!canStart && !session\)/);
-    assert.match(panel, /pages\.lists\.decide_need_three/);
-    assert.match(panel, /pages\.lists\.decide_waiting_owner/);
-    assert.match(panel, /pages\.lists\.decide_going_here/);
-    assert.match(panel, /winner\.mapsLink/);
+    const sessionPanel = read('src/sections/lists/decide-session-panel.js');
+    assert.match(sessionPanel, /if \(!canStart && !session\)/);
+    assert.match(sessionPanel, /pages\.lists\.decide_need_three/);
+    assert.match(sessionPanel, /pages\.lists\.decide_waiting_owner/);
+    assert.match(sessionPanel, /pages\.lists\.decide_going_here/);
+    assert.match(sessionPanel, /winner\.mapsLink/);
     assert.match(panel, /searchParams\.set\('d', nextSessionId\)/);
     assert.match(panel, /history\.replaceState/);
     assert.match(panel, /loadGenRef\.current !== gen/);
     assert.match(panel, /persistLockToken\(String\(created\.session_id\), String\(created\.lock_token\)\)/);
-    assert.match(panel, /window\.location\.href/);
-    assert.match(panel, /paths\.restaurantPublic\(winner\.restaurantId\)/);
-    assert.match(panel, /color="primary"/);
-    assert.match(panel, /touchTargetSx/);
-    assert.match(panel, /tabularNumsSx/);
-    assert.match(panel, /DecidePlaceThumb/);
+    assert.match(sessionPanel, /window\.location\.href/);
+    assert.match(sessionPanel, /paths\.restaurantPublic\(winner\.restaurantId\)/);
+    assert.match(sessionPanel, /color="primary"/);
+    assert.match(sessionPanel, /touchTargetSx/);
+    assert.match(sessionPanel, /tabularNumsSx/);
+    assert.match(sessionPanel, /DecidePlaceThumb/);
     assert.doesNotMatch(panel, /gen_random_bytes/);
+    assert.doesNotMatch(sessionPanel, /gen_random_bytes/);
   });
 
   test('list OG card fetches restaurant thumbs for WhatsApp collage', () => {
