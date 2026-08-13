@@ -23,7 +23,8 @@ export default async function TonightOpenGraphImage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { night } = await fetchNight(id).catch(() => ({ night: null }));
+  const { night: raw } = await fetchNight(id).catch(() => ({ night: null }));
+  const night = raw as { list_id?: unknown; title?: unknown } | null;
   const listId = night?.list_id ? String(night.list_id) : null;
   if (listId) {
     return renderListOgImage(listId);
