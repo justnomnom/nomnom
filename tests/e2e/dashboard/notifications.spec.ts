@@ -76,6 +76,7 @@ test.describe('dashboard notifications', () => {
       await splash.waitFor({ state: 'hidden', timeout: 90_000 }).catch(() => {});
     }
     await expectSignedInDashboardShell(page, { timeout: 60_000 });
+    await expect(page.getByText('List updates')).toBeVisible({ timeout: 45_000 });
     await expect(emailLabel).toBeVisible({ timeout: 15_000 });
     await expect(emailSwitch).toHaveJSProperty('checked', !wasChecked);
     const restored = page.waitForResponse(
@@ -89,11 +90,8 @@ test.describe('dashboard notifications', () => {
     await expect(emailSwitch).toHaveJSProperty('checked', wasChecked);
   });
 
-  test('GET /api/notifications returns feed shape for signed-in user', async ({ page }) => {
-    test.setTimeout(180_000);
-    await gotoSignedInDashboard(page, '/dashboard/notifications');
-
-    const res = await page.request.get('/api/notifications');
+  test('GET /api/notifications returns feed shape for signed-in user', async ({ request }) => {
+    const res = await request.get('/api/notifications');
     expect(res.status()).toBe(200);
     const json = await res.json();
     expect(Array.isArray(json.notifications)).toBe(true);
@@ -101,24 +99,18 @@ test.describe('dashboard notifications', () => {
     expect(typeof json.hasMore).toBe('boolean');
   });
 
-  test('POST read/delete with missing target → 400', async ({ page }) => {
-    test.setTimeout(180_000);
-    await gotoSignedInDashboard(page, '/dashboard/notifications');
-
-    const readRes = await page.request.post('/api/notifications/read', { data: {} });
+  test('POST read/delete with missing target → 400', async ({ request }) => {
+    const readRes = await request.post('/api/notifications/read', { data: {} });
     expect(readRes.status()).toBe(400);
     expect((await readRes.json()).error).toBe('missing_target');
 
-    const deleteRes = await page.request.post('/api/notifications/delete', { data: { id: '' } });
+    const deleteRes = await request.post('/api/notifications/delete', { data: { id: '' } });
     expect(deleteRes.status()).toBe(400);
     expect((await deleteRes.json()).error).toBe('missing_target');
   });
 
-  test('POST mark-all-read succeeds', async ({ page }) => {
-    test.setTimeout(180_000);
-    await gotoSignedInDashboard(page, '/dashboard/notifications');
-
-    const res = await page.request.post('/api/notifications/read', { data: { all: true } });
+  test('POST mark-all-read succeeds', async ({ request }) => {
+    const res = await request.post('/api/notifications/read', { data: { all: true } });
     expect(res.status()).toBe(200);
     expect((await res.json()).ok).toBe(true);
   });

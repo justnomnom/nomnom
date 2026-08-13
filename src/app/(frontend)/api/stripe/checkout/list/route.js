@@ -63,7 +63,9 @@ export async function POST(request) {
 
   const supabase = await createSupabaseServerClient();
 
-  const listQuery = supabase
+  // Admin client: buyers are not yet subscribers, so RLS on `lists` would hide
+  // `public_subscribers` rows and checkout would mis-report `list_not_monetized`.
+  const listQuery = supabaseAdminClient
     .from('lists')
     .select(
       'id, user_id, name, paid_access_enabled, stripe_price_id, monthly_amount_cents, currency'

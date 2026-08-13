@@ -79,6 +79,14 @@ function tryResolveSpecifier(specifier, parentURL) {
  * @param {(s: string, c: object) => Promise<object>} nextResolve
  */
 export async function resolve(specifier, context, nextResolve) {
+  // Next's `next/cache` export is extensionless; Node ESM cannot resolve it.
+  if (specifier === 'next/cache') {
+    return {
+      shortCircuit: true,
+      url: pathToFileURL(path.join(ROOT, 'scripts/node-test-stubs/next-cache.mjs')).href,
+    };
+  }
+
   // Only rewrite bare extensionless relatives and src/ aliases.
   const needsRewrite =
     specifier.startsWith('src/') ||

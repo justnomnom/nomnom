@@ -4,9 +4,9 @@ import { expectAppShellMainVisible } from '../support/page-assertions';
 
 /**
  * Unauthenticated routes: marketing shell, auth entry points, and global error pages.
- * Runs without Supabase E2E auth (public project).
+ * Runs without Supabase E2E auth (public project). Tests are independent so a cold
+ * compile timeout on one page cannot skip the rest of the file.
  */
-test.describe.configure({ mode: 'serial' });
 
 test.describe('public home and marketing', () => {
   test('home page loads', async ({ page }) => {
@@ -23,15 +23,17 @@ test.describe('public home and marketing', () => {
   });
 
   test('contact page loads', async ({ page }) => {
-    await page.goto('/contact-us');
+    test.setTimeout(120_000);
+    await page.goto('/contact-us', { waitUntil: 'domcontentloaded', timeout: 120_000 });
     await expect(page).toHaveURL(/\/contact-us/);
-    await expectAppShellMainVisible(page);
+    await expectAppShellMainVisible(page, { timeout: 45_000 });
   });
 
   test('FAQs page loads', async ({ page }) => {
-    await page.goto('/faqs');
+    test.setTimeout(120_000);
+    await page.goto('/faqs', { waitUntil: 'domcontentloaded', timeout: 120_000 });
     await expect(page).toHaveURL(/\/faqs/);
-    await expectAppShellMainVisible(page);
+    await expectAppShellMainVisible(page, { timeout: 45_000 });
   });
 
   test('countries hub loads', async ({ page }) => {
@@ -92,9 +94,10 @@ test.describe('public auth entry points (no submission)', () => {
 
 test.describe('public error pages', () => {
   test('404 page renders', async ({ page }) => {
-    await page.goto('/error/404');
+    test.setTimeout(180_000);
+    await page.goto('/error/404', { waitUntil: 'domcontentloaded', timeout: 120_000 });
     await expect(page).toHaveURL(/\/error\/404/);
-    await expectAppShellMainVisible(page);
+    await expectAppShellMainVisible(page, { timeout: 45_000 });
   });
 
   test('403 page renders', async ({ page }) => {

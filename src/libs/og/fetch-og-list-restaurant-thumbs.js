@@ -5,6 +5,7 @@
 import { createClient } from '@supabase/supabase-js';
 
 import { SUPABASE_API } from 'src/config-global';
+import { pickOgListRestaurantThumbUrls } from './pick-og-list-restaurant-thumbs';
 
 // ----------------------------------------------------------------------
 
@@ -38,19 +39,7 @@ export async function fetchOgListRestaurantThumbs(listId, limit = 4) {
       .order('sort_order', { ascending: true })
       .limit(12);
     if (error || !Array.isArray(items)) return [];
-
-    const urls = [];
-    for (const row of items) {
-      const images = row?.restaurants?.restaurant_images;
-      if (!Array.isArray(images) || !images.length) continue;
-      const sorted = images
-        .filter((img) => img?.url && img.moderation_status !== 'rejected')
-        .toSorted((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
-      const first = sorted[0]?.url;
-      if (first && !urls.includes(first)) urls.push(first);
-      if (urls.length >= max) break;
-    }
-    return urls;
+    return pickOgListRestaurantThumbUrls(items, max);
   } catch {
     return [];
   }

@@ -8,7 +8,6 @@ import { expectAppShellMainVisible } from '../support/page-assertions';
  * render a soft not-found/empty state at 200; both are acceptable. What we assert
  * everywhere: status < 500 and the app shell renders.
  */
-test.describe.configure({ mode: 'serial' });
 
 const BOGUS = 'e2e-nonexistent-xyz-9999';
 const NASTY = "%27%22%3E%3C--"; // ' " > < -- (URL-encoded), guards against injection-driven 500s

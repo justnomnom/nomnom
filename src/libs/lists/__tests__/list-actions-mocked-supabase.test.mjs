@@ -88,7 +88,9 @@ mock.module('src/libs/notifications/list-live-update-notify.js', {
 
 const { createList } = await import('../actions/crud-hub-actions.js');
 const { addRestaurantToLists } = await import('../actions/items-actions.js');
-const { fetchListPage } = await import('../actions/list-page-actions.js');
+const { fetchListPage, resolveListSlug, fetchListForManage } = await import(
+  '../actions/list-page-actions.js'
+);
 
 /**
  * Chainable PostgREST stub. `handler` returns `{ data, error }` (or a thenable) per call.
@@ -515,5 +517,155 @@ test('fetchListPage: non-owner on a paid list uses the freemium preview RPC', as
     supabase.calls.some((c) => c.table === 'list_items' && c.op === 'select'),
     false
   );
+});
+
+test('resolveListSlug: blank handle or slug → null without querying', async () => {
+  supabase = makeSupabaseMock(() => ({ data: null, error: null }));
+  assert.equal(await resolveListSlug('', 'dinner'), null);
+  assert.equal(await resolveListSlug('ada', ''), null);
+  assert.equal(
+    supabase.calls.some((c) => c.kind === 'rpc'),
+    false
+  );
+});
+
+test('resolveListSlug: unknown creator → null', async () => {
+  supabase = makeSupabaseMock((ctx) => {
+    if (ctx.kind === 'rpc' && ctx.rpc === 'resolve_user_id_from_username') {
+      return { data: null, error: null };
+    }
+    return { data: null, error: null };
+  });
+  assert.equal(await resolveListSlug('nobody', 'dinner'), null);
+  assert.equal(
+    supabase.calls.some((c) => c.table === 'lists'),
+    false
+  );
+});
+
+test('resolveListSlug: handle + slug resolve to the list id', async () => {
+  supabase = makeSupabaseMock((ctx) => {
+    if (ctx.kind === 'rpc' && ctx.rpc === 'resolve_user_id_from_username') {
+      assert.equal(ctx.args.p_username, 'ada');
+      return { data: USER_ID, error: null };
+    }
+    if (ctx.table === 'lists' && ctx.single === 'maybe') {
+      assert.equal(ctx.filter.user_id, USER_ID);
+      assert.equal(ctx.filter.slug, 'dinner');
+      return { data: { id: LIST_ID }, error: null };
+    }
+    return { data: null, error: null };
+  });
+  assert.equal(await resolveListSlug('@Ada', 'Dinner'), LIST_ID);
+});
+
+test('fetchListForManage: missing list → not_found', async () => {
+  authUser = { id: USER_ID };
+  supabase = makeSupabaseMock((ctx) => {
+    if (ctx.table === 'lists' && ctx.single === 'maybe') {
+      return { data: null, error: null };
+    }
+    return { data: [], error: null };
+  });
+  const out = await fetchListForManage(LIST_ID, { viewerLang: 'en' });
+  assert.equal(out.error, 'not_found');
+  assert.equal(out.list, null);
+  assert.deepEqual(out.items, []);
+});
+
+test('fetchListForManage: editor viewer gets list, items, members, and owner in parallel', async () => {
+  authUser = { id: OTHER_USER_ID };
+  supabase = makeSupabaseMock((ctx) => {
+    if (ctx.table === 'lists' && ctx.single === 'maybe') {
+      return {
+        data: {
+          id: LIST_ID,
+          user_id: USER_ID,
+          name: 'Dinner',
+          description: '',
+          cover_image_url: null,
+          visibility: 'public',
+          published_at: '2026-01-01T00:00:00Z',
+          updated_at: '2026-01-02T00:00:00Z',
+          paid_access_enabled: false,
+          monthly_amount_cents: null,
+          currency: 'eur',
+          stripe_price_id: null,
+          stripe_product_id: null,
+        },
+        error: null,
+      };
+    }
+    if (ctx.table === 'list_items' && ctx.op === 'select') {
+      return { data: [], error: null };
+    }
+    if (ctx.kind === 'rpc' && ctx.rpc === 'list_members_with_profiles') {
+      return {
+        data: [
+          {
+            user_id: OTHER_USER_ID,
+            role: 'editor',
+            status: 'accepted',
+            invited_by: USER_ID,
+            created_at: '2026-01-01T00:00:00Z',
+            display_name: 'Bo',
+            username: 'bo',
+            avatar_url: null,
+          },
+        ],
+        error: null,
+      };
+    }
+    if (ctx.kind === 'rpc' && ctx.rpc === 'list_manage_owner_profile') {
+      return {
+        data: [
+          {
+            owner_id: USER_ID,
+            display_name: 'Ada',
+            username: 'ada',
+            avatar_url: null,
+          },
+        ],
+        error: null,
+      };
+    }
+    return { data: [], error: null };
+  });
+  const out = await fetchListForManage(LIST_ID, { viewerLang: 'en' });
+  assert.equal(out.error, null);
+  assert.equal(out.list?.id, LIST_ID);
+  assert.deepEqual(out.items, []);
+  assert.equal(out.members[0]?.user_id, OTHER_USER_ID);
+  assert.equal(out.listOwner?.user_id, USER_ID);
+  assert.ok(supabase.calls.some((c) => c.table === 'lists' && c.single === 'maybe'));
+  assert.ok(supabase.calls.some((c) => c.table === 'list_items'));
+  assert.ok(supabase.calls.some((c) => c.rpc === 'list_members_with_profiles'));
+  assert.ok(supabase.calls.some((c) => c.rpc === 'list_manage_owner_profile'));
+});
+
+test('addRestaurantToLists: min-sort and existing-row selects both run', async () => {
+  authUser = { id: USER_ID };
+  resetSideEffects();
+  supabase = makeSupabaseMock((ctx) => {
+    if (ctx.table === 'list_items' && ctx.op === 'select' && String(ctx.select).includes('sort_order')) {
+      return { data: [{ list_id: LIST_ID, sort_order: 1 }], error: null };
+    }
+    if (ctx.table === 'list_items' && ctx.op === 'select') {
+      return { data: [], error: null };
+    }
+    if (ctx.table === 'list_items' && ctx.op === 'upsert') {
+      return { data: null, error: null };
+    }
+    if (ctx.table === 'lists' && ctx.op === 'update') {
+      return { data: null, error: null };
+    }
+    return { data: null, error: null };
+  });
+  const out = await addRestaurantToLists(RESTAURANT_ID, [LIST_ID]);
+  assert.deepEqual(out, { error: null });
+  const selects = supabase.calls.filter((c) => c.table === 'list_items' && c.op === 'select');
+  assert.equal(selects.length, 2);
+  assert.ok(selects.some((c) => String(c.select).includes('sort_order')));
+  assert.ok(selects.some((c) => c.filter.restaurant_id === RESTAURANT_ID));
 });
 });

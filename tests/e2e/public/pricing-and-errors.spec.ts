@@ -25,7 +25,8 @@ test.describe('pricing page content', () => {
 test.describe('error pages', () => {
   for (const code of ['403', '404', '500'] as const) {
     test(`/error/${code} renders its shell`, async ({ page }) => {
-      await page.goto(`/error/${code}`, { waitUntil: 'load', timeout: 120_000 });
+      test.setTimeout(180_000);
+      await page.goto(`/error/${code}`, { waitUntil: 'domcontentloaded', timeout: 120_000 });
       await expect(page).toHaveURL(new RegExp(`/error/${code}`));
       await expectAppShellMainVisible(page, { timeout: 45_000 });
     });

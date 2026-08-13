@@ -45,8 +45,9 @@ test.describe('Portugal geo shell (sitemap-backed)', () => {
 
 test.describe('auth — new password entry', () => {
   test('new password page loads (Supabase recovery entry)', async ({ page }) => {
-    await page.goto('/auth/new-password');
+    test.setTimeout(180_000);
+    await page.goto('/auth/new-password', { waitUntil: 'domcontentloaded', timeout: 120_000 });
     await expect(page).toHaveURL(/\/auth\/new-password/);
-    await expectAppShellMainVisible(page);
+    await expectAppShellMainVisible(page, { timeout: 45_000 });
   });
 });

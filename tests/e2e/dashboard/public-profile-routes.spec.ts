@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { expectSignedInDashboardShell } from '../support/page-assertions';
+import { APP_NOT_FOUND_HEADING, expectSignedInDashboardShell } from '../support/page-assertions';
 import { dashboardTestsDisabled } from '../support/skip-dashboard';
 import { E2E_DASHBOARD_AUTH_SETUP_HINT } from '../support/test-credentials';
 
@@ -19,14 +19,19 @@ test.describe('public profile by handle (optional)', () => {
   });
 
   test('dashboard public profile route loads', async ({ page }) => {
+    test.setTimeout(180_000);
     const handle = process.env.E2E_PUBLIC_PROFILE_USERNAME!.trim().replace(/^@/, '');
-    await page.goto(`/dashboard/u/${handle}`, { waitUntil: 'domcontentloaded' });
+    await page.goto(`/dashboard/u/${handle}`, { waitUntil: 'domcontentloaded', timeout: 120_000 });
     await expect(page).toHaveURL(new RegExp(`/dashboard/u/${handle}`));
-    await expectSignedInDashboardShell(page, { timeout: 25_000 });
+    const splash = page.getByText('Pulling up the menu...');
+    if (await splash.isVisible().catch(() => false)) {
+      await splash.waitFor({ state: 'hidden', timeout: 90_000 }).catch(() => {});
+    }
+    await expectSignedInDashboardShell(page, { timeout: 90_000 });
 
     const profileRoot = page.getByTestId('e2e-user-public-profile');
-    const notFound = page.getByRole('heading', { name: 'Page Not Found', level: 3 });
-    await expect(profileRoot.or(notFound)).toBeVisible({ timeout: 25_000 });
+    const notFound = page.getByRole('heading', { name: APP_NOT_FOUND_HEADING, level: 3 });
+    await expect(profileRoot.or(notFound)).toBeVisible({ timeout: 90_000 });
 
     if (await notFound.isVisible()) {
       test.skip(

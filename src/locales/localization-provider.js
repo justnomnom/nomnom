@@ -38,6 +38,8 @@ export default function LocalizationProvider({ children }) {
         return;
       }
       i18n.on('initialized', finish);
+      // Init can complete between the check and the listener.
+      if (i18n.isInitialized) finish();
     };
 
     boot();

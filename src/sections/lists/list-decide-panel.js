@@ -6,6 +6,7 @@ import { useRef, useMemo, useState, useEffect, useCallback, useLayoutEffect } fr
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
+import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
@@ -18,6 +19,7 @@ import { useShareLink } from 'src/hooks/use-share-link';
 
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
+import { SPACE, tabularNumsSx, touchTargetSx } from 'src/theme/spacing';
 import {
   castListDecideVote,
   lockListDecideSession,
@@ -25,6 +27,18 @@ import {
   createListDecideSession,
 } from 'src/libs/lists/actions/decide-actions';
 import { canStartListDecide, pickDecideWinnerId, rankDecideTallies } from 'src/libs/lists/list-decide-tally';
+import {
+  canLockDecideSession,
+  decideErrorMessage,
+  getOrCreateVoterKey,
+  lockedWinnerRestaurantId,
+  mapListItemsToDecidePlaces,
+  persistCachedSession,
+  persistLockToken,
+  readCachedSession,
+  readLockToken,
+  resolveDecideSessionId,
+} from 'src/libs/lists/list-decide-client';
 import { useListDecideAnalytics } from 'src/libs/analytics/list-decide-analytics';
 
 import Iconify from 'src/components/iconify';
@@ -32,113 +46,44 @@ import ShareFeedbackSnackbar from 'src/components/share/share-feedback-snackbar'
 
 // ----------------------------------------------------------------------
 
-const VOTER_KEY_STORAGE = 'nomnom:list-decide-voter-key:v1';
-const LOCK_TOKEN_PREFIX = 'nomnom:list-decide-lock:';
-const SESSION_CACHE_PREFIX = 'nomnom:list-decide-session:';
 const POLL_MS = 4000;
+const PLACE_THUMB_SIZE = 40;
+const WINNER_THUMB_SIZE = 48;
+const CARD_SX = { p: SPACE.md, borderRadius: 2 };
+const INNER_SURFACE_SX = {
+  p: SPACE.md,
+  borderRadius: 1,
+  bgcolor: 'background.neutral',
+  textAlign: 'center',
+};
+const VOTE_ROW_SX = {
+  py: SPACE.xs,
+  px: SPACE.sm,
+  borderRadius: 1,
+  bgcolor: 'background.neutral',
+  minWidth: 0,
+};
 
 /**
- * Stable anonymous voter id for guest decide votes.
- * @returns {string}
+ * Circular place thumb with a first-letter fallback when no photo is set.
  */
-function getOrCreateVoterKey() {
-  if (typeof window === 'undefined') return 'ssr-placeholder-key';
-  try {
-    const existing = window.localStorage.getItem(VOTER_KEY_STORAGE);
-    if (existing && existing.length >= 8) return existing;
-    const next =
-      typeof crypto !== 'undefined' && crypto.randomUUID
-        ? crypto.randomUUID()
-        : `vk-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-    window.localStorage.setItem(VOTER_KEY_STORAGE, next);
-    return next;
-  } catch {
-    return `vk-ephemeral-${Date.now()}`;
-  }
+function DecidePlaceThumb({ name, photo, size }) {
+  const fallback = String(name || '')
+    .trim()
+    .charAt(0)
+    .toUpperCase() || '?';
+  return (
+    <Avatar src={photo || undefined} alt="" sx={{ width: size, height: size, flexShrink: 0 }}>
+      {fallback}
+    </Avatar>
+  );
 }
 
-/**
- * @param {string} sessionId
- * @param {string} lockToken
- */
-function persistLockToken(sessionId, lockToken) {
-  if (typeof window === 'undefined' || !sessionId || !lockToken) return;
-  try {
-    window.sessionStorage.setItem(`${LOCK_TOKEN_PREFIX}${sessionId}`, lockToken);
-  } catch {
-    // ignore
-  }
-}
-
-/**
- * @param {string} sessionId
- * @returns {string | null}
- */
-function readLockToken(sessionId) {
-  if (typeof window === 'undefined' || !sessionId) return null;
-  try {
-    return window.sessionStorage.getItem(`${LOCK_TOKEN_PREFIX}${sessionId}`);
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Prefer the prop, then the live ?d= query (useSearchParams can lag on remount).
- * @param {string | null | undefined} initialSessionId
- * @returns {string | null}
- */
-function resolveDecideSessionId(initialSessionId) {
-  if (initialSessionId) return String(initialSessionId);
-  if (typeof window === 'undefined') return null;
-  try {
-    return new URLSearchParams(window.location.search).get('d');
-  } catch {
-    return null;
-  }
-}
-
-/**
- * @param {string | null | undefined} sessionId
- * @returns {object | null}
- */
-function readCachedSession(sessionId) {
-  if (typeof window === 'undefined' || !sessionId) return null;
-  try {
-    const raw = window.sessionStorage.getItem(`${SESSION_CACHE_PREFIX}${sessionId}`);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === 'object' ? parsed : null;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Keep the last known session payload so auth remounts do not flash the idle CTA.
- * @param {object | null | undefined} session
- */
-function persistCachedSession(session) {
-  const id = session?.session_id;
-  if (typeof window === 'undefined' || !id) return;
-  try {
-    window.sessionStorage.setItem(`${SESSION_CACHE_PREFIX}${id}`, JSON.stringify(session));
-  } catch {
-    // ignore
-  }
-}
-
-/**
- * Map server error codes to translation keys.
- * @param {string | null} code
- * @param {(k: string) => string} t
- */
-function decideErrorMessage(code, t) {
-  if (!code) return null;
-  const key = `pages.lists.decide_error_${code}`;
-  const translated = t(key);
-  return translated === key ? t('pages.lists.decide_error_generic') : translated;
-}
+DecidePlaceThumb.propTypes = {
+  name: PropTypes.string,
+  photo: PropTypes.string,
+  size: PropTypes.number.isRequired,
+};
 
 /**
  * Share → Decide panel for a public list: vote, optional spin, lock result.
@@ -161,25 +106,7 @@ export default function ListDecidePanel({
   } = useShareLink();
 
   const placeRows = useMemo(
-    () =>
-      (items || [])
-        .map((item) => {
-          const r = item?.restaurants || item?.restaurant || null;
-          const id = r?.id || item?.restaurant_id;
-          if (!id) return null;
-          const images = Array.isArray(r?.restaurant_images) ? r.restaurant_images : [];
-          const photo =
-            images
-              .toSorted((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
-              .find((img) => img?.url)?.url || null;
-          return {
-            restaurantId: String(id),
-            name: r?.name || t('pages.lists.decide_unnamed_place'),
-            mapsLink: r?.maps_link || null,
-            photo,
-          };
-        })
-        .filter(Boolean),
+    () => mapListItemsToDecidePlaces(items, t('pages.lists.decide_unnamed_place')),
     [items, t]
   );
 
@@ -200,7 +127,12 @@ export default function ListDecidePanel({
   const tallies = session?.tallies || {};
   const ranked = useMemo(() => rankDecideTallies(tallies, restaurantIds), [tallies, restaurantIds]);
   const canStart = canStartListDecide(placeRows.length);
-  const canLock = Boolean(sessionId && !locked && (isOwner || readLockToken(sessionId)));
+  const canLock = canLockDecideSession({
+    sessionId,
+    locked,
+    isOwner,
+    lockToken: sessionId ? readLockToken(sessionId) : null,
+  });
 
   const syncSessionUrl = useCallback((nextSessionId) => {
     if (typeof window === 'undefined' || !nextSessionId) return;
@@ -387,18 +319,14 @@ export default function ListDecidePanel({
     });
   }, [sessionId, locked, busy, tallies, restaurantIds, listId, analytics, applySession]);
 
-  const winnerId = locked
-    ? session?.winner_restaurant_id
-      ? String(session.winner_restaurant_id)
-      : null
-    : null;
+  const winnerId = lockedWinnerRestaurantId(session);
   const winner = winnerId ? placeById.get(winnerId) : null;
   const roulettePlace = roulettePickId ? placeById.get(roulettePickId) : null;
 
   if (!canStart && !session) {
     return (
-      <Card variant="outlined" sx={{ p: 2 }}>
-        <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5 }}>
+      <Card variant="outlined" sx={CARD_SX}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: SPACE.xxs }}>
           {t('pages.lists.decide_title')}
         </Typography>
         <Typography variant="body2" color="text.secondary">
@@ -410,9 +338,9 @@ export default function ListDecidePanel({
 
   return (
     <>
-      <Card variant="outlined" sx={{ p: 2 }}>
-        <Stack spacing={1.5}>
-          <Stack direction="row" alignItems="center" justifyContent="space-between" gap={1}>
+      <Card variant="outlined" sx={CARD_SX}>
+        <Stack spacing={SPACE.sm}>
+          <Stack direction="row" alignItems="center" justifyContent="space-between" gap={SPACE.xs}>
             <Box>
               <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
                 {t('pages.lists.decide_title')}
@@ -425,7 +353,7 @@ export default function ListDecidePanel({
                     : t('pages.lists.decide_intro')}
               </Typography>
             </Box>
-            {busy ? <CircularProgress size={20} /> : null}
+            {busy ? <CircularProgress size={20} color="primary" /> : null}
           </Stack>
 
           {err ? (
@@ -436,6 +364,8 @@ export default function ListDecidePanel({
 
           {!session && isOwner ? (
             <Button
+              fullWidth
+              size="small"
               variant="contained"
               color="primary"
               onClick={handleStartDecide}
@@ -452,31 +382,28 @@ export default function ListDecidePanel({
           ) : null}
 
           {session && winner ? (
-            <Box
-              sx={{
-                p: 2,
-                borderRadius: 2,
-                bgcolor: 'background.neutral',
-                textAlign: 'center',
-              }}
-            >
-              <Typography variant="overline" color="text.secondary">
-                {t('pages.lists.decide_going_here')}
-              </Typography>
-              <Typography variant="h6" sx={{ fontWeight: 800, mt: 0.5 }}>
-                {winner.name}
-              </Typography>
+            <Stack spacing={SPACE.sm} alignItems="center" sx={INNER_SURFACE_SX}>
+              <DecidePlaceThumb name={winner.name} photo={winner.photo} size={WINNER_THUMB_SIZE} />
+              <Box>
+                <Typography variant="overline" color="text.secondary">
+                  {t('pages.lists.decide_going_here')}
+                </Typography>
+                <Typography variant="h6" sx={{ fontWeight: 700, mt: SPACE.xxs }}>
+                  {winner.name}
+                </Typography>
+              </Box>
               <Stack
                 direction="row"
-                spacing={1}
+                spacing={SPACE.xs}
                 justifyContent="center"
-                sx={{ mt: 1.5 }}
                 flexWrap="wrap"
+                useFlexGap
               >
                 <Button
                   component={RouterLink}
                   href={paths.restaurantPublic(winner.restaurantId)}
                   variant="contained"
+                  color="primary"
                   size="small"
                 >
                   {t('pages.lists.decide_view_place')}
@@ -493,12 +420,12 @@ export default function ListDecidePanel({
                   </Button>
                 ) : null}
               </Stack>
-            </Box>
+            </Stack>
           ) : null}
 
           {session && !locked ? (
             <>
-              <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+              <Stack direction="row" spacing={SPACE.xs} flexWrap="wrap" useFlexGap>
                 <Button
                   variant="outlined"
                   size="small"
@@ -530,12 +457,12 @@ export default function ListDecidePanel({
               </Stack>
 
               {roulettePlace ? (
-                <Typography variant="body2">
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>
                   {t('pages.lists.decide_spin_result', { name: roulettePlace.name })}
                 </Typography>
               ) : null}
 
-              <Stack spacing={1}>
+              <Stack spacing={SPACE.xs}>
                 {ranked.map((row) => {
                   const place = placeById.get(row.restaurantId);
                   if (!place) return null;
@@ -544,20 +471,15 @@ export default function ListDecidePanel({
                       key={row.restaurantId}
                       direction="row"
                       alignItems="center"
-                      spacing={1}
-                      sx={{
-                        py: 0.75,
-                        px: 1,
-                        borderRadius: 1.5,
-                        bgcolor: 'background.neutral',
-                        minWidth: 0,
-                      }}
+                      spacing={SPACE.sm}
+                      sx={VOTE_ROW_SX}
                     >
+                      <DecidePlaceThumb name={place.name} photo={place.photo} size={PLACE_THUMB_SIZE} />
                       <Box sx={{ flex: 1, minWidth: 0 }}>
                         <Typography variant="subtitle2" noWrap sx={{ fontWeight: 700 }}>
                           {place.name}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant="caption" color="text.secondary" sx={tabularNumsSx}>
                           {t('pages.lists.decide_tally', {
                             up: row.up,
                             down: row.down,
@@ -571,6 +493,7 @@ export default function ListDecidePanel({
                         disabled={busy}
                         size="small"
                         color="primary"
+                        sx={touchTargetSx}
                       >
                         <Iconify icon={ic.likeBold} width={20} />
                       </IconButton>
@@ -579,6 +502,7 @@ export default function ListDecidePanel({
                         onClick={() => handleVote(row.restaurantId, -1)}
                         disabled={busy}
                         size="small"
+                        sx={touchTargetSx}
                       >
                         <Iconify icon={ic.dislikeBold} width={20} />
                       </IconButton>

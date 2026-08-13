@@ -10,6 +10,9 @@ export const MOBILE_NAV_TRIGGER_NAME = /Open main menu/i;
 
 const MARKETING_HOME_GOTO = { waitUntil: 'domcontentloaded' as const, timeout: 180_000 };
 
+/** App `not-found` heading (en copy) plus the legacy heading some specs still mention. */
+export const APP_NOT_FOUND_HEADING = /This dish isn.?t on the menu|Page Not Found/i;
+
 /**
  * Marketing `/` can briefly show SplashScreen or SentryErrorBoundary during webpack dev compiles.
  * Retry navigation when the kitchen-mishap fallback or mobile nav trigger is missing.
