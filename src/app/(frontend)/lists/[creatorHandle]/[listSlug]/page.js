@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import PropTypes from 'prop-types';
 import { notFound } from 'next/navigation';
 
@@ -8,6 +9,7 @@ import { fetchListPage, resolveListSlug, fetchListMetadata } from 'src/libs/list
 import { DynamicTitle } from 'src/components/dynamic-title';
 
 import { ListPublicView } from 'src/sections/lists/view';
+import PublicListPageSkeleton from 'src/sections/lists/view/public-list-page-skeleton';
 
 // ----------------------------------------------------------------------
 
@@ -47,10 +49,10 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default async function SlugListPage({ params }) {
-  const { creatorHandle, listSlug } = await params;
-
-  // Lang overlaps slug resolve (async-parallel).
+/**
+ * Streams slug list payload under Suspense (async-suspense-boundaries).
+ */
+async function SlugListPageContent({ creatorHandle, listSlug }) {
   const viewerLangPromise = getServerViewerLang();
   const listId = await resolveListSlug(creatorHandle, listSlug);
   if (!listId) notFound();
@@ -72,6 +74,21 @@ export default async function SlugListPage({ params }) {
         paidAccess={data.paidAccess}
       />
     </>
+  );
+}
+
+SlugListPageContent.propTypes = {
+  creatorHandle: PropTypes.string.isRequired,
+  listSlug: PropTypes.string.isRequired,
+};
+
+export default async function SlugListPage({ params }) {
+  const { creatorHandle, listSlug } = await params;
+
+  return (
+    <Suspense fallback={<PublicListPageSkeleton />}>
+      <SlugListPageContent creatorHandle={creatorHandle} listSlug={listSlug} />
+    </Suspense>
   );
 }
 

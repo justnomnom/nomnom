@@ -82,6 +82,13 @@ const EVENT_SCHEMAS = {
   // Page views
   list_viewed: { required: ['list_id'] },
   creator_profile_viewed: { required: ['creator_id'] },
+  // Share → Decide
+  list_share_copied: { required: ['list_id'] },
+  list_decide_open: { required: ['list_id', 'session_id'] },
+  list_vote_cast: { required: ['list_id', 'session_id', 'restaurant_id', 'vote'] },
+  list_roulette_spin: { required: ['list_id', 'restaurant_id'] },
+  list_result_shown: { required: ['list_id', 'session_id', 'restaurant_id'] },
+  list_result_locked: { required: ['list_id', 'session_id'] },
   // List management
   list_created: { required: ['list_id'] },
   list_details_saved: { required: ['list_id'] },

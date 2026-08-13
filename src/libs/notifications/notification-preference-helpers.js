@@ -59,3 +59,48 @@ export function buildNotificationPreferenceUpsert(userId, patch, updatedAt = new
 export function isValidNotificationMuteTarget(targetType, targetId) {
   return NOTIFICATION_MUTE_TYPES.has(targetType) && Boolean(targetId);
 }
+
+/**
+ * Optimistic prefs after a toggle. Rollback when the save returns an error.
+ *
+ * @param {Record<string, boolean>} prefs
+ * @param {string} key
+ * @param {boolean} previousValue
+ * @param {string | null | undefined} error
+ * @returns {Record<string, boolean>}
+ */
+export function rollbackNotificationPrefIfFailed(prefs, key, previousValue, error) {
+  if (!error) return prefs;
+  return { ...prefs, [key]: previousValue };
+}
+
+/**
+ * Apply an optimistic pref toggle before the server round-trip.
+ *
+ * @param {Record<string, boolean>} prefs
+ * @param {string} key
+ * @param {boolean} value
+ * @returns {Record<string, boolean>}
+ */
+export function optimisticNotificationPrefs(prefs, key, value) {
+  return { ...prefs, [key]: value };
+}
+
+/**
+ * Which push-enable UI to show on notification settings.
+ *
+ * @param {{ iosNotInstalled?: boolean, supported?: boolean, permission?: string, subscribed?: boolean }} state
+ * @returns {'ios_hint'|'unsupported'|'blocked'|'enabled'|'enable'}
+ */
+export function resolvePushEnableControlKind({
+  iosNotInstalled,
+  supported,
+  permission,
+  subscribed,
+} = {}) {
+  if (iosNotInstalled) return 'ios_hint';
+  if (!supported) return 'unsupported';
+  if (permission === 'denied') return 'blocked';
+  if (subscribed) return 'enabled';
+  return 'enable';
+}

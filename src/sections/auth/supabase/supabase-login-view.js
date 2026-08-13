@@ -19,7 +19,7 @@ import { useRouter, useSearchParams } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { getAuthRedirectOrigin } from 'src/utils/auth-utils';
-import { isValidAuthReturnPath } from 'src/utils/auth-return-path';
+import { isValidAuthReturnPath, sanitizeAuthReturnPath } from 'src/utils/auth-return-path';
 
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
@@ -55,7 +55,7 @@ export default function SupabaseLoginView() {
 
   const searchParams = useSearchParams();
 
-  const returnTo = searchParams.get('returnTo');
+  const returnTo = sanitizeAuthReturnPath(searchParams.get('returnTo'), PATH_AFTER_LOGIN);
   const emailFromQuery = searchParams.get('email') || '';
   const oauthError =
     searchParams.get('error_description') ||
@@ -92,7 +92,7 @@ export default function SupabaseLoginView() {
     if (authLoading) return;
     if (!authenticated) return;
 
-    router.push(returnTo || PATH_AFTER_LOGIN);
+    router.push(returnTo);
   }, [authenticated, authLoading, router, returnTo]);
 
   useEffect(() => {
@@ -149,8 +149,7 @@ export default function SupabaseLoginView() {
         throw new Error('Supabase client is not available');
       }
 
-      const rawReturnTo = returnTo || PATH_AFTER_LOGIN;
-      const returnToPath = isValidAuthReturnPath(rawReturnTo) ? rawReturnTo : PATH_AFTER_LOGIN;
+      const returnToPath = sanitizeAuthReturnPath(returnTo, PATH_AFTER_LOGIN);
       if (typeof document !== 'undefined') {
         const isSecure = typeof window !== 'undefined' && window.location?.protocol === 'https:';
         document.cookie = `auth_return_to=${encodeURIComponent(returnToPath)};path=/;max-age=600;SameSite=Lax${isSecure ? ';Secure' : ''}`;

@@ -1,5 +1,4 @@
-import dayjs from 'dayjs';
-import { format, getTime, formatDistanceToNow } from 'date-fns';
+import { format, getTime, isValid, startOfDay, formatDistanceToNow, differenceInCalendarDays } from 'date-fns';
 
 // ----------------------------------------------------------------------
 
@@ -54,18 +53,18 @@ export function isAfter(startDate, endDate) {
 }
 
 /**
- * Calculate duration in days between start and end dates (inclusive)
+ * Calculate duration in days between start and end dates (inclusive).
  * @param {string|Date} startDate - Start date
  * @param {string|Date} endDate - End date
  * @returns {number} - Number of days (inclusive), defaults to 1 for invalid/missing dates
  */
 export function calculateDuration(startDate, endDate) {
   if (!startDate) return 1;
-  const start = dayjs(startDate).startOf('day');
   if (!endDate) return 1;
-  const end = dayjs(endDate).startOf('day');
-  if (!start.isValid() || !end.isValid()) return 1;
-  const diff = end.diff(start, 'day');
+  const start = startOfDay(new Date(startDate));
+  const end = startOfDay(new Date(endDate));
+  if (!isValid(start) || !isValid(end)) return 1;
+  const diff = differenceInCalendarDays(end, start);
   if (diff < 0) return 1;
   return diff + 1;
 }

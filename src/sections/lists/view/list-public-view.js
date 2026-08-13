@@ -53,6 +53,7 @@ import {
 import Iconify from 'src/components/iconify';
 import ShareFeedbackSnackbar from 'src/components/share/share-feedback-snackbar';
 
+import ListDecidePanel from 'src/sections/lists/list-decide-panel';
 import MapSheetSortMenu from 'src/sections/map/map-sheet-sort-menu';
 import { useMapMobileSpotSheet } from 'src/sections/map/use-map-mobile-spot-sheet';
 import { MapMobileSpotSheetShell } from 'src/sections/map/map-mobile-spot-sheet-shell';
@@ -878,6 +879,21 @@ export default function ListPublicView({
           {list.description}
         </Typography>
       ) : null}
+
+      {list.visibility === 'public' &&
+        !showPaidPaywall &&
+        error !== 'login_required' &&
+        (items?.length ?? 0) > 0 && (
+          <ListDecidePanel
+            listId={listId}
+            listName={list.name}
+            items={items}
+            isOwner={Boolean(initialMembership?.isOwner)}
+            ownerUsername={owner?.username || null}
+            listSlug={list.slug || null}
+            initialSessionId={searchParams.get('d') || null}
+          />
+        )}
 
       {paidAccess?.listUpdatedAt && !isDashboardEmbed && !showPaidPaywall && (
         <Typography

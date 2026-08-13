@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import PropTypes from 'prop-types';
 import { notFound, redirect } from 'next/navigation';
 
@@ -8,6 +9,7 @@ import { fetchListPage, fetchListMetadata } from 'src/libs/lists/actions';
 import { DynamicTitle } from 'src/components/dynamic-title';
 
 import { ListPublicView } from 'src/sections/lists/view';
+import PublicListPageSkeleton from 'src/sections/lists/view/public-list-page-skeleton';
 
 // ----------------------------------------------------------------------
 
@@ -51,12 +53,10 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default async function PublicListPage({ params, searchParams }) {
-  const { creatorHandle: id } = await params;
-  if (!UUID_RE.test(id)) {
-    notFound();
-  }
-
+/**
+ * Streams UUID list payload (or slug redirect) under Suspense.
+ */
+async function PublicListPageContent({ id, searchParams }) {
   const viewerLangPromise = getServerViewerLang();
   const data = await fetchListPage(id, { viewerLang: viewerLangPromise });
   if (data.error === 'not_found' || data.error === 'not_public' || !data.list) {
@@ -84,6 +84,24 @@ export default async function PublicListPage({ params, searchParams }) {
         paidAccess={data.paidAccess}
       />
     </>
+  );
+}
+
+PublicListPageContent.propTypes = {
+  id: PropTypes.string.isRequired,
+  searchParams: PropTypes.object,
+};
+
+export default async function PublicListPage({ params, searchParams }) {
+  const { creatorHandle: id } = await params;
+  if (!UUID_RE.test(id)) {
+    notFound();
+  }
+
+  return (
+    <Suspense fallback={<PublicListPageSkeleton />}>
+      <PublicListPageContent id={id} searchParams={searchParams} />
+    </Suspense>
   );
 }
 

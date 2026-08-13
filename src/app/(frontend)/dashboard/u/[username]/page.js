@@ -1,15 +1,17 @@
+import { Suspense } from 'react';
 import PropTypes from 'prop-types';
 import { notFound } from 'next/navigation';
 
 import { APP } from 'src/config-global';
+import { fetchPublicProfileByUsername } from 'src/libs/lists/actions';
 import { getDefaultTranslation } from 'src/locales/default-translations';
 import { fetchViewerFollowsUser } from 'src/auth/actions/profile-actions';
-import { fetchPublicProfileByUsername } from 'src/libs/lists/actions';
 import { getSupabaseAuthUser } from 'src/libs/supabase/supabase-server-client';
 
 import { DynamicTitle } from 'src/components/dynamic-title';
 
 import { UserPublicProfileDashboardShell } from 'src/sections/lists/view';
+import UserPublicProfileRouteLoadingSkeleton from 'src/sections/lists/view/user-public-profile-route-loading-skeleton';
 
 // ----------------------------------------------------------------------
 
@@ -30,13 +32,10 @@ export async function generateMetadata({ params }) {
   return { title: `${base} — ${APP.name}` };
 }
 
-export default async function DashboardUserPublicProfilePage({ params }) {
-  const { username } = await params;
-  const raw = (username ?? '').trim();
-  if (!raw) {
-    notFound();
-  }
-
+/**
+ * Streams dashboard profile payload under Suspense (async-suspense-boundaries).
+ */
+async function DashboardUserPublicProfilePageContent({ raw }) {
   const [{ profile, lists, recentActivity, error }, authResult] = await Promise.all([
     fetchPublicProfileByUsername(raw),
     getSupabaseAuthUser(),
@@ -68,6 +67,24 @@ export default async function DashboardUserPublicProfilePage({ params }) {
         initialFollowing={initialFollowing}
       />
     </>
+  );
+}
+
+DashboardUserPublicProfilePageContent.propTypes = {
+  raw: PropTypes.string.isRequired,
+};
+
+export default async function DashboardUserPublicProfilePage({ params }) {
+  const { username } = await params;
+  const raw = (username ?? '').trim();
+  if (!raw) {
+    notFound();
+  }
+
+  return (
+    <Suspense fallback={<UserPublicProfileRouteLoadingSkeleton />}>
+      <DashboardUserPublicProfilePageContent raw={raw} />
+    </Suspense>
   );
 }
 

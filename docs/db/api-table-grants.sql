@@ -68,6 +68,10 @@ GRANT SELECT ON TABLE public.list_items TO anon;
 GRANT DELETE, INSERT, SELECT, UPDATE ON TABLE public.list_items TO authenticated;
 GRANT DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE ON TABLE public.list_items TO service_role;
 
+-- Share → Decide: no direct client DML/SELECT (voter_key privacy). Reads/writes via RPCs.
+GRANT DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE ON TABLE public.list_decide_sessions TO service_role;
+GRANT DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE ON TABLE public.list_decide_votes TO service_role;
+
 GRANT SELECT ON TABLE public.list_item_must_try_dishes TO anon;
 GRANT DELETE, INSERT, SELECT, UPDATE ON TABLE public.list_item_must_try_dishes TO authenticated;
 GRANT DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE ON TABLE public.list_item_must_try_dishes TO service_role;

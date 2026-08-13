@@ -4,6 +4,8 @@ import { useEffect, useCallback } from 'react';
 import { paths } from 'src/routes/paths';
 import { useRouter, useSearchParams } from 'src/routes/hooks';
 
+import { sanitizeAuthReturnPath } from 'src/utils/auth-return-path';
+
 import { SplashScreen } from 'src/components/loading-screen';
 
 import { useAuthContext } from '../hooks';
@@ -27,7 +29,10 @@ function Container({ children }) {
 
   const searchParams = useSearchParams();
 
-  const returnTo = searchParams.get('returnTo') || paths.dashboard.discover;
+  const returnTo = sanitizeAuthReturnPath(
+    searchParams.get('returnTo'),
+    paths.dashboard.discover
+  );
 
   const { authenticated } = useAuthContext();
 

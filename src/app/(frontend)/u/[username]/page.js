@@ -1,16 +1,18 @@
+import { Suspense } from 'react';
 import PropTypes from 'prop-types';
 import { notFound } from 'next/navigation';
 
 import { ogText } from 'src/libs/og/og-text';
 import { getSiteUrl } from 'src/libs/site-url';
 import { fetchOgProfile } from 'src/libs/og/fetch-og-profile';
-import { fetchViewerFollowsUser } from 'src/auth/actions/profile-actions';
 import { fetchPublicProfileByUsername } from 'src/libs/lists/actions';
+import { fetchViewerFollowsUser } from 'src/auth/actions/profile-actions';
 import { getSupabaseAuthUser } from 'src/libs/supabase/supabase-server-client';
 
 import { DynamicTitle } from 'src/components/dynamic-title';
 
 import { UserPublicProfileView } from 'src/sections/lists/view';
+import PublicUserProfileMarketingSkeleton from 'src/sections/lists/view/public-user-profile-marketing-skeleton';
 
 // ----------------------------------------------------------------------
 
@@ -49,13 +51,10 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default async function PublicUserProfilePage({ params }) {
-  const { username } = await params;
-  const raw = (username ?? '').trim();
-  if (!raw) {
-    notFound();
-  }
-
+/**
+ * Streams public profile payload under Suspense (async-suspense-boundaries).
+ */
+async function PublicUserProfilePageContent({ raw }) {
   const [{ profile, lists, recentActivity, error }, authResult] = await Promise.all([
     fetchPublicProfileByUsername(raw),
     getSupabaseAuthUser(),
@@ -87,6 +86,24 @@ export default async function PublicUserProfilePage({ params }) {
         initialFollowing={initialFollowing}
       />
     </>
+  );
+}
+
+PublicUserProfilePageContent.propTypes = {
+  raw: PropTypes.string.isRequired,
+};
+
+export default async function PublicUserProfilePage({ params }) {
+  const { username } = await params;
+  const raw = (username ?? '').trim();
+  if (!raw) {
+    notFound();
+  }
+
+  return (
+    <Suspense fallback={<PublicUserProfileMarketingSkeleton />}>
+      <PublicUserProfilePageContent raw={raw} />
+    </Suspense>
   );
 }
 

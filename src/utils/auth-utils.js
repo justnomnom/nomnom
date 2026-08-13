@@ -3,6 +3,8 @@ import { paths } from 'src/routes/paths';
 import { SITE } from 'src/config-global';
 import { supabaseBrowserClient } from 'src/libs/supabase/supabase-client';
 
+import { sanitizeAuthReturnPath } from './auth-return-path';
+
 /**
  * Base origin for Supabase OAuth and email-link redirects. Must match a URL listed under
  * Supabase → Authentication → URL Configuration → Redirect URLs (e.g. `http://localhost:3032/auth/callback`).
@@ -80,7 +82,10 @@ export const handleRefreshTokenError = async (supabase, returnPath) => {
   // Redirect to login page using the correct path
   if (typeof window !== 'undefined') {
     const searchParams = new URLSearchParams({
-      returnTo: returnPath || window.location.pathname,
+      returnTo: sanitizeAuthReturnPath(
+        returnPath || window.location.pathname,
+        paths.dashboard.discover
+      ),
     }).toString();
 
     window.location.href = `${paths.auth.supabase.login}?${searchParams}`;
@@ -105,7 +110,7 @@ export const handle401Unauthorized = async () => {
   // Redirect to login page
   if (typeof window !== 'undefined') {
     const searchParams = new URLSearchParams({
-      returnTo: window.location.pathname,
+      returnTo: sanitizeAuthReturnPath(window.location.pathname, paths.dashboard.discover),
     }).toString();
 
     window.location.href = `${paths.auth.supabase.login}?${searchParams}`;

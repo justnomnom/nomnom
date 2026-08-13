@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import PropTypes from 'prop-types';
 import { notFound, redirect } from 'next/navigation';
 
@@ -14,6 +15,8 @@ import {
 } from 'src/libs/restaurant/fetch-restaurant-by-id-for-ssr';
 
 import { DynamicTitle } from 'src/components/dynamic-title';
+
+import RestaurantDetailRouteLoadingSkeleton from 'src/sections/restaurant/view/restaurant-detail-route-loading-skeleton';
 
 import PublicRestaurantShareClient from './public-restaurant-share-client';
 
@@ -57,12 +60,10 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default async function PublicRestaurantSharePage({ params, searchParams }) {
-  const { id } = await params;
-  if (!RESTAURANT_ID_UUID_RE.test(id)) {
-    notFound();
-  }
-
+/**
+ * Auth redirect + restaurant fetch under Suspense (async-suspense-boundaries).
+ */
+async function PublicRestaurantShareContent({ id, searchParams }) {
   // Auth first so logged-in redirects skip the restaurant fetch (async-defer-await).
   const {
     data: { user },
@@ -93,6 +94,24 @@ export default async function PublicRestaurantSharePage({ params, searchParams }
         <PublicRestaurantShareClient restaurant={restaurant} />
       </Box>
     </>
+  );
+}
+
+PublicRestaurantShareContent.propTypes = {
+  id: PropTypes.string.isRequired,
+  searchParams: PropTypes.oneOfType([PropTypes.object, PropTypes.instanceOf(Promise)]),
+};
+
+export default async function PublicRestaurantSharePage({ params, searchParams }) {
+  const { id } = await params;
+  if (!RESTAURANT_ID_UUID_RE.test(id)) {
+    notFound();
+  }
+
+  return (
+    <Suspense fallback={<RestaurantDetailRouteLoadingSkeleton />}>
+      <PublicRestaurantShareContent id={id} searchParams={searchParams} />
+    </Suspense>
   );
 }
 

@@ -64,7 +64,7 @@ async function withUser(
   try {
     await run(page, user);
   } finally {
-    await context.close();
+    await context.close().catch(() => {});
     await deleteOnboardingUserData(user.id);
     await deleteSeededUser(user.id);
   }
@@ -85,16 +85,25 @@ test.describe('onboarding location step — geolocation (O4/O10)', () => {
       browser,
       async (page) => {
         await openLocationStep(page);
-        await page.getByRole('button', { name: 'Use my location' }).click();
+
+        // Auto-geo may already have flipped the CTA before this click (permission
+        // is granted on the context). Don't wait on the idle label in that case —
+        // clicking it would time out, and clicking "Location is on" would clear GPS.
+        const locationOn = page.getByRole('button', { name: /Location is on/i });
+        const useMyLocation = page.getByRole('button', { name: 'Use my location' });
+        if (await useMyLocation.isVisible()) {
+          await useMyLocation.click();
+        }
 
         // Success callback flips the label — the grant + getCurrentPosition wiring works.
-        await expect(page.getByRole('button', { name: 'Location is on' })).toBeVisible({
+        await expect(locationOn).toBeVisible({
           timeout: 90_000,
         });
         // The matched locality lands as a selection chip (server-action cold compile can
         // take ~30s+; a no-match renders nothing by design → environment skip).
         const chipAppeared = await page
-          .locator('.MuiChip-root')
+          .getByRole('button', { name: 'Lisbon' })
+          .or(page.locator('.MuiAutocomplete-root .MuiChip-root'))
           .first()
           .waitFor({ state: 'visible', timeout: 120_000 })
           .then(() => true)

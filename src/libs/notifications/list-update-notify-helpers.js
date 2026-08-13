@@ -84,3 +84,22 @@ export function isDeadWebPushStatus(statusCode) {
 export function shouldAttemptWebPush(userIds) {
   return Array.isArray(userIds) && userIds.length > 0;
 }
+
+/**
+ * Lists that newly received this restaurant (re-adds must not re-notify).
+ *
+ * @param {Iterable<string> | null | undefined} listIds
+ * @param {Iterable<string> | null | undefined} existingListIds
+ * @returns {string[]}
+ */
+export function listIdsNewlyReceivingRestaurant(listIds, existingListIds) {
+  const already = new Set(
+    existingListIds == null
+      ? []
+      : Array.isArray(existingListIds)
+        ? existingListIds
+        : [...existingListIds]
+  );
+  const ids = listIds == null ? [] : Array.isArray(listIds) ? listIds : [...listIds];
+  return ids.filter((id) => id && !already.has(id));
+}

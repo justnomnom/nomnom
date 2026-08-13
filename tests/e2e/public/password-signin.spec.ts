@@ -26,7 +26,7 @@ test.describe('password sign-in flow', () => {
     // 90s+ — longer than the toHaveURL budget. One anonymous GET compiles the route.
     await page.request.get('/dashboard/discover', { timeout: 180_000 }).catch(() => {});
 
-    await page.goto('/auth/login', { waitUntil: 'load', timeout: 120_000 });
+    await page.goto('/auth/login', { waitUntil: 'domcontentloaded', timeout: 120_000 });
 
     await page.locator('input[name="email"]').fill(email);
     await page.locator('input[name="password"]').fill(password);

@@ -14,6 +14,7 @@ import { useShareLink } from 'src/hooks/use-share-link';
 import { ic } from 'src/assets/icons';
 import { NAV } from 'src/config-global';
 import { useTranslate } from 'src/locales';
+import { useListDecideAnalytics } from 'src/libs/analytics/list-decide-analytics';
 
 import Iconify from 'src/components/iconify';
 import ShareFeedbackSnackbar from 'src/components/share/share-feedback-snackbar';
@@ -49,11 +50,13 @@ export default function DashboardListPublicView({
     feedback: shareFeedback,
     dismissFeedback: dismissShareFeedback,
   } = useShareLink();
+  const { trackShareCopied } = useListDecideAnalytics();
 
   const handleShare = useCallback(async () => {
     const url = typeof window !== 'undefined' ? window.location.href : '';
     await shareLink({ url, title: list?.name ?? '' });
-  }, [shareLink, list?.name]);
+    if (listId) trackShareCopied({ list_id: listId });
+  }, [shareLink, list?.name, listId, trackShareCopied]);
 
   const endAdornment = (
     <>

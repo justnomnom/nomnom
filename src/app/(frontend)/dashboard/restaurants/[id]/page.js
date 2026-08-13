@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import PropTypes from 'prop-types';
 import { notFound } from 'next/navigation';
 
@@ -28,6 +29,7 @@ import {
 import { DynamicTitle } from 'src/components/dynamic-title';
 
 import { RestaurantDetailView } from 'src/sections/restaurant/view';
+import RestaurantDetailRouteLoadingSkeleton from 'src/sections/restaurant/view/restaurant-detail-route-loading-skeleton';
 
 // ----------------------------------------------------------------------
 
@@ -73,12 +75,11 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default async function DashboardRestaurantPage({ params }) {
-  const { id } = await params;
-  if (!RESTAURANT_ID_UUID_RE.test(id)) {
-    notFound();
-  }
-
+/**
+ * Streams restaurant payload under Suspense so the route shell can paint
+ * while detail + mentions resolve (async-suspense-boundaries).
+ */
+async function DashboardRestaurantPageContent({ id }) {
   const viewerLangPromise = getServerViewerLang();
   const restaurantPromise = fetchRestaurantByIdForSsr(id);
   const secondaryPromise = Promise.all([
@@ -111,11 +112,6 @@ export default async function DashboardRestaurantPage({ params }) {
   }
   const reviews = reviewsResult.reviews ?? [];
 
-  // Supplemental: public list rows for followed accounts (deduped vs primary RPC rows).
-  // Primary: saves on lists you own, collaborate on, or subscribe to. Merged, then:
-  // (1) NomNom circle: you + people you follow on a list;
-  // (2) drop other people’s list-only saves (no written review) — no “Someone saved this” cards;
-  // list names remain only on rows you can see (RPC + public supplement for follows).
   const primaryItemIds = new Set((listMentionsResult.items ?? []).map((m) => m.id).filter(Boolean));
   const reviewsByKey = new Map(reviews.map((r) => [`${r.user_id}:${r.restaurant_id}`, r]));
   const supplemental = (publicListItems ?? [])
@@ -133,16 +129,13 @@ export default async function DashboardRestaurantPage({ params }) {
     });
   const listMentionsMerged = [...(listMentionsResult.items ?? []), ...supplemental];
 
-  // NomNom circle: only you and people you follow who have this place on a list.
   const listMentionsCircle = filterListMentionsToFollowsOnly(
     listMentionsMerged,
     myUserId,
     followingIds
   );
-  // Drop other people’s list-only saves (no written review) — avoids “Someone saved this” cards.
   const listMentions = filterListMentionsToSelfOrReviewBacked(listMentionsCircle, myUserId);
 
-  // Reviews: you + everyone you follow (even if their save isn’t on a list you can see).
   const allowedReviewerIds = new Set([...(myUserId ? [String(myUserId)] : []), ...followingIds]);
   const filteredReviews = reviews.filter(
     (r) => r.user_id && allowedReviewerIds.has(String(r.user_id))
@@ -166,6 +159,23 @@ export default async function DashboardRestaurantPage({ params }) {
         analyticsSurface="dashboard"
       />
     </>
+  );
+}
+
+DashboardRestaurantPageContent.propTypes = {
+  id: PropTypes.string.isRequired,
+};
+
+export default async function DashboardRestaurantPage({ params }) {
+  const { id } = await params;
+  if (!RESTAURANT_ID_UUID_RE.test(id)) {
+    notFound();
+  }
+
+  return (
+    <Suspense fallback={<RestaurantDetailRouteLoadingSkeleton />}>
+      <DashboardRestaurantPageContent id={id} />
+    </Suspense>
   );
 }
 

@@ -1,6 +1,9 @@
-import { filterMutedRecipients } from 'src/libs/notifications/filter-notification-recipients';
-import { filterDigestRecipientsByEmailPreference } from 'src/libs/notifications/group-list-update-digest';
-import { isWithinLiveListNotifyCooldown } from 'src/libs/notifications/live-list-notify-cooldown';
+import {
+  emailsByUserFromAdminLookups,
+  isWithinLiveListNotifyCooldown,
+  resolveLiveListEmailRecipients,
+  shouldStampLiveListNotifiedAt,
+} from 'src/libs/notifications/live-list-notify-cooldown';
 
 /**
  * Notify opted-in Live List (paid) subscribers by email when new spots are added.
@@ -69,9 +72,11 @@ export async function notifyLiveListSubscribers(supabase, listId) {
         .eq('list_updates_email', true),
     ]);
 
-    const emailOptInIds = filterDigestRecipientsByEmailPreference(subscriberIds, prefRows);
     const activeSubscriberIds = new Set(
-      filterMutedRecipients([...emailOptInIds], muteRows, {
+      resolveLiveListEmailRecipients({
+        subscriberIds,
+        muteRows,
+        prefRows,
         listId,
         creatorId: list.user_id,
       })
@@ -90,7 +95,7 @@ export async function notifyLiveListSubscribers(supabase, listId) {
         }
       })
     );
-    const emailById = Object.fromEntries(emailEntries.filter(([, email]) => email));
+    const emailById = emailsByUserFromAdminLookups(emailEntries);
     if (Object.keys(emailById).length === 0) return;
 
     const listUrl = `${siteUrl}/lists/${listId}`;
@@ -108,8 +113,7 @@ export async function notifyLiveListSubscribers(supabase, listId) {
       })
     );
 
-    const anySent = sendResults.some((r) => r.status === 'fulfilled');
-    if (!anySent) return;
+    if (!shouldStampLiveListNotifiedAt(sendResults)) return;
 
     // Stamp only after a successful send so a total failure can retry.
     await supabaseAdminClient

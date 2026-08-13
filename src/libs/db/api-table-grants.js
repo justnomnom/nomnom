@@ -32,6 +32,8 @@ export const API_GRANT_SERVICE_ROLE_ONLY_TABLES = Object.freeze([
   'stripe_events',
   'suggested_creators',
   'sponsored_restaurant_placements',
+  'list_decide_sessions',
+  'list_decide_votes',
 ]);
 
 /**

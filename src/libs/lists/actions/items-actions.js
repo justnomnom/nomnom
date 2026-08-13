@@ -2,6 +2,7 @@
 
 import { notifyListFollowers } from 'src/libs/notifications/notify-list-followers';
 import { notifyLiveListSubscribers } from 'src/libs/notifications/list-live-update-notify';
+import { listIdsNewlyReceivingRestaurant } from 'src/libs/notifications/list-update-notify-helpers';
 import { groupListItemsByRestaurant } from 'src/libs/lists/group-list-items-by-restaurant';
 import {
   fetchAllSupabasePages,
@@ -138,8 +139,8 @@ export async function addRestaurantToLists(restaurantId, listIds) {
     .select('list_id')
     .eq('restaurant_id', restaurantId)
     .in('list_id', listIds);
-  const alreadyOnList = new Set((existingRows ?? []).map((r) => r.list_id));
-  const newlyAddedListIds = listIds.filter((id) => !alreadyOnList.has(id));
+  const alreadyOnList = (existingRows ?? []).map((r) => r.list_id);
+  const newlyAddedListIds = listIdsNewlyReceivingRestaurant(listIds, alreadyOnList);
   const rows = listIds.map((listId) => ({
     list_id: listId,
     restaurant_id: restaurantId,

@@ -2200,12 +2200,10 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
               onClick={onNextFromLocation}
               disabled={
                 busy ||
-                // Don't block Continue on in-flight GPS once the user already picked a city
-                // (auto-geo can take up to the geolocation timeout).
-                (geoLoading && selectedLocalityIds.length === 0) ||
-                locationsLoading ||
-                !!locationsError ||
-                selectedLocalityIds.length === 0
+                // Don't block Continue once a city is selected — GPS and the catalog
+                // fetch can still be in flight (or the catalog can have errored).
+                (selectedLocalityIds.length === 0 &&
+                  (geoLoading || locationsLoading || !!locationsError))
               }
               aria-busy={busy}
               startIcon={

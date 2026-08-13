@@ -54,7 +54,7 @@
     "test:e2e:support-unit": "playwright test -c playwright.support-unit.config.cjs",
     "test:e2e:all": "npm run test:e2e:support-unit && npm run test:e2e",
     "test:e2e:ui": "playwright test -c playwright.config.cjs --ui",
-    "test": "node --import ./scripts/register-node-test-loader.mjs --test \"src/**/__tests__/*.test.mjs\"",
+    "test": "node --import ./scripts/register-node-test-loader.mjs --experimental-test-module-mocks --test \"src/**/__tests__/*.test.mjs\"",
     "test:e2e:headed": "playwright test -c playwright.config.cjs --headed",
     "test:e2e:install": "playwright install chromium",
     "e2e:setup-user": "node scripts/ensure-e2e-test-user.mjs",

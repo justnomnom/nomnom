@@ -52,6 +52,13 @@ export {
 } from 'src/libs/lists/actions/list-page-actions';
 
 export {
+  createListDecideSession,
+  fetchListDecideSession,
+  castListDecideVote,
+  lockListDecideSession,
+} from 'src/libs/lists/actions/decide-actions';
+
+export {
   fetchPublicProfileActivityPage,
   fetchPublicProfileByUsername,
   resolveUsernameToUserId,

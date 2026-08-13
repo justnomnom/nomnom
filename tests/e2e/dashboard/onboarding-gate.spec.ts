@@ -39,13 +39,15 @@ test.describe('onboarding gate — completed user', () => {
   });
 
   test('/onboarding redirects a completed user to discover', async ({ page }) => {
-    test.setTimeout(120_000);
-    await page.goto('/onboarding', { waitUntil: 'load', timeout: 120_000 });
+    test.setTimeout(180_000);
+    // Layout `redirect()` streams as a client navigation — `waitUntil: 'load'` can hang
+    // on a cold webpack compile of the destination. Wait for DOM, then poll the URL.
+    await page.goto('/onboarding', { waitUntil: 'domcontentloaded', timeout: 180_000 });
     try {
-      await expect(page).toHaveURL(/\/dashboard\/discover/, { timeout: 45_000 });
+      await expect(page).toHaveURL(/\/dashboard\/discover/, { timeout: 60_000 });
     } catch {
-      await page.reload({ waitUntil: 'load', timeout: 120_000 });
-      await expect(page).toHaveURL(/\/dashboard\/discover/, { timeout: 45_000 });
+      await page.reload({ waitUntil: 'domcontentloaded', timeout: 180_000 });
+      await expect(page).toHaveURL(/\/dashboard\/discover/, { timeout: 60_000 });
     }
   });
 

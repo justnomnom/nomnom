@@ -11,7 +11,7 @@ import { expectAppShellMainVisible } from '../support/page-assertions';
 test.describe('register — field boundaries', () => {
   test('short password (< 6) shows a validation error and does not submit', async ({ page }) => {
     test.setTimeout(120_000);
-    await page.goto('/auth/register', { waitUntil: 'load', timeout: 120_000 });
+    await page.goto('/auth/register', { waitUntil: 'domcontentloaded', timeout: 120_000 });
 
     await page.locator('input[name="email"]').fill('e2e-shortpw@example.com');
     await page.locator('input[name="password"]').fill('123');
@@ -23,7 +23,7 @@ test.describe('register — field boundaries', () => {
 
   test('invalid email format is blocked (no navigation away from register)', async ({ page }) => {
     test.setTimeout(120_000);
-    await page.goto('/auth/register', { waitUntil: 'load', timeout: 120_000 });
+    await page.goto('/auth/register', { waitUntil: 'domcontentloaded', timeout: 120_000 });
 
     await page.locator('input[name="email"]').fill('not-an-email');
     await page.locator('input[name="password"]').fill('ValidPass123');
@@ -37,7 +37,7 @@ test.describe('register — field boundaries', () => {
 
   test('empty email is rejected', async ({ page }) => {
     test.setTimeout(120_000);
-    await page.goto('/auth/register', { waitUntil: 'load', timeout: 120_000 });
+    await page.goto('/auth/register', { waitUntil: 'domcontentloaded', timeout: 120_000 });
 
     await page.locator('input[name="password"]').fill('ValidPass123');
     await page.locator('form button[type="submit"]').click();
@@ -50,7 +50,7 @@ test.describe('register — field boundaries', () => {
 test.describe('forgot-password — boundaries', () => {
   test('invalid email does not proceed', async ({ page }) => {
     test.setTimeout(120_000);
-    await page.goto('/auth/forgot-password', { waitUntil: 'load', timeout: 120_000 });
+    await page.goto('/auth/forgot-password', { waitUntil: 'domcontentloaded', timeout: 120_000 });
     await page.locator('input[name="email"]').fill('not-an-email');
     await page.locator('form button[type="submit"]').click();
     await page.waitForTimeout(1500);
@@ -60,7 +60,7 @@ test.describe('forgot-password — boundaries', () => {
 
 test.describe('new-password — direct entry without a recovery token', () => {
   test('renders without crashing', async ({ page }) => {
-    await page.goto('/auth/new-password', { waitUntil: 'load', timeout: 120_000 });
+    await page.goto('/auth/new-password', { waitUntil: 'domcontentloaded', timeout: 120_000 });
     await expect(page).toHaveURL(/\/auth\/new-password/);
     await expectAppShellMainVisible(page, { timeout: 45_000 });
   });
