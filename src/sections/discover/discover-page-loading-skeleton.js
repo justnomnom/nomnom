@@ -29,7 +29,7 @@ import DiscoverListsLeaderboardSkeleton from './discover-lists-leaderboard-skele
  *   1. Market context hint (label + use-location IconButton + change Button)
  *   2. Lists leaderboard (avatars row)
  *   3. Vibe chip strip (overline + 4 chips)
- *   4. Roulette promo card (divider kicker + outlined button)
+ *   4. Tonight + Roulette promo cards (divider kickers + outlined buttons)
  *   5. Restaurant feed (locating skeleton cards)
  */
 export default function DiscoverPageLoadingSkeleton() {
@@ -107,7 +107,33 @@ export default function DiscoverPageLoadingSkeleton() {
                 </Stack>
               </Stack>
 
-              {/* Roulette promo */}
+              {/* Tonight + Roulette promos */}
+              <Stack {...dashboardSubsectionStackProps}>
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <Box sx={{ flex: 1, height: '1px', bgcolor: 'divider' }} />
+                  <Skeleton height={14} width={140} borderRadius={4} />
+                  <Box sx={{ flex: 1, height: '1px', bgcolor: 'divider' }} />
+                </Stack>
+                <Box
+                  sx={{
+                    borderRadius: 4,
+                    px: { xs: 1.5, sm: 2 },
+                    py: { xs: 1.25, sm: 1.5 },
+                    border: (th) => `2px solid ${alpha(th.palette.primary.main, 0.15)}`,
+                    bgcolor: (th) => alpha(th.palette.primary.main, 0.06),
+                  }}
+                >
+                  <Stack direction="row" alignItems="center" spacing={2} sx={{ minWidth: 0 }}>
+                    <Skeleton width={48} height={48} borderRadius={8} />
+                    <Stack spacing={0.75} sx={{ flex: 1, minWidth: 0 }}>
+                      <Skeleton height={20} width="58%" borderRadius={4} />
+                      <Skeleton height={14} width="72%" borderRadius={4} />
+                    </Stack>
+                    <Skeleton width={22} height={22} borderRadius={1} />
+                  </Stack>
+                </Box>
+              </Stack>
+
               <Stack {...dashboardSubsectionStackProps}>
                 <Stack direction="row" alignItems="center" spacing={1}>
                   <Box sx={{ flex: 1, height: '1px', bgcolor: 'divider' }} />
