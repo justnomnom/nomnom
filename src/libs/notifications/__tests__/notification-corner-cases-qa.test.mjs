@@ -23,7 +23,10 @@ import {
 import { groupNotifications } from '../group-notifications.js';
 import {
   LIVE_LIST_NOTIFY_COOLDOWN_HOURS,
+  emailsByUserFromAdminLookups,
   isWithinLiveListNotifyCooldown,
+  resolveLiveListEmailRecipients,
+  shouldStampLiveListNotifiedAt,
 } from '../live-list-notify-cooldown.js';
 import {
   parseNotificationListOffset,
@@ -505,6 +508,51 @@ test('usage: live-list cooldown — null/invalid allow send; inside window block
       now
     ),
     false
+  );
+});
+
+test('usage: live-list email audience — opt-in first, then mutes win', () => {
+  const ids = ['opted', 'muted', 'default-off', 'creator-muted'];
+  const recipients = resolveLiveListEmailRecipients({
+    subscriberIds: ids,
+    prefRows: [
+      { user_id: 'opted', list_updates_email: true },
+      { user_id: 'muted', list_updates_email: true },
+      { user_id: 'creator-muted', list_updates_email: true },
+    ],
+    muteRows: [
+      { user_id: 'muted', target_type: 'list', target_id: 'L1' },
+      { user_id: 'creator-muted', target_type: 'creator', target_id: 'C1' },
+    ],
+    listId: 'L1',
+    creatorId: 'C1',
+  });
+  assert.deepEqual(recipients, ['opted']);
+});
+
+test('usage: admin email lookups drop nulls; stamp only after a fulfilled send', () => {
+  assert.deepEqual(
+    emailsByUserFromAdminLookups([
+      ['u1', 'a@x.com'],
+      ['u2', null],
+      ['u3', ''],
+      ['u4', 'b@x.com'],
+    ]),
+    { u1: 'a@x.com', u4: 'b@x.com' }
+  );
+  assert.deepEqual(emailsByUserFromAdminLookups(null), {});
+  assert.equal(shouldStampLiveListNotifiedAt(null), false);
+  assert.equal(shouldStampLiveListNotifiedAt([]), false);
+  assert.equal(
+    shouldStampLiveListNotifiedAt([{ status: 'rejected', reason: new Error('x') }]),
+    false
+  );
+  assert.equal(
+    shouldStampLiveListNotifiedAt([
+      { status: 'rejected', reason: new Error('x') },
+      { status: 'fulfilled', value: undefined },
+    ]),
+    true
   );
 });
 

@@ -10,8 +10,8 @@ import { setUiLocaleCookie, readUiLocaleCookie } from 'src/libs/ui-locale';
 
 import { useSettingsContext } from 'src/components/settings/context';
 
-import { getLanguageStorageKey } from './i18n';
 import { allLangs, defaultLang } from './config-lang';
+import { ensureI18nLocale, getLanguageStorageKey } from './i18n';
 
 // ----------------------------------------------------------------------
 
@@ -50,10 +50,16 @@ export function useTranslate() {
     const preferred = langStorage || cookieLang;
     const lang = allLangs.find((l) => l.value === preferred) || defaultLang;
     setCurrentLang(lang);
+    let nextLang = null;
     if (preferred && preferred !== i18n.language) {
-      i18n.changeLanguage(preferred);
+      nextLang = preferred;
     } else if (!preferred && i18n.language !== defaultLang.value) {
-      i18n.changeLanguage(defaultLang.value);
+      nextLang = defaultLang.value;
+    }
+    if (nextLang) {
+      ensureI18nLocale(nextLang).then(() => {
+        i18n.changeLanguage(nextLang);
+      });
     }
     if (langStorage && !cookieLang) {
       setUiLocaleCookie(langStorage);
@@ -63,7 +69,9 @@ export function useTranslate() {
   // Initialize language if not set
   useEffect(() => {
     if (!i18n.language || !allLangs.find((l) => l.value === i18n.language)) {
-      i18n.changeLanguage(defaultLang.value);
+      ensureI18nLocale(defaultLang.value).then(() => {
+        i18n.changeLanguage(defaultLang.value);
+      });
     }
   }, [i18n]);
 
@@ -75,12 +83,14 @@ export function useTranslate() {
 
   const onChangeLang = useCallback(
     (newlang) => {
-      i18n.changeLanguage(newlang);
-      safeSetItem(languageStorageKey, newlang);
-      setUiLocaleCookie(newlang);
-      settings.onChangeDirectionByLang(newlang);
-      const lang = allLangs.find((l) => l.value === newlang) || defaultLang;
-      setCurrentLang(lang);
+      ensureI18nLocale(newlang).then(() => {
+        i18n.changeLanguage(newlang);
+        safeSetItem(languageStorageKey, newlang);
+        setUiLocaleCookie(newlang);
+        settings.onChangeDirectionByLang(newlang);
+        const lang = allLangs.find((l) => l.value === newlang) || defaultLang;
+        setCurrentLang(lang);
+      });
     },
     [i18n, settings, languageStorageKey]
   );

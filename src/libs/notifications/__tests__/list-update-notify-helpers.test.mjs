@@ -8,6 +8,7 @@ import {
   buildListUpdateNotificationData,
   digestWindowSinceIso,
   isDeadWebPushStatus,
+  listIdsNewlyReceivingRestaurant,
   notificationCleanupCutoffIso,
   shouldAttemptWebPush,
   shouldFanOutListUpdate,
@@ -75,4 +76,13 @@ test('web push: dead statuses 404/410; empty audience skipped', () => {
   assert.equal(shouldAttemptWebPush([]), false);
   assert.equal(shouldAttemptWebPush(null), false);
   assert.equal(shouldAttemptWebPush('u1'), false);
+});
+
+test('listIdsNewlyReceivingRestaurant: re-adds and empties are skipped', () => {
+  assert.deepEqual(listIdsNewlyReceivingRestaurant(['A', 'B'], ['A']), ['B']);
+  assert.deepEqual(listIdsNewlyReceivingRestaurant(['A', 'B'], ['A', 'B']), []);
+  assert.deepEqual(listIdsNewlyReceivingRestaurant(['A', 'B'], []), ['A', 'B']);
+  assert.deepEqual(listIdsNewlyReceivingRestaurant(null, ['A']), []);
+  assert.deepEqual(listIdsNewlyReceivingRestaurant(['A', '', null], ['A']), []);
+  assert.deepEqual(listIdsNewlyReceivingRestaurant(new Set(['A', 'C']), new Set(['A'])), ['C']);
 });

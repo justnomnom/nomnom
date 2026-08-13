@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { notFound } from 'next/navigation';
 
 import { APP } from 'src/config-global';
+import { fetchOgProfile } from 'src/libs/og/fetch-og-profile';
 import { fetchPublicProfileByUsername } from 'src/libs/lists/actions';
 import { getDefaultTranslation } from 'src/locales/default-translations';
-import { fetchViewerFollowsUser } from 'src/auth/actions/profile-actions';
 import { getSupabaseAuthUser } from 'src/libs/supabase/supabase-server-client';
 
 import { DynamicTitle } from 'src/components/dynamic-title';
@@ -21,11 +21,11 @@ export async function generateMetadata({ params }) {
   if (!raw) {
     return { title: `${getDefaultTranslation('pages.dashboard.settings.title')} — ${APP.name}` };
   }
-  const { profile, error } = await fetchPublicProfileByUsername(raw);
-  if (error === 'not_found' || !profile) {
+  const profile = await fetchOgProfile(raw).catch(() => null);
+  if (!profile) {
     return { title: `${getDefaultTranslation('pages.dashboard.settings.title')} — ${APP.name}` };
   }
-  const titleName = profile.display_name || (profile.username ? `@${profile.username}` : raw);
+  const titleName = profile.displayName || (profile.handle ? `@${profile.handle}` : raw);
   const template = getDefaultTranslation('pages.lists.user_document_title');
   const base =
     typeof template === 'string' ? template.replace(/\{\{\s*name\s*\}\}/g, titleName) : titleName;
@@ -50,11 +50,7 @@ async function DashboardUserPublicProfilePageContent({ raw }) {
     data: { user },
   } = authResult;
   const viewerUserId = user?.id ?? null;
-  let initialFollowing = false;
-  if (viewerUserId && viewerUserId !== profile.id) {
-    const f = await fetchViewerFollowsUser(profile.id);
-    initialFollowing = f.following;
-  }
+  const initialFollowing = Boolean(profile.viewer_following);
 
   return (
     <>

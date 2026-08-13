@@ -1,19 +1,20 @@
 'use server';
 
+import { cache } from 'react';
+
 import { supabaseAdminClient } from 'src/libs/supabase/supabase-admin';
 import { insertNotifications } from 'src/libs/notifications/create-notification';
-import {
-  buildListSocialNotificationData,
-  resolveOwnerRecipientExcludingActor,
-  shouldEmitDirectNotification,
-} from 'src/libs/notifications/social-notification-payloads';
+import { normUuid, itemCountFromListItemsEmbed } from 'src/libs/lists/actions/_shared';
 import { PROFILE_ACTIVITY_PAGE_SIZE } from 'src/libs/profile/public-profile-activity-constants';
 import {
   getSupabaseAuthUser,
   createSupabaseServerClient,
 } from 'src/libs/supabase/supabase-server-client';
-
-import { normUuid, itemCountFromListItemsEmbed } from 'src/libs/lists/actions/_shared';
+import {
+  shouldEmitDirectNotification,
+  buildListSocialNotificationData,
+  resolveOwnerRecipientExcludingActor,
+} from 'src/libs/notifications/social-notification-payloads';
 
 function normalizeProfileActivityRpc(raw) {
   if (raw == null) return [];
@@ -60,7 +61,7 @@ export async function fetchPublicProfileActivityPage(
 }
 
 /** Public profile + lists + merged activity feed (RPCs; reviews visible to anon via `public_profile_activity`). */
-export async function fetchPublicProfileByUsername(username) {
+const fetchPublicProfileByUsernameCached = cache(async (username) => {
   const supabase = await createSupabaseServerClient();
   const handle = (username ?? '').trim().replace(/^@/, '');
   if (!handle) {
@@ -86,13 +87,14 @@ export async function fetchPublicProfileByUsername(username) {
   } = authResult;
   const viewerIsOwner = Boolean(user?.id && user.id === profile.id);
 
-  const [listsResult, { data: activityRaw, error: aErr }] = await Promise.all([
-    (async () => {
-      if (viewerIsOwner) {
-        const { data: ownedRaw, error: oErr } = await supabase
-          .from('lists')
-          .select(
-            `
+  const [listsResult, { data: activityRaw, error: aErr }, subscribeListResult, followResult] =
+    await Promise.all([
+      (async () => {
+        if (viewerIsOwner) {
+          const { data: ownedRaw, error: oErr } = await supabase
+            .from('lists')
+            .select(
+              `
             id,
             name,
             description,
@@ -103,28 +105,46 @@ export async function fetchPublicProfileByUsername(username) {
             slug,
             list_items(count)
           `
-          )
-          .eq('user_id', profile.id)
-          .order('updated_at', { ascending: false });
-        if (oErr) return { lists: [], error: oErr.message };
-        const lists = (ownedRaw ?? []).map(({ list_items: li, ...rest }) => ({
-          ...rest,
-          item_count: itemCountFromListItemsEmbed(li),
-        }));
-        return { lists, error: null };
-      }
-      const { data: listsRpc, error: lErr } = await supabase.rpc('public_lists_for_profile', {
+            )
+            .eq('user_id', profile.id)
+            .order('updated_at', { ascending: false });
+          if (oErr) return { lists: [], error: oErr.message };
+          const lists = (ownedRaw ?? []).map(({ list_items: li, ...rest }) => ({
+            ...rest,
+            item_count: itemCountFromListItemsEmbed(li),
+          }));
+          return { lists, error: null };
+        }
+        const { data: listsRpc, error: lErr } = await supabase.rpc('public_lists_for_profile', {
+          p_owner_user_id: profile.id,
+        });
+        if (lErr) return { lists: [], error: lErr.message };
+        return { lists: listsRpc ?? [], error: null };
+      })(),
+      supabase.rpc('public_profile_activity', {
         p_owner_user_id: profile.id,
-      });
-      if (lErr) return { lists: [], error: lErr.message };
-      return { lists: listsRpc ?? [], error: null };
-    })(),
-    supabase.rpc('public_profile_activity', {
-      p_owner_user_id: profile.id,
-      p_limit: PROFILE_ACTIVITY_PAGE_SIZE,
-      p_offset: 0,
-    }),
-  ]);
+        p_limit: PROFILE_ACTIVITY_PAGE_SIZE,
+        p_offset: 0,
+      }),
+      supabase
+        .from('lists')
+        .select('id')
+        .eq('user_id', profile.id)
+        .eq('visibility', 'public_subscribers')
+        .eq('paid_access_enabled', true)
+        .not('stripe_price_id', 'is', null)
+        .order('created_at', { ascending: true })
+        .limit(1)
+        .maybeSingle(),
+      user?.id && user.id !== profile.id
+        ? supabase
+            .from('user_follows')
+            .select('follower_id')
+            .eq('follower_id', user.id)
+            .eq('following_id', profile.id)
+            .maybeSingle()
+        : Promise.resolve({ data: null }),
+    ]);
 
   if (listsResult.error) {
     return { profile, lists: [], recentActivity: [], error: listsResult.error };
@@ -139,19 +159,10 @@ export async function fetchPublicProfileByUsername(username) {
   // The RPC may not expose subscribe_list_id, so we derive it directly:
   // find the owner's oldest paid public_subscribers list (the one used for checkout).
   const creatorPayoutReady = Boolean(profile.creator_payout_ready);
-  const { data: subscribeListData } = await supabase
-    .from('lists')
-    .select('id')
-    .eq('user_id', profile.id)
-    .eq('visibility', 'public_subscribers')
-    .eq('paid_access_enabled', true)
-    .not('stripe_price_id', 'is', null)
-    .order('created_at', { ascending: true })
-    .limit(1)
-    .maybeSingle();
-
+  const subscribeListData = subscribeListResult?.data;
   const subscribeListId =
     profile.subscribe_list_id ?? (creatorPayoutReady ? (subscribeListData?.id ?? null) : null);
+  const viewerFollowing = Boolean(followResult?.data);
 
   let viewerSubscribedToCreator = false;
   let viewerSubscriptionRowId = null;
@@ -192,9 +203,15 @@ export async function fetchPublicProfileByUsername(username) {
     viewer_subscription_row_id: viewerSubscriptionRowId,
     viewer_subscription_period_end: viewerSubscriptionPeriodEnd,
     viewer_subscription_cancel_at_period_end: viewerSubscriptionCancelAtPeriodEnd,
+    viewer_following: viewerFollowing,
   };
 
   return { profile: profileForView, lists: listsResult.lists, recentActivity, error: null };
+});
+
+/** Public profile + lists + merged activity feed. Deduped per request via `React.cache()`. */
+export async function fetchPublicProfileByUsername(username) {
+  return fetchPublicProfileByUsernameCached(username);
 }
 
 export async function resolveUsernameToUserId(username) {

@@ -1,27 +1,27 @@
 'use server';
 
+import { cache } from 'react';
+
 import { supabaseAdminClient } from 'src/libs/supabase/supabase-admin';
 import { getMyStripeConnectStatus } from 'src/auth/actions/stripe-list-actions';
+import { slimRestaurantCardMetadata } from 'src/libs/restaurant/slim-restaurant-card-metadata';
 import { mergeSnapshotPurchaseCapturedItemIds } from 'src/libs/lists/merge-snapshot-purchase-captured-item-ids';
-import {
-  fetchAllSupabasePages,
-  SUPABASE_DEFAULT_PAGE_SIZE,
-} from 'src/libs/supabase/supabase-fetch-all-pages';
 import {
   getSupabaseAuthUser,
   createSupabaseServerClient,
 } from 'src/libs/supabase/supabase-server-client';
 import {
-  computeListSnapshotAmountCents,
-  LIST_FREEMIUM_FREE_PLACES_COUNT,
-} from 'src/libs/stripe/list-stripe-constants';
-
-import { slimRestaurantCardMetadata } from 'src/libs/restaurant/slim-restaurant-card-metadata';
-
-import {
   resolveViewerLangInput,
   enrichListItemsWithReviewsAndMustTry,
 } from 'src/libs/lists/actions/_shared';
+import {
+  fetchAllSupabasePages,
+  SUPABASE_DEFAULT_PAGE_SIZE,
+} from 'src/libs/supabase/supabase-fetch-all-pages';
+import {
+  computeListSnapshotAmountCents,
+  LIST_FREEMIUM_FREE_PLACES_COUNT,
+} from 'src/libs/stripe/list-stripe-constants';
 
 /** Slim nested `restaurants.metadata` on list item rows (same allowlist as map paths). */
 function slimListItemsRestaurantMetadata(items) {
@@ -79,10 +79,11 @@ export async function fetchListMembershipForViewer(listId) {
 export async function fetchListForManage(listId, opts = {}) {
   const viewerLangPromise = resolveViewerLangInput(opts.viewerLang);
   const supabase = await createSupabaseServerClient();
-  const { data: list, error: lErr } = await supabase
-    .from('lists')
-    .select(
-      `
+  const [listResult, authResult] = await Promise.all([
+    supabase
+      .from('lists')
+      .select(
+        `
       id,
       user_id,
       name,
@@ -97,9 +98,12 @@ export async function fetchListForManage(listId, opts = {}) {
       stripe_price_id,
       stripe_product_id
     `
-    )
-    .eq('id', listId)
-    .maybeSingle();
+      )
+      .eq('id', listId)
+      .maybeSingle(),
+    getSupabaseAuthUser(),
+  ]);
+  const { data: list, error: lErr } = listResult;
   if (lErr || !list)
     return {
       list: null,
@@ -204,7 +208,7 @@ export async function fetchListForManage(listId, opts = {}) {
   let bundleCurrency = 'eur';
   const {
     data: { user: manageViewer },
-  } = await getSupabaseAuthUser();
+  } = authResult;
   if (manageViewer?.id && list.user_id === manageViewer.id) {
     const [st, bundleResult] = await Promise.all([
       getMyStripeConnectStatus(),
@@ -243,7 +247,7 @@ export async function fetchListForManage(listId, opts = {}) {
  * @param {string} creatorHandle — username from users table (no @ prefix)
  * @param {string} listSlug
  */
-export async function resolveListSlug(creatorHandle, listSlug) {
+const resolveListSlugCached = cache(async (creatorHandle, listSlug) => {
   const supabase = await createSupabaseServerClient();
   const handle = creatorHandle.replace(/^@/, '').toLowerCase().trim();
   if (!handle || !listSlug) return null;
@@ -260,6 +264,11 @@ export async function resolveListSlug(creatorHandle, listSlug) {
     .eq('slug', listSlug.toLowerCase().trim())
     .maybeSingle();
   return list?.id ?? null;
+});
+
+/** Resolve `/lists/:handle/:slug` to a list id. Deduped per request via `React.cache()`. */
+export async function resolveListSlug(creatorHandle, listSlug) {
+  return resolveListSlugCached(creatorHandle, listSlug);
 }
 
 /**
@@ -564,27 +573,6 @@ export async function fetchListPage(listId, opts = {}) {
     };
   }
 
-  if (accessType === 'snapshot') {
-    if (snapshotCapturedItemIds !== null) {
-      paidAccess.snapshotNewRestaurantCount = await countListItemsNotInCaptureForSnapshot(
-        listId,
-        snapshotCapturedItemIds
-      );
-    } else if (snapRows.length) {
-      const oldestPurchasedAt = snapRows.reduce((acc, r) => {
-        const p = r?.purchased_at;
-        if (!p) return acc;
-        return !acc || p < acc ? p : acc;
-      }, null);
-      if (oldestPurchasedAt) {
-        paidAccess.snapshotNewRestaurantCount = await countListItemsCreatedAfterForSnapshot(
-          listId,
-          oldestPurchasedAt
-        );
-      }
-    }
-  }
-
   const listItemsSelect = `
       id,
       restaurant_id,
@@ -618,15 +606,29 @@ export async function fetchListPage(listId, opts = {}) {
       )
     `;
 
-  let rawItems = [];
-  let iErr = null;
-  if (
-    accessType === 'snapshot' &&
-    snapshotCapturedItemIds !== null &&
-    snapshotCapturedItemIds.length === 0
-  ) {
-    rawItems = [];
-  } else {
+  const snapshotCountPromise = (async () => {
+    if (accessType !== 'snapshot') return null;
+    if (snapshotCapturedItemIds !== null) {
+      return countListItemsNotInCaptureForSnapshot(listId, snapshotCapturedItemIds);
+    }
+    if (!snapRows.length) return null;
+    const oldestPurchasedAt = snapRows.reduce((acc, r) => {
+      const p = r?.purchased_at;
+      if (!p) return acc;
+      return !acc || p < acc ? p : acc;
+    }, null);
+    if (!oldestPurchasedAt) return null;
+    return countListItemsCreatedAfterForSnapshot(listId, oldestPurchasedAt);
+  })();
+
+  const itemsFetchPromise = (async () => {
+    if (
+      accessType === 'snapshot' &&
+      snapshotCapturedItemIds !== null &&
+      snapshotCapturedItemIds.length === 0
+    ) {
+      return { rawItems: [], iErr: null, hasMore: false };
+    }
     // Shared base query. Stable secondary sort on `id` keeps `.range()` paging deterministic
     // across page boundaries when `created_at` ties.
     const buildItemsPage = (from, pageSize) => {
@@ -648,25 +650,47 @@ export async function fetchListPage(listId, opts = {}) {
         'list_freemium_preview_items',
         { p_list_id: listId, p_limit: LIST_FREEMIUM_FREE_PLACES_COUNT }
       );
-      rawItems = Array.isArray(preview?.items) ? preview.items : [];
-      paidAccess.hasMore = Boolean(preview?.has_more);
-      iErr = previewErr;
-    } else {
-      // Full list: page past PostgREST's 1000-row window so lists with >1000 places aren't
-      // silently truncated (previously hard-capped at .limit(1000)).
-      try {
-        rawItems = await fetchAllSupabasePages(async (from, pageSize) => {
-          const { data: page, error } = await buildItemsPage(from, pageSize);
-          if (error) {
-            throw error;
-          }
-          return page ?? [];
-        }, SUPABASE_DEFAULT_PAGE_SIZE);
-      } catch (e) {
-        iErr = e;
-      }
+      return {
+        rawItems: Array.isArray(preview?.items) ? preview.items : [],
+        iErr: previewErr,
+        hasMore: Boolean(preview?.has_more),
+      };
     }
+    // Full list: page past PostgREST's 1000-row window so lists with >1000 places aren't
+    // silently truncated (previously hard-capped at .limit(1000)).
+    try {
+      const fetched = await fetchAllSupabasePages(async (from, pageSize) => {
+        const { data: page, error } = await buildItemsPage(from, pageSize);
+        if (error) {
+          throw error;
+        }
+        return page ?? [];
+      }, SUPABASE_DEFAULT_PAGE_SIZE);
+      return { rawItems: fetched, iErr: null, hasMore: false };
+    } catch (e) {
+      return { rawItems: [], iErr: e, hasMore: false };
+    }
+  })();
+
+  const ownerPromise = creatorDeleted
+    ? Promise.resolve({ data: null, error: null })
+    : supabase.rpc(list.published_at ? 'published_list_owner' : 'list_owner_snapshot', {
+        p_list_id: listId,
+      });
+
+  const [snapshotNewRestaurantCount, itemsFetch, ownerResult, viewerLang] = await Promise.all([
+    snapshotCountPromise,
+    itemsFetchPromise,
+    ownerPromise,
+    viewerLangPromise,
+  ]);
+
+  paidAccess.snapshotNewRestaurantCount = snapshotNewRestaurantCount;
+  if (shouldGate) {
+    paidAccess.hasMore = itemsFetch.hasMore;
   }
+
+  const { rawItems, iErr } = itemsFetch;
   if (iErr)
     return { list, items: [], owner: null, membership: null, paidAccess, error: iErr.message };
 
@@ -685,16 +709,9 @@ export async function fetchListPage(listId, opts = {}) {
     visibleItems.sort((a, b) => (captureOrder.get(a.id) ?? 1e9) - (captureOrder.get(b.id) ?? 1e9));
   }
 
-  const viewerLang = await viewerLangPromise;
-  // Item enrich and owner RPC are independent (async-parallel).
-  const itemsPromise = enrichListItemsWithReviewsAndMustTry(supabase, visibleItems, viewerLang);
-  const ownerPromise = creatorDeleted
-    ? Promise.resolve({ data: null, error: null })
-    : supabase.rpc(list.published_at ? 'published_list_owner' : 'list_owner_snapshot', {
-        p_list_id: listId,
-      });
-  const [enrichedItems, ownerResult] = await Promise.all([itemsPromise, ownerPromise]);
-  const itemsWithMustTry = slimListItemsRestaurantMetadata(enrichedItems);
+  const itemsWithMustTry = slimListItemsRestaurantMetadata(
+    await enrichListItemsWithReviewsAndMustTry(supabase, visibleItems, viewerLang)
+  );
 
   let owner = null;
   if (!creatorDeleted) {

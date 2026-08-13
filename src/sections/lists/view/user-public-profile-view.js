@@ -222,12 +222,21 @@ export default function UserPublicProfileView({
   const [activityHasMore, setActivityHasMore] = useState(
     () => (recentActivity ?? []).length >= PROFILE_ACTIVITY_PAGE_SIZE
   );
+  const [prevRecentActivity, setPrevRecentActivity] = useState(recentActivity);
+  const [prevActivityProfileId, setPrevActivityProfileId] = useState(profile?.id);
   /** Newly created lists until server `lists` includes them (same pattern as save-to-list sheet). */
   const [pendingOwnLists, setPendingOwnLists] = useState([]);
 
   if (initialFollowing !== prevInitialFollowing) {
     setPrevInitialFollowing(initialFollowing);
     setFollowing(initialFollowing);
+  }
+
+  if (recentActivity !== prevRecentActivity || profile?.id !== prevActivityProfileId) {
+    setPrevRecentActivity(recentActivity);
+    setPrevActivityProfileId(profile?.id);
+    setActivityRows(recentActivity ?? []);
+    setActivityHasMore((recentActivity ?? []).length >= PROFILE_ACTIVITY_PAGE_SIZE);
   }
 
   useEffect(() => {
@@ -278,11 +287,6 @@ export default function UserPublicProfileView({
     },
     [router]
   );
-
-  useEffect(() => {
-    setActivityRows(recentActivity ?? []);
-    setActivityHasMore((recentActivity ?? []).length >= PROFILE_ACTIVITY_PAGE_SIZE);
-  }, [profile?.id, recentActivity]);
 
   const filteredActivity = useMemo(() => {
     const rows = activityRows ?? [];

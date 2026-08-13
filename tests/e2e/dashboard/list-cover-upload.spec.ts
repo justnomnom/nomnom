@@ -52,7 +52,9 @@ test.describe('dashboard lists — cover image upload/remove', () => {
         timeout: 60_000,
       });
       // Upload → getPublicUrl → coverUrl state → Save persists it.
-      await page.getByRole('button', { name: 'Save', exact: true }).click();
+      const saveDetails = page.getByRole('button', { name: 'Save', exact: true });
+      await saveDetails.click();
+      await expect(saveDetails).toBeEnabled({ timeout: 30_000 });
 
       await expect
         .poll(

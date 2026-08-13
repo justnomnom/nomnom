@@ -13,6 +13,7 @@ import {
   omitActiveSubscriptionsFromDigest,
 } from '../group-list-update-digest.js';
 import { isAuthorizedCronRequest } from '../notification-cron-auth.js';
+import { listIdsNewlyReceivingRestaurant } from '../list-update-notify-helpers.js';
 import {
   resolveOwnerRecipientExcludingActor,
   shouldEmitDirectNotification,
@@ -97,11 +98,8 @@ test('regression: self-invite / self-subscribe / self-accept never emit', () => 
 });
 
 test('regression: newly-added-only semantics — re-add set is empty → no fan-out targets', () => {
-  // Pure contract used by items-actions: only newlyAddedListIds are notified.
-  const listIds = [LIST_A, LIST_B];
-  const alreadyOnList = new Set([LIST_A, LIST_B]);
-  const newlyAddedListIds = listIds.filter((id) => !alreadyOnList.has(id));
-  assert.deepEqual(newlyAddedListIds, []);
+  assert.deepEqual(listIdsNewlyReceivingRestaurant([LIST_A, LIST_B], [LIST_A, LIST_B]), []);
+  assert.deepEqual(listIdsNewlyReceivingRestaurant([LIST_A, LIST_B], [LIST_A]), [LIST_B]);
 });
 
 test('regression: remove path must not be treated as a Live List email trigger', () => {

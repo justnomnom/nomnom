@@ -2,16 +2,16 @@
 
 import { notifyListFollowers } from 'src/libs/notifications/notify-list-followers';
 import { notifyLiveListSubscribers } from 'src/libs/notifications/list-live-update-notify';
-import { listIdsNewlyReceivingRestaurant } from 'src/libs/notifications/list-update-notify-helpers';
 import { groupListItemsByRestaurant } from 'src/libs/lists/group-list-items-by-restaurant';
-import {
-  fetchAllSupabasePages,
-  SUPABASE_DEFAULT_PAGE_SIZE,
-} from 'src/libs/supabase/supabase-fetch-all-pages';
+import { listIdsNewlyReceivingRestaurant } from 'src/libs/notifications/list-update-notify-helpers';
 import {
   getSupabaseAuthUser,
   createSupabaseServerClient,
 } from 'src/libs/supabase/supabase-server-client';
+import {
+  fetchAllSupabasePages,
+  SUPABASE_DEFAULT_PAGE_SIZE,
+} from 'src/libs/supabase/supabase-fetch-all-pages';
 
 export async function listIdsByRestaurantIdsForUser(restaurantIds) {
   const supabase = await createSupabaseServerClient();
@@ -123,22 +123,26 @@ export async function addRestaurantToLists(restaurantId, listIds) {
   } = await getSupabaseAuthUser();
   if (!user?.id) return { error: 'unauthorized' };
   if (!restaurantId || !listIds?.length) return { error: 'invalid' };
-  const { data: minRows } = await supabase
-    .from('list_items')
-    .select('list_id, sort_order')
-    .in('list_id', listIds)
-    .order('sort_order', { ascending: true });
+  const [minRowsResult, existingRowsResult] = await Promise.all([
+    supabase
+      .from('list_items')
+      .select('list_id, sort_order')
+      .in('list_id', listIds)
+      .order('sort_order', { ascending: true }),
+    supabase
+      .from('list_items')
+      .select('list_id')
+      .eq('restaurant_id', restaurantId)
+      .in('list_id', listIds),
+  ]);
+  const { data: minRows } = minRowsResult;
   const minByList = new Map();
   (minRows ?? []).forEach((r) => {
     if (!minByList.has(r.list_id)) minByList.set(r.list_id, r.sort_order);
   });
   // Which lists already contain this restaurant? Re-adding is a no-op upsert and
   // must NOT re-notify followers — only the newly added lists should.
-  const { data: existingRows } = await supabase
-    .from('list_items')
-    .select('list_id')
-    .eq('restaurant_id', restaurantId)
-    .in('list_id', listIds);
+  const { data: existingRows } = existingRowsResult;
   const alreadyOnList = (existingRows ?? []).map((r) => r.list_id);
   const newlyAddedListIds = listIdsNewlyReceivingRestaurant(listIds, alreadyOnList);
   const rows = listIds.map((listId) => ({

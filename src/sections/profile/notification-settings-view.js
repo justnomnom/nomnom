@@ -83,28 +83,35 @@ export default function NotificationSettingsView() {
 
   const savePref = async (key, value) => {
     const previous = prefs[key];
-    setPrefs((prev) => ({ ...prev, [key]: value }));
+    setPrefs((prev) => optimisticNotificationPrefs(prev, key, value));
     const res = await updateMyNotificationPreferences({ [key]: value });
     if (res?.error) {
-      setPrefs((prev) => ({ ...prev, [key]: previous }));
+      setPrefs((prev) => rollbackNotificationPrefIfFailed(prev, key, previous, res.error));
     }
   };
 
+  const pushKind = resolvePushEnableControlKind({
+    iosNotInstalled,
+    supported,
+    permission,
+    subscribed,
+  });
+
   const renderEnableControl = () => {
-    if (iosNotInstalled) {
+    if (pushKind === 'ios_hint') {
       return <Alert severity="info">{t('components.notifications.enable_device_ios_hint')}</Alert>;
     }
-    if (!supported) {
+    if (pushKind === 'unsupported') {
       return (
         <Alert severity="info">{t('components.notifications.enable_device_unsupported')}</Alert>
       );
     }
-    if (permission === 'denied') {
+    if (pushKind === 'blocked') {
       return (
         <Alert severity="warning">{t('components.notifications.enable_device_blocked')}</Alert>
       );
     }
-    if (subscribed) {
+    if (pushKind === 'enabled') {
       return (
         <Stack direction="row" alignItems="center" justifyContent="space-between" gap={2}>
           <Typography variant="body2" color="success.main">

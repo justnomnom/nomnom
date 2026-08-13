@@ -192,12 +192,19 @@ export async function upsertRestaurantReview({ restaurantId, rating, body, media
   }
   const nextMedia = normalized.media;
 
-  const { data: existing, error: exErr } = await supabase
-    .from('restaurant_reviews')
-    .select('media')
-    .eq('restaurant_id', restaurantId)
-    .eq('user_id', user.id)
-    .maybeSingle();
+  const [{ data: existing, error: exErr }, { data: profile, error: pErr }] = await Promise.all([
+    supabase
+      .from('restaurant_reviews')
+      .select('media')
+      .eq('restaurant_id', restaurantId)
+      .eq('user_id', user.id)
+      .maybeSingle(),
+    supabase
+      .from('users')
+      .select('display_name, username, avatar_url')
+      .eq('id', user.id)
+      .maybeSingle(),
+  ]);
 
   if (exErr) return { error: exErr.message };
 
@@ -205,12 +212,6 @@ export async function upsertRestaurantReview({ restaurantId, rating, body, media
   const nextPaths = new Set(nextMedia.map((m) => m.path));
   const toRemove = oldPaths.filter((p) => !nextPaths.has(p));
   await removeReviewStoragePaths(supabase, toRemove);
-
-  const { data: profile, error: pErr } = await supabase
-    .from('users')
-    .select('display_name, username, avatar_url')
-    .eq('id', user.id)
-    .maybeSingle();
 
   if (pErr) return { error: pErr.message };
 

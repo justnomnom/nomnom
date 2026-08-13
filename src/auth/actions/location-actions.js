@@ -6,16 +6,16 @@ import { RESTAURANT_TAG_CATEGORY_ORDER } from 'src/utils/restaurant-tag-groups';
 
 import { fetchDishTagsCatalog } from 'src/libs/dish-tags/dish-tag-resolve';
 import { attachOpeningStatusToRows } from 'src/libs/restaurant/opening-hours';
-import { slimRestaurantRowsMetadata } from 'src/libs/restaurant/slim-restaurant-card-metadata';
 import { RESTAURANT_ID_UUID_RE } from 'src/libs/restaurant/fetch-restaurant-by-id-for-ssr';
-import {
-  fetchAllSupabasePages,
-  SUPABASE_DEFAULT_PAGE_SIZE,
-} from 'src/libs/supabase/supabase-fetch-all-pages';
+import { slimRestaurantRowsMetadata } from 'src/libs/restaurant/slim-restaurant-card-metadata';
 import {
   getSupabaseAuthUser,
   createSupabaseServerClient,
 } from 'src/libs/supabase/supabase-server-client';
+import {
+  fetchAllSupabasePages,
+  SUPABASE_DEFAULT_PAGE_SIZE,
+} from 'src/libs/supabase/supabase-fetch-all-pages';
 
 import { LISBOA_ROULETTE_BBOX, ROULETTE_POOL_FETCH_LIMIT } from 'src/sections/roulette/constants';
 
@@ -484,7 +484,11 @@ export async function fetchMapSpotDetailById(restaurantId) {
       console.error('[fetchMapSpotDetailById]', error);
       return { row: null, error: error.message };
     }
-    return { row: data ?? null, error: undefined };
+    if (!data) {
+      return { row: null, error: undefined };
+    }
+    const [row] = slimRestaurantRowsMetadata(attachOpeningStatusToRows([data]));
+    return { row: row ?? null, error: undefined };
   } catch (e) {
     console.error('[fetchMapSpotDetailById]', e);
     return { row: null, error: e?.message ?? 'unknown' };
@@ -652,14 +656,16 @@ async function fetchTagsCatalogExtras(supabase) {
 export async function fetchRestaurantTagsCatalog() {
   try {
     const supabase = await createSupabaseServerClient();
-    const perCategory = await Promise.all(
-      RESTAURANT_TAG_CATEGORY_ORDER.map((category) =>
-        category === 'dish'
-          ? fetchDishTagsCatalog(supabase)
-          : fetchTagsCatalogForCategory(supabase, category)
-      )
-    );
-    const extras = await fetchTagsCatalogExtras(supabase);
+    const [perCategory, extras] = await Promise.all([
+      Promise.all(
+        RESTAURANT_TAG_CATEGORY_ORDER.map((category) =>
+          category === 'dish'
+            ? fetchDishTagsCatalog(supabase)
+            : fetchTagsCatalogForCategory(supabase, category)
+        )
+      ),
+      fetchTagsCatalogExtras(supabase),
+    ]);
     const tags = [...perCategory.flat(), ...extras];
     return { tags };
   } catch (e) {

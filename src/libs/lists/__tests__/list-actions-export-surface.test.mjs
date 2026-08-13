@@ -17,7 +17,12 @@ const AUTH_REEXPORT = path.resolve(
 /** @param {string} filePath */
 function exportedAsyncFns(filePath) {
   const src = fs.readFileSync(filePath, 'utf8');
-  return [...src.matchAll(/^export async function (\w+)/gm)].map((m) => m[1]).sort();
+  const names = [
+    ...[...src.matchAll(/^export async function (\w+)/gm)].map((m) => m[1]),
+    // `React.cache()` wrappers: `export const foo = cache(async function foo...)`
+    ...[...src.matchAll(/^export const (\w+) = cache\(async function \1\b/gm)].map((m) => m[1]),
+  ];
+  return [...new Set(names)].sort();
 }
 
 /** @param {string} filePath */
@@ -39,6 +44,7 @@ const ACTION_FILES = [
   'map-actions.js',
   'items-actions.js',
   'list-page-actions.js',
+  'decide-actions.js',
   'members-profile-actions.js',
 ];
 
@@ -53,7 +59,7 @@ test('list actions modules expose the expected export surface', () => {
   const fromIndex = namedExportsInBarrel(path.join(ACTIONS_DIR, 'index.js'));
   const fromAuth = namedExportsInBarrel(AUTH_REEXPORT);
 
-  assert.equal(fromModules.size, 42, `expected 42 action exports, got ${fromModules.size}`);
+  assert.equal(fromModules.size, 46, `expected 46 action exports, got ${fromModules.size}`);
   assert.ok(!fromModules.has('ensureListSlug'), 'ensureListSlug must not be a public server action');
   assert.deepEqual(fromIndex, [...fromModules].sort());
   assert.deepEqual(fromAuth, fromIndex);

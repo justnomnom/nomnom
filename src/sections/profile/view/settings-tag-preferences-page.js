@@ -1,7 +1,7 @@
 'use client';
 
 import PropTypes from 'prop-types';
-import { useRef, useMemo, useState, useEffect, useCallback } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 
 import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
@@ -59,20 +59,12 @@ export default function SettingsTagPreferencesPage({
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
 
-  const prevServerIdsKeyRef = useRef(null);
-
-  useEffect(() => {
-    const ids = initialSelectedIds
-      .map((id) => (typeof id === 'string' ? id.trim().toLowerCase() : ''))
-      .filter((id) => DRAFT_TAG_ID_RE.test(id))
-      .sort();
-    const key = JSON.stringify(ids);
-    if (prevServerIdsKeyRef.current === key) {
-      return;
-    }
-    prevServerIdsKeyRef.current = key;
-    setSelectedIds(new Set(ids));
-  }, [initialSelectedIds]);
+  const serverIdsKey = JSON.stringify([...validInitial].sort());
+  const [prevServerIdsKey, setPrevServerIdsKey] = useState(serverIdsKey);
+  if (prevServerIdsKey !== serverIdsKey) {
+    setPrevServerIdsKey(serverIdsKey);
+    setSelectedIds(new Set(validInitial));
+  }
 
   const tagSections = useMemo(() => groupRestaurantTagsByCategory(initialTags), [initialTags]);
   const userDishTagIds = useMemo(() => userDishTagIdSet(userDishTags), [userDishTags]);

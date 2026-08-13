@@ -13,6 +13,7 @@ export const dynamic = 'force-dynamic';
  * Body: the browser PushSubscription JSON ({ endpoint, keys: { p256dh, auth } }).
  */
 export async function POST(request) {
+  const bodyPromise = request.json();
   const {
     data: { user },
   } = await getSupabaseAuthUser();
@@ -22,7 +23,7 @@ export async function POST(request) {
 
   let body;
   try {
-    body = await request.json();
+    body = await bodyPromise;
   } catch {
     return NextResponse.json({ error: 'invalid_json' }, { status: 400 });
   }

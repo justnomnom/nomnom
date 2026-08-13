@@ -20,6 +20,7 @@ export async function POST(request) {
     return NextResponse.json({ error: 'stripe_not_configured' }, { status: 503 });
   }
 
+  const bodyPromise = request.json();
   const {
     data: { user },
   } = await getSupabaseAuthUser();
@@ -29,7 +30,7 @@ export async function POST(request) {
 
   let body;
   try {
-    body = await request.json();
+    body = await bodyPromise;
   } catch {
     return NextResponse.json({ error: 'invalid_json' }, { status: 400 });
   }

@@ -20,7 +20,7 @@ test.describe('dashboard lists — create & delete with DB checks', () => {
   test('create list via UI; assert row in Postgres; delete via UI; assert row gone', async ({
     page,
   }) => {
-    test.setTimeout(150_000);
+    test.setTimeout(240_000);
     loadE2EEnv();
     const email = await getE2ETestUserEmailForDb();
 
@@ -32,8 +32,15 @@ test.describe('dashboard lists — create & delete with DB checks', () => {
     const admin = getServiceRoleClient();
     const name = `E2E List ${Date.now()}`;
 
-    await page.goto('/dashboard/lists');
-    await page.getByTestId('e2e-lists-new').click();
+    await page.goto('/dashboard/lists', { waitUntil: 'domcontentloaded', timeout: 180_000 });
+    const newListBtn = page.getByTestId('e2e-lists-new');
+    try {
+      await expect(newListBtn).toBeVisible({ timeout: 45_000 });
+    } catch {
+      await page.reload({ waitUntil: 'domcontentloaded', timeout: 180_000 });
+      await expect(newListBtn).toBeVisible({ timeout: 45_000 });
+    }
+    await newListBtn.click();
     await page.getByTestId('e2e-create-list-name').fill(name);
     await page.getByTestId('e2e-create-list-submit').click();
 

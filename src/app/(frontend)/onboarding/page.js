@@ -1,5 +1,9 @@
+import { Suspense } from 'react';
+
 import { fetchRestaurantTagsCatalog } from 'src/auth/actions/location-actions';
 import { getSupabaseAuthUser } from 'src/libs/supabase/supabase-server-client';
+
+import { SplashScreen } from 'src/components/loading-screen';
 
 import { OnboardingWizard } from 'src/sections/onboarding';
 
@@ -10,7 +14,10 @@ export const metadata = {
   title: 'Onboarding',
 };
 
-export default async function OnboardingPage() {
+/**
+ * Streams auth + tag catalog under Suspense (async-suspense-boundaries).
+ */
+async function OnboardingPageContent() {
   const [authResult, tagsResult] = await Promise.all([
     getSupabaseAuthUser(),
     fetchRestaurantTagsCatalog(),
@@ -21,4 +28,12 @@ export default async function OnboardingPage() {
   const { tags } = tagsResult;
 
   return <OnboardingWizard draftUserId={user?.id ?? ''} initialTags={tags ?? []} />;
+}
+
+export default function OnboardingPage() {
+  return (
+    <Suspense fallback={<SplashScreen />}>
+      <OnboardingPageContent />
+    </Suspense>
+  );
 }

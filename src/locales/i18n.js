@@ -6,11 +6,37 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 
 import { defaultLang } from './config-lang';
 import translationEn from './langs/en.json';
-import translationPt from './langs/pt.json';
 
 export { getLanguageStorageKey } from './language-storage-key';
 
 // ----------------------------------------------------------------------
+
+const localeLoaders = {
+  pt: () => import('./langs/pt.json'),
+};
+
+const loadedLocales = new Set(['en']);
+
+/**
+ * Loads a non-default locale JSON before switching i18n language.
+ * English is bundled with the initial client payload; Portuguese is fetched on demand.
+ * @param {string} lng
+ * @returns {Promise<void>}
+ */
+export async function ensureI18nLocale(lng) {
+  const code = String(lng || '')
+    .toLowerCase()
+    .startsWith('pt')
+    ? 'pt'
+    : 'en';
+  if (loadedLocales.has(code)) return;
+  const loader = localeLoaders[code];
+  if (!loader) return;
+  const mod = await loader();
+  const resources = mod.default ?? mod;
+  i18n.addResourceBundle(code, 'translations', resources, true, true);
+  loadedLocales.add(code);
+}
 
 // Initialize with default language (will be updated when user context is available)
 const lng = defaultLang.value;
@@ -21,7 +47,6 @@ i18n
   .init({
     resources: {
       en: { translations: translationEn },
-      pt: { translations: translationPt },
     },
     lng,
     fallbackLng: 'en',

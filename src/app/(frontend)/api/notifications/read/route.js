@@ -14,6 +14,7 @@ export const dynamic = 'force-dynamic';
  * (`{ all: true }`) as read.
  */
 export async function POST(request) {
+  const bodyPromise = request.json();
   const {
     data: { user },
   } = await getSupabaseAuthUser();
@@ -23,7 +24,7 @@ export async function POST(request) {
 
   let body;
   try {
-    body = await request.json();
+    body = await bodyPromise;
   } catch {
     return NextResponse.json({ error: 'invalid_json' }, { status: 400 });
   }

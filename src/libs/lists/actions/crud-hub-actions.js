@@ -466,8 +466,14 @@ export async function updateListMeta(
   }
   if (cover_image_url !== undefined) patch.cover_image_url = cover_image_url;
   if (published_at !== undefined) patch.published_at = published_at;
-  const { error } = await supabase.from('lists').update(patch).eq('id', listId);
+  const { data: updated, error } = await supabase
+    .from('lists')
+    .update(patch)
+    .eq('id', listId)
+    .select('id')
+    .maybeSingle();
   if (error) return { error: error.message };
+  if (!updated) return { error: 'save_failed' };
 
   // Auto-generate slug when name is set or list is published for the first time.
   if (patch.name || patch.published_at) {

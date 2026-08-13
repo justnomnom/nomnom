@@ -10,6 +10,9 @@ import {
   buildNotificationPreferenceUpsert,
   isValidNotificationMuteTarget,
   mergeNotificationPreferences,
+  optimisticNotificationPrefs,
+  resolvePushEnableControlKind,
+  rollbackNotificationPrefIfFailed,
 } from '../notification-preference-helpers.js';
 
 test('defaults: in-app + push on, email digest off (opt-in)', () => {
@@ -81,4 +84,51 @@ test('mute targets: list and creator only; id required', () => {
   assert.equal(isValidNotificationMuteTarget('list', ''), false);
   assert.equal(isValidNotificationMuteTarget('list', null), false);
   assert.equal(isValidNotificationMuteTarget(null, 'L1'), false);
+});
+
+test('optimistic toggle then rollback only when save returns an error', () => {
+  const prefs = { list_updates_in_app: true, list_updates_push: true, list_updates_email: false };
+  const optimistic = optimisticNotificationPrefs(prefs, 'list_updates_email', true);
+  assert.equal(optimistic.list_updates_email, true);
+  assert.equal(prefs.list_updates_email, false);
+
+  const afterSuccess = rollbackNotificationPrefIfFailed(optimistic, 'list_updates_email', false, null);
+  assert.equal(afterSuccess.list_updates_email, true);
+
+  const afterFail = rollbackNotificationPrefIfFailed(
+    optimistic,
+    'list_updates_email',
+    false,
+    'save_failed'
+  );
+  assert.equal(afterFail.list_updates_email, false);
+  assert.equal(afterFail.list_updates_in_app, true);
+});
+
+test('push enable control kind: ios hint wins, then unsupported, blocked, enabled, enable', () => {
+  assert.equal(
+    resolvePushEnableControlKind({ iosNotInstalled: true, supported: false }),
+    'ios_hint'
+  );
+  assert.equal(resolvePushEnableControlKind({ supported: false }), 'unsupported');
+  assert.equal(
+    resolvePushEnableControlKind({ supported: true, permission: 'denied' }),
+    'blocked'
+  );
+  assert.equal(
+    resolvePushEnableControlKind({
+      supported: true,
+      permission: 'granted',
+      subscribed: true,
+    }),
+    'enabled'
+  );
+  assert.equal(
+    resolvePushEnableControlKind({
+      supported: true,
+      permission: 'default',
+      subscribed: false,
+    }),
+    'enable'
+  );
 });

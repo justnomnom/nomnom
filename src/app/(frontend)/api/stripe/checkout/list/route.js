@@ -24,9 +24,12 @@ export async function POST(request) {
     return NextResponse.json({ error: 'stripe_not_configured' }, { status: 503 });
   }
 
+  const bodyPromise = request.json();
+  const authPromise = getSupabaseAuthUser();
+
   let body;
   try {
-    body = await request.json();
+    body = await bodyPromise;
   } catch {
     return NextResponse.json({ error: 'invalid_json' }, { status: 400 });
   }
@@ -53,7 +56,7 @@ export async function POST(request) {
 
   const {
     data: { user },
-  } = await getSupabaseAuthUser();
+  } = await authPromise;
   if (!user?.id || !user.email) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
