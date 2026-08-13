@@ -14,19 +14,19 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 import { useTranslate } from 'src/locales';
 import { SPACE, touchTargetSx } from 'src/theme/spacing';
-import {
-  castNightVote,
-  fetchNight,
-  fetchNightDecide,
-  joinNight,
-} from 'src/libs/lists/actions/night-actions';
+import { useNightAnalytics } from 'src/libs/analytics/night-analytics';
 import { lockListDecideSession } from 'src/libs/lists/actions/decide-actions';
+import {
+  joinNight,
+  fetchNight,
+  castNightVote,
+  fetchNightDecide,
+} from 'src/libs/lists/actions/night-actions';
 import {
   decideErrorMessage,
   getOrCreateVoterKey,
   persistCachedSession,
 } from 'src/libs/lists/list-decide-client';
-import { useNightAnalytics } from 'src/libs/analytics/night-analytics';
 
 import DecideSessionPanel from 'src/sections/lists/decide-session-panel';
 
@@ -77,7 +77,7 @@ export default function NightDecideView({ nightId }) {
   const applyNight = useCallback((nextNight) => {
     if (!nextNight) return;
     setNight(nextNight);
-    const decide = nextNight.decide;
+    const { decide } = nextNight;
     if (decide) {
       setSession(decide);
       persistCachedSession(decide);
@@ -107,7 +107,10 @@ export default function NightDecideView({ nightId }) {
     };
   }, [nightId, applyNight, analytics]);
 
-  const guests = Array.isArray(night?.guests) ? night.guests : [];
+  const guests = useMemo(
+    () => (Array.isArray(night?.guests) ? night.guests : []),
+    [night?.guests]
+  );
   const hasJoined = useMemo(
     () => Boolean(voterKey) && guests.some((g) => String(g?.guest_key) === String(voterKey)),
     [guests, voterKey]

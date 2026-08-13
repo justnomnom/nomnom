@@ -20,22 +20,22 @@ import { useShareLink } from 'src/hooks/use-share-link';
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import { SPACE, tabularNumsSx, touchTargetSx } from 'src/theme/spacing';
+import { useListDecideAnalytics } from 'src/libs/analytics/list-decide-analytics';
+import { rankDecideTallies, canStartListDecide, pickDecideWinnerId } from 'src/libs/lists/list-decide-tally';
 import {
   castListDecideVote,
   lockListDecideSession,
   fetchListDecideSession,
 } from 'src/libs/lists/actions/decide-actions';
-import { canStartListDecide, pickDecideWinnerId, rankDecideTallies } from 'src/libs/lists/list-decide-tally';
 import {
-  canLockDecideSession,
+  readLockToken,
   decideErrorMessage,
   getOrCreateVoterKey,
+  canLockDecideSession,
+  persistCachedSession,
   lockedWinnerRestaurantId,
   mapListItemsToDecidePlaces,
-  persistCachedSession,
-  readLockToken,
 } from 'src/libs/lists/list-decide-client';
-import { useListDecideAnalytics } from 'src/libs/analytics/list-decide-analytics';
 
 import Iconify from 'src/components/iconify';
 import ShareFeedbackSnackbar from 'src/components/share/share-feedback-snackbar';
@@ -156,7 +156,7 @@ export default function DecideSessionPanel({
 
   const sessionId = session?.session_id ? String(session.session_id) : null;
   const locked = session?.status === 'locked';
-  const tallies = session?.tallies || {};
+  const tallies = useMemo(() => session?.tallies || {}, [session?.tallies]);
   const ranked = useMemo(() => rankDecideTallies(tallies, restaurantIds), [tallies, restaurantIds]);
   const canStart = canStartListDecide(placeRows.length);
   const canLock = canLockDecideSession({
@@ -342,6 +342,9 @@ export default function DecideSessionPanel({
   const winner = winnerId ? placeById.get(winnerId) : null;
   const roulettePlace = roulettePickId ? placeById.get(roulettePickId) : null;
   const hideStart = !showStart;
+  let decideHint = t('pages.lists.decide_intro');
+  if (locked) decideHint = t('pages.lists.decide_locked_hint');
+  else if (session) decideHint = t('pages.lists.decide_open_hint');
 
   if (!canStart && !session) {
     return (
@@ -366,11 +369,7 @@ export default function DecideSessionPanel({
                 {t('pages.lists.decide_title')}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {locked
-                  ? t('pages.lists.decide_locked_hint')
-                  : session
-                    ? t('pages.lists.decide_open_hint')
-                    : t('pages.lists.decide_intro')}
+                {decideHint}
               </Typography>
             </Box>
             {busy ? <CircularProgress size={20} color="primary" /> : null}
