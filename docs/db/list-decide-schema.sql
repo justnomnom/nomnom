@@ -45,3 +45,7 @@ GRANT ALL ON TABLE public.list_decide_votes TO service_role;
 -- Supabase MCP / SQL editor if rebuilding an environment; keep EXECUTE:
 --   create_list_decide_session → authenticated
 --   get_list_decide_session, cast_list_decide_vote, lock_list_decide_session → anon + authenticated
+--
+-- create_list_decide_session lock_token MUST NOT call gen_random_bytes() unless
+-- pgcrypto is installed on search_path. Prefer:
+--   replace(gen_random_uuid()::text || gen_random_uuid()::text, '-', '')

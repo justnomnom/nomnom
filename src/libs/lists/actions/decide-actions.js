@@ -27,6 +27,8 @@ function mapDecideError(message) {
   if (m.includes('invalid_vote')) return 'invalid_vote';
   if (m.includes('rate_limited')) return 'rate_limited';
   if (m.includes('not_authorized_to_lock')) return 'not_authorized_to_lock';
+  // Hide raw Postgres internals (e.g. missing extension) behind a stable key.
+  if (/gen_random_bytes|permission denied|PGRST|postgres/i.test(m)) return 'unknown';
   return m || 'unknown';
 }
 
