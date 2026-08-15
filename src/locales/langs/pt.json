@@ -708,11 +708,9 @@
         "vibe_friends": "Amigos",
         "vibe_cheap": "Económico",
         "vibe_corporate": "Trabalho",
-        "roulette_kicker": "Ou isto se não tiveres ideias",
-        "roulette_sub": "Mexe para uma sugestão ao acaso",
-        "tonight_kicker": "Novo · Decide com amigos",
+        "roulette_sub": "Com sorte? Mexe para uma sugestão ao acaso",
         "decide_promo_title": "Partilhar → Decidir",
-        "decide_promo_sub": "Começa uma votação numa lista pública — sem instalar a app",
+        "decide_promo_sub": "Transforma qualquer lista pública numa votação",
         "tonight_promo_title": "Planear esta noite",
         "tonight_promo_sub": "Escolhe 3–5 sítios, partilha o link e votem juntos",
         "lists_leaderboard_title": "Classificação das listas NomNom",
@@ -744,7 +742,9 @@
         "fab_label": "NomNom?",
         "feed_empty_vibe": "Ainda não há sítios com essa vibe por aqui. Experimenta outra ou limpa o filtro.",
         "feed_empty_clear_vibe": "Limpar filtro",
-        "filter_open_now": "Aberto agora"
+        "filter_open_now": "Aberto agora",
+        "decide_group_kicker": "Não sabes onde comer?",
+        "roulette_promo_title": "Roleta"
       },
       "admin": {
         "hub": {
@@ -1014,7 +1014,10 @@
         "empty_lists_title": "A tua primeira lista está à espera",
         "empty_lists": "Agrupa sítios em listas — um roteiro de brunch ao fim de semana, sítios para ir com amigos, um guia local para quando vierem visitas.",
         "empty_lists_body": "Toca em Guardar num sítio para o adicionar a uma lista. Cria quantas listas quiseres — podem ser privadas ou partilhadas.",
-        "visit_summary": "{{saved}} sítios guardados · {{visited}} visitados"
+        "visit_summary": "{{saved}} sítios guardados · {{visited}} visitados",
+        "decide_hint_title": "Escolhe uma lista para começar a votação",
+        "decide_hint_body": "Abre qualquer lista e toca em Decidir para partilhar um link — os amigos votam sem instalar a app.",
+        "decide_hint_dismiss": "Entendido"
       },
       "roulette": {
         "meta_title": "Roleta NomNom",
@@ -1735,6 +1738,16 @@
       "delete": "Apagar",
       "empty": "Calmo por agora. Volta mais tarde.",
       "empty_filtered": "Nada por aqui para esta lista.",
+      "empty_title": "Estás em dia",
+      "empty_filtered_title": "Nada para esta lista",
+      "empty_cta": "Descobrir spots",
+      "section_today": "Hoje",
+      "section_week": "Esta semana",
+      "section_earlier": "Mais antigas",
+      "unread_count": "{{count}} por ler",
+      "aria_unread": "Por ler",
+      "row_actions": "Opções da notificação",
+      "group_toggle": "Ver os spots desta atualização",
       "filter_all": "Todas",
       "see_all": "Ver todas",
       "load_more": "Ver mais",

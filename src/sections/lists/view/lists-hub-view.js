@@ -14,17 +14,17 @@ import Typography from '@mui/material/Typography';
 import { alpha, useTheme } from '@mui/material/styles';
 
 import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
+import { useRouter, useSearchParams } from 'src/routes/hooks';
 
 import { usePrefersReducedMotion } from 'src/hooks/use-prefers-reduced-motion';
 
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
-import { tabularNumsSx } from 'src/theme/spacing';
 import { fetchMyListsHub } from 'src/libs/lists/actions';
 import { fetchMyVisitSummary } from 'src/auth/actions/visit-actions';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
 import { useSkeletonThemeColors } from 'src/theme/use-skeleton-theme';
+import { SPACE, tabularNumsSx, TOUCH_TARGET_SIZE } from 'src/theme/spacing';
 
 import Iconify from 'src/components/iconify';
 import { MotionPart, MotionContainer } from 'src/components/animate';
@@ -56,9 +56,6 @@ import {
 
 // ----------------------------------------------------------------------
 
-/** 44px — same tap target as profile hub header */
-const TOUCH_MIN = 44;
-
 function NewListIconButton({ onClick }) {
   const theme = useTheme();
   const { t } = useTranslate();
@@ -69,8 +66,8 @@ function NewListIconButton({ onClick }) {
       onClick={onClick}
       aria-label={t('pages.lists.new_list')}
       sx={{
-        width: TOUCH_MIN,
-        height: TOUCH_MIN,
+        width: TOUCH_TARGET_SIZE,
+        height: TOUCH_TARGET_SIZE,
         color: 'primary.main',
         WebkitTapHighlightColor: 'transparent',
         touchAction: 'manipulation',
@@ -113,9 +110,16 @@ const VALID_FILTERS = ['all', 'own', 'shared', 'from_others', 'subscriptions'];
 export default function ListsHubView() {
   const theme = useTheme();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { t } = useTranslate();
   const prefersReducedMotion = usePrefersReducedMotion();
   const { trackEvent } = useAnalytics();
+  /**
+   * `?decide=1` from the Discover "Share → Decide" tile. Decide runs on a single list
+   * (`ListDecidePanel`), so the hub can't open it directly — it points at the next step instead.
+   */
+  const [decideHintDismissed, setDecideHintDismissed] = useState(false);
+  const showDecideHint = searchParams.get('decide') === '1' && !decideHintDismissed;
   const [createOpen, setCreateOpen] = useState(false);
   const [owned, setOwned] = useState([]);
   const [sharedWithMe, setSharedWithMe] = useState([]);
@@ -291,6 +295,49 @@ export default function ListsHubView() {
       <Box sx={{ ...dashboardPageRootSx, minWidth: 0, overflowX: 'hidden' }}>
         <DashboardPageMotion stagger>
           <Stack {...dashboardSubsectionStackProps}>
+            {showDecideHint && (
+              <DashboardMotionSection>
+                <Stack
+                  direction="row"
+                  spacing={SPACE.sm}
+                  alignItems="flex-start"
+                  sx={{
+                    borderRadius: 2,
+                    p: SPACE.sm,
+                    border: `2px solid ${alpha(theme.palette.primary.main, 0.15)}`,
+                    bgcolor: alpha(theme.palette.primary.main, 0.06),
+                  }}
+                >
+                  <Iconify
+                    icon={ic.likeBold}
+                    width={22}
+                    sx={{ color: 'primary.main', flexShrink: 0, mt: 0.25 }}
+                  />
+                  <Stack spacing={0.25} sx={{ flex: 1, minWidth: 0 }}>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
+                      {t('pages.dashboard.lists.decide_hint_title')}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
+                      {t('pages.dashboard.lists.decide_hint_body')}
+                    </Typography>
+                  </Stack>
+                  <Button
+                    size="small"
+                    color="primary"
+                    onClick={() => setDecideHintDismissed(true)}
+                    sx={{
+                      flexShrink: 0,
+                      fontWeight: 700,
+                      textTransform: 'none',
+                      minHeight: TOUCH_TARGET_SIZE,
+                    }}
+                  >
+                    {t('pages.dashboard.lists.decide_hint_dismiss')}
+                  </Button>
+                </Stack>
+              </DashboardMotionSection>
+            )}
+
             {!loading && (
               <DashboardMotionSection>
                 <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 560 }}>

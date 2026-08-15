@@ -708,11 +708,9 @@
         "vibe_friends": "Friends",
         "vibe_cheap": "Cheap Eats",
         "vibe_corporate": "Corporate",
-        "roulette_kicker": "Or use this if you have no idea",
-        "roulette_sub": "Shake for a random gem",
-        "tonight_kicker": "New · Decide with friends",
+        "roulette_sub": "Feeling lucky? Shake for a random gem",
         "decide_promo_title": "Share → Decide",
-        "decide_promo_sub": "Start a vote on a public list — friends don’t need the app",
+        "decide_promo_sub": "Turn any public list into a group vote",
         "tonight_promo_title": "Plan Tonight",
         "tonight_promo_sub": "Pick 3–5 places, share a link, vote together",
         "lists_leaderboard_title": "NomNom list leaderboard",
@@ -744,7 +742,9 @@
         "fab_label": "NomNom?",
         "feed_empty_vibe": "No spots match that vibe here yet. Try another, or clear the filter.",
         "feed_empty_clear_vibe": "Clear filter",
-        "filter_open_now": "Open now"
+        "filter_open_now": "Open now",
+        "decide_group_kicker": "Can't decide where to eat?",
+        "roulette_promo_title": "Roulette"
       },
       "admin": {
         "hub": {
@@ -1014,7 +1014,10 @@
         "empty_lists_title": "Your first list is waiting",
         "empty_lists": "Group spots into lists — a weekend brunch rotation, places to visit with friends, a local guide when guests come to town.",
         "empty_lists_body": "Tap Save on any spot to add it to a list. Create as many lists as you like — they can be private or shared.",
-        "visit_summary": "{{saved}} spots saved · {{visited}} visited"
+        "visit_summary": "{{saved}} spots saved · {{visited}} visited",
+        "decide_hint_title": "Pick a list to start a vote",
+        "decide_hint_body": "Open any list, then tap Decide to share a link — friends vote without installing the app.",
+        "decide_hint_dismiss": "Got it"
       },
       "roulette": {
         "meta_title": "NomNom Roulette",
@@ -1735,6 +1738,16 @@
       "delete": "Delete",
       "empty": "Calm for now. Check back later.",
       "empty_filtered": "Nothing here for this list.",
+      "empty_title": "You're all caught up",
+      "empty_filtered_title": "Nothing for this list",
+      "empty_cta": "Discover spots",
+      "section_today": "Today",
+      "section_week": "This week",
+      "section_earlier": "Earlier",
+      "unread_count": "{{count}} unread",
+      "aria_unread": "Unread",
+      "row_actions": "Notification options",
+      "group_toggle": "Show the spots in this update",
       "filter_all": "All",
       "see_all": "See all",
       "load_more": "Load more",

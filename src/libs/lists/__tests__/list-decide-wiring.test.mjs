@@ -278,7 +278,61 @@ describe('Share → Decide analytics', () => {
       const d = lang.pages.dashboard.discover;
       assert.ok(d.decide_promo_title);
       assert.ok(d.tonight_promo_title);
-      assert.ok(d.tonight_kicker);
+      assert.ok(d.decide_group_kicker);
+      assert.ok(d.roulette_promo_title);
+    }
+  });
+
+  test('the three promos are one group card: Tonight hero + Decide/Roulette tiles', () => {
+    const view = read('src/sections/discover/view/discover-view.js');
+    const promo = read('src/sections/discover/discover-feature-promo.js');
+    // Exactly two tiles — the hero must stay the default variant.
+    assert.equal((view.match(/variant="tile"/g) ?? []).length, 2);
+    assert.match(promo, /variant: PropTypes\.oneOf\(\['hero', 'tile'\]\)/);
+    // One labelled group, and the old per-section divider kickers are gone.
+    assert.match(view, /aria-labelledby="discover-decide-group-label"/);
+    assert.match(view, /id="discover-decide-group-label"/);
+    assert.doesNotMatch(view, /tonight_kicker|roulette_kicker/);
+  });
+
+  test('neither promo variant paints its own surface (no card-inside-a-card)', () => {
+    const promo = read('src/sections/discover/discover-feature-promo.js');
+    // A filled tile out-weighs the hero and re-nests the card — the group card owns the surface.
+    assert.doesNotMatch(promo, /bgcolor: 'background\.paper'/);
+    assert.match(promo, /bgcolor: 'transparent'/);
+    // No per-variant border either.
+    assert.doesNotMatch(promo, /border: \(tt\) =>/);
+  });
+
+  test('the group card keeps a hairline between the two secondary actions', () => {
+    const view = read('src/sections/discover/view/discover-view.js');
+    // A 1px middle grid column, not a gap — the two tiles must read as one segmented region.
+    assert.match(view, /gridTemplateColumns: 'minmax\(0, 1fr\) 1px minmax\(0, 1fr\)'/);
+  });
+
+  test('the discover route skeleton mirrors the real group card', () => {
+    const skeleton = read('src/sections/discover/discover-page-loading-skeleton.js');
+    const view = read('src/sections/discover/view/discover-view.js');
+    // Same 3-column hairline grid and same card radius, or the skeleton pops on swap.
+    assert.match(skeleton, /gridTemplateColumns: 'minmax\(0, 1fr\) 1px minmax\(0, 1fr\)'/);
+    for (const src of [skeleton, view]) assert.match(src, /borderRadius: 2,/);
+    // The old two-section shape (two kicker rules + three bordered rows) must be gone.
+    assert.doesNotMatch(skeleton, /borderRadius: 4,/);
+  });
+
+  test('Decide and Tonight no longer share a destination', () => {
+    const view = read('src/sections/discover/view/discover-view.js');
+    const paths = read('src/routes/paths.js');
+    const hub = read('src/sections/lists/view/lists-hub-view.js');
+    assert.match(paths, /listsDecide: `\$\{ROOTS\.DASHBOARD\}\/lists\?decide=1`/);
+    assert.match(view, /href=\{paths\.dashboard\.listsDecide\}/);
+    // The hub reads the param and explains the next step (Decide lives on a single list).
+    assert.match(hub, /searchParams\.get\('decide'\) === '1'/);
+    for (const lang of ['en', 'pt']) {
+      const l = JSON.parse(read(`src/locales/langs/${lang}.json`)).pages.dashboard.lists;
+      assert.ok(l.decide_hint_title);
+      assert.ok(l.decide_hint_body);
+      assert.ok(l.decide_hint_dismiss);
     }
   });
 });

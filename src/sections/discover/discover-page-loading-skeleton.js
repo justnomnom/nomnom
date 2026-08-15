@@ -107,59 +107,69 @@ export default function DiscoverPageLoadingSkeleton() {
                 </Stack>
               </Stack>
 
-              {/* Decide + Tonight, then Roulette promos */}
+              {/* "Can't decide?" group card: Tonight hero + Decide / Roulette tiles */}
               <Stack {...dashboardSubsectionStackProps}>
-                <Stack direction="row" alignItems="center" spacing={1}>
-                  <Box sx={{ flex: 1, height: '1px', bgcolor: 'divider' }} />
-                  <Skeleton height={14} width={140} borderRadius={4} />
-                  <Box sx={{ flex: 1, height: '1px', bgcolor: 'divider' }} />
-                </Stack>
-                {[0, 1].map((i) => (
-                  <Box
-                    key={i}
-                    sx={{
-                      borderRadius: 4,
-                      px: { xs: 1.5, sm: 2 },
-                      py: { xs: 1.25, sm: 1.5 },
-                      border: (th) => `2px solid ${alpha(th.palette.primary.main, 0.15)}`,
-                      bgcolor: (th) => alpha(th.palette.primary.main, 0.06),
-                    }}
-                  >
-                    <Stack direction="row" alignItems="center" spacing={2} sx={{ minWidth: 0 }}>
-                      <Skeleton width={48} height={48} borderRadius={8} />
-                      <Stack spacing={0.75} sx={{ flex: 1, minWidth: 0 }}>
-                        <Skeleton height={20} width={i === 0 ? '58%' : '52%'} borderRadius={4} />
-                        <Skeleton height={14} width={i === 0 ? '72%' : '68%'} borderRadius={4} />
-                      </Stack>
-                      <Skeleton width={22} height={22} borderRadius={1} />
-                    </Stack>
-                  </Box>
-                ))}
-              </Stack>
-
-              <Stack {...dashboardSubsectionStackProps}>
-                <Stack direction="row" alignItems="center" spacing={1}>
-                  <Box sx={{ flex: 1, height: '1px', bgcolor: 'divider' }} />
-                  <Skeleton height={14} width={120} borderRadius={4} />
-                  <Box sx={{ flex: 1, height: '1px', bgcolor: 'divider' }} />
-                </Stack>
                 <Box
                   sx={{
-                    borderRadius: 4,
-                    px: { xs: 1.5, sm: 2 },
-                    py: { xs: 1.25, sm: 1.5 },
+                    borderRadius: 2,
+                    p: { xs: 1, sm: 1.5 },
                     border: (th) => `2px solid ${alpha(th.palette.primary.main, 0.15)}`,
                     bgcolor: (th) => alpha(th.palette.primary.main, 0.06),
                   }}
                 >
-                  <Stack direction="row" alignItems="center" spacing={2} sx={{ minWidth: 0 }}>
+                  <Box sx={{ px: 1, pb: 1 }}>
+                    <Skeleton height={14} width={160} borderRadius={4} />
+                  </Box>
+
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    spacing={2}
+                    sx={{ minWidth: 0, px: { xs: 1, sm: 1.5 }, py: { xs: 1.25, sm: 1.5 } }}
+                  >
                     <Skeleton width={48} height={48} borderRadius={8} />
                     <Stack spacing={0.75} sx={{ flex: 1, minWidth: 0 }}>
-                      <Skeleton height={20} width="62%" borderRadius={4} />
-                      <Skeleton height={14} width="40%" borderRadius={4} />
+                      <Skeleton height={20} width="52%" borderRadius={4} />
+                      <Skeleton height={14} width="72%" borderRadius={4} />
                     </Stack>
                     <Skeleton width={22} height={22} borderRadius={1} />
                   </Stack>
+
+                  <Box
+                    sx={{
+                      height: '1px',
+                      my: 1.5,
+                      mx: 1,
+                      bgcolor: (th) => alpha(th.palette.primary.main, 0.15),
+                    }}
+                  />
+
+                  <Box
+                    sx={{
+                      display: 'grid',
+                      gridTemplateColumns: 'minmax(0, 1fr) 1px minmax(0, 1fr)',
+                      alignItems: 'stretch',
+                      gap: { xs: 0.5, sm: 1 },
+                    }}
+                  >
+                    <Stack spacing={1} sx={{ minWidth: 0, p: 1.5 }}>
+                      <Skeleton width={36} height={36} borderRadius={8} />
+                      <Skeleton height={16} width="78%" borderRadius={4} />
+                      <Skeleton height={12} width="92%" borderRadius={4} />
+                      <Skeleton height={12} width="64%" borderRadius={4} />
+                    </Stack>
+
+                    <Box
+                      sx={{ my: 1, bgcolor: (th) => alpha(th.palette.primary.main, 0.15) }}
+                    />
+
+                    <Stack spacing={1} sx={{ minWidth: 0, p: 1.5 }}>
+                      <Skeleton width={36} height={36} borderRadius={8} />
+                      <Skeleton height={16} width="58%" borderRadius={4} />
+                      <Skeleton height={12} width="92%" borderRadius={4} />
+                      <Skeleton height={12} width="80%" borderRadius={4} />
+                    </Stack>
+                  </Box>
                 </Box>
               </Stack>
 

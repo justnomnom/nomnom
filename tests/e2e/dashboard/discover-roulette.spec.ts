@@ -74,15 +74,47 @@ test.describe('dashboard discover + roulette', () => {
 
     const decide = page.getByRole('link', { name: /Share → Decide|Partilhar → Decidir/i });
     const tonight = page.getByRole('link', { name: /Plan Tonight|Planear esta noite/i });
-    const roulette = page.getByRole('link', { name: /NomNom Roulette|Roleta NomNom/i });
+    // Title is the short "Roulette" / "Roleta" — it sits in a narrow tile, so it is NOT the
+    // long-form "Try the NomNom Roulette" used elsewhere.
+    const roulette = page.getByRole('link', { name: /^Roulette|^Roleta/i });
 
     await expect(decide).toBeVisible({ timeout: 45_000 });
     await expect(tonight).toBeVisible({ timeout: 20_000 });
     await expect(roulette).toBeVisible({ timeout: 20_000 });
 
-    await expect(decide).toHaveAttribute('href', /\/dashboard\/lists/);
-    await expect(tonight).toHaveAttribute('href', /\/dashboard\/lists/);
+    // Decide and Tonight must NOT share a destination — Decide deep-links the hub hint.
+    await expect(decide).toHaveAttribute('href', /\/dashboard\/lists\?decide=1/);
+    await expect(tonight).toHaveAttribute('href', /\/dashboard\/lists$/);
     await expect(roulette).toHaveAttribute('href', /\/dashboard\/roulette/);
+
+    // All three live in one labelled group rather than separate divider-kicker sections.
+    const group = page.locator('section[aria-labelledby="discover-decide-group-label"]');
+    await expect(group).toHaveCount(1);
+    await expect(group.getByRole('link')).toHaveCount(3);
+  });
+
+  test('discover → Decide deep-link shows the "pick a list" hint on the lists hub', async ({
+    page,
+  }) => {
+    // Crosses two heavy routes. Warm the destination FIRST: on the shared webpack dev server a
+    // cold /dashboard/lists compile otherwise lands inside the post-click wait, and the whole
+    // test times out even though the wiring is fine (passes in isolation, fails in a full run).
+    test.setTimeout(240_000);
+    await gotoDashboard(page, '/dashboard/lists');
+    // With no ?decide=1 the hub must stay clean — asserted here so the warm-up earns its keep.
+    await expect(page.getByRole('button', { name: /Got it|Entendido/i })).toHaveCount(0);
+
+    await gotoDashboard(page, '/dashboard/discover');
+    await expect(page.getByTestId('e2e-discover-view')).toBeVisible({ timeout: 45_000 });
+
+    await page.getByRole('link', { name: /Share → Decide|Partilhar → Decidir/i }).click();
+    // RouterLink anchor → App Router soft navigation, so poll the URL (no commit fires).
+    await expect(page).toHaveURL(/\/dashboard\/lists\?decide=1/, { timeout: 90_000 });
+
+    const dismiss = page.getByRole('button', { name: /Got it|Entendido/i });
+    await expect(dismiss).toBeVisible({ timeout: 45_000 });
+    await dismiss.click();
+    await expect(dismiss).toBeHidden({ timeout: 15_000 });
   });
 
   // ---- D3: name typeahead (Search mode) --------------------------------------------------------

@@ -11,14 +11,24 @@ import Typography from '@mui/material/Typography';
 import { RouterLink } from 'src/routes/components';
 
 import { ic } from 'src/assets/icons';
-import { SPACE } from 'src/theme/spacing';
+import { SPACE, RADIUS } from 'src/theme/spacing';
 
 import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
 /**
- * Discover home feature promo row (Decide / Tonight / Roulette).
+ * Action inside the Discover "can't decide" group card.
+ *
+ * Both variants are deliberately container-less: the group card around them supplies the
+ * border and tint, so these must not add a second one (DESIGN.md §"No nested cards").
+ *
+ * - `hero`  — full-width row, 48px icon tile, chevron. The primary action.
+ * - `tile`  — half-width region, 36px icon, no chevron. Also surface-less: a filled panel
+ *   here out-pops the hero and turns the card into a card-of-cards. Separation comes from
+ *   the hairline the parent grid draws between the two. Stacks vertically on `xs` where the
+ *   column is ~150px, and goes side-by-side from `sm` up where a vertical stack would leave
+ *   a void beside the icon.
  */
 export default function DiscoverFeaturePromo({
   href,
@@ -28,7 +38,11 @@ export default function DiscoverFeaturePromo({
   subtitle,
   onNavigate,
   rotateDeg = 3,
+  variant = 'hero',
 }) {
+  const isTile = variant === 'tile';
+  const iconBoxPx = isTile ? 36 : 48;
+
   return (
     <Button
       component={RouterLink}
@@ -36,47 +50,50 @@ export default function DiscoverFeaturePromo({
       fullWidth
       onClick={onNavigate}
       sx={{
-        justifyContent: 'space-between',
-        alignItems: 'center',
+        justifyContent: isTile ? 'flex-start' : 'space-between',
+        alignItems: isTile ? { xs: 'flex-start', sm: 'center' } : 'center',
+        flexDirection: isTile ? { xs: 'column', sm: 'row' } : 'row',
         gap: SPACE.xs,
-        borderRadius: 4,
-        px: { xs: SPACE.sm, sm: SPACE.md },
-        py: { xs: 1.25, sm: SPACE.sm },
-        minHeight: { xs: 56, sm: undefined },
+        borderRadius: `${RADIUS.base}px`,
+        px: isTile ? SPACE.sm : { xs: SPACE.xs, sm: SPACE.sm },
+        py: isTile ? SPACE.sm : { xs: 1.25, sm: SPACE.sm },
+        minHeight: isTile ? undefined : { xs: 56, sm: undefined },
+        height: isTile ? 1 : undefined,
         textAlign: 'left',
-        border: (tt) => `2px solid ${alpha(tt.palette.primary.main, 0.15)}`,
-        bgcolor: (tt) => alpha(tt.palette.primary.main, 0.06),
+        // Both variants are transparent — the group card's tint is the only surface.
+        bgcolor: 'transparent',
         color: 'text.primary',
         transition: (tt) =>
-          tt.transitions.create(['background-color', 'border-color', 'transform'], {
+          tt.transitions.create(['background-color', 'transform'], {
             duration: tt.transitions.duration.shorter,
           }),
         '&:hover': {
           bgcolor: (tt) => alpha(tt.palette.primary.main, 0.1),
-          borderColor: (tt) => alpha(tt.palette.primary.main, 0.28),
           [`& .${iconClassName}`]: {
             transform: 'rotate(-4deg) scale(1.06)',
           },
         },
-        [`@media (prefers-reduced-motion: reduce)`]: {
-          [`&:hover .${iconClassName}`]: {
-            transform: 'none',
-          },
+        '&:active': { transform: 'scale(0.98)' },
+        // Only the two motion effects are reset; the hover tint is a colour change, not motion,
+        // so it survives — the row must still look interactive.
+        '@media (prefers-reduced-motion: reduce)': {
+          '&:active': { transform: 'none' },
+          [`&:hover .${iconClassName}`]: { transform: 'none' },
         },
       }}
     >
       <Stack
-        direction="row"
-        spacing={SPACE.md}
-        alignItems="center"
-        sx={{ minWidth: 0, flex: 1, textAlign: 'left' }}
+        direction={isTile ? { xs: 'column', sm: 'row' } : 'row'}
+        spacing={isTile ? { xs: SPACE.xs, sm: SPACE.sm } : SPACE.md}
+        alignItems={isTile ? { xs: 'flex-start', sm: 'center' } : 'center'}
+        sx={{ minWidth: 0, flex: 1, width: 1, textAlign: 'left' }}
       >
         <Box
           className={iconClassName}
           sx={{
-            width: 48,
-            height: 48,
-            borderRadius: 2,
+            width: iconBoxPx,
+            height: iconBoxPx,
+            borderRadius: `${RADIUS.tight}px`,
             bgcolor: 'primary.main',
             display: 'flex',
             alignItems: 'center',
@@ -94,12 +111,17 @@ export default function DiscoverFeaturePromo({
             },
           }}
         >
-          <Iconify icon={icon} width={28} sx={{ color: 'primary.contrastText' }} />
+          <Iconify
+            icon={icon}
+            width={isTile ? 20 : 28}
+            sx={{ color: 'primary.contrastText' }}
+          />
         </Box>
-        <Box sx={{ minWidth: 0 }}>
+        <Box sx={{ minWidth: 0, width: 1 }}>
           <Typography
             sx={{
               fontWeight: 800,
+              ...(isTile && { fontSize: 14, lineHeight: 1.3 }),
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               display: '-webkit-box',
@@ -109,12 +131,24 @@ export default function DiscoverFeaturePromo({
           >
             {title}
           </Typography>
-          <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{
+              fontWeight: 700,
+              display: '-webkit-box',
+              overflow: 'hidden',
+              WebkitLineClamp: isTile ? 3 : 2,
+              WebkitBoxOrient: 'vertical',
+            }}
+          >
             {subtitle}
           </Typography>
         </Box>
       </Stack>
-      <Iconify icon={ic.arrowRightBold} width={22} sx={{ color: 'primary.main', flexShrink: 0 }} />
+      {isTile ? null : (
+        <Iconify icon={ic.arrowRightBold} width={22} sx={{ color: 'primary.main', flexShrink: 0 }} />
+      )}
     </Button>
   );
 }
@@ -127,4 +161,5 @@ DiscoverFeaturePromo.propTypes = {
   subtitle: PropTypes.node.isRequired,
   onNavigate: PropTypes.func,
   rotateDeg: PropTypes.number,
+  variant: PropTypes.oneOf(['hero', 'tile']),
 };

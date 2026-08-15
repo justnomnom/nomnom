@@ -70,6 +70,11 @@ export const paths = {
     restaurant: (id) => `${ROOTS.DASHBOARD}/restaurants/${id}`,
     /** My NomNom lists hub (was historically called “Saved”; `/dashboard/saved` redirects here). */
     lists: `${ROOTS.DASHBOARD}/lists`,
+    /**
+     * Lists hub with the "pick a list to start a vote" hint shown. Decide itself lives on a
+     * single list (`ListDecidePanel`), so this is the closest the hub can deep-link.
+     */
+    listsDecide: `${ROOTS.DASHBOARD}/lists?decide=1`,
     settings: `${ROOTS.DASHBOARD}/settings`,
     settingsEdit: `${ROOTS.DASHBOARD}/settings/profile/edit`,
     settingsAppearance: `${ROOTS.DASHBOARD}/settings/appearance`,
