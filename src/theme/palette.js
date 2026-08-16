@@ -24,7 +24,14 @@ export const primary = {
   main: '#FF6B35',
   dark: '#E85A28',
   darker: '#B8481F',
-  contrastText: '#FFFFFF',
+  /**
+   * Warm ink, not white. White on `main` is 2.77:1 — below AA for the 12-14px
+   * labels that sit on every filled terracotta surface (contained CTAs,
+   * selected filter chips, badges). Ink clears AA on the whole ramp
+   * (light 9.29:1, main 6.54:1, dark 5.23:1) and keeps the terracotta itself
+   * untouched. Same value as `grey[900]` / `text.primary`.
+   */
+  contrastText: '#15130f',
 };
 
 export const secondary = {
