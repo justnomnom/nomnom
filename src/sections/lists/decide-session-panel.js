@@ -154,6 +154,8 @@ export default function DecideSessionPanel({
   const [err, setErr] = useState(null);
   const [roulettePickId, setRoulettePickId] = useState(null);
   const [myVotes, setMyVotes] = useState(/** @type {Record<string, 1 | -1>} */ ({}));
+  /** Restaurant whose vote is in flight — only that row waits, not the whole panel. */
+  const [pendingVoteId, setPendingVoteId] = useState(/** @type {string | null} */ (null));
   const resultTracked = useRef(false);
   const voterKeyRef = useRef(null);
 
@@ -192,6 +194,18 @@ export default function DecideSessionPanel({
   const locked = session?.status === 'locked';
   const tallies = useMemo(() => session?.tallies || {}, [session?.tallies]);
   const ranked = useMemo(() => rankDecideTallies(tallies, restaurantIds), [tallies, restaurantIds]);
+  /**
+   * Rows render in the fixed shortlist order, never re-sorted by score. Ranking the
+   * list live meant a row moved the instant anyone voted — including on the 4s poll —
+   * so you would aim at a restaurant and hit whichever one slid into its place.
+   * `ranked` still decides the winner; a "Leading" badge carries that signal instead.
+   */
+  const displayRows = useMemo(
+    () => restaurantIds.map((id) => ranked.find((r) => r.restaurantId === id)).filter(Boolean),
+    [restaurantIds, ranked]
+  );
+  const hasAnyVote = useMemo(() => displayRows.some((r) => r.up > 0 || r.down > 0), [displayRows]);
+  const leaderId = hasAnyVote ? (ranked[0]?.restaurantId ?? null) : null;
   const canStart = canStartListDecide(placeRows.length);
   const canLock = canLockDecideSession({
     sessionId,
@@ -314,9 +328,13 @@ export default function DecideSessionPanel({
 
   const handleVote = useCallback(
     async (restaurantId, vote) => {
-      if (!votingEnabled || !sessionId || locked || busy) return;
+      if (!votingEnabled || !sessionId || locked) return;
       const voterKey = voterKeyRef.current || getOrCreateVoterKey();
-      setBusy(true);
+      // Show your choice immediately. A vote is an upsert keyed by
+      // (session, voter, restaurant), so re-tapping is safe and the server is
+      // still the source of truth for the counts.
+      setMyVotes((prev) => ({ ...prev, [String(restaurantId)]: vote }));
+      setPendingVoteId(String(restaurantId));
       const { session: next, error } = await castVoteFn({
         sessionId,
         restaurantId,
@@ -325,8 +343,10 @@ export default function DecideSessionPanel({
         nightId,
         guestKey: voterKey,
       });
-      setBusy(false);
+      setPendingVoteId((cur) => (cur === String(restaurantId) ? null : cur));
       if (error || !next) {
+        // Roll the optimistic mark back so the row never claims a vote the server rejected.
+        setMyVotes(readMyVotes(sessionId));
         setErr(error || 'unknown');
         return;
       }
@@ -340,7 +360,7 @@ export default function DecideSessionPanel({
         ...extras,
       });
     },
-    [votingEnabled, sessionId, locked, busy, listId, analytics, applySession, castVoteFn, nightId, extras]
+    [votingEnabled, sessionId, locked, listId, analytics, applySession, castVoteFn, nightId, extras]
   );
 
   const handleRoulette = useCallback(() => {
@@ -568,15 +588,16 @@ export default function DecideSessionPanel({
               ) : null}
 
               <Stack spacing={SPACE.xs}>
-                {ranked.map((row) => {
+                {displayRows.map((row) => {
                   const place = placeById.get(row.restaurantId);
                   if (!place) return null;
+                  const mine = myVotes[row.restaurantId];
                   return (
                     <Stack
                       key={row.restaurantId}
                       direction="row"
                       alignItems="center"
-                      spacing={SPACE.sm}
+                      spacing={SPACE.xs}
                       sx={VOTE_ROW_SX}
                     >
                       <DecidePlaceThumb name={place.name} photo={place.photo} size={PLACE_THUMB_SIZE} />
@@ -584,37 +605,71 @@ export default function DecideSessionPanel({
                         <Typography variant="subtitle2" component="h3" noWrap sx={{ fontWeight: 700 }}>
                           {place.name}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary" sx={tabularNumsSx}>
-                          {t('pages.lists.decide_tally', {
-                            up: row.up,
-                            down: row.down,
-                            net: row.net,
-                          })}
-                        </Typography>
+                        {/* Counts live next to the thumbs now, so this line carries the
+                            status a number cannot: who is winning, and what you picked. */}
+                        {(() => {
+                          const isLeader = row.restaurantId === leaderId;
+                          if (!isLeader && !mine) return null;
+                          const label = isLeader
+                            ? t('pages.lists.decide_leading')
+                            : t(
+                                mine === 1
+                                  ? 'pages.lists.decide_you_voted_for'
+                                  : 'pages.lists.decide_you_voted_against'
+                              );
+                          return (
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                color: isLeader ? 'success.darker' : 'text.secondary',
+                                fontWeight: isLeader ? 700 : 400,
+                              }}
+                            >
+                              {label}
+                            </Typography>
+                          );
+                        })()}
                       </Box>
-                      {/* Both buttons rest neutral and fill in only for *your* vote.
-                          Upvote used to be hardcoded color="primary", so it looked
-                          already-chosen before you touched it and never changed after. */}
-                      <IconButton
-                        aria-label={t('pages.lists.decide_upvote_aria', { name: place.name })}
-                        aria-pressed={myVotes[row.restaurantId] === 1}
-                        onClick={() => handleVote(row.restaurantId, 1)}
-                        disabled={busy || !votingEnabled}
-                        size="small"
-                        sx={[touchTargetSx, voteButtonSx(myVotes[row.restaurantId] === 1, 'success')]}
-                      >
-                        <Iconify icon={ic.likeBold} width={20} />
-                      </IconButton>
-                      <IconButton
-                        aria-label={t('pages.lists.decide_downvote_aria', { name: place.name })}
-                        aria-pressed={myVotes[row.restaurantId] === -1}
-                        onClick={() => handleVote(row.restaurantId, -1)}
-                        disabled={busy || !votingEnabled}
-                        size="small"
-                        sx={[touchTargetSx, voteButtonSx(myVotes[row.restaurantId] === -1, 'error')]}
-                      >
-                        <Iconify icon={ic.dislikeBold} width={20} />
-                      </IconButton>
+                      {/* Each thumb carries its own count, so the score reads without
+                          decoding "+3 / -0 · net 3". Both rest neutral and fill only for
+                          *your* vote; only this row waits on its own request, so tapping
+                          another restaurant mid-flight is no longer swallowed. */}
+                      <Stack direction="row" alignItems="center" spacing={0.25}>
+                        <IconButton
+                          aria-label={t('pages.lists.decide_upvote_aria', { name: place.name })}
+                          aria-pressed={mine === 1}
+                          onClick={() => handleVote(row.restaurantId, 1)}
+                          disabled={!votingEnabled || pendingVoteId === row.restaurantId}
+                          size="small"
+                          sx={[touchTargetSx, voteButtonSx(mine === 1, 'success')]}
+                        >
+                          <Iconify icon={ic.likeBold} width={20} />
+                        </IconButton>
+                        <Typography
+                          variant="subtitle2"
+                          sx={[tabularNumsSx, { minWidth: 12, color: 'text.secondary' }]}
+                        >
+                          {row.up}
+                        </Typography>
+                      </Stack>
+                      <Stack direction="row" alignItems="center" spacing={0.25}>
+                        <IconButton
+                          aria-label={t('pages.lists.decide_downvote_aria', { name: place.name })}
+                          aria-pressed={mine === -1}
+                          onClick={() => handleVote(row.restaurantId, -1)}
+                          disabled={!votingEnabled || pendingVoteId === row.restaurantId}
+                          size="small"
+                          sx={[touchTargetSx, voteButtonSx(mine === -1, 'error')]}
+                        >
+                          <Iconify icon={ic.dislikeBold} width={20} />
+                        </IconButton>
+                        <Typography
+                          variant="subtitle2"
+                          sx={[tabularNumsSx, { minWidth: 12, color: 'text.secondary' }]}
+                        >
+                          {row.down}
+                        </Typography>
+                      </Stack>
                     </Stack>
                   );
                 })}
