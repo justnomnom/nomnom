@@ -60,7 +60,7 @@ test('list actions modules expose the expected export surface', () => {
   const fromIndex = namedExportsInBarrel(path.join(ACTIONS_DIR, 'index.js'));
   const fromAuth = namedExportsInBarrel(AUTH_REEXPORT);
 
-  assert.equal(fromModules.size, 51, `expected 51 action exports, got ${fromModules.size}`);
+  assert.equal(fromModules.size, 52, `expected 52 action exports, got ${fromModules.size}`);
   assert.ok(!fromModules.has('ensureListSlug'), 'ensureListSlug must not be a public server action');
   assert.deepEqual(fromIndex, [...fromModules].sort());
   assert.deepEqual(fromAuth, fromIndex);

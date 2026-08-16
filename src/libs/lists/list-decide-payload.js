@@ -2,6 +2,9 @@
  * Pure payload helpers for Share → Decide server actions.
  */
 
+/** Abuse cap shared by create_night / add_night_place (not a product max of 5). */
+export const NIGHT_PLACES_ABUSE_CAP = 200;
+
 /**
  * Normalize RPC error messages into stable app error codes.
  * @param {unknown} message

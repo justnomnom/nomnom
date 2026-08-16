@@ -264,7 +264,7 @@ describe('Share → Decide analytics', () => {
   test('Tonight night analytics events are registered', () => {
     const nightAnalytics = read('src/libs/analytics/night-analytics.js');
     const provider = read('src/libs/analytics/analytics-provider.js');
-    for (const name of ['night_created', 'night_share_copied', 'night_open', 'night_join']) {
+    for (const name of ['night_created', 'night_share_copied', 'night_open', 'night_join', 'night_place_added']) {
       assert.match(nightAnalytics, new RegExp(`'${name}'`));
       assert.match(provider, new RegExp(`${name}: \\{ required:`));
     }
@@ -346,7 +346,7 @@ describe('Share → Decide analytics', () => {
   test('the Decide hint is measurable at the destination, not just the click', () => {
     const hub = read('src/sections/lists/view/lists-hub-view.js');
     const provider = read('src/libs/analytics/analytics-provider.js');
-    for (const name of ['decide_hint_shown', 'decide_hint_dismissed']) {
+    for (const name of ['decide_hint_shown', 'decide_hint_dismissed', 'tonight_hint_shown', 'tonight_hint_dismissed']) {
       assert.match(hub, new RegExp(`trackEvent\\('${name}'\\)`));
       assert.match(provider, new RegExp(`${name}: \\{ required: \\[\\] \\}`));
     }
@@ -356,19 +356,91 @@ describe('Share → Decide analytics', () => {
     assert.doesNotMatch(hub, /decideHintDismissed/);
   });
 
+  test('Plan tonight searches any restaurant and is not gated on 3 list items', () => {
+    const sheet = read('src/sections/lists/plan-tonight-sheet.js');
+    const view = read('src/sections/lists/view/list-public-view.js');
+    const en = JSON.parse(read('src/locales/langs/en.json'));
+    const pt = JSON.parse(read('src/locales/langs/pt.json'));
+    assert.match(sheet, /searchRestaurantsForPicker/);
+    assert.match(sheet, /plan_tonight_search_label/);
+    assert.match(sheet, /tonightPickerRows/);
+    assert.match(sheet, /tonightSelectedPickerRows/);
+    assert.doesNotMatch(sheet, /const selectedPickerRows = pickerRows.filter/);
+    assert.doesNotMatch(view, /isOwner\) && \(items\?\.length \?\? 0\) >= 3/);
+    assert.match(view, /Boolean\(initialMembership\?\.isOwner\) \? \(/);
+    assert.match(view, /searchParams\.get\('tonight'\) !== '1'/);
+    for (const lang of [en, pt]) {
+      assert.ok(lang.pages.lists.plan_tonight_search_label?.trim());
+      assert.ok(lang.pages.lists.plan_tonight_search_empty?.trim());
+      assert.ok(lang.pages.lists.plan_tonight_empty_list?.trim());
+      assert.ok(lang.pages.lists.plan_tonight_picks?.trim());
+      assert.ok(lang.pages.lists.plan_tonight_from_list?.trim());
+    }
+    assert.match(sheet, /autoFocus/);
+    assert.doesNotMatch(sheet, /MAX_PLACES/);
+    assert.match(sheet, /selectedCount >= MIN_PLACES && !busy/);
+    for (const lang of [en, pt]) {
+      assert.match(lang.pages.lists.plan_tonight_hint, /\{\{min\}\}/);
+      assert.doesNotMatch(lang.pages.lists.plan_tonight_hint, /\{\{max\}\}/);
+      assert.match(lang.pages.lists.plan_tonight_selected, /\{\{count\}\}/);
+      assert.doesNotMatch(lang.pages.lists.plan_tonight_selected, /\{\{max\}\}/);
+    }
+  });
+
+
+  test('Plan tonight keeps restaurant selection while the sheet stays open', () => {
+    const sheet = read('src/sections/lists/plan-tonight-sheet.js');
+    assert.match(sheet, /justOpened/);
+    assert.match(sheet, /wasOpenRef/);
+    assert.match(sheet, /toggleTonightSelectedIds/);
+    assert.match(sheet, /stopPropagation/);
+  });
+
+  test('Tonight page lets anyone who joined add restaurants', () => {
+    const view = read('src/sections/tonight/night-decide-view.js');
+    const actions = read('src/libs/lists/actions/night-actions.js');
+    const en = JSON.parse(read('src/locales/langs/en.json'));
+    const pt = JSON.parse(read('src/locales/langs/pt.json'));
+    assert.match(view, /addNightPlace/);
+    assert.match(view, /searchRestaurantsForPicker/);
+    assert.match(view, /hasJoined && !sessionLocked/);
+    assert.match(view, /slice\.places/);
+    assert.match(view, /slice\.guests/);
+    assert.match(view, /tonightAddSearchState/);
+    assert.match(view, /add_place_already/);
+    assert.match(view, /const ok = await onPick/);
+    assert.match(actions, /rpc\('add_night_place'/);
+    assert.match(actions, /NIGHT_PLACES_ABUSE_CAP/);
+    assert.doesNotMatch(actions, /ids\.length > 5/);
+    for (const lang of [en, pt]) {
+      assert.ok(lang.pages.tonight.add_place_title?.trim());
+      assert.ok(lang.pages.tonight.add_place_hint?.trim());
+      assert.ok(lang.pages.tonight.add_place_search_label?.trim());
+      assert.ok(lang.pages.tonight.add_place_empty?.trim());
+      assert.ok(lang.pages.tonight.add_place_already?.trim());
+    }
+  });
+
   test('Decide and Tonight no longer share a destination', () => {
     const view = read('src/sections/discover/view/discover-view.js');
     const paths = read('src/routes/paths.js');
     const hub = read('src/sections/lists/view/lists-hub-view.js');
     assert.match(paths, /listsDecide: `\$\{ROOTS\.DASHBOARD\}\/lists\?decide=1`/);
+    assert.match(paths, /listsTonight: `\$\{ROOTS\.DASHBOARD\}\/lists\?tonight=1`/);
     assert.match(view, /href=\{paths\.dashboard\.listsDecide\}/);
-    // The hub reads the param and explains the next step (Decide lives on a single list).
+    assert.match(view, /href=\{paths\.dashboard\.listsTonight\}/);
+    // The hub reads the param and explains the next step (Decide / Tonight live on a single list).
     assert.match(hub, /searchParams\.get\('decide'\) === '1'/);
+    assert.match(hub, /searchParams\.get\('tonight'\) === '1'/);
+    assert.match(hub, /\?tonight=1/);
     for (const lang of ['en', 'pt']) {
       const l = JSON.parse(read(`src/locales/langs/${lang}.json`)).pages.dashboard.lists;
       assert.ok(l.decide_hint_title);
       assert.ok(l.decide_hint_body);
       assert.ok(l.decide_hint_dismiss);
+      assert.ok(l.tonight_hint_title);
+      assert.ok(l.tonight_hint_body);
+      assert.ok(l.tonight_hint_dismiss);
     }
   });
 });

@@ -13,6 +13,11 @@ import {
   getOrCreateVoterKey,
   lockedWinnerRestaurantId,
   mapListItemsToDecidePlaces,
+  tonightPickerRows,
+  tonightSelectedPickerRows,
+  filterTonightPickerRows,
+  toggleTonightSelectedIds,
+  tonightAddSearchState,
   persistCachedSession,
   persistLockToken,
   readCachedSession,
@@ -256,6 +261,16 @@ describe('mapListItemsToDecidePlaces', () => {
     assert.equal(row.photo, 'first.jpg');
   });
 
+
+  it('unwraps restaurants when PostgREST returns an array embed', () => {
+    const [row] = mapListItemsToDecidePlaces(
+      [{ restaurants: [{ id: 'r-arr', name: 'Array Join', maps_link: null, restaurant_images: [] }] }],
+      'Restaurant'
+    );
+    assert.equal(row.restaurantId, 'r-arr');
+    assert.equal(row.name, 'Array Join');
+  });
+
   it('returns [] for non-arrays', () => {
     assert.deepEqual(mapListItemsToDecidePlaces(null, 'x'), []);
     assert.deepEqual(mapListItemsToDecidePlaces(undefined, 'x'), []);
@@ -292,6 +307,106 @@ describe('mapListItemsToDecidePlaces', () => {
       'Restaurant'
     );
     assert.equal(row.photo, 'no-order.jpg');
+  });
+});
+
+describe('tonightPickerRows + filterTonightPickerRows', () => {
+  it('puts extras first and dedupes by restaurantId', () => {
+    const rows = tonightPickerRows(
+      [
+        { restaurantId: 'a', name: 'List A' },
+        { restaurantId: 'b', name: 'List B' },
+      ],
+      [
+        { restaurantId: 'x', name: 'Search X' },
+        { restaurantId: 'a', name: 'Dup A' },
+        { restaurantId: '', name: 'skip' },
+      ]
+    );
+    assert.deepEqual(
+      rows.map((r) => r.restaurantId),
+      ['x', 'a', 'b']
+    );
+    assert.equal(rows[1].name, 'Dup A');
+  });
+
+  it('filters by name only when the query is at least 2 chars', () => {
+    const places = [
+      { restaurantId: 'a', name: 'Cervejaria Ramiro' },
+      { restaurantId: 'b', name: 'Taberna da Rua das Flores' },
+    ];
+    assert.equal(filterTonightPickerRows(places, 'r').length, 2);
+    assert.deepEqual(
+      filterTonightPickerRows(places, 'ram').map((r) => r.restaurantId),
+      ['a']
+    );
+    assert.deepEqual(filterTonightPickerRows(null, 'ra'), []);
+    assert.deepEqual(tonightPickerRows(null, undefined), []);
+  });
+
+  it('keeps selected list picks even when search would hide them', () => {
+    const places = [
+      { restaurantId: 'a', name: 'Cervejaria Ramiro' },
+      { restaurantId: 'b', name: 'Taberna da Rua das Flores' },
+    ];
+    const extras = [{ restaurantId: 'x', name: 'Caffe Florian' }];
+    const selected = new Set(['b', 'x']);
+    const visible = filterTonightPickerRows(places, 'ram');
+    assert.deepEqual(
+      visible.map((r) => r.restaurantId),
+      ['a']
+    );
+    assert.deepEqual(
+      tonightSelectedPickerRows(places, extras, selected).map((r) => r.restaurantId),
+      ['x', 'b']
+    );
+    assert.deepEqual(tonightSelectedPickerRows(places, extras, null), []);
+  });
+});
+
+
+describe('toggleTonightSelectedIds', () => {
+  it('adds, removes, ignores empty ids, and has no default max', () => {
+    const first = toggleTonightSelectedIds(new Set(), 'a');
+    assert.deepEqual([...first], ['a']);
+    const removed = toggleTonightSelectedIds(first, 'a');
+    assert.deepEqual([...removed], []);
+    const empty = new Set(['a']);
+    assert.equal(toggleTonightSelectedIds(empty, ''), empty);
+    const full = new Set(['1', '2', '3', '4', '5']);
+    const sixth = toggleTonightSelectedIds(full, '6');
+    assert.deepEqual([...sixth].sort(), ['1', '2', '3', '4', '5', '6']);
+    assert.equal(toggleTonightSelectedIds(full, '6', 5), full);
+    const fromNull = toggleTonightSelectedIds(null, 'z');
+    assert.deepEqual([...fromNull], ['z']);
+  });
+});
+
+describe('tonightAddSearchState', () => {
+  it('is idle below 2 chars, pending while in flight, and does not call empty during pending', () => {
+    assert.equal(tonightAddSearchState({ query: 'r' }), 'idle');
+    assert.equal(tonightAddSearchState({ query: 'ra', pending: true, hits: [] }), 'pending');
+  });
+
+  it('distinguishes no match from already-on-night', () => {
+    const existingIds = new Set(['a']);
+    assert.equal(
+      tonightAddSearchState({ query: 'ram', hits: [{ id: 'a' }], existingIds, pending: false }),
+      'already_on_night'
+    );
+    assert.equal(
+      tonightAddSearchState({ query: 'ram', hits: [], existingIds, pending: false }),
+      'empty'
+    );
+    assert.equal(
+      tonightAddSearchState({
+        query: 'ram',
+        hits: [{ id: 'b' }],
+        existingIds,
+        pending: false,
+      }),
+      'results'
+    );
   });
 });
 

@@ -1,7 +1,15 @@
 -- Tonight Night tables + RPCs.
 -- Canonical: supabase/migrations/20260813180000_nights_tonight.sql
+-- Follow-up: supabase/migrations/20260816140000_tonight_any_restaurant.sql
+--   Tonight shortlist may include catalog restaurants that are not on the list.
+-- Follow-up: supabase/migrations/20260816180000_tonight_open_shortlist.sql
+--   No max of 5 at create; joined guests can add places (abuse cap 200);
+--   get_night_decide poll includes places so live adds show up.
+-- Follow-up: supabase/migrations/20260816190000_tonight_add_place_hardening.sql
+--   Shared 200 cap on create; add_night_place locks the session, ON CONFLICT
+--   is success, rate-limit skips the create batch, poll includes guests.
 -- Depends on: supabase/migrations/20260813140000_list_decide.sql
 --
 -- Tables: nights, night_places, night_guests (service_role only).
--- RPCs: create_night, get_night, get_night_decide, join_night, cast_night_vote.
+-- RPCs: create_night, get_night, get_night_decide, join_night, cast_night_vote, add_night_place.
 -- Also extends Decide: allowed_restaurant_ids + session coupling with nights.

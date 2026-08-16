@@ -8,6 +8,7 @@ import {
   isValidDecideVoterKey,
   mapDecideError,
   parseDecidePayload,
+  NIGHT_PLACES_ABUSE_CAP,
 } from '../list-decide-payload.js';
 
 describe('mapDecideError', () => {
@@ -99,5 +100,11 @@ describe('isValidDecideVoterKey', () => {
     assert.equal(isValidDecideVoterKey('café-key'), true);
     assert.equal(isValidDecideVoterKey(`\n${'x'.repeat(8)}\t`), true);
     assert.equal(isValidDecideVoterKey('x'.repeat(8)), true);
+  });
+});
+
+describe('NIGHT_PLACES_ABUSE_CAP', () => {
+  it('is 200 so create and add share the same cap', () => {
+    assert.equal(NIGHT_PLACES_ABUSE_CAP, 200);
   });
 });

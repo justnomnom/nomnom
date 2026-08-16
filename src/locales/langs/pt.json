@@ -400,13 +400,19 @@
       "decide_error_night_not_found": "Este link de Tonight é inválido ou expirou.",
       "decide_error_not_joined": "Entra com o teu nome antes de votar.",
       "decide_error_invalid_display_name": "Indica um nome (1–80 caracteres).",
-      "decide_error_too_many_places": "Escolhe no máximo 5 sítios para Tonight.",
+      "decide_error_too_many_places": "São demasiados sítios para uma só noite.",
       "decide_error_invalid_restaurant_id": "Um dos sítios selecionados é inválido.",
       "plan_tonight_cta": "Planear esta noite",
       "plan_tonight_title": "Planear esta noite",
-      "plan_tonight_hint": "Escolhe {{min}}–{{max}} sítios e partilha o link para os amigos entrarem e votarem.",
+      "plan_tonight_hint": "Escolhe pelo menos {{min}} restaurantes — pesquisa o catálogo ou toca em sítios desta lista. Os amigos podem acrescentar mais depois de partilhares.",
       "plan_tonight_name_label": "Título da noite",
-      "plan_tonight_selected": "{{count}} / {{max}} selecionados",
+      "plan_tonight_search_label": "Pesquisar qualquer restaurante",
+      "plan_tonight_search_empty": "Nenhum restaurante corresponde à pesquisa.",
+      "plan_tonight_empty_list": "Pesquisa para escolher os restaurantes que quiseres.",
+      "plan_tonight_picks": "Os teus sítios",
+      "plan_tonight_from_list": "Desta lista",
+      "plan_tonight_search_results": "Resultados da pesquisa",
+      "plan_tonight_selected": "{{count}} selecionados",
       "plan_tonight_create": "Criar e copiar link",
       "plan_tonight_cancel": "Cancelar"
     },
@@ -421,7 +427,12 @@
       "whos_coming_empty": "Ainda ninguém — sê o primeiro a entrar.",
       "not_found_title": "Tonight não encontrado",
       "link_copied": "Link de Tonight copiado.",
-      "link_copy_failed": "Não foi possível copiar o link de Tonight."
+      "link_copy_failed": "Não foi possível copiar o link de Tonight.",
+      "add_place_title": "Adicionar um restaurante",
+      "add_place_hint": "Quem entrar pode acrescentar sítios para votar.",
+      "add_place_search_label": "Pesquisar qualquer restaurante",
+      "add_place_empty": "Nenhum restaurante corresponde à pesquisa.",
+      "add_place_already": "Esses sítios já estão nesta noite."
     },
     "home": {
       "title": "Escolhas de restaurantes de quem sabe",
@@ -717,7 +728,7 @@
         "decide_promo_title": "Partilhar → Decidir",
         "decide_promo_sub": "Transforma qualquer lista pública numa votação",
         "tonight_promo_title": "Planear esta noite",
-        "tonight_promo_sub": "Escolhe 3–5 sítios, partilha o link e votem juntos",
+        "tonight_promo_sub": "Escolhe quaisquer restaurantes, partilha o link e votem juntos",
         "lists_leaderboard_title": "Classificação das listas NomNom",
         "lists_leaderboard_subtitle": "Em todas as listas NomNom — sítios, avaliações e pratos a não perder.",
         "lists_leaderboard_mode_interaction": "Impulso",
@@ -1022,7 +1033,10 @@
         "visit_summary": "{{saved}} sítios guardados · {{visited}} visitados",
         "decide_hint_title": "Escolhe uma lista para começar a votação",
         "decide_hint_body": "Abre qualquer lista e toca em Decidir para partilhar um link — os amigos votam sem instalar a app.",
-        "decide_hint_dismiss": "Entendido"
+        "decide_hint_dismiss": "Entendido",
+        "tonight_hint_title": "Escolhe uma lista para planear esta noite",
+        "tonight_hint_body": "Abre uma lista tua pública e escolhe quaisquer restaurantes — da lista ou da pesquisa.",
+        "tonight_hint_dismiss": "Entendido"
       },
       "roulette": {
         "meta_title": "Roleta NomNom",

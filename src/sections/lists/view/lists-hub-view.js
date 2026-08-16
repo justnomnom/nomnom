@@ -117,16 +117,23 @@ export default function ListsHubView() {
   /**
    * `?decide=1` from the Discover "Share → Decide" tile. Decide runs on a single list
    * (`ListDecidePanel`), so the hub can't open it directly — it points at the next step instead.
+   * `?tonight=1` is the same pattern for Plan tonight (pick any restaurants on a list).
    */
-  const showDecideHint = searchParams.get('decide') === '1';
+  const showTonightHint = searchParams.get('tonight') === '1';
+  const showDecideHint = searchParams.get('decide') === '1' && !showTonightHint;
+  const showHubHint = showTonightHint || showDecideHint;
   /**
    * Dismissing strips the param instead of only flipping local state, so a reload, a back
    * navigation, or a shared copy of the URL doesn't resurrect a hint the user already closed.
    */
-  const handleDismissDecideHint = useCallback(() => {
-    trackEvent('decide_hint_dismissed');
+  const handleDismissHubHint = useCallback(() => {
+    if (showTonightHint) {
+      trackEvent('tonight_hint_dismissed');
+    } else {
+      trackEvent('decide_hint_dismissed');
+    }
     router.replace(paths.dashboard.lists);
-  }, [router, trackEvent]);
+  }, [router, trackEvent, showTonightHint]);
   const [createOpen, setCreateOpen] = useState(false);
   const [owned, setOwned] = useState([]);
   const [sharedWithMe, setSharedWithMe] = useState([]);
@@ -285,11 +292,15 @@ export default function ListsHubView() {
     trackEvent('saved_view_opened');
   }, [trackEvent]);
 
-  // Guarded on `showDecideHint` so it fires once per arrival, not on every re-render, and
+  // Guarded on the hint flags so they fire once per arrival, not on every re-render, and
   // never for the plain /dashboard/lists visit.
   useEffect(() => {
     if (showDecideHint) trackEvent('decide_hint_shown');
   }, [showDecideHint, trackEvent]);
+
+  useEffect(() => {
+    if (showTonightHint) trackEvent('tonight_hint_shown');
+  }, [showTonightHint, trackEvent]);
 
   return (
     <SettingsDrillShell
@@ -308,7 +319,7 @@ export default function ListsHubView() {
       <Box sx={{ ...dashboardPageRootSx, minWidth: 0, overflowX: 'hidden' }}>
         <DashboardPageMotion stagger>
           <Stack {...dashboardSubsectionStackProps}>
-            {showDecideHint && (
+            {showHubHint && (
               <DashboardMotionSection>
                 <Stack
                   direction="row"
@@ -322,22 +333,30 @@ export default function ListsHubView() {
                   }}
                 >
                   <Iconify
-                    icon={ic.likeBold}
+                    icon={showTonightHint ? ic.usersGroupTwoRoundedBold : ic.likeBold}
                     width={22}
                     sx={{ color: 'primary.main', flexShrink: 0, mt: 0.25 }}
                   />
                   <Stack spacing={0.25} sx={{ flex: 1, minWidth: 0 }}>
                     <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
-                      {t('pages.dashboard.lists.decide_hint_title')}
+                      {t(
+                        showTonightHint
+                          ? 'pages.dashboard.lists.tonight_hint_title'
+                          : 'pages.dashboard.lists.decide_hint_title'
+                      )}
                     </Typography>
                     <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
-                      {t('pages.dashboard.lists.decide_hint_body')}
+                      {t(
+                        showTonightHint
+                          ? 'pages.dashboard.lists.tonight_hint_body'
+                          : 'pages.dashboard.lists.decide_hint_body'
+                      )}
                     </Typography>
                   </Stack>
                   <Button
                     size="small"
                     color="primary"
-                    onClick={handleDismissDecideHint}
+                    onClick={handleDismissHubHint}
                     sx={{
                       flexShrink: 0,
                       fontWeight: 700,
@@ -345,7 +364,11 @@ export default function ListsHubView() {
                       minHeight: TOUCH_TARGET_SIZE,
                     }}
                   >
-                    {t('pages.dashboard.lists.decide_hint_dismiss')}
+                    {t(
+                      showTonightHint
+                        ? 'pages.dashboard.lists.tonight_hint_dismiss'
+                        : 'pages.dashboard.lists.decide_hint_dismiss'
+                    )}
                   </Button>
                 </Stack>
               </DashboardMotionSection>
@@ -641,7 +664,11 @@ export default function ListsHubView() {
                           <MotionPart key={list.id} variants={dashboardFade().inUp}>
                             <NomNomListLinkTile
                               list={list}
-                              href={paths.dashboard.listDetails(list.id)}
+                              href={
+                                showTonightHint
+                                  ? `${paths.dashboard.listDetails(list.id)}?tonight=1`
+                                  : paths.dashboard.listDetails(list.id)
+                              }
                               t={t}
                               compact
                             />

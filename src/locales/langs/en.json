@@ -400,13 +400,19 @@
       "decide_error_night_not_found": "This Tonight link is invalid or expired.",
       "decide_error_not_joined": "Join with your name before voting.",
       "decide_error_invalid_display_name": "Enter a display name (1–80 characters).",
-      "decide_error_too_many_places": "Pick at most 5 places for Tonight.",
+      "decide_error_too_many_places": "That's too many places for one night.",
       "decide_error_invalid_restaurant_id": "One of the selected places is invalid.",
       "plan_tonight_cta": "Plan tonight",
       "plan_tonight_title": "Plan tonight",
-      "plan_tonight_hint": "Pick {{min}}–{{max}} places, then share a link so friends can join and vote.",
+      "plan_tonight_hint": "Pick at least {{min}} restaurants — search the catalog or tap places from this list. Friends can add more after you share.",
       "plan_tonight_name_label": "Night title",
-      "plan_tonight_selected": "{{count}} / {{max}} selected",
+      "plan_tonight_search_label": "Search any restaurant",
+      "plan_tonight_search_empty": "No restaurants match that search.",
+      "plan_tonight_empty_list": "Search to pick whatever restaurants you want.",
+      "plan_tonight_picks": "Your picks",
+      "plan_tonight_from_list": "From this list",
+      "plan_tonight_search_results": "Search results",
+      "plan_tonight_selected": "{{count}} selected",
       "plan_tonight_create": "Create & copy link",
       "plan_tonight_cancel": "Cancel"
     },
@@ -421,7 +427,12 @@
       "whos_coming_empty": "Nobody yet — be the first to join.",
       "not_found_title": "Tonight not found",
       "link_copied": "Tonight link copied.",
-      "link_copy_failed": "Could not copy the Tonight link."
+      "link_copy_failed": "Could not copy the Tonight link.",
+      "add_place_title": "Add a restaurant",
+      "add_place_hint": "Anyone who joined can add places to vote on.",
+      "add_place_search_label": "Search any restaurant",
+      "add_place_empty": "No restaurants match that search.",
+      "add_place_already": "Those places are already on this night."
     },
     "home": {
       "title": "Restaurant picks from people who know",
@@ -717,7 +728,7 @@
         "decide_promo_title": "Share → Decide",
         "decide_promo_sub": "Turn any public list into a group vote",
         "tonight_promo_title": "Plan Tonight",
-        "tonight_promo_sub": "Pick 3–5 places, share a link, vote together",
+        "tonight_promo_sub": "Pick any restaurants, share a link, vote together",
         "lists_leaderboard_title": "NomNom list leaderboard",
         "lists_leaderboard_subtitle": "Across all NomNom lists — spots, reviews, and must-try picks.",
         "lists_leaderboard_mode_interaction": "Momentum",
@@ -1022,7 +1033,10 @@
         "visit_summary": "{{saved}} spots saved · {{visited}} visited",
         "decide_hint_title": "Pick a list to start a vote",
         "decide_hint_body": "Open any list, then tap Decide to share a link — friends vote without installing the app.",
-        "decide_hint_dismiss": "Got it"
+        "decide_hint_dismiss": "Got it",
+        "tonight_hint_title": "Pick a list to plan tonight",
+        "tonight_hint_body": "Open one of your public lists, then pick any restaurants — from the list or search.",
+        "tonight_hint_dismiss": "Got it"
       },
       "roulette": {
         "meta_title": "NomNom Roulette",

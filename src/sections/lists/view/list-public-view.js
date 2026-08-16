@@ -191,6 +191,15 @@ export default function ListPublicView({
   const [guestAuthPromptOpen, setGuestAuthPromptOpen] = useState(false);
   const [guestAuthPromptRestaurantId, setGuestAuthPromptRestaurantId] = useState(null);
   const [planTonightOpen, setPlanTonightOpen] = useState(false);
+  const tonightParamOpenedRef = useRef(false);
+
+  useEffect(() => {
+    if (tonightParamOpenedRef.current) return;
+    if (searchParams.get('tonight') !== '1') return;
+    if (!initialMembership?.isOwner) return;
+    tonightParamOpenedRef.current = true;
+    setPlanTonightOpen(true);
+  }, [searchParams, initialMembership?.isOwner]);
 
   // Deep-link: `?spot=<restaurantId>` (e.g. from a notification) highlights that
   // spot in the list and scrolls it into view.
@@ -885,19 +894,21 @@ export default function ListPublicView({
       {list.visibility === 'public' &&
         !showPaidPaywall &&
         error !== 'login_required' &&
-        (items?.length ?? 0) > 0 && (
+        ((items?.length ?? 0) > 0 || Boolean(initialMembership?.isOwner)) && (
           <Stack spacing={SPACE.sm} sx={{ width: 1 }}>
-            <ListDecidePanel
-              key={searchParams.get('d') || 'decide-idle'}
-              listId={listId}
-              listName={list.name}
-              items={items}
-              isOwner={Boolean(initialMembership?.isOwner)}
-              ownerUsername={owner?.username || null}
-              listSlug={list.slug || null}
-              initialSessionId={searchParams.get('d') || null}
-            />
-            {Boolean(initialMembership?.isOwner) && (items?.length ?? 0) >= 3 ? (
+            {(items?.length ?? 0) > 0 ? (
+              <ListDecidePanel
+                key={searchParams.get('d') || 'decide-idle'}
+                listId={listId}
+                listName={list.name}
+                items={items}
+                isOwner={Boolean(initialMembership?.isOwner)}
+                ownerUsername={owner?.username || null}
+                listSlug={list.slug || null}
+                initialSessionId={searchParams.get('d') || null}
+              />
+            ) : null}
+            {Boolean(initialMembership?.isOwner) ? (
               <Button
                 fullWidth
                 size="small"
@@ -909,13 +920,15 @@ export default function ListPublicView({
                 {t('pages.lists.plan_tonight_cta')}
               </Button>
             ) : null}
-            <PlanTonightSheet
-              open={planTonightOpen}
-              onClose={() => setPlanTonightOpen(false)}
-              listId={listId}
-              items={items}
-              isOwner={Boolean(initialMembership?.isOwner)}
-            />
+            {Boolean(initialMembership?.isOwner) ? (
+              <PlanTonightSheet
+                open={planTonightOpen}
+                onClose={() => setPlanTonightOpen(false)}
+                listId={listId}
+                items={items}
+                isOwner={Boolean(initialMembership?.isOwner)}
+              />
+            ) : null}
           </Stack>
         )}
 

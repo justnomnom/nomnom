@@ -1,13 +1,14 @@
 'use client';
 
 import PropTypes from 'prop-types';
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useRef, useMemo, useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import InputAdornment from '@mui/material/InputAdornment';
 
 import { paths } from 'src/routes/paths';
 
@@ -18,8 +19,18 @@ import { useTranslate } from 'src/locales';
 import { SPACE, touchTargetSx } from 'src/theme/spacing';
 import { createNight } from 'src/libs/lists/actions/night-actions';
 import { useNightAnalytics } from 'src/libs/analytics/night-analytics';
-import { persistLockToken, decideErrorMessage, mapListItemsToDecidePlaces } from 'src/libs/lists/list-decide-client';
+import { searchRestaurantsForPicker } from 'src/libs/lists/actions/items-actions';
+import {
+  decideErrorMessage,
+  filterTonightPickerRows,
+  mapListItemsToDecidePlaces,
+  persistLockToken,
+  tonightPickerRows,
+  tonightSelectedPickerRows,
+  toggleTonightSelectedIds,
+} from 'src/libs/lists/list-decide-client';
 
+import Iconify from 'src/components/iconify';
 import { ResponsiveSheet } from 'src/components/sheet-shell';
 import ShareFeedbackSnackbar from 'src/components/share/share-feedback-snackbar';
 
@@ -30,14 +41,35 @@ import SettingsSelectionRow from 'src/sections/profile/settings-selection-row';
 const TITLE_ID = 'plan-tonight-title';
 const DESC_ID = 'plan-tonight-desc';
 const MIN_PLACES = 3;
-const MAX_PLACES = 5;
 
 /**
- * Owner sheet to create a Tonight Night (3–5 place shortlist) and copy the share link.
+ * Map a catalog search hit into a picker row.
+ * @param {{ id?: string, name?: string, address?: string | null }} hit
+ * @param {string} unnamedPlace
+ * @returns {{ restaurantId: string, name: string, label: string, mapsLink: null, photo: null } | null}
+ */
+function catalogHitToPlace(hit, unnamedPlace) {
+  const id = hit?.id ? String(hit.id) : '';
+  if (!id) return null;
+  const name = hit.name || unnamedPlace;
+  const address = typeof hit.address === 'string' ? hit.address.trim() : '';
+  return {
+    restaurantId: id,
+    name,
+    label: address ? `${name} · ${address}` : name,
+    mapsLink: null,
+    photo: null,
+  };
+}
+
+/**
+ * Owner sheet to create a Tonight Night (at least 3 places) and copy the share link.
+ * Places can come from the current list or from a catalog search of any restaurant.
  */
 export default function PlanTonightSheet({ open, onClose, listId, items, isOwner }) {
   const { t } = useTranslate();
   const analytics = useNightAnalytics();
+  const unnamedPlace = t('pages.lists.decide_unnamed_place');
   const {
     copyLink,
     feedback: shareFeedback,
@@ -48,38 +80,112 @@ export default function PlanTonightSheet({ open, onClose, listId, items, isOwner
   });
 
   const placeRows = useMemo(
-    () => mapListItemsToDecidePlaces(items, t('pages.lists.decide_unnamed_place')),
-    [items, t]
+    () => mapListItemsToDecidePlaces(items, unnamedPlace),
+    [items, unnamedPlace]
   );
+  const listIdSet = useMemo(() => new Set(placeRows.map((p) => p.restaurantId)), [placeRows]);
 
   const [title, setTitle] = useState('Tonight');
   const [selectedIds, setSelectedIds] = useState(() => new Set());
+  const [extraById, setExtraById] = useState(() => ({}));
+  const [searchQ, setSearchQ] = useState('');
+  const [searchHits, setSearchHits] = useState([]);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState(null);
+  const wasOpenRef = useRef(false);
 
   useEffect(() => {
-    if (!open) return;
+    const justOpened = open && !wasOpenRef.current;
+    wasOpenRef.current = open;
+    if (!justOpened) return;
     setTitle(t('pages.tonight.default_title'));
     setSelectedIds(new Set());
+    setExtraById({});
+    setSearchQ('');
+    setSearchHits([]);
     setErr(null);
   }, [open, t]);
 
-  const selectedCount = selectedIds.size;
-  const canSubmit =
-    isOwner && selectedCount >= MIN_PLACES && selectedCount <= MAX_PLACES && !busy;
+  useEffect(() => {
+    if (!open) return undefined;
+    const q = searchQ.trim();
+    if (q.length < 2) {
+      setSearchHits([]);
+      return undefined;
+    }
+    let cancelled = false;
+    const tmr = setTimeout(() => {
+      searchRestaurantsForPicker(q, 15).then(({ restaurants }) => {
+        if (!cancelled) setSearchHits(restaurants ?? []);
+      });
+    }, 320);
+    return () => {
+      cancelled = true;
+      clearTimeout(tmr);
+    };
+  }, [open, searchQ]);
 
-  const handleToggle = useCallback((restaurantId) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(restaurantId)) {
-        next.delete(restaurantId);
-        return next;
-      }
-      if (next.size >= MAX_PLACES) return prev;
-      next.add(restaurantId);
-      return next;
-    });
-  }, []);
+  const selectedCount = selectedIds.size;
+  const canSubmit = isOwner && selectedCount >= MIN_PLACES && !busy;
+  const isSearching = searchQ.trim().length >= 2;
+
+  const extraRows = useMemo(
+    () =>
+      Object.values(extraById).filter(
+        (p) => selectedIds.has(p.restaurantId) && !listIdSet.has(p.restaurantId)
+      ),
+    [extraById, selectedIds, listIdSet]
+  );
+
+  const selectedPickerRows = useMemo(
+    () => tonightSelectedPickerRows(placeRows, extraRows, selectedIds),
+    [placeRows, extraRows, selectedIds]
+  );
+
+  const pickerRows = useMemo(() => {
+    const listVisible = isSearching ? filterTonightPickerRows(placeRows, searchQ) : placeRows;
+    const merged = tonightPickerRows(listVisible, extraRows);
+    const shownIds = new Set(merged.map((p) => p.restaurantId));
+    const catalogRows = isSearching
+      ? searchHits
+          .map((hit) => catalogHitToPlace(hit, unnamedPlace))
+          .filter((p) => p && !shownIds.has(p.restaurantId) && !listIdSet.has(p.restaurantId))
+      : [];
+    return [...merged, ...catalogRows];
+  }, [extraRows, listIdSet, isSearching, placeRows, searchQ, searchHits, unnamedPlace]);
+
+  /** Toggle a picker row, keeping catalog extras in extraById. */
+  const handleToggle = useCallback(
+    (place) => {
+      const restaurantId = place?.restaurantId;
+      if (!restaurantId || busy) return;
+      const wasSelected = selectedIds.has(restaurantId);
+
+      setSelectedIds((prev) => toggleTonightSelectedIds(prev, restaurantId));
+
+      if (listIdSet.has(restaurantId)) return;
+
+      setExtraById((map) => {
+        if (wasSelected) {
+          if (!(restaurantId in map)) return map;
+          const copy = { ...map };
+          delete copy[restaurantId];
+          return copy;
+        }
+        return {
+          ...map,
+          [restaurantId]: {
+            restaurantId,
+            name: place.name || unnamedPlace,
+            label: place.label || place.name || unnamedPlace,
+            mapsLink: null,
+            photo: null,
+          },
+        };
+      });
+    },
+    [busy, listIdSet, unnamedPlace, selectedIds]
+  );
 
   const handleClose = useCallback(() => {
     if (busy) return;
@@ -151,6 +257,26 @@ export default function PlanTonightSheet({ open, onClose, listId, items, isOwner
     </Stack>
   );
 
+  const showEmptyHint = !isSearching && placeRows.length === 0 && extraRows.length === 0;
+  const showSearchEmpty = isSearching && pickerRows.length === 0 && selectedPickerRows.length === 0;
+  const otherPickerRows = pickerRows.filter((place) => !selectedIds.has(place.restaurantId));
+
+  /**
+   * Renders one selectable restaurant row. Pointer down is stopped so the sheet swipe
+   * dismiss does not steal the tap.
+   * @param {{ restaurantId: string, name: string, label?: string }} place
+   */
+  const renderPickerRow = (place) => (
+    <Box key={place.restaurantId} onPointerDown={(event) => event.stopPropagation()}>
+      <SettingsSelectionRow
+        selected={selectedIds.has(place.restaurantId)}
+        onClick={() => handleToggle(place)}
+        icon={ic.shopBold}
+        label={place.label || place.name}
+      />
+    </Box>
+  );
+
   return (
     <>
       <ResponsiveSheet
@@ -163,8 +289,26 @@ export default function PlanTonightSheet({ open, onClose, listId, items, isOwner
         closeDisabled={busy}
       >
         <Typography id={DESC_ID} variant="body2" color="text.secondary">
-          {t('pages.lists.plan_tonight_hint', { min: MIN_PLACES, max: MAX_PLACES })}
+          {t('pages.lists.plan_tonight_hint', { min: MIN_PLACES })}
         </Typography>
+
+        <TextField
+          fullWidth
+          size="small"
+          autoFocus
+          label={t('pages.lists.plan_tonight_search_label')}
+          value={searchQ}
+          onChange={(e) => setSearchQ(e.target.value)}
+          disabled={busy}
+          inputProps={{ autoComplete: 'off' }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Iconify icon={ic.searchLinear} width={18} sx={{ color: 'text.disabled' }} />
+              </InputAdornment>
+            ),
+          }}
+        />
 
         <TextField
           fullWidth
@@ -183,20 +327,38 @@ export default function PlanTonightSheet({ open, onClose, listId, items, isOwner
         ) : null}
 
         <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
-          {t('pages.lists.plan_tonight_selected', { count: selectedCount, max: MAX_PLACES })}
+          {t('pages.lists.plan_tonight_selected', { count: selectedCount })}
         </Typography>
 
-        <Stack spacing={SPACE.xs}>
-          {placeRows.map((place) => (
-            <Box key={place.restaurantId}>
-              <SettingsSelectionRow
-                selected={selectedIds.has(place.restaurantId)}
-                onClick={() => handleToggle(place.restaurantId)}
-                icon={ic.shopBold}
-                label={place.name}
-              />
-            </Box>
-          ))}
+        {showEmptyHint ? (
+          <Typography variant="body2" color="text.secondary">
+            {t('pages.lists.plan_tonight_empty_list')}
+          </Typography>
+        ) : null}
+
+        {showSearchEmpty ? (
+          <Typography variant="body2" color="text.secondary">
+            {t('pages.lists.plan_tonight_search_empty')}
+          </Typography>
+        ) : null}
+
+        <Stack spacing={SPACE.xs} sx={{ maxHeight: 320, overflow: 'auto' }}>
+          {selectedPickerRows.length > 0 ? (
+            <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
+              {t('pages.lists.plan_tonight_picks')}
+            </Typography>
+          ) : null}
+          {selectedPickerRows.map(renderPickerRow)}
+          {otherPickerRows.length > 0 ? (
+            <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
+              {t(
+                isSearching
+                  ? 'pages.lists.plan_tonight_search_results'
+                  : 'pages.lists.plan_tonight_from_list'
+              )}
+            </Typography>
+          ) : null}
+          {otherPickerRows.map(renderPickerRow)}
         </Stack>
       </ResponsiveSheet>
 

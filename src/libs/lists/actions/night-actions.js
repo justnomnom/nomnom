@@ -10,6 +10,7 @@ import {
   mapDecideError,
   parseDecidePayload,
   isValidDecideVoterKey,
+  NIGHT_PLACES_ABUSE_CAP,
 } from 'src/libs/lists/list-decide-payload';
 
 /**
@@ -39,7 +40,7 @@ export async function createNight({ listId, restaurantIds, title = 'Tonight', st
   const ids = normUuidList(restaurantIds);
   if (!id) return { night: null, error: 'invalid_list' };
   if (ids.length < 3) return { night: null, error: 'need_three_places' };
-  if (ids.length > 5) return { night: null, error: 'too_many_places' };
+  if (ids.length > NIGHT_PLACES_ABUSE_CAP) return { night: null, error: 'too_many_places' };
 
   const {
     data: { user },
@@ -77,7 +78,7 @@ export async function fetchNight(nightId) {
 }
 
 /**
- * Slim poll payload (decide + guest_count).
+ * Slim poll payload (decide + guest_count + guests + places).
  * @param {string} nightId
  * @returns {Promise<{ slice: object | null, error: string | null }>}
  */
@@ -136,4 +137,28 @@ export async function castNightVote({ nightId, restaurantId, guestKey, vote }) {
   });
   if (error) return { session: null, error: mapDecideError(error.message) };
   return { session: parseDecidePayload(data), error: null };
+}
+
+/**
+ * Joined guest adds a catalog restaurant to an open Tonight shortlist.
+ * @param {{ nightId: string, restaurantId: string, guestKey: string }} params
+ * @returns {Promise<{ night: object | null, error: string | null }>}
+ */
+export async function addNightPlace({ nightId, restaurantId, guestKey }) {
+  const nid = normUuid(nightId);
+  const rid = normUuid(restaurantId);
+  if (!nid) return { night: null, error: 'night_not_found' };
+  if (!rid) return { night: null, error: 'invalid_restaurant_id' };
+  if (!isValidDecideVoterKey(guestKey)) return { night: null, error: 'invalid_voter_key' };
+
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.rpc('add_night_place', {
+    p_night_id: nid,
+    p_restaurant_id: rid,
+    p_guest_key: guestKey.trim(),
+  });
+  if (error) return { night: null, error: mapDecideError(error.message) };
+  const night = parseDecidePayload(data);
+  if (!night?.night_id) return { night: null, error: 'unknown' };
+  return { night, error: null };
 }

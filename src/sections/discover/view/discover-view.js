@@ -1606,7 +1606,7 @@ export default function DiscoverView({
               </Typography>
 
               <DiscoverFeaturePromo
-                href={paths.dashboard.lists}
+                href={paths.dashboard.listsTonight}
                 icon={ic.usersGroupTwoRoundedBold}
                 iconClassName="discover-tonight-icon"
                 title={t('pages.dashboard.discover.tonight_promo_title')}

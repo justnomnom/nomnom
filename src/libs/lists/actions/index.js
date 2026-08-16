@@ -64,6 +64,7 @@ export {
   fetchNightDecide,
   joinNight,
   castNightVote,
+  addNightPlace,
 } from 'src/libs/lists/actions/night-actions';
 
 export {

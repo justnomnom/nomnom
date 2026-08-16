@@ -46,6 +46,7 @@ export {
   fetchNightDecide,
   joinNight,
   castNightVote,
+  addNightPlace,
   fetchPublicProfileActivityPage,
   fetchPublicProfileByUsername,
   resolveUsernameToUserId,

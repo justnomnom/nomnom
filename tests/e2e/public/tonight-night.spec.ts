@@ -3,12 +3,16 @@ import { expect, test } from '@playwright/test';
 
 import { loadE2EEnv } from '../load-env';
 import {
+  buildUserStorageState,
   createOwnedList,
+  deleteList,
+  deleteRestaurants,
   publishList,
   seedListItemReturningId,
+  seedRestaurant,
 } from '../support/seed';
 import { hasServiceRoleCredentials } from '../support/service-role';
-import { getServiceRoleClient } from '../support/supabase-service';
+import { getAnyMunicipalityId, getServiceRoleClient } from '../support/supabase-service';
 import { getE2EGlobalSetupAuth } from '../support/test-credentials';
 
 /**
@@ -109,6 +113,7 @@ test.describe('tonight night flow', () => {
     await g2.getByRole('textbox').first().fill('Guest Two');
     await g2.getByRole('button', { name: /join/i }).click();
     await expect(g2.getByText(/Guest Two/i).first()).toBeVisible({ timeout: 20_000 });
+    await expect(g1.getByText(/Guest Two/i).first()).toBeVisible({ timeout: 15_000 });
 
     loadE2EEnv();
     const url = process.env.E2E_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '';
@@ -194,5 +199,91 @@ test.describe('tonight night flow', () => {
     await expect(page.getByText(/we're going here|vamos aqui/i).first()).toBeVisible();
 
     await ctx.close();
+  });
+
+  test('owner taps three list places in Plan tonight and creates a night', async ({ browser }) => {
+    test.setTimeout(180_000);
+    const auth = await getE2EGlobalSetupAuth();
+    test.skip(!auth.ok, !auth.ok ? auth.missing.join(', ') : 'E2E owner credentials missing');
+    if (!auth.ok) return;
+
+    const admin = getServiceRoleClient();
+    const { data: listed } = await admin.auth.admin.listUsers({ perPage: 200 });
+    const owner = (listed?.users || []).find((u) => u.email === auth.email);
+    test.skip(!owner?.id, 'E2E owner not found in auth.users');
+
+    const municipalityId = await getAnyMunicipalityId();
+    test.skip(!municipalityId, 'Need a municipality to seed restaurants');
+
+    const stamp = Date.now().toString(36);
+    const names = [0, 1, 2].map((i) => `E2E Tonight Pick ${stamp} ${i}`);
+    const restaurantIds: string[] = [];
+    let listId: string | null = null;
+    let ctx: Awaited<ReturnType<typeof browser.newContext>> | null = null;
+
+    try {
+      for (const name of names) {
+        restaurantIds.push(await seedRestaurant(name, municipalityId));
+      }
+
+      listId = await createOwnedList(owner!.id, {
+        name: `E2E Tonight Picker ${stamp}`,
+        visibility: 'public',
+      });
+      await publishList(listId);
+      for (let i = 0; i < names.length; i += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        await seedListItemReturningId(listId, restaurantIds[i], owner!.id, { sortOrder: i });
+      }
+
+      ctx = await browser.newContext({
+        storageState: await buildUserStorageState(auth.email, auth.password),
+      });
+      await ctx.grantPermissions(['clipboard-read', 'clipboard-write']);
+      const page = await ctx.newPage();
+      await page.goto(`/lists/${listId}`, { waitUntil: 'domcontentloaded' });
+      await expect(page.getByRole('button', { name: /plan tonight/i })).toBeVisible({
+        timeout: 45_000,
+      });
+      await page.getByRole('button', { name: /plan tonight/i }).click();
+
+      const sheet = page.getByRole('dialog');
+      await expect(sheet).toBeVisible({ timeout: 15_000 });
+
+      const createBtn = sheet.getByRole('button', { name: /create & copy link/i });
+      await expect(createBtn).toBeDisabled();
+
+      for (const name of names) {
+        // eslint-disable-next-line no-await-in-loop
+        await sheet.getByRole('button', { name, exact: true }).click();
+      }
+
+      await expect(sheet.getByText(/^3 selected$/i)).toBeVisible();
+      await expect(createBtn).toBeEnabled();
+      await createBtn.click();
+
+      await expect(page.getByText(/tonight link copied/i).first()).toBeVisible({ timeout: 20_000 });
+
+      const { data: nights, error: nightsErr } = await admin
+        .from('nights')
+        .select('id')
+        .eq('list_id', listId);
+      expect(nightsErr).toBeNull();
+      expect(nights?.length).toBe(1);
+      const { count, error: placesErr } = await admin
+        .from('night_places')
+        .select('*', { count: 'exact', head: true })
+        .eq('night_id', nights![0].id);
+      expect(placesErr).toBeNull();
+      expect(count).toBe(3);
+    } finally {
+      if (ctx) await ctx.close();
+      if (listId) {
+        await admin.from('nights').delete().eq('list_id', listId);
+        await admin.from('list_decide_sessions').delete().eq('list_id', listId);
+        await deleteList(listId);
+      }
+      await deleteRestaurants(restaurantIds);
+    }
   });
 });

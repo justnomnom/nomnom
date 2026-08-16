@@ -75,6 +75,11 @@ export const paths = {
      * single list (`ListDecidePanel`), so this is the closest the hub can deep-link.
      */
     listsDecide: `${ROOTS.DASHBOARD}/lists?decide=1`,
+    /**
+     * Lists hub with the "open a list, then pick any restaurants" hint. Plan tonight
+     * itself lives on a single owned public list (`PlanTonightSheet`).
+     */
+    listsTonight: `${ROOTS.DASHBOARD}/lists?tonight=1`,
     settings: `${ROOTS.DASHBOARD}/settings`,
     settingsEdit: `${ROOTS.DASHBOARD}/settings/profile/edit`,
     settingsAppearance: `${ROOTS.DASHBOARD}/settings/appearance`,

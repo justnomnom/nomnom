@@ -121,7 +121,8 @@ export function decideErrorMessage(code, t) {
 export function mapListItemsToDecidePlaces(items, unnamedPlace) {
   return (Array.isArray(items) ? items : [])
     .map((item) => {
-      const r = item?.restaurants || item?.restaurant || null;
+      const nested = item?.restaurants || item?.restaurant || null;
+      const r = Array.isArray(nested) ? nested[0] : nested;
       const id = r?.id || item?.restaurant_id;
       if (!id) return null;
       const images = Array.isArray(r?.restaurant_images) ? r.restaurant_images : [];
@@ -137,6 +138,101 @@ export function mapListItemsToDecidePlaces(items, unnamedPlace) {
       };
     })
     .filter(Boolean);
+}
+
+/**
+ * Deduped Tonight picker rows: extras from catalog search first, then list places.
+ * @param {{ restaurantId: string, name: string }[]} listPlaces
+ * @param {{ restaurantId: string, name: string }[]} extraPlaces
+ * @returns {{ restaurantId: string, name: string }[]}
+ */
+export function tonightPickerRows(listPlaces, extraPlaces) {
+  const seen = new Set();
+  return [
+    ...(Array.isArray(extraPlaces) ? extraPlaces : []),
+    ...(Array.isArray(listPlaces) ? listPlaces : []),
+  ].flatMap((place) => {
+    const id = place?.restaurantId ? String(place.restaurantId) : '';
+    if (!id || seen.has(id)) return [];
+    seen.add(id);
+    return [place];
+  });
+}
+
+/**
+ * Selected shortlist rows, independent of the current search filter.
+ * Picks stay visible in "Your picks" even when the list/catalog query would hide them.
+ * @param {{ restaurantId: string }[]} listPlaces
+ * @param {{ restaurantId: string }[]} extraPlaces
+ * @param {Set<string> | unknown} selectedIds
+ * @returns {{ restaurantId: string }[]}
+ */
+export function tonightSelectedPickerRows(listPlaces, extraPlaces, selectedIds) {
+  const selected = selectedIds instanceof Set ? selectedIds : new Set();
+  const keep = (place) => Boolean(place?.restaurantId) && selected.has(place.restaurantId);
+  return tonightPickerRows(
+    (Array.isArray(listPlaces) ? listPlaces : []).filter(keep),
+    (Array.isArray(extraPlaces) ? extraPlaces : []).filter(keep)
+  );
+}
+
+/**
+ * Filter picker rows by restaurant name. Queries shorter than 2 chars return all rows.
+ * @param {{ restaurantId: string, name: string }[]} places
+ * @param {unknown} query
+ * @returns {{ restaurantId: string, name: string }[]}
+ */
+export function filterTonightPickerRows(places, query) {
+  const rows = Array.isArray(places) ? places : [];
+  const q = String(query || '')
+    .trim()
+    .toLowerCase();
+  if (q.length < 2) return rows;
+  return rows.filter((p) => String(p.name || '').toLowerCase().includes(q));
+}
+
+/**
+ * Classify Tonight live-page catalog search: idle, pending, results, already_on_night, empty.
+ * @param {{ query?: unknown, hits?: unknown, existingIds?: Set<string> | unknown, pending?: boolean }} params
+ * @returns {'idle' | 'pending' | 'results' | 'already_on_night' | 'empty'}
+ */
+export function tonightAddSearchState({ query, hits, existingIds, pending } = {}) {
+  const q = String(query || '').trim();
+  if (q.length < 2) return 'idle';
+  if (pending) return 'pending';
+  const onNight = existingIds instanceof Set ? existingIds : new Set();
+  const list = Array.isArray(hits) ? hits : [];
+  const fresh = list.filter((hit) => {
+    const id = hit?.id ? String(hit.id) : '';
+    return Boolean(id) && !onNight.has(id);
+  });
+  if (fresh.length > 0) return 'results';
+  const anyHit = list.some((hit) => Boolean(hit?.id));
+  return anyHit ? 'already_on_night' : 'empty';
+}
+
+/**
+ * Toggle a restaurant id in a Tonight shortlist Set.
+ * Pass `maxPlaces` only when a caller still wants a cap; omit for unlimited.
+ * Returns the previous Set when the toggle is a no-op (missing id or already at cap).
+ * @param {Set<string> | unknown} selectedIds
+ * @param {unknown} restaurantId
+ * @param {number} [maxPlaces]
+ * @returns {Set<string>}
+ */
+export function toggleTonightSelectedIds(selectedIds, restaurantId, maxPlaces) {
+  const prev = selectedIds instanceof Set ? selectedIds : new Set();
+  const id = restaurantId ? String(restaurantId) : '';
+  if (!id) return prev;
+  if (prev.has(id)) {
+    const next = new Set(prev);
+    next.delete(id);
+    return next;
+  }
+  if (Number.isFinite(maxPlaces) && prev.size >= maxPlaces) return prev;
+  const next = new Set(prev);
+  next.add(id);
+  return next;
 }
 
 /**

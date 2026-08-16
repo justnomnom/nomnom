@@ -95,6 +95,7 @@ const EVENT_SCHEMAS = {
   night_share_copied: { required: ['night_id', 'list_id'] },
   night_open: { required: ['night_id'] },
   night_join: { required: ['night_id'] },
+  night_place_added: { required: ['night_id', 'restaurant_id'] },
   // Discover feature promos (Decide / Tonight / Roulette)
   discover_promo_clicked: { required: ['promo'] },
   // Landing half of the Decide promo: `?decide=1` sends users to the lists hub, which can
@@ -102,6 +103,8 @@ const EVENT_SCHEMAS = {
   // blind at the destination.
   decide_hint_shown: { required: [] },
   decide_hint_dismissed: { required: [] },
+  tonight_hint_shown: { required: [] },
+  tonight_hint_dismissed: { required: [] },
   // List management
   list_created: { required: ['list_id'] },
   list_details_saved: { required: ['list_id'] },
