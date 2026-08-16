@@ -386,6 +386,15 @@ export default function NightDecideView({ nightId }) {
           <Typography variant="body2" color="text.secondary" sx={{ mt: SPACE.xxs }}>
             {t('pages.tonight.subtitle')}
           </Typography>
+          {/* Who's coming reads as social proof under the title, not as a section
+              card competing with Join and Decide for the same visual weight. */}
+          <Typography variant="body2" color="text.secondary" sx={{ mt: SPACE.xs }}>
+            {guests.length === 0
+              ? t('pages.tonight.whos_coming_empty')
+              : `${t('pages.tonight.whos_coming', { count: guests.length })} · ${guests
+                  .map((g) => g.display_name)
+                  .join(', ')}`}
+          </Typography>
         </Box>
 
         {err ? (
@@ -394,10 +403,16 @@ export default function NightDecideView({ nightId }) {
           </Typography>
         ) : null}
 
+        {hasJoined && !sessionLocked ? (
+          <TonightAddPlaceSearch existingIds={existingIds} busy={addBusy} onPick={handleAddPlace} />
+        ) : null}
+
+        {/* Join sits directly above the shortlist it unlocks, so the name field is
+            adjacent to the disabled vote controls instead of two sections away. */}
         {!hasJoined ? (
           <Card variant="outlined" sx={CARD_SX}>
             <Stack spacing={SPACE.sm}>
-              <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+              <Typography variant="subtitle2" component="h2" sx={{ fontWeight: 700 }}>
                 {t('pages.tonight.join_title')}
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -425,29 +440,6 @@ export default function NightDecideView({ nightId }) {
               </Button>
             </Stack>
           </Card>
-        ) : null}
-
-        <Card variant="outlined" sx={CARD_SX}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: SPACE.xs }}>
-            {t('pages.tonight.whos_coming', { count: guests.length })}
-          </Typography>
-          {guests.length === 0 ? (
-            <Typography variant="body2" color="text.secondary">
-              {t('pages.tonight.whos_coming_empty')}
-            </Typography>
-          ) : (
-            <Stack spacing={SPACE.xxs}>
-              {guests.map((g) => (
-                <Typography key={String(g.guest_key)} variant="body2">
-                  {g.display_name}
-                </Typography>
-              ))}
-            </Stack>
-          )}
-        </Card>
-
-        {hasJoined && !sessionLocked ? (
-          <TonightAddPlaceSearch existingIds={existingIds} busy={addBusy} onPick={handleAddPlace} />
         ) : null}
 
         <DecideSessionPanel
