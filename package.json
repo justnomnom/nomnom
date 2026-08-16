@@ -75,7 +75,10 @@
     "tags:reseed": "node scripts/reseed-tags-catalog.mjs",
     "db:audit-grants": "node scripts/audit-api-table-grants.mjs",
     "db:apply-grants": "node scripts/audit-api-table-grants.mjs --apply",
-    "analyze": "ANALYZE=true next build"
+    "analyze": "ANALYZE=true next build",
+    "db:check": "node scripts/check-db-contract.mjs",
+    "db:check:prod": "node scripts/check-db-contract.mjs --env production",
+    "db:check:all": "node scripts/check-db-contract.mjs --env both"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.15",
