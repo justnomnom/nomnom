@@ -43,6 +43,7 @@ import { getLocaleBodyMaxWidthCh } from 'src/theme/locale-prose';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
 import { getPaywallRelativeDate } from 'src/libs/paywall/paywall-recency';
 import { SPACE, touchTargetSx, TOUCH_TARGET_SIZE } from 'src/theme/spacing';
+import { readableAccent } from 'src/theme/readable-accent';
 import { acceptListInvite, declineListInvite } from 'src/libs/lists/actions';
 import { isPlacesView, sortListItemsByMode } from 'src/libs/lists/sort-list-items';
 import {
@@ -915,7 +916,16 @@ export default function ListPublicView({
                 variant="outlined"
                 color="primary"
                 onClick={() => setPlanTonightOpen(true)}
-                sx={touchTargetSx}
+                sx={[
+                  touchTargetSx,
+                  /* primary.main is AA for large text only (DESIGN.md §19); a button
+                     label is small text, so step the accent down in light mode. */
+                  (t) => ({
+                    color: readableAccent(t),
+                    borderColor: alpha(t.palette.primary.main, 0.5),
+                    '&:hover': { borderColor: readableAccent(t) },
+                  }),
+                ]}
               >
                 {t('pages.lists.plan_tonight_cta')}
               </Button>

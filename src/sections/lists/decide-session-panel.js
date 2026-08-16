@@ -416,6 +416,7 @@ export default function DecideSessionPanel({
               color="primary"
               onClick={handleStartDecide}
               disabled={busy || !canStart}
+              sx={touchTargetSx}
             >
               {t('pages.lists.decide_start_cta')}
             </Button>
