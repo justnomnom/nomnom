@@ -422,7 +422,7 @@
       "join_title": "Entrar nesta noite",
       "join_hint": "Indica um nome para os amigos saberem quem está a votar.",
       "display_name_label": "O teu nome",
-      "join_cta": "Entrar",
+      "join_cta": "Entrar nesta noite",
       "whos_coming": "Quem vem ({{count}})",
       "whos_coming_empty": "Ainda ninguém — sê o primeiro a entrar.",
       "not_found_title": "Tonight não encontrado",

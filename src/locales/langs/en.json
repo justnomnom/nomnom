@@ -422,7 +422,7 @@
       "join_title": "Join this night",
       "join_hint": "Add a name so friends know who’s voting.",
       "display_name_label": "Your name",
-      "join_cta": "Join",
+      "join_cta": "Join this night",
       "whos_coming": "Who’s coming ({{count}})",
       "whos_coming_empty": "Nobody yet — be the first to join.",
       "not_found_title": "Tonight not found",
