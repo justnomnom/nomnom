@@ -142,4 +142,57 @@ test.describe('tonight night flow', () => {
       page.getByText(/not found|invalid|expired|wrong|couldn't|could not/i).first()
     ).toBeVisible({ timeout: 45_000 });
   });
+
+  test('lock winner shows Share in WhatsApp reply CTA', async ({ browser }) => {
+    const auth = await getE2EGlobalSetupAuth();
+    test.skip(!auth.ok, !auth.ok ? auth.missing.join(', ') : 'E2E owner credentials missing');
+    if (!auth.ok) return;
+
+    const admin = getServiceRoleClient();
+    const { data: listed } = await admin.auth.admin.listUsers({ perPage: 200 });
+    const owner = (listed?.users || []).find((u) => u.email === auth.email);
+    test.skip(!owner?.id, 'E2E owner not found in auth.users');
+
+    const { data: restaurants } = await admin.from('restaurants').select('id').limit(5);
+    test.skip(!restaurants || restaurants.length < 3, 'Need ≥3 restaurants');
+
+    const listId = await createOwnedList(owner!.id, {
+      name: `E2E Tonight Reply ${Date.now()}`,
+      visibility: 'public',
+    });
+    await publishList(listId);
+    for (let i = 0; i < 3; i += 1) {
+      // eslint-disable-next-line no-await-in-loop
+      await seedListItemReturningId(listId, restaurants![i].id, owner!.id, { sortOrder: i });
+    }
+
+    const night = await createNightAsOwner(
+      auth.email,
+      auth.password,
+      listId,
+      restaurants!.slice(0, 3).map((r) => r.id)
+    );
+
+    const ctx = await browser.newContext();
+    await ctx.addInitScript(
+      ({ sessionId, lockToken }) => {
+        window.sessionStorage.setItem(`nomnom:list-decide-lock:${sessionId}`, lockToken);
+      },
+      { sessionId: night.decide_session_id, lockToken: night.lock_token }
+    );
+    const page = await ctx.newPage();
+    await page.goto(`/tonight/${night.night_id}`, { waitUntil: 'domcontentloaded' });
+    await expect(page.getByText(/E2E Tonight/i).first()).toBeVisible({ timeout: 45_000 });
+
+    const lockBtn = page.getByRole('button', { name: /lock winner|fechar vencedor/i });
+    await expect(lockBtn).toBeVisible({ timeout: 20_000 });
+    await lockBtn.click();
+
+    await expect(
+      page.getByRole('button', { name: /share in whatsapp|partilhar no whatsapp/i })
+    ).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByText(/we're going here|vamos aqui/i).first()).toBeVisible();
+
+    await ctx.close();
+  });
 });

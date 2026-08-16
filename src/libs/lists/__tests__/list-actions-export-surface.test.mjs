@@ -45,6 +45,7 @@ const ACTION_FILES = [
   'items-actions.js',
   'list-page-actions.js',
   'decide-actions.js',
+  'night-actions.js',
   'members-profile-actions.js',
 ];
 
@@ -59,7 +60,7 @@ test('list actions modules expose the expected export surface', () => {
   const fromIndex = namedExportsInBarrel(path.join(ACTIONS_DIR, 'index.js'));
   const fromAuth = namedExportsInBarrel(AUTH_REEXPORT);
 
-  assert.equal(fromModules.size, 46, `expected 46 action exports, got ${fromModules.size}`);
+  assert.equal(fromModules.size, 51, `expected 51 action exports, got ${fromModules.size}`);
   assert.ok(!fromModules.has('ensureListSlug'), 'ensureListSlug must not be a public server action');
   assert.deepEqual(fromIndex, [...fromModules].sort());
   assert.deepEqual(fromAuth, fromIndex);

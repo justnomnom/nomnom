@@ -22,6 +22,7 @@ import { useTranslate } from 'src/locales';
 import { SPACE, tabularNumsSx, touchTargetSx } from 'src/theme/spacing';
 import { useListDecideAnalytics } from 'src/libs/analytics/list-decide-analytics';
 import { rankDecideTallies, canStartListDecide, pickDecideWinnerId } from 'src/libs/lists/list-decide-tally';
+import { buildDecideWinnerReplyText } from 'src/libs/lists/build-decide-winner-reply-text';
 import {
   castListDecideVote,
   lockListDecideSession,
@@ -110,7 +111,11 @@ export default function DecideSessionPanel({
     share: shareLink,
     feedback: shareFeedback,
     dismissFeedback: dismissShareFeedback,
-  } = useShareLink();
+  } = useShareLink({
+    copiedKey: nightId ? 'pages.tonight.link_copied' : 'pages.lists.decide_share_copied',
+    messageCopiedKey: 'pages.lists.decide_reply_copied',
+    failedKey: 'pages.lists.decide_reply_failed',
+  });
 
   const [internalSession, setInternalSession] = useState(null);
   const controlled = typeof setSessionProp === 'function';
@@ -338,6 +343,24 @@ export default function DecideSessionPanel({
     });
   }, [sessionId, locked, busy, tallies, restaurantIds, listId, analytics, applySession, lockFn, extras]);
 
+  const handleReplyShare = useCallback(async () => {
+    const winnerIdNow = lockedWinnerRestaurantId(session);
+    const place = winnerIdNow ? placeById.get(winnerIdNow) : null;
+    if (!place?.restaurantId || typeof window === 'undefined') return;
+    const restaurantUrl = `${window.location.origin}${paths.restaurantPublic(place.restaurantId)}`;
+    const text = buildDecideWinnerReplyText({
+      lead: t('pages.lists.decide_reply_share_text', { name: place.name }),
+      mapsLink: place.mapsLink,
+    });
+    await shareLink({ url: restaurantUrl, title: place.name || '', text });
+    analytics.trackResultReplyShared({
+      list_id: listId,
+      session_id: sessionId,
+      restaurant_id: place.restaurantId,
+      ...extras,
+    });
+  }, [session, placeById, shareLink, t, analytics, listId, sessionId, extras]);
+
   const winnerId = lockedWinnerRestaurantId(session);
   const winner = winnerId ? placeById.get(winnerId) : null;
   const roulettePlace = roulettePickId ? placeById.get(roulettePickId) : null;
@@ -403,7 +426,7 @@ export default function DecideSessionPanel({
           {session && winner ? (
             <Stack spacing={SPACE.sm} alignItems="center" sx={INNER_SURFACE_SX}>
               <DecidePlaceThumb name={winner.name} photo={winner.photo} size={WINNER_THUMB_SIZE} />
-              <Box>
+              <Box sx={{ textAlign: 'center' }}>
                 <Typography variant="overline" color="text.secondary">
                   {t('pages.lists.decide_going_here')}
                 </Typography>
@@ -411,33 +434,44 @@ export default function DecideSessionPanel({
                   {winner.name}
                 </Typography>
               </Box>
-              <Stack
-                direction="row"
-                spacing={SPACE.xs}
-                justifyContent="center"
-                flexWrap="wrap"
-                useFlexGap
-              >
+              <Stack spacing={SPACE.sm} sx={{ width: 1 }}>
                 <Button
-                  component={RouterLink}
-                  href={paths.restaurantPublic(winner.restaurantId)}
+                  fullWidth
                   variant="contained"
                   color="primary"
-                  size="small"
+                  size="large"
+                  startIcon={<Iconify icon={ic.shareLinear} width={20} />}
+                  onClick={handleReplyShare}
+                  disabled={busy}
+                  sx={touchTargetSx}
                 >
-                  {t('pages.lists.decide_view_place')}
+                  {t('pages.lists.decide_reply_cta')}
                 </Button>
-                {winner.mapsLink ? (
+                <Stack direction="row" spacing={SPACE.xs} sx={{ width: 1 }}>
                   <Button
-                    href={winner.mapsLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    component={RouterLink}
+                    href={paths.restaurantPublic(winner.restaurantId)}
                     variant="outlined"
-                    size="small"
+                    size="medium"
+                    fullWidth
+                    sx={touchTargetSx}
                   >
-                    {t('pages.lists.decide_open_maps')}
+                    {t('pages.lists.decide_view_place')}
                   </Button>
-                ) : null}
+                  {winner.mapsLink ? (
+                    <Button
+                      href={winner.mapsLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      variant="outlined"
+                      size="medium"
+                      fullWidth
+                      sx={touchTargetSx}
+                    >
+                      {t('pages.lists.decide_open_maps')}
+                    </Button>
+                  ) : null}
+                </Stack>
               </Stack>
             </Stack>
           ) : null}

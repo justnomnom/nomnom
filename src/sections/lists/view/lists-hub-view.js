@@ -118,8 +118,15 @@ export default function ListsHubView() {
    * `?decide=1` from the Discover "Share → Decide" tile. Decide runs on a single list
    * (`ListDecidePanel`), so the hub can't open it directly — it points at the next step instead.
    */
-  const [decideHintDismissed, setDecideHintDismissed] = useState(false);
-  const showDecideHint = searchParams.get('decide') === '1' && !decideHintDismissed;
+  const showDecideHint = searchParams.get('decide') === '1';
+  /**
+   * Dismissing strips the param instead of only flipping local state, so a reload, a back
+   * navigation, or a shared copy of the URL doesn't resurrect a hint the user already closed.
+   */
+  const handleDismissDecideHint = useCallback(() => {
+    trackEvent('decide_hint_dismissed');
+    router.replace(paths.dashboard.lists);
+  }, [router, trackEvent]);
   const [createOpen, setCreateOpen] = useState(false);
   const [owned, setOwned] = useState([]);
   const [sharedWithMe, setSharedWithMe] = useState([]);
@@ -278,6 +285,12 @@ export default function ListsHubView() {
     trackEvent('saved_view_opened');
   }, [trackEvent]);
 
+  // Guarded on `showDecideHint` so it fires once per arrival, not on every re-render, and
+  // never for the plain /dashboard/lists visit.
+  useEffect(() => {
+    if (showDecideHint) trackEvent('decide_hint_shown');
+  }, [showDecideHint, trackEvent]);
+
   return (
     <SettingsDrillShell
       title={t('pages.dashboard.lists.page_heading')}
@@ -324,7 +337,7 @@ export default function ListsHubView() {
                   <Button
                     size="small"
                     color="primary"
-                    onClick={() => setDecideHintDismissed(true)}
+                    onClick={handleDismissDecideHint}
                     sx={{
                       flexShrink: 0,
                       fontWeight: 700,

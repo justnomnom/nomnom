@@ -89,6 +89,7 @@ const EVENT_SCHEMAS = {
   list_roulette_spin: { required: ['list_id', 'restaurant_id'] },
   list_result_shown: { required: ['list_id', 'session_id', 'restaurant_id'] },
   list_result_locked: { required: ['list_id', 'session_id'] },
+  list_result_reply_shared: { required: ['list_id', 'session_id', 'restaurant_id'] },
   // Tonight (Night object)
   night_created: { required: ['night_id', 'list_id'] },
   night_share_copied: { required: ['night_id', 'list_id'] },
@@ -96,6 +97,11 @@ const EVENT_SCHEMAS = {
   night_join: { required: ['night_id'] },
   // Discover feature promos (Decide / Tonight / Roulette)
   discover_promo_clicked: { required: ['promo'] },
+  // Landing half of the Decide promo: `?decide=1` sends users to the lists hub, which can
+  // only point at the next step. Without these, the funnel is measurable at the click and
+  // blind at the destination.
+  decide_hint_shown: { required: [] },
+  decide_hint_dismissed: { required: [] },
   // List management
   list_created: { required: ['list_id'] },
   list_details_saved: { required: ['list_id'] },

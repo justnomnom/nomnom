@@ -8,6 +8,7 @@ import { alpha } from '@mui/material/styles';
 
 import { paths } from 'src/routes/paths';
 
+import { SPACE } from 'src/theme/spacing';
 import { useTranslate } from 'src/locales';
 import { useSkeletonThemeColors } from 'src/theme/use-skeleton-theme';
 
@@ -107,25 +108,34 @@ export default function DiscoverPageLoadingSkeleton() {
                 </Stack>
               </Stack>
 
-              {/* "Can't decide?" group card: Tonight hero + Decide / Roulette tiles */}
+              {/**
+               * "Can't decide?" group card: Tonight hero + Decide / Roulette tiles.
+               * Mirrors the real card in `discover-view.js` and swaps to it on load, so both
+               * must use the SAME `SPACE` tokens — raw numbers here would drift silently the
+               * first time a token is retuned, and the card would visibly jump.
+               */}
               <Stack {...dashboardSubsectionStackProps}>
                 <Box
                   sx={{
                     borderRadius: 2,
-                    p: { xs: 1, sm: 1.5 },
+                    p: { xs: SPACE.xs, sm: SPACE.sm },
                     border: (th) => `2px solid ${alpha(th.palette.primary.main, 0.15)}`,
                     bgcolor: (th) => alpha(th.palette.primary.main, 0.06),
                   }}
                 >
-                  <Box sx={{ px: 1, pb: 1 }}>
+                  <Box sx={{ px: SPACE.xs, pb: SPACE.xs }}>
                     <Skeleton height={14} width={160} borderRadius={4} />
                   </Box>
 
                   <Stack
                     direction="row"
                     alignItems="center"
-                    spacing={2}
-                    sx={{ minWidth: 0, px: { xs: 1, sm: 1.5 }, py: { xs: 1.25, sm: 1.5 } }}
+                    spacing={SPACE.md}
+                    sx={{
+                      minWidth: 0,
+                      px: { xs: SPACE.xs, sm: SPACE.sm },
+                      py: { xs: 1.25, sm: SPACE.sm },
+                    }}
                   >
                     <Skeleton width={48} height={48} borderRadius={8} />
                     <Stack spacing={0.75} sx={{ flex: 1, minWidth: 0 }}>
@@ -138,8 +148,8 @@ export default function DiscoverPageLoadingSkeleton() {
                   <Box
                     sx={{
                       height: '1px',
-                      my: 1.5,
-                      mx: 1,
+                      my: SPACE.sm,
+                      mx: SPACE.xs,
                       bgcolor: (th) => alpha(th.palette.primary.main, 0.15),
                     }}
                   />
@@ -149,10 +159,10 @@ export default function DiscoverPageLoadingSkeleton() {
                       display: 'grid',
                       gridTemplateColumns: 'minmax(0, 1fr) 1px minmax(0, 1fr)',
                       alignItems: 'stretch',
-                      gap: { xs: 0.5, sm: 1 },
+                      gap: { xs: SPACE.xxs, sm: SPACE.xs },
                     }}
                   >
-                    <Stack spacing={1} sx={{ minWidth: 0, p: 1.5 }}>
+                    <Stack spacing={SPACE.xs} sx={{ minWidth: 0, p: SPACE.sm }}>
                       <Skeleton width={36} height={36} borderRadius={8} />
                       <Skeleton height={16} width="78%" borderRadius={4} />
                       <Skeleton height={12} width="92%" borderRadius={4} />
@@ -160,10 +170,10 @@ export default function DiscoverPageLoadingSkeleton() {
                     </Stack>
 
                     <Box
-                      sx={{ my: 1, bgcolor: (th) => alpha(th.palette.primary.main, 0.15) }}
+                      sx={{ my: SPACE.xs, bgcolor: (th) => alpha(th.palette.primary.main, 0.15) }}
                     />
 
-                    <Stack spacing={1} sx={{ minWidth: 0, p: 1.5 }}>
+                    <Stack spacing={SPACE.xs} sx={{ minWidth: 0, p: SPACE.sm }}>
                       <Skeleton width={36} height={36} borderRadius={8} />
                       <Skeleton height={16} width="58%" borderRadius={4} />
                       <Skeleton height={12} width="92%" borderRadius={4} />

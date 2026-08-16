@@ -13,6 +13,7 @@ export const LIST_DECIDE_EVENTS = {
   ROULETTE_SPIN: 'list_roulette_spin',
   RESULT_SHOWN: 'list_result_shown',
   RESULT_LOCKED: 'list_result_locked',
+  RESULT_REPLY_SHARED: 'list_result_reply_shared',
 };
 
 /**
@@ -29,6 +30,7 @@ export function useListDecideAnalytics() {
       trackRouletteSpin: (p) => trackEvent(LIST_DECIDE_EVENTS.ROULETTE_SPIN, p),
       trackResultShown: (p) => trackEvent(LIST_DECIDE_EVENTS.RESULT_SHOWN, p),
       trackResultLocked: (p) => trackEvent(LIST_DECIDE_EVENTS.RESULT_LOCKED, p),
+      trackResultReplyShared: (p) => trackEvent(LIST_DECIDE_EVENTS.RESULT_REPLY_SHARED, p),
     }),
     [trackEvent]
   );

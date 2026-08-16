@@ -33,10 +33,15 @@ const DECIDE_I18N_KEYS = [
   'pages.lists.decide_start_cta',
   'pages.lists.decide_waiting_owner',
   'pages.lists.decide_share_link',
+  'pages.lists.decide_share_copied',
   'pages.lists.decide_spin',
   'pages.lists.decide_spin_result',
   'pages.lists.decide_lock_cta',
   'pages.lists.decide_going_here',
+  'pages.lists.decide_reply_cta',
+  'pages.lists.decide_reply_share_text',
+  'pages.lists.decide_reply_copied',
+  'pages.lists.decide_reply_failed',
   'pages.lists.decide_view_place',
   'pages.lists.decide_open_maps',
   'pages.lists.decide_tally',
@@ -78,6 +83,7 @@ describe('Share → Decide i18n', () => {
   test('interpolated copy keeps {{name}} / tally placeholders in both locales', () => {
     for (const key of [
       'pages.lists.decide_spin_result',
+      'pages.lists.decide_reply_share_text',
       'pages.lists.decide_upvote_aria',
       'pages.lists.decide_downvote_aria',
     ]) {
@@ -192,6 +198,12 @@ describe('Share → Decide wiring', () => {
     assert.match(sessionPanel, /pages\.lists\.decide_need_three/);
     assert.match(sessionPanel, /pages\.lists\.decide_waiting_owner/);
     assert.match(sessionPanel, /pages\.lists\.decide_going_here/);
+    assert.match(sessionPanel, /pages\.lists\.decide_reply_cta/);
+    assert.match(sessionPanel, /handleReplyShare/);
+    assert.match(sessionPanel, /buildDecideWinnerReplyText/);
+    assert.match(sessionPanel, /trackResultReplyShared/);
+    assert.match(sessionPanel, /decide_reply_copied/);
+    assert.match(sessionPanel, /size="large"/);
     assert.match(sessionPanel, /winner\.mapsLink/);
     assert.match(panel, /searchParams\.set\('d', nextSessionId\)/);
     assert.match(panel, /history\.replaceState/);
@@ -226,6 +238,7 @@ describe('Share → Decide analytics', () => {
     }
     assert.ok(names.includes('list_share_copied'));
     assert.ok(names.includes('list_result_locked'));
+    assert.ok(names.includes('list_result_reply_shared'));
   });
 
   test('provider required fields cover the funnel payloads the panel sends', () => {
@@ -242,6 +255,10 @@ describe('Share → Decide analytics', () => {
       /list_result_shown: \{ required: \['list_id', 'session_id', 'restaurant_id'\] \}/
     );
     assert.match(provider, /list_result_locked: \{ required: \['list_id', 'session_id'\] \}/);
+    assert.match(
+      provider,
+      /list_result_reply_shared: \{ required: \['list_id', 'session_id', 'restaurant_id'\] \}/
+    );
   });
 
   test('Tonight night analytics events are registered', () => {
@@ -318,6 +335,25 @@ describe('Share → Decide analytics', () => {
     for (const src of [skeleton, view]) assert.match(src, /borderRadius: 2,/);
     // The old two-section shape (two kicker rules + three bordered rows) must be gone.
     assert.doesNotMatch(skeleton, /borderRadius: 4,/);
+    // Both must express the card's padding with the SAME tokens. Raw numbers here would
+    // match today and drift the first time a SPACE token is retuned.
+    for (const src of [skeleton, view]) {
+      assert.match(src, /p: \{ xs: SPACE\.xs, sm: SPACE\.sm \}/);
+    }
+    assert.match(skeleton, /import \{ SPACE \} from 'src\/theme\/spacing'/);
+  });
+
+  test('the Decide hint is measurable at the destination, not just the click', () => {
+    const hub = read('src/sections/lists/view/lists-hub-view.js');
+    const provider = read('src/libs/analytics/analytics-provider.js');
+    for (const name of ['decide_hint_shown', 'decide_hint_dismissed']) {
+      assert.match(hub, new RegExp(`trackEvent\\('${name}'\\)`));
+      assert.match(provider, new RegExp(`${name}: \\{ required: \\[\\] \\}`));
+    }
+    // Dismissing strips ?decide=1 rather than only flipping local state, so a reload or a
+    // shared URL can't resurrect a closed hint.
+    assert.match(hub, /router\.replace\(paths\.dashboard\.lists\)/);
+    assert.doesNotMatch(hub, /decideHintDismissed/);
   });
 
   test('Decide and Tonight no longer share a destination', () => {
