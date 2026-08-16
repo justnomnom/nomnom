@@ -376,7 +376,7 @@ export default function DecideSessionPanel({
   if (!canStart && !session) {
     return (
       <Card variant="outlined" sx={CARD_SX}>
-        <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: SPACE.xxs }}>
+        <Typography variant="subtitle2" component="h2" sx={{ fontWeight: 700, mb: SPACE.xxs }}>
           {t('pages.lists.decide_title')}
         </Typography>
         <Typography variant="body2" color="text.secondary">
@@ -392,7 +392,7 @@ export default function DecideSessionPanel({
         <Stack spacing={SPACE.sm}>
           <Stack direction="row" alignItems="center" justifyContent="space-between" gap={SPACE.xs}>
             <Box>
-              <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+              <Typography variant="subtitle2" component="h2" sx={{ fontWeight: 700 }}>
                 {t('pages.lists.decide_title')}
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -542,7 +542,7 @@ export default function DecideSessionPanel({
                     >
                       <DecidePlaceThumb name={place.name} photo={place.photo} size={PLACE_THUMB_SIZE} />
                       <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <Typography variant="subtitle2" noWrap sx={{ fontWeight: 700 }}>
+                        <Typography variant="subtitle2" component="h3" noWrap sx={{ fontWeight: 700 }}>
                           {place.name}
                         </Typography>
                         <Typography variant="caption" color="text.secondary" sx={tabularNumsSx}>

@@ -380,7 +380,7 @@ export default function NightDecideView({ nightId }) {
     <Container maxWidth="sm" sx={{ py: SPACE.lg }}>
       <Stack spacing={SPACE.md}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+          <Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>
             {night.title || t('pages.tonight.default_title')}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: SPACE.xxs }}>
