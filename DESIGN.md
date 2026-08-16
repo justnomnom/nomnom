@@ -29,9 +29,14 @@ Source of truth: `src/theme/palette.js`
 | `primary.main` | `#FF6B35` | CTAs, active nav, links, focus states, chips |
 | `primary.dark` | `#E85A28` | Pressed state |
 | `primary.darker` | `#B8481F` | Rare emphasis |
-| `primary.contrastText` | `#FFFFFF` | Text on filled primary buttons |
+| `primary.contrastText` | `#15130f` | Text/icons on filled primary surfaces (warm ink, not white) |
 
 **Rule**: Terracotta is disciplined — roughly 10% of any surface. Overuse kills its warmth. Use it for: active states, primary buttons, single accent per card, icon tint, text links.
+
+**Rule on text and terracotta (both directions).** Terracotta is a mid-tone: it fails AA against *both* white and near-black at small sizes if you pick the wrong pairing.
+
+- *Text **on** filled terracotta* uses `contrastText` (warm ink `#15130f`) — 6.54:1 on `main`, 9.29:1 on `light`, 5.23:1 on `dark`. White was 2.77:1 and failed on every step except `darker`. This covers contained CTAs, selected filter chips, and badges.
+- *Terracotta **as** text or as a small indicator* on a light surface uses `readableAccent(theme)` from `src/theme/readable-accent.js` — it steps light mode down to `primary.darker` (4.83:1 on card) and keeps `primary.main` in dark (5.67:1). `primary.main` as small text on parchment is 2.6:1; see §19.
 
 ### Secondary — Cool Slate (intentional)
 
@@ -728,7 +733,8 @@ Missing keys silently fall back to the key string — always add both locales wh
 ## 19. Accessibility
 
 - **Minimum touch target**: 44×44px for interactive elements (buttons, nav items, list rows)
-- **WCAG AA contrast** for all body text; primary `#FF6B35` on white meets AA for large text only — do not use it as small body text colour
+- **WCAG AA contrast** for all body text; primary `#FF6B35` on white meets AA for large text only — do not use it as small body text colour. Reach for `readableAccent(theme)` (`src/theme/readable-accent.js`) when you want an accent-colored count, label, or indicator dot; it returns `primary.darker` in light and `primary.main` in dark
+- **Non-text indicators** (unread dots, status glyphs, type badges) need 3:1 against their own background, same as UI components — the accent helper covers this too
 - **Focus styles**: MUI default focus ring inherits `primary.main` at `0.24` opacity — do not remove
 - **`prefers-reduced-motion`**: All non-essential animations must respect this preference
 - **Screen reader labels**: Iconify icons used as standalone buttons need `aria-label` on the wrapping `IconButton`
@@ -777,4 +783,6 @@ Missing keys silently fall back to the key string — always add both locales wh
 | 2026-07-03 | §5 row rhythm sub-scale documented | `py: 1.75` (14px) and `py: 2.25` (18px) are used consistently across settings/list rows and their skeletons — a de-facto rhythm the SPACE scale doesn't capture. Documented as sanctioned (like §3's compact labels) instead of churning 25+ files to 12/16px without visual verification. |
 | 2026-07-03 | §9 indicator-dot width-animation exception | Carousel pagination dots animate `width` 4→10px; `scaleX` would distort the pill radius. Codified as the one sanctioned layout-property animation (sub-16px indicators only). |
 | 2026-07-03 | Ratings localised via `fRating` (FINDING-007) | Rating displays hardcoded `.toFixed(1)` — pt users saw `4.5` instead of `4,5`, violating §17. New `fRating(value, currentLang, { trimTrailingZero })` in `src/utils/format-number.js`; UI surfaces wired to it. SEO-only pages stay en-formatted. |
+| 2026-08-16 | `primary.contrastText` flipped `#FFFFFF` → `#15130f` (warm ink) | White on terracotta measured 2.77:1 — below AA for the 12–14px labels on every filled brand surface (contained CTAs, selected chips, badges). Ink clears AA across the whole ramp (9.29 / 6.54 / 5.23) and leaves the terracotta itself untouched, so the brand colour is unchanged while its labels become readable. §2 rule added covering both directions. |
+| 2026-08-16 | Added `readableAccent(theme)` for accent-as-text and small indicators | `primary.main` as 11–12px text or as a state dot on parchment is 2.6:1, which §19 already forbade but nothing enforced. Helper steps light mode to `primary.darker` (4.83:1) and keeps `primary.main` in dark (5.67:1). First consumers: notifications unread counts, unread dots, notification type badges. |
 | 2026-07-03 | `autoFocus` guarded on Capacitor (FINDING-008) | Bare `autoFocus` pops the iOS keyboard and shifts sheets. Standard: `autoFocus={!isCapacitorNative()}` on every autofocused field. |

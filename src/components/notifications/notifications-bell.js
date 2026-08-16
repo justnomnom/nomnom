@@ -10,9 +10,9 @@ import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Popover from '@mui/material/Popover';
 import Tooltip from '@mui/material/Tooltip';
-import { useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+import { alpha, useTheme } from '@mui/material/styles';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
@@ -21,16 +21,25 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
-import { touchTargetSx } from 'src/theme/spacing';
+import { readableAccent } from 'src/theme/readable-accent';
 import { useGetNotifications } from 'src/api/notifications';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
+import { RADIUS, touchTargetSx, TOUCH_TARGET_SIZE } from 'src/theme/spacing';
 
 import Iconify from 'src/components/iconify';
 import DeleteDialog from 'src/components/custom-dialog/delete-dialog';
+import {
+  SheetGrabBarRail,
+  sheetDragHandleProps,
+  mobileBottomSheetDrawerPaperSx,
+  SwipeDismissBottomSheetContent,
+} from 'src/components/sheet-shell';
 
 import NotificationsPanel from './notifications-panel';
 
 // ----------------------------------------------------------------------
+
+const POPOVER_WIDTH = 400;
 
 export default function NotificationsBell() {
   const theme = useTheme();
@@ -86,7 +95,13 @@ export default function NotificationsBell() {
       aria-label={t('components.notifications.aria_bell')}
       sx={{ ...touchTargetSx, color: 'text.primary' }}
     >
-      <Badge badgeContent={unreadCount > 9 ? '9+' : unreadCount} color="error" overlap="circular">
+      <Badge
+        badgeContent={unreadCount}
+        max={9}
+        color="primary"
+        overlap="circular"
+        sx={{ '& .MuiBadge-badge': { fontWeight: 700, boxShadow: `0 0 0 2px ${theme.palette.background.paper}` } }}
+      >
         <Iconify icon={ic.bellBold} width={24} />
       </Badge>
     </IconButton>
@@ -97,12 +112,20 @@ export default function NotificationsBell() {
       direction="row"
       alignItems="center"
       justifyContent="space-between"
-      sx={{ px: 2, py: 1.5 }}
+      gap={1}
+      sx={{ px: 2, py: 1.25, minHeight: TOUCH_TARGET_SIZE + 8 }}
     >
-      <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
-        {t('components.notifications.title')}
-      </Typography>
-      <Stack direction="row" spacing={0.5}>
+      <Box sx={{ minWidth: 0 }}>
+        <Typography variant="subtitle1" component="h2" sx={{ fontWeight: 800, lineHeight: 1.3 }}>
+          {t('components.notifications.title')}
+        </Typography>
+        {unreadCount > 0 && (
+          <Typography variant="caption" sx={{ color: readableAccent(theme), fontWeight: 700 }}>
+            {t('components.notifications.unread_count', { count: unreadCount })}
+          </Typography>
+        )}
+      </Box>
+      <Stack direction="row" spacing={0.5} sx={{ flexShrink: 0 }}>
         <Tooltip title={t('components.notifications.mark_all_read')}>
           <span>
             <IconButton
@@ -110,6 +133,7 @@ export default function NotificationsBell() {
               disabled={unreadCount === 0}
               aria-label={t('components.notifications.mark_all_read')}
               onClick={() => markAllRead()}
+              sx={touchTargetSx}
             >
               <Iconify icon={ic.checkReadBold} width={20} />
             </IconButton>
@@ -122,7 +146,7 @@ export default function NotificationsBell() {
               disabled={notifications.length === 0}
               aria-label={t('components.notifications.delete_all')}
               onClick={() => setConfirmOpen(true)}
-              sx={{ color: 'text.secondary', '&:hover': { color: 'error.main' } }}
+              sx={{ ...touchTargetSx, color: 'text.secondary', '&:hover': { color: 'error.main' } }}
             >
               <Iconify icon={ic.trashBold} width={20} />
             </IconButton>
@@ -132,31 +156,29 @@ export default function NotificationsBell() {
     </Stack>
   );
 
-  const body = (
-    <Box
-      aria-live="polite"
-      sx={{ maxHeight: { xs: '70vh', sm: 420 }, overflowY: 'auto', minWidth: 0 }}
-    >
-      <NotificationsPanel
-        notifications={notifications}
-        loading={notificationsLoading}
-        onMarkRead={markNotificationRead}
-        onDelete={deleteNotification}
-        onNavigate={handleClose}
-        onMuteList={muteList}
-      />
-    </Box>
+  const panel = (
+    <NotificationsPanel
+      notifications={notifications}
+      loading={notificationsLoading}
+      /** Peek surface: per-list filtering belongs on the full history page. */
+      showListFilter={false}
+      onMarkRead={markNotificationRead}
+      onDelete={deleteNotification}
+      onNavigate={handleClose}
+      onMuteList={muteList}
+    />
   );
 
-  const footer = (
-    <>
-      <Divider />
-      <Box sx={{ p: 1 }}>
-        <Button fullWidth size="small" color="inherit" onClick={handleSeeAll}>
-          {t('components.notifications.see_all')}
-        </Button>
-      </Box>
-    </>
+  const seeAll = (
+    <Button
+      fullWidth
+      color="inherit"
+      onClick={handleSeeAll}
+      endIcon={<Iconify icon={ic.chevronRightLinear} width={16} />}
+      sx={{ fontWeight: 700, py: 1, minHeight: TOUCH_TARGET_SIZE }}
+    >
+      {t('components.notifications.see_all')}
+    </Button>
   );
 
   return (
@@ -168,19 +190,24 @@ export default function NotificationsBell() {
           anchor="bottom"
           open={open}
           onClose={handleClose}
-          PaperProps={{
-            sx: {
-              borderTopLeftRadius: 16,
-              borderTopRightRadius: 16,
-              maxHeight: '85vh',
-              pb: 'env(safe-area-inset-bottom, 0px)',
-            },
-          }}
+          PaperProps={{ sx: mobileBottomSheetDrawerPaperSx }}
         >
-          {header}
-          <Divider />
-          {body}
-          {footer}
+          <SwipeDismissBottomSheetContent
+            onClose={handleClose}
+            chrome={
+              <>
+                <Box {...sheetDragHandleProps()}>
+                  <SheetGrabBarRail />
+                </Box>
+                {header}
+                <Divider />
+              </>
+            }
+          >
+            <Box aria-live="polite">{panel}</Box>
+            <Divider sx={{ mt: 0.5 }} />
+            <Box sx={{ p: 1 }}>{seeAll}</Box>
+          </SwipeDismissBottomSheetContent>
         </Drawer>
       ) : (
         <Popover
@@ -192,9 +219,12 @@ export default function NotificationsBell() {
           slotProps={{
             paper: {
               sx: {
-                width: 380,
+                width: POPOVER_WIDTH,
                 maxWidth: 'calc(100vw - 24px)',
                 mt: 1,
+                overflow: 'hidden',
+                borderRadius: `${RADIUS.loose}px`,
+                border: `1px solid ${alpha(theme.palette.divider, 0.6)}`,
                 boxShadow: theme.customShadows?.dropdown ?? theme.shadows[8],
               },
             },
@@ -202,8 +232,11 @@ export default function NotificationsBell() {
         >
           {header}
           <Divider />
-          {body}
-          {footer}
+          <Box aria-live="polite" sx={{ maxHeight: 440, overflowY: 'auto' }}>
+            {panel}
+          </Box>
+          <Divider />
+          <Box sx={{ p: 1 }}>{seeAll}</Box>
         </Popover>
       )}
 

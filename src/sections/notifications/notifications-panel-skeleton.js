@@ -6,45 +6,61 @@ import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 
+import { RADIUS, TOUCH_TARGET_SIZE } from 'src/theme/spacing';
 import { useSkeletonThemeColors } from 'src/theme/use-skeleton-theme';
 
-// Keep in sync with `NotificationsPanel` / `RowShell` (40px avatar, body + caption).
+// Keep in sync with `NotificationsPanel` / `RowShell`
+// (40px avatar + type badge, sentence + timestamp, one 44px overflow control).
 const NOTIFICATION_AVATAR_SIZE = 40;
-const NOTIFICATION_ACTION_SIZE = 32;
+const NOTIFICATION_BADGE_SIZE = 20;
 
 function NotificationRowSkeleton({ bodyWidth, captionWidth }) {
   return (
     <Box
       sx={{
-        px: 2,
-        py: 1.5,
+        pl: 2,
+        pr: 1,
+        py: 1.75,
         display: 'flex',
         alignItems: 'flex-start',
         gap: 1.5,
       }}
     >
-      <Skeleton
-        circle
-        width={NOTIFICATION_AVATAR_SIZE}
-        height={NOTIFICATION_AVATAR_SIZE}
-        style={{ flexShrink: 0 }}
-      />
-      <Box sx={{ minWidth: 0, flex: 1, pt: 0.25 }}>
-        <Skeleton height={16} width={bodyWidth} borderRadius={4} />
-        <Skeleton height={12} width={captionWidth} borderRadius={4} style={{ marginTop: 8 }} />
+      <Box sx={{ position: 'relative', flexShrink: 0, lineHeight: 0 }}>
+        <Skeleton
+          circle
+          width={NOTIFICATION_AVATAR_SIZE}
+          height={NOTIFICATION_AVATAR_SIZE}
+          style={{ display: 'block' }}
+        />
+        <Box sx={{ position: 'absolute', right: -3, bottom: -3, lineHeight: 0 }}>
+          <Skeleton
+            circle
+            width={NOTIFICATION_BADGE_SIZE}
+            height={NOTIFICATION_BADGE_SIZE}
+            style={{ display: 'block' }}
+          />
+        </Box>
       </Box>
-      <Stack direction="row" spacing={0.25} sx={{ flexShrink: 0 }}>
+
+      <Box sx={{ minWidth: 0, flex: 1, pt: 0.25 }}>
+        <Skeleton height={16} width={bodyWidth} borderRadius={RADIUS.tight} />
         <Skeleton
-          width={NOTIFICATION_ACTION_SIZE}
-          height={NOTIFICATION_ACTION_SIZE}
-          borderRadius={8}
+          height={12}
+          width={captionWidth}
+          borderRadius={RADIUS.tight}
+          style={{ marginTop: 8 }}
         />
+      </Box>
+
+      <Box sx={{ flexShrink: 0, pt: 0.5, lineHeight: 0 }}>
         <Skeleton
-          width={NOTIFICATION_ACTION_SIZE}
-          height={NOTIFICATION_ACTION_SIZE}
-          borderRadius={8}
+          width={TOUCH_TARGET_SIZE - 12}
+          height={TOUCH_TARGET_SIZE - 12}
+          borderRadius={RADIUS.tight}
+          style={{ display: 'block' }}
         />
-      </Stack>
+      </Box>
     </Box>
   );
 }
@@ -62,7 +78,7 @@ const ROW_WIDTHS = [
   { body: '86%', caption: '26%' },
 ];
 
-/** Skeleton list matching `NotificationsPanel` notification rows. */
+/** Skeleton list matching `NotificationsPanel` — section label + notification rows. */
 export default function NotificationsPanelSkeleton({ count = 4, ariaLabel, sx }) {
   const skeletonTheme = useSkeletonThemeColors();
   const rows = ROW_WIDTHS.slice(0, count);
@@ -73,6 +89,9 @@ export default function NotificationsPanelSkeleton({ count = 4, ariaLabel, sx })
       highlightColor={skeletonTheme.highlightColor}
     >
       <Stack spacing={0} role="status" aria-busy="true" aria-label={ariaLabel} sx={sx}>
+        <Box sx={{ px: 2, pt: 1.5, pb: 0.75, lineHeight: 0 }}>
+          <Skeleton height={11} width={64} borderRadius={RADIUS.tight} />
+        </Box>
         {rows.map((row, i) => (
           <NotificationRowSkeleton key={i} bodyWidth={row.body} captionWidth={row.caption} />
         ))}

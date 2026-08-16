@@ -1,15 +1,11 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 import { expectSignedInDashboardShell } from '../support/page-assertions';
 import { dashboardTestsDisabled } from '../support/skip-dashboard';
 import { E2E_DASHBOARD_AUTH_SETUP_HINT } from '../support/test-credentials';
 
-/**
- * Webpack first compile of a dashboard route shows the splash; wait it out.
- * @param {import('@playwright/test').Page} page
- * @param {string} path
- */
-async function gotoSignedInDashboard(page, path) {
+/** Webpack first compile of a dashboard route shows the splash; wait it out. */
+async function gotoSignedInDashboard(page: Page, path: string) {
   await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 120_000 });
   const splash = page.getByText('Pulling up the menu...');
   if (await splash.isVisible().catch(() => false)) {

@@ -9,11 +9,15 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import { useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
 
 import { paths } from 'src/routes/paths';
+import { RouterLink } from 'src/routes/components';
 
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
+import { touchTargetSx } from 'src/theme/spacing';
+import { readableAccent } from 'src/theme/readable-accent';
 import { setNotificationMute } from 'src/auth/actions/notification-mutes-actions';
 import {
   fetchNotificationsPage,
@@ -35,22 +39,32 @@ import NotificationsPageSkeleton from './notifications-page-skeleton';
 
 // ----------------------------------------------------------------------
 
-function NotificationsToolbarActions({ hasUnread, hasItems, loading, onMarkAllRead, onDeleteAll }) {
+function NotificationsToolbarActions({ unreadCount, hasItems, loading, onMarkAllRead, onDeleteAll }) {
   const { t } = useTranslate();
+  const theme = useTheme();
 
   if (loading) {
     return <CompactToolbarIconSkeleton />;
   }
 
   return (
-    <Stack direction="row" spacing={0.5}>
+    <Stack direction="row" spacing={0.5} alignItems="center">
+      {unreadCount > 0 && (
+        <Typography
+          variant="caption"
+          sx={{ color: readableAccent(theme), fontWeight: 700, mr: 0.5, whiteSpace: 'nowrap' }}
+        >
+          {t('components.notifications.unread_count', { count: unreadCount })}
+        </Typography>
+      )}
       <Tooltip title={t('components.notifications.mark_all_read')}>
         <span>
           <IconButton
             size="small"
-            disabled={!hasUnread}
+            disabled={unreadCount === 0}
             aria-label={t('components.notifications.mark_all_read')}
             onClick={onMarkAllRead}
+            sx={touchTargetSx}
           >
             <Iconify icon={ic.checkReadBold} width={20} />
           </IconButton>
@@ -63,7 +77,7 @@ function NotificationsToolbarActions({ hasUnread, hasItems, loading, onMarkAllRe
             disabled={!hasItems}
             aria-label={t('components.notifications.delete_all')}
             onClick={onDeleteAll}
-            sx={{ color: 'text.secondary', '&:hover': { color: 'error.main' } }}
+            sx={{ ...touchTargetSx, color: 'text.secondary', '&:hover': { color: 'error.main' } }}
           >
             <Iconify icon={ic.trashBold} width={20} />
           </IconButton>
@@ -74,7 +88,7 @@ function NotificationsToolbarActions({ hasUnread, hasItems, loading, onMarkAllRe
 }
 
 NotificationsToolbarActions.propTypes = {
-  hasUnread: PropTypes.bool.isRequired,
+  unreadCount: PropTypes.number.isRequired,
   hasItems: PropTypes.bool.isRequired,
   loading: PropTypes.bool.isRequired,
   onMarkAllRead: PropTypes.func.isRequired,
@@ -145,7 +159,7 @@ export default function NotificationsView() {
     }
   };
 
-  const hasUnread = items.some((n) => !n.read_at);
+  const unreadCount = items.filter((n) => !n.read_at).length;
 
   if (loading && items.length === 0) {
     return <NotificationsPageSkeleton />;
@@ -158,7 +172,7 @@ export default function NotificationsView() {
       backAriaLabel={t('pages.dashboard.title')}
       endAdornment={
         <NotificationsToolbarActions
-          hasUnread={hasUnread}
+          unreadCount={unreadCount}
           hasItems={items.length > 0}
           loading={loading}
           onMarkAllRead={handleMarkAllRead}
@@ -175,6 +189,17 @@ export default function NotificationsView() {
               onMarkRead={handleMarkRead}
               onDelete={handleDelete}
               onMuteList={handleMuteList}
+              emptyAction={
+                <Button
+                  variant="contained"
+                  color="primary"
+                  component={RouterLink}
+                  href={paths.dashboard.discover}
+                  startIcon={<Iconify icon={ic.compassBold} width={18} />}
+                >
+                  {t('components.notifications.empty_cta')}
+                </Button>
+              }
             />
           </Box>
 

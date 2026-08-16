@@ -16,31 +16,79 @@ import Typography from '@mui/material/Typography';
 import { alpha, useTheme } from '@mui/material/styles';
 
 import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 
 import { ic } from 'src/assets/icons';
+import { TOUCH_TARGET_SIZE } from 'src/theme/spacing';
 import { useLocales, useTranslate } from 'src/locales';
+import { readableAccent } from 'src/theme/readable-accent';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
 import { groupNotifications } from 'src/libs/notifications/group-notifications';
-import {
-  NOTIFICATION_LIST_FILTER_ALL,
-  buildNotificationListFilterChips,
-  canMuteNotificationList,
-  filterNotificationsByListId,
-} from 'src/libs/notifications/notification-feed-helpers';
 import {
   resolveNotificationActorFields,
   resolveNotificationSentenceKind,
 } from 'src/libs/notifications/social-notification-payloads';
+import {
+  canMuteNotificationList,
+  bucketFeedEntriesByDate,
+  filterNotificationsByListId,
+  NOTIFICATION_LIST_FILTER_ALL,
+  buildNotificationListFilterChips,
+} from 'src/libs/notifications/notification-feed-helpers';
 
 import Iconify from 'src/components/iconify';
 import { ScrollableChipRow } from 'src/components/horizontal-scroll-row';
 import { scrollableChipPillButtonSx } from 'src/components/scrollable-chip-select';
 
+import { sectionLabelSx } from 'src/sections/profile/view/settings-shell-shared';
 import NotificationsPanelSkeleton from 'src/sections/notifications/notifications-panel-skeleton';
 
+import NotificationRowMenu from './notification-row-menu';
+
 // ----------------------------------------------------------------------
+
+/** Row metrics — keep `notifications-panel-skeleton` in lockstep with these. */
+const AVATAR_SIZE = 40;
+const TYPE_BADGE_SIZE = 20;
+const ROW_PX = 2;
+const ROW_PY = 1.75;
+const UNREAD_DOT_SIZE = 6;
+/** Vertical center of the row avatar — anchors the unread dot and the action controls. */
+const ROW_AVATAR_CENTER_PX = ROW_PY * 8 + AVATAR_SIZE / 2;
+/** Left inset that lines expanded group items up with the sentence column. */
+const TEXT_COLUMN_INSET = 8.5;
+
+/** One glyph per notification kind so the feed is scannable without reading it. */
+const TYPE_ICON_BY_KIND = {
+  new_follower: ic.userBold,
+  list_invite: ic.letterBold,
+  list_subscribed: ic.bookmarkBold,
+  invite_accepted: ic.checkCircleBold,
+  join_approved: ic.usersGroupRoundedBold,
+  list_update: ic.mapPointBold,
+};
+
+const SECTION_LABEL_KEYS = {
+  today: 'components.notifications.section_today',
+  week: 'components.notifications.section_week',
+  earlier: 'components.notifications.section_earlier',
+};
+
+/** Raw list names would otherwise stretch a filter chip past the panel width. */
+const chipLabelSx = {
+  display: 'block',
+  maxWidth: 148,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+};
+
+const SENTENCE_VERB_KEYS = {
+  list_invite: 'list_invite_verb',
+  list_subscribed: 'list_subscribed_verb',
+  invite_accepted: 'invite_accepted_verb',
+  join_approved: 'join_approved_verb',
+};
 
 function relativeTime(iso, isPt) {
   if (!iso) return '';
@@ -54,18 +102,21 @@ function relativeTime(iso, isPt) {
   }
 }
 
-const rowLinkSx = {
-  color: 'text.primary',
-  fontWeight: 700,
-  textDecoration: 'none',
-  cursor: 'pointer',
-  '&:hover': { textDecoration: 'underline' },
-};
+/** Bold, `text.primary` emphasis for the nouns inside a notification sentence. */
+function Subject({ children }) {
+  return (
+    <Box component="span" sx={{ fontWeight: 700, color: 'text.primary' }}>
+      {children}
+    </Box>
+  );
+}
+
+Subject.propTypes = { children: PropTypes.node };
 
 /**
  * Shared list UI for both the header bell popover and the full history page.
- * Groups list-update bursts, renders each notification type, exposes per-row
- * read/delete, and tracks clicks.
+ * Groups list-update bursts into one row, buckets the feed by date, renders each
+ * notification type with its own glyph, and tracks clicks.
  */
 export default function NotificationsPanel({
   notifications,
@@ -75,6 +126,8 @@ export default function NotificationsPanel({
   onNavigate,
   onMuteList,
   emptyLabel,
+  emptyAction,
+  showListFilter = true,
 }) {
   const theme = useTheme();
   const { t } = useTranslate();
@@ -94,7 +147,7 @@ export default function NotificationsPanel({
     [notifications, listFilter]
   );
 
-  const grouped = useMemo(() => groupNotifications(visible), [visible]);
+  const sections = useMemo(() => bucketFeedEntriesByDate(groupNotifications(visible)), [visible]);
 
   const trackClick = useCallback(
     (type) => {
@@ -107,36 +160,63 @@ export default function NotificationsPanel({
     [trackEvent]
   );
 
-  const showChips = listChips.length > 1;
+  const showChips = showListFilter && listChips.length > 1;
+  const isEmpty = sections.length === 0;
 
   const rowProps = { isPt, t, theme, onMarkRead, onDelete, onNavigate, onMuteList, trackClick };
 
   const renderBody = () => {
-    if (loading && grouped.length === 0) {
+    if (loading && isEmpty) {
       return (
         <NotificationsPanelSkeleton count={4} ariaLabel={t('components.notifications.title')} />
       );
     }
-    if (grouped.length === 0) {
+
+    if (isEmpty) {
+      const filtered = listFilter !== NOTIFICATION_LIST_FILTER_ALL;
       return (
-        <Box sx={{ p: 4, textAlign: 'center' }}>
-          <Typography variant="body2" color="text.secondary">
-            {listFilter === NOTIFICATION_LIST_FILTER_ALL
-              ? emptyLabel || t('components.notifications.empty')
-              : t('components.notifications.empty_filtered')}
-          </Typography>
-        </Box>
+        <EmptyFeed
+          theme={theme}
+          title={t(
+            filtered
+              ? 'components.notifications.empty_filtered_title'
+              : 'components.notifications.empty_title'
+          )}
+          body={
+            filtered
+              ? t('components.notifications.empty_filtered')
+              : emptyLabel || t('components.notifications.empty')
+          }
+          action={filtered ? null : emptyAction}
+        />
       );
     }
+
     return (
-      <Stack sx={{ py: 0.5 }}>
-        {grouped.map((entry) =>
-          entry.kind === 'group' ? (
-            <GroupRow key={entry.id} group={entry} {...rowProps} />
-          ) : (
-            <NotificationRow key={entry.id} notification={entry.notification} {...rowProps} />
-          )
-        )}
+      <Stack sx={{ pb: 0.5 }}>
+        {sections.map((section) => (
+          <Box key={section.key} component="section">
+            <Typography component="h3" sx={{ ...sectionLabelSx(theme), px: ROW_PX, pt: 1.5, pb: 0.75 }}>
+              {t(SECTION_LABEL_KEYS[section.key])}
+            </Typography>
+
+            <Box
+              sx={{
+                '& > *:not(:last-child)': {
+                  borderBottom: `1px solid ${alpha(theme.palette.divider, 0.5)}`,
+                },
+              }}
+            >
+              {section.entries.map((entry) =>
+                entry.kind === 'group' ? (
+                  <GroupRow key={entry.id} group={entry} {...rowProps} />
+                ) : (
+                  <NotificationRow key={entry.id} notification={entry.notification} {...rowProps} />
+                )
+              )}
+            </Box>
+          </Box>
+        ))}
       </Stack>
     );
   };
@@ -144,11 +224,19 @@ export default function NotificationsPanel({
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
       {showChips && (
-        <Box sx={{ px: 1, pb: 1 }} role="group" aria-label={t('components.notifications.title')}>
+        <Box
+          role="group"
+          aria-label={t('components.notifications.title')}
+          sx={{
+            px: 1.5,
+            py: 1,
+            borderBottom: `1px solid ${alpha(theme.palette.divider, 0.5)}`,
+          }}
+        >
           <ScrollableChipRow gap={1} sx={{ mx: 0, width: 1 }}>
             <Button
-              size="small"
-              disableRipple
+              color="inherit"
+              disableElevation
               aria-pressed={listFilter === NOTIFICATION_LIST_FILTER_ALL}
               onClick={() => setListFilter(NOTIFICATION_LIST_FILTER_ALL)}
               sx={scrollableChipPillButtonSx(theme, {
@@ -160,13 +248,15 @@ export default function NotificationsPanel({
             {listChips.map((chip) => (
               <Button
                 key={chip.id}
-                size="small"
-                disableRipple
+                color="inherit"
+                disableElevation
                 aria-pressed={listFilter === chip.id}
                 onClick={() => setListFilter(chip.id)}
                 sx={scrollableChipPillButtonSx(theme, { selected: listFilter === chip.id })}
               >
-                {chip.name}
+                <Box component="span" sx={chipLabelSx}>
+                  {chip.name}
+                </Box>
               </Button>
             ))}
           </ScrollableChipRow>
@@ -186,29 +276,141 @@ NotificationsPanel.propTypes = {
   onNavigate: PropTypes.func,
   onMuteList: PropTypes.func,
   emptyLabel: PropTypes.string,
+  emptyAction: PropTypes.node,
+  showListFilter: PropTypes.bool,
 };
 
 // ----------------------------------------------------------------------
 
-/** Row chrome shared by every notification type. */
-function RowShell({ isUnread, theme, avatar, children, actions }) {
+/** Teaches what the feed is for instead of only reporting absence (DESIGN.md §7). */
+function EmptyFeed({ theme, title, body, action }) {
+  return (
+    <Stack alignItems="center" spacing={1.25} sx={{ px: 3, py: 6, textAlign: 'center' }}>
+      <Box
+        sx={{
+          width: 56,
+          height: 56,
+          borderRadius: '50%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          bgcolor: alpha(theme.palette.primary.main, 0.1),
+          color: readableAccent(theme),
+        }}
+      >
+        <Iconify icon={ic.bellLinear} width={26} />
+      </Box>
+      <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+        {title}
+      </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 320 }}>
+        {body}
+      </Typography>
+      {action ? <Box sx={{ pt: 0.5 }}>{action}</Box> : null}
+    </Stack>
+  );
+}
+
+EmptyFeed.propTypes = {
+  theme: PropTypes.object.isRequired,
+  title: PropTypes.string,
+  body: PropTypes.string,
+  action: PropTypes.node,
+};
+
+// ----------------------------------------------------------------------
+
+/**
+ * Row chrome shared by every notification type.
+ *
+ * The sentence area is a single link to one destination (no nested anchors) and the
+ * controls sit outside it. On pointer devices the overflow trigger fades in on
+ * hover/focus so a long feed reads as text rather than a wall of icon buttons.
+ */
+function RowShell({ isUnread, theme, t, href, onOpen, avatar, children, actions }) {
+  const isLink = Boolean(href);
+
   return (
     <Box
       sx={{
-        px: 2,
-        py: 1.5,
+        position: 'relative',
         display: 'flex',
         alignItems: 'flex-start',
-        gap: 1.5,
-        position: 'relative',
-        bgcolor: isUnread ? alpha(theme.palette.primary.main, 0.06) : 'transparent',
-        transition: theme.transitions.create('background-color'),
-        '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.1) },
+        bgcolor: isUnread ? alpha(theme.palette.primary.main, 0.055) : 'transparent',
+        transition: theme.transitions.create('background-color', {
+          duration: theme.transitions.duration.shorter,
+        }),
+        '&:hover': {
+          bgcolor: isUnread ? alpha(theme.palette.primary.main, 0.1) : theme.palette.action.hover,
+        },
+        '@media (hover: hover) and (pointer: fine)': {
+          '& .notification-row-menu-button': {
+            opacity: 0,
+            transition: theme.transitions.create('opacity', {
+              duration: theme.transitions.duration.shorter,
+            }),
+          },
+          '&:hover .notification-row-menu-button, & .notification-row-menu-button:focus-visible, & .notification-row-menu-button[aria-expanded="true"]':
+            { opacity: 1 },
+        },
       }}
     >
-      {avatar}
-      <Box sx={{ minWidth: 0, flex: 1 }}>{children}</Box>
-      {actions}
+      {isUnread && (
+        <Box
+          role="img"
+          aria-label={t('components.notifications.aria_unread')}
+          sx={{
+            position: 'absolute',
+            left: 6,
+            top: `${ROW_AVATAR_CENTER_PX - UNREAD_DOT_SIZE / 2}px`,
+            width: UNREAD_DOT_SIZE,
+            height: UNREAD_DOT_SIZE,
+            borderRadius: '50%',
+            bgcolor: readableAccent(theme),
+          }}
+        />
+      )}
+
+      <Box
+        component={isLink ? RouterLink : 'div'}
+        href={isLink ? href : undefined}
+        onClick={isLink ? onOpen : undefined}
+        sx={{
+          flex: 1,
+          minWidth: 0,
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: 1.5,
+          pl: ROW_PX,
+          pr: 0.5,
+          py: ROW_PY,
+          color: 'inherit',
+          textDecoration: 'none',
+          WebkitTapHighlightColor: 'transparent',
+          /** Matches the filter-chip focus ring so keyboard nav reads the same app-wide. */
+          '&:focus-visible': {
+            outline: `2px solid ${alpha(theme.palette.primary.main, 0.35)}`,
+            outlineOffset: -2,
+          },
+        }}
+      >
+        {avatar}
+        <Box sx={{ minWidth: 0, flex: 1 }}>{children}</Box>
+      </Box>
+
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 0.25,
+          pr: 0.5,
+          /** Optically centers the 44px controls on the avatar rather than the whole row. */
+          pt: `${ROW_AVATAR_CENTER_PX - TOUCH_TARGET_SIZE / 2}px`,
+          flexShrink: 0,
+        }}
+      >
+        {actions}
+      </Box>
     </Box>
   );
 }
@@ -216,82 +418,71 @@ function RowShell({ isUnread, theme, avatar, children, actions }) {
 RowShell.propTypes = {
   isUnread: PropTypes.bool,
   theme: PropTypes.object.isRequired,
+  t: PropTypes.func.isRequired,
+  href: PropTypes.string,
+  onOpen: PropTypes.func,
   avatar: PropTypes.node,
   children: PropTypes.node,
   actions: PropTypes.node,
 };
 
-function ActorAvatar({ name, href, go }) {
+/** Initial avatar with a kind badge — notification payloads carry no avatar URL. */
+function ActorAvatar({ name, icon, theme }) {
   const initial = (name || '').charAt(0).toUpperCase();
-  if (href) {
-    return (
+
+  return (
+    <Box sx={{ position: 'relative', flexShrink: 0 }}>
       <Avatar
-        component={RouterLink}
-        href={href}
-        onClick={go}
         alt=""
-        sx={{ width: 40, height: 40, flexShrink: 0 }}
+        sx={{
+          width: AVATAR_SIZE,
+          height: AVATAR_SIZE,
+          fontSize: '0.9375rem',
+          fontWeight: 700,
+          color: 'text.primary',
+          bgcolor: alpha(theme.palette.primary.main, 0.12),
+        }}
       >
         {initial}
       </Avatar>
-    );
-  }
-  return (
-    <Avatar alt="" sx={{ width: 40, height: 40, flexShrink: 0 }}>
-      {initial}
-    </Avatar>
+      <Box
+        sx={{
+          position: 'absolute',
+          right: -3,
+          bottom: -3,
+          width: TYPE_BADGE_SIZE,
+          height: TYPE_BADGE_SIZE,
+          borderRadius: '50%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          bgcolor: 'background.paper',
+          color: readableAccent(theme),
+          boxShadow: theme.customShadows?.z1 ?? theme.shadows[1],
+        }}
+      >
+        <Iconify icon={icon} width={12} />
+      </Box>
+    </Box>
   );
 }
 
-ActorAvatar.propTypes = { name: PropTypes.string, href: PropTypes.string, go: PropTypes.func };
-
-function RowActions({ isUnread, t, onMarkRead, onDelete, onMute }) {
-  return (
-    <Stack direction="row" spacing={0.25} sx={{ flexShrink: 0 }}>
-      {isUnread && (
-        <Tooltip title={t('components.notifications.mark_read')}>
-          <IconButton
-            size="small"
-            aria-label={t('components.notifications.mark_read')}
-            onClick={onMarkRead}
-          >
-            <Iconify icon={ic.checkmarkFill} width={18} />
-          </IconButton>
-        </Tooltip>
-      )}
-      {onMute && (
-        <Tooltip title={t('components.notifications.mute_list')}>
-          <IconButton
-            size="small"
-            aria-label={t('components.notifications.mute_list')}
-            onClick={onMute}
-            sx={{ color: 'text.secondary' }}
-          >
-            <Iconify icon={ic.bellOffLinear} width={18} />
-          </IconButton>
-        </Tooltip>
-      )}
-      <Tooltip title={t('components.notifications.delete')}>
-        <IconButton
-          size="small"
-          aria-label={t('components.notifications.delete')}
-          onClick={onDelete}
-          sx={{ color: 'text.secondary', '&:hover': { color: 'error.main' } }}
-        >
-          <Iconify icon={ic.trashLinear} width={18} />
-        </IconButton>
-      </Tooltip>
-    </Stack>
-  );
-}
-
-RowActions.propTypes = {
-  isUnread: PropTypes.bool,
-  t: PropTypes.func.isRequired,
-  onMarkRead: PropTypes.func,
-  onDelete: PropTypes.func,
-  onMute: PropTypes.func,
+ActorAvatar.propTypes = {
+  name: PropTypes.string,
+  icon: PropTypes.string.isRequired,
+  theme: PropTypes.object.isRequired,
 };
+
+/** Timestamp line under every sentence. */
+function RowMeta({ children }) {
+  return (
+    <Typography variant="caption" color="text.secondary" sx={{ mt: 0.375, display: 'block' }}>
+      {children}
+    </Typography>
+  );
+}
+
+RowMeta.propTypes = { children: PropTypes.node };
 
 // ----------------------------------------------------------------------
 
@@ -306,7 +497,6 @@ function NotificationRow({
   onMuteList,
   trackClick,
 }) {
-  const router = useRouter();
   const data = notification?.data ?? {};
   const type = notification?.type;
   const sentenceKind = resolveNotificationSentenceKind(type);
@@ -318,77 +508,40 @@ function NotificationRow({
   const actorHref = actorUsername ? paths.dashboard.userPublic(actorUsername) : null;
   const listName = data.list_name || '';
   const listHref = data.list_id ? paths.dashboard.listDetails(data.list_id) : null;
+  const restaurantName = data.restaurant_name || '';
+  const spotHref =
+    listHref && data.restaurant_id ? `${listHref}?spot=${data.restaurant_id}` : listHref;
 
-  const go = (href) => (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+  /** One destination per row: the thing the notification is about. */
+  const href = sentenceKind === 'new_follower' ? actorHref : (spotHref ?? actorHref);
+
+  const handleOpen = () => {
     if (isUnread) onMarkRead?.(notification.id);
     trackClick?.(type);
     onNavigate?.();
-    if (href) router.push(href);
   };
-
-  const actorLink = actorHref ? (
-    <Box component={RouterLink} href={actorHref} onClick={go(actorHref)} sx={rowLinkSx}>
-      {actorName}
-    </Box>
-  ) : (
-    <Box component="span" sx={{ fontWeight: 700, color: 'text.primary' }}>
-      {actorName}
-    </Box>
-  );
-
-  const listLink = (
-    <Box component={RouterLink} href={listHref} onClick={go(listHref)} sx={rowLinkSx}>
-      {listName}
-    </Box>
-  );
 
   let sentence;
   if (sentenceKind === 'new_follower') {
     sentence = (
       <>
-        {actorLink} {t('components.notifications.new_follower_body')}
+        <Subject>{actorName}</Subject> {t('components.notifications.new_follower_body')}
       </>
     );
-  } else if (sentenceKind === 'list_invite') {
+  } else if (sentenceKind === 'list_update') {
     sentence = (
       <>
-        {actorLink} {t('components.notifications.list_invite_verb')} {listLink}
-      </>
-    );
-  } else if (sentenceKind === 'list_subscribed') {
-    sentence = (
-      <>
-        {actorLink} {t('components.notifications.list_subscribed_verb')} {listLink}
-      </>
-    );
-  } else if (sentenceKind === 'invite_accepted') {
-    sentence = (
-      <>
-        {actorLink} {t('components.notifications.invite_accepted_verb')} {listLink}
-      </>
-    );
-  } else if (sentenceKind === 'join_approved') {
-    sentence = (
-      <>
-        {actorLink} {t('components.notifications.join_approved_verb')} {listLink}
+        <Subject>{actorName}</Subject> {t('components.notifications.verb_added')}{' '}
+        <Subject>{restaurantName}</Subject> {t('components.notifications.verb_to')}{' '}
+        <Subject>{listName}</Subject>
       </>
     );
   } else {
-    // list_update
-    const restaurantName = data.restaurant_name || '';
-    const spotHref =
-      data.list_id && data.restaurant_id
-        ? `${paths.dashboard.listDetails(data.list_id)}?spot=${data.restaurant_id}`
-        : listHref;
     sentence = (
       <>
-        {actorLink} {t('components.notifications.verb_added')}{' '}
-        <Box component={RouterLink} href={spotHref} onClick={go(spotHref)} sx={rowLinkSx}>
-          {restaurantName}
-        </Box>{' '}
-        {t('components.notifications.verb_to')} {listLink}
+        <Subject>{actorName}</Subject>{' '}
+        {t(`components.notifications.${SENTENCE_VERB_KEYS[sentenceKind]}`)}{' '}
+        <Subject>{listName}</Subject>
       </>
     );
   }
@@ -397,25 +550,29 @@ function NotificationRow({
     <RowShell
       isUnread={isUnread}
       theme={theme}
+      t={t}
+      href={href}
+      onOpen={handleOpen}
       avatar={
-        <ActorAvatar name={actorName} href={actorHref} go={actorHref ? go(actorHref) : undefined} />
+        <ActorAvatar
+          name={actorName}
+          icon={TYPE_ICON_BY_KIND[sentenceKind] ?? TYPE_ICON_BY_KIND.list_update}
+          theme={theme}
+        />
       }
       actions={
-        <RowActions
+        <NotificationRowMenu
           isUnread={isUnread}
-          t={t}
-          onMarkRead={() => onMarkRead?.(notification.id)}
-          onDelete={() => onDelete?.(notification.id)}
+          onMarkRead={onMarkRead ? () => onMarkRead(notification.id) : undefined}
           onMute={canMute ? () => onMuteList(data.list_id) : undefined}
+          onDelete={onDelete ? () => onDelete(notification.id) : undefined}
         />
       }
     >
-      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+      <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: isUnread ? 500 : 400 }}>
         {sentence}
       </Typography>
-      <Typography variant="caption" color="text.secondary" sx={{ mt: 0.25, display: 'block' }}>
-        {relativeTime(notification.created_at, isPt)}
-      </Typography>
+      <RowMeta>{relativeTime(notification.created_at, isPt)}</RowMeta>
     </RowShell>
   );
 }
@@ -445,101 +602,100 @@ function GroupRow({
   onMuteList,
   trackClick,
 }) {
-  const router = useRouter();
   const [expanded, setExpanded] = useState(false);
   const data = group.data ?? {};
   const isUnread = group.unreadCount > 0;
 
   const actorName = data.creator_name || '';
-  const actorUsername = data.creator_username || null;
-  const actorHref = actorUsername ? paths.dashboard.userPublic(actorUsername) : null;
+  const listName = data.list_name || '';
   const listHref = data.list_id ? paths.dashboard.listDetails(data.list_id) : null;
   const ids = group.items.map((n) => n.id);
 
-  const go = (href) => (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (isUnread) ids.forEach((id) => onMarkRead?.(id));
+  const markGroupRead = () => ids.forEach((id) => onMarkRead?.(id));
+
+  const handleOpen = () => {
+    if (isUnread) markGroupRead();
     trackClick?.('list_update_group');
     onNavigate?.();
-    if (href) router.push(href);
   };
 
-  const actorLink = actorHref ? (
-    <Box component={RouterLink} href={actorHref} onClick={go(actorHref)} sx={rowLinkSx}>
-      {actorName}
-    </Box>
-  ) : (
-    <Box component="span" sx={{ fontWeight: 700, color: 'text.primary' }}>
-      {actorName}
-    </Box>
-  );
+  const toggleLabel = expanded
+    ? t('components.notifications.group_hide')
+    : t('components.notifications.group_show');
 
   return (
     <Box>
       <RowShell
         isUnread={isUnread}
         theme={theme}
-        avatar={
-          <ActorAvatar
-            name={actorName}
-            href={actorHref}
-            go={actorHref ? go(actorHref) : undefined}
-          />
-        }
+        t={t}
+        href={listHref}
+        onOpen={handleOpen}
+        avatar={<ActorAvatar name={actorName} icon={TYPE_ICON_BY_KIND.list_update} theme={theme} />}
         actions={
-          <RowActions
-            isUnread={isUnread}
-            t={t}
-            onMarkRead={() => ids.forEach((id) => onMarkRead?.(id))}
-            onDelete={() => ids.forEach((id) => onDelete?.(id))}
-            onMute={data.list_id && onMuteList ? () => onMuteList(data.list_id) : undefined}
-          />
+          <>
+            <Tooltip title={toggleLabel}>
+              <IconButton
+                onClick={() => setExpanded((v) => !v)}
+                aria-expanded={expanded}
+                aria-label={toggleLabel}
+                sx={{
+                  width: TOUCH_TARGET_SIZE,
+                  height: TOUCH_TARGET_SIZE,
+                  color: 'text.secondary',
+                  '&:hover': { color: 'text.primary' },
+                }}
+              >
+                <Iconify
+                  icon={ic.chevronDownFill}
+                  width={20}
+                  sx={{
+                    transform: expanded ? 'rotate(180deg)' : 'none',
+                    transition: theme.transitions.create('transform', {
+                      duration: theme.transitions.duration.shortest,
+                    }),
+                  }}
+                />
+              </IconButton>
+            </Tooltip>
+            <NotificationRowMenu
+              isUnread={isUnread}
+              onMarkRead={onMarkRead ? markGroupRead : undefined}
+              onMute={data.list_id && onMuteList ? () => onMuteList(data.list_id) : undefined}
+              onDelete={onDelete ? () => ids.forEach((id) => onDelete(id)) : undefined}
+            />
+          </>
         }
       >
-        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          {actorLink} {t('components.notifications.verb_added')}{' '}
-          <Box component="span" sx={{ fontWeight: 700, color: 'text.primary' }}>
-            {t('components.notifications.spots_count', { count: group.count })}
-          </Box>{' '}
-          {t('components.notifications.verb_to')}{' '}
-          <Box component={RouterLink} href={listHref} onClick={go(listHref)} sx={rowLinkSx}>
-            {data.list_name || ''}
-          </Box>
+        <Typography
+          variant="body2"
+          sx={{ color: 'text.secondary', fontWeight: isUnread ? 500 : 400 }}
+        >
+          <Subject>{actorName}</Subject> {t('components.notifications.verb_added')}{' '}
+          <Subject>{t('components.notifications.spots_count', { count: group.count })}</Subject>{' '}
+          {t('components.notifications.verb_to')} <Subject>{listName}</Subject>
         </Typography>
-        <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 0.25 }}>
-          <Typography variant="caption" color="text.secondary">
-            {relativeTime(group.createdAt, isPt)}
-          </Typography>
-          <Button
-            size="small"
-            variant="text"
-            color="inherit"
-            onClick={() => setExpanded((v) => !v)}
-            sx={{ minWidth: 0, p: 0.25, fontSize: 12, color: 'primary.main' }}
-            aria-expanded={expanded}
-          >
-            {expanded
-              ? t('components.notifications.group_hide')
-              : t('components.notifications.group_show')}
-          </Button>
-        </Stack>
+        <RowMeta>{relativeTime(group.createdAt, isPt)}</RowMeta>
       </RowShell>
 
       <Collapse in={expanded} unmountOnExit>
-        <Box sx={{ pl: 2, borderLeft: `2px solid ${theme.palette.divider}`, ml: 3 }}>
-          {group.items.map((n) => (
-            <NotificationRow
-              key={n.id}
-              notification={n}
+        <Box
+          sx={{
+            bgcolor: alpha(theme.palette.text.primary, 0.025),
+            borderTop: `1px solid ${alpha(theme.palette.divider, 0.5)}`,
+          }}
+        >
+          {group.items.map((item) => (
+            <GroupSpotRow
+              key={item.id}
+              item={item}
               isPt={isPt}
-              t={t}
               theme={theme}
-              onMarkRead={onMarkRead}
-              onDelete={onDelete}
-              onNavigate={onNavigate}
-              onMuteList={onMuteList}
-              trackClick={trackClick}
+              onOpen={() => {
+                if (!item.read_at) onMarkRead?.(item.id);
+                trackClick?.('list_update');
+                onNavigate?.();
+              }}
             />
           ))}
         </Box>
@@ -558,4 +714,75 @@ GroupRow.propTypes = {
   onNavigate: PropTypes.func,
   onMuteList: PropTypes.func,
   trackClick: PropTypes.func,
+};
+
+/** One spot inside an expanded burst — a link, not a full notification row. */
+function GroupSpotRow({ item, isPt, theme, onOpen }) {
+  const data = item?.data ?? {};
+  const listHref = data.list_id ? paths.dashboard.listDetails(data.list_id) : null;
+  const href = listHref && data.restaurant_id ? `${listHref}?spot=${data.restaurant_id}` : listHref;
+
+  const body = (
+    <>
+      <Iconify
+        icon={ic.mapPointBold}
+        width={14}
+        sx={{ color: readableAccent(theme), flexShrink: 0, mt: 0.25 }}
+      />
+      <Typography
+        variant="body2"
+        noWrap
+        sx={{ fontWeight: 600, color: 'text.primary', minWidth: 0 }}
+      >
+        {data.restaurant_name || ''}
+      </Typography>
+      <Typography variant="caption" color="text.secondary" sx={{ flexShrink: 0, ml: 'auto' }}>
+        {relativeTime(item.created_at, isPt)}
+      </Typography>
+    </>
+  );
+
+  const layoutSx = {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: 1,
+    pl: TEXT_COLUMN_INSET,
+    pr: 2,
+    py: 1,
+  };
+
+  if (!href) {
+    return <Box sx={layoutSx}>{body}</Box>;
+  }
+
+  return (
+    <Box
+      component={RouterLink}
+      href={href}
+      onClick={onOpen}
+      sx={{
+        ...layoutSx,
+        color: 'inherit',
+        textDecoration: 'none',
+        WebkitTapHighlightColor: 'transparent',
+        transition: theme.transitions.create('background-color', {
+          duration: theme.transitions.duration.shorter,
+        }),
+        '&:hover': { bgcolor: theme.palette.action.hover },
+        '&:focus-visible': {
+          outline: `2px solid ${alpha(theme.palette.primary.main, 0.35)}`,
+          outlineOffset: -2,
+        },
+      }}
+    >
+      {body}
+    </Box>
+  );
+}
+
+GroupSpotRow.propTypes = {
+  item: PropTypes.object.isRequired,
+  isPt: PropTypes.bool,
+  theme: PropTypes.object.isRequired,
+  onOpen: PropTypes.func,
 };
