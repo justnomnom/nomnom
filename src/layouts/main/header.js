@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import PropTypes from 'prop-types';
 import { usePathname } from 'next/navigation';
 
 import Box from '@mui/material/Box';
@@ -31,7 +32,12 @@ import HeaderShadow from '../common/header-shadow';
 
 // ----------------------------------------------------------------------
 
-export default function Header() {
+/**
+ * Marketing app bar. `minimal` keeps the brand mark but drops the nav and the
+ * sign-up CTA — for task pages reached by a shared link (e.g. /tonight/[id]),
+ * where the acquisition pill otherwise outranks the page's own action.
+ */
+export default function Header({ minimal = false }) {
   const theme = useTheme();
   const { t } = useTranslate();
   const { user } = useAuthContext();
@@ -114,74 +120,76 @@ export default function Header() {
 
           <Box sx={{ flexGrow: 1, minWidth: 0 }} />
 
-          {mdUp && <NavDesktop data={navData} />}
+          {mdUp && !minimal && <NavDesktop data={navData} />}
 
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="flex-end"
-            spacing={{ xs: 0.25, sm: 0.75 }}
-            sx={{
-              flexShrink: 0,
-              maxWidth: { xs: 'calc(100vw - 148px - 32px)', sm: 'none' },
-              '& .MuiIconButton-root': {
-                width: TOUCH_TARGET_SIZE,
-                height: TOUCH_TARGET_SIZE,
-                WebkitTapHighlightColor: 'transparent',
-              },
-            }}
-          >
-            {/* Menu before CTA on small screens so the icon is not clipped when the pill is wide */}
-            {!mdUp && <NavMobile data={navData} />}
-
-            <Button
-              component={Link}
-              href={ctaHref}
-              variant="contained"
-              color="primary"
-              size={mdUp ? 'medium' : 'small'}
+          {!minimal && (
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="flex-end"
+              spacing={{ xs: 0.25, sm: 0.75 }}
               sx={{
-                ml: { xs: 0.5, sm: 1 },
-                px: { xs: 1.75, sm: 2.5 },
-                py: { xs: 0.85, sm: 0.95 },
-                minHeight: TOUCH_TARGET_SIZE,
-                minWidth: 0,
-                borderRadius: '2.5rem',
-                fontWeight: 600,
-                fontSize: { xs: '0.8125rem', sm: '0.875rem' },
-                lineHeight: 1.35,
-                letterSpacing: '0.02em',
-                textTransform: 'none',
-                boxShadow: (th) => th.customShadows.primary,
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                transition: (th) =>
-                  th.transitions.create(['box-shadow', 'background-color', 'transform'], {
-                    duration: th.transitions.duration.shorter,
-                  }),
-                '&:hover': {
-                  boxShadow: (th) =>
-                    `${alpha(th.palette.primary.darker, 0.35)} 0px 8px 20px -4px, ${alpha(th.palette.primary.main, 0.4)} 0px 0px 0px 1px`,
-                },
-                '&:focus-visible': {
-                  outline: (th) =>
-                    `2px solid ${
-                      th.palette.mode === 'light'
-                        ? th.palette.info.main
-                        : alpha(th.palette.info.light, 0.9)
-                    }`,
-                  outlineOffset: 2,
+                flexShrink: 0,
+                maxWidth: { xs: 'calc(100vw - 148px - 32px)', sm: 'none' },
+                '& .MuiIconButton-root': {
+                  width: TOUCH_TARGET_SIZE,
+                  height: TOUCH_TARGET_SIZE,
+                  WebkitTapHighlightColor: 'transparent',
                 },
               }}
             >
-              {t(
-                smUp
-                  ? 'pages.home.advertisement.ctaLabel'
-                  : 'pages.home.advertisement.ctaLabelShort'
-              )}
-            </Button>
-          </Stack>
+              {/* Menu before CTA on small screens so the icon is not clipped when the pill is wide */}
+              {!mdUp && <NavMobile data={navData} />}
+
+              <Button
+                component={Link}
+                href={ctaHref}
+                variant="contained"
+                color="primary"
+                size={mdUp ? 'medium' : 'small'}
+                sx={{
+                  ml: { xs: 0.5, sm: 1 },
+                  px: { xs: 1.75, sm: 2.5 },
+                  py: { xs: 0.85, sm: 0.95 },
+                  minHeight: TOUCH_TARGET_SIZE,
+                  minWidth: 0,
+                  borderRadius: '2.5rem',
+                  fontWeight: 600,
+                  fontSize: { xs: '0.8125rem', sm: '0.875rem' },
+                  lineHeight: 1.35,
+                  letterSpacing: '0.02em',
+                  textTransform: 'none',
+                  boxShadow: (th) => th.customShadows.primary,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  transition: (th) =>
+                    th.transitions.create(['box-shadow', 'background-color', 'transform'], {
+                      duration: th.transitions.duration.shorter,
+                    }),
+                  '&:hover': {
+                    boxShadow: (th) =>
+                      `${alpha(th.palette.primary.darker, 0.35)} 0px 8px 20px -4px, ${alpha(th.palette.primary.main, 0.4)} 0px 0px 0px 1px`,
+                  },
+                  '&:focus-visible': {
+                    outline: (th) =>
+                      `2px solid ${
+                        th.palette.mode === 'light'
+                          ? th.palette.info.main
+                          : alpha(th.palette.info.light, 0.9)
+                      }`,
+                    outlineOffset: 2,
+                  },
+                }}
+              >
+                {t(
+                  smUp
+                    ? 'pages.home.advertisement.ctaLabel'
+                    : 'pages.home.advertisement.ctaLabelShort'
+                )}
+              </Button>
+            </Stack>
+          )}
         </Container>
       </Toolbar>
 
@@ -189,3 +197,8 @@ export default function Header() {
     </AppBar>
   );
 }
+
+Header.propTypes = {
+  /** Brand mark only: no nav, no sign-up CTA. */
+  minimal: PropTypes.bool,
+};

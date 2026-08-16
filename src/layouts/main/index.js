@@ -13,12 +13,17 @@ import Header from './header';
 
 // ----------------------------------------------------------------------
 
-export default function MainLayout({ children }) {
+/**
+ * Marketing shell. `minimal` strips the nav, the sign-up CTA and the footer,
+ * leaving the brand mark — for public task pages opened from a shared link,
+ * where marketing chrome competes with the job the visitor came to do.
+ */
+export default function MainLayout({ children, minimal = false }) {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: 1 }}>
       <SkipToMainLink />
 
-      <Header />
+      <Header minimal={minimal} />
 
       <Box
         component="main"
@@ -41,11 +46,12 @@ export default function MainLayout({ children }) {
         {children}
       </Box>
 
-      <Footer />
+      {!minimal && <Footer />}
     </Box>
   );
 }
 
 MainLayout.propTypes = {
   children: PropTypes.node,
+  minimal: PropTypes.bool,
 };
