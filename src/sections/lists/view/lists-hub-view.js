@@ -545,7 +545,12 @@ export default function ListsHubView() {
                           aria-busy="true"
                           sx={{
                             display: 'grid',
-                            gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+                            /* Must track the live tile grid below (DESIGN.md §10). */
+                            gridTemplateColumns: {
+                              xs: 'repeat(2, minmax(0, 1fr))',
+                              sm: 'repeat(3, minmax(0, 1fr))',
+                              md: 'repeat(4, minmax(0, 1fr))',
+                            },
                             gap: 1.5,
                           }}
                         >
@@ -656,7 +661,14 @@ export default function ListsHubView() {
                       <Box
                         sx={{
                           display: 'grid',
-                          gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+                          /* 2-up on mobile, expanding on desktop (DESIGN.md §10). Fixed at
+                             2 columns, tiles stretched to ~446px wide on a 1280px screen
+                             while the cover art stayed ~102px, leaving large dead gaps. */
+                          gridTemplateColumns: {
+                            xs: 'repeat(2, minmax(0, 1fr))',
+                            sm: 'repeat(3, minmax(0, 1fr))',
+                            md: 'repeat(4, minmax(0, 1fr))',
+                          },
                           gap: 1.5,
                         }}
                       >
