@@ -29,6 +29,7 @@ export default function SettingsSelectionRow({
   iconColor = 'primary.main',
   iconSx,
   label,
+  multiSelect = false,
 }) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
@@ -36,6 +37,7 @@ export default function SettingsSelectionRow({
   return (
     <CardActionArea
       onClick={onClick}
+      aria-pressed={selected}
       sx={{
         px: 2,
         py: 2,
@@ -99,10 +101,12 @@ export default function SettingsSelectionRow({
           sx={{ color: 'primary.main', flexShrink: 0 }}
         />
       ) : (
+        /* Multi-select rows rest on an empty check circle so the row reads as
+           "tap to pick"; navigation-style lists keep the drill-in chevron. */
         <Iconify
-          icon={ic.chevronRightLinear}
-          width={20}
-          sx={{ color: 'text.secondary', flexShrink: 0 }}
+          icon={multiSelect ? ic.checkCircleLinear : ic.chevronRightLinear}
+          width={multiSelect ? 22 : 20}
+          sx={{ color: multiSelect ? 'text.disabled' : 'text.secondary', flexShrink: 0 }}
         />
       )}
     </CardActionArea>
@@ -117,4 +121,6 @@ SettingsSelectionRow.propTypes = {
   iconColor: PropTypes.string,
   iconSx: PropTypes.object,
   label: PropTypes.node.isRequired,
+  /** Rest on an empty check circle instead of a drill-in chevron. */
+  multiSelect: PropTypes.bool,
 };

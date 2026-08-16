@@ -31,6 +31,7 @@ export const ic = {
   chartBold: 'solar:chart-2-bold',
   chatRoundLineLinear: 'solar:chat-round-line-linear',
   checkCircleBold: 'solar:check-circle-bold',
+  checkCircleLinear: 'solar:check-circle-linear',
   checkReadBold: 'solar:check-read-bold',
   checkmarkCircleFill: 'eva:checkmark-circle-2-fill',
   checkmarkFill: 'eva:checkmark-fill',

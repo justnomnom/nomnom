@@ -269,6 +269,7 @@ export default function PlanTonightSheet({ open, onClose, listId, items, isOwner
   const renderPickerRow = (place) => (
     <Box key={place.restaurantId} onPointerDown={(event) => event.stopPropagation()}>
       <SettingsSelectionRow
+        multiSelect
         selected={selectedIds.has(place.restaurantId)}
         onClick={() => handleToggle(place)}
         icon={ic.shopBold}
