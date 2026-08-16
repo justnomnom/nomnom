@@ -18,20 +18,22 @@ export const grey = {
   900: '#15130f',
 };
 
+/**
+ * White labels on filled terracotta (contained CTAs, selected chips, badges, FABs).
+ *
+ * Product lock — never change this to ink / `grey[900]` / `text.primary` for WCAG.
+ * That regression painted every primary button black. Small terracotta-*as-text*
+ * uses `readableAccent()`, not a dark `contrastText`.
+ */
+export const PRIMARY_ON_FILL_TEXT = '#FFFFFF';
+
 export const primary = {
   lighter: '#FFE8DF',
   light: '#FFA070',
   main: '#FF6B35',
   dark: '#E85A28',
   darker: '#B8481F',
-  /**
-   * Warm ink, not white. White on `main` is 2.77:1 — below AA for the 12-14px
-   * labels that sit on every filled terracotta surface (contained CTAs,
-   * selected filter chips, badges). Ink clears AA on the whole ramp
-   * (light 9.29:1, main 6.54:1, dark 5.23:1) and keeps the terracotta itself
-   * untouched. Same value as `grey[900]` / `text.primary`.
-   */
-  contrastText: '#15130f',
+  contrastText: PRIMARY_ON_FILL_TEXT,
 };
 
 export const secondary = {

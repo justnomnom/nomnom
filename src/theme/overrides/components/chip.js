@@ -3,6 +3,7 @@ import { chipClasses } from '@mui/material/Chip';
 
 import { RADIUS } from '../../spacing';
 import { hoverable } from '../hoverable';
+import { PRIMARY_ON_FILL_TEXT } from '../../palette';
 
 // ----------------------------------------------------------------------
 
@@ -68,6 +69,10 @@ export function chip(theme) {
           color: theme.palette[color].lighter,
           backgroundColor: theme.palette[color].dark,
         },
+        ...(filledVariant &&
+          color === 'primary' && {
+            color: PRIMARY_ON_FILL_TEXT,
+          }),
         // SOFT
         ...(softVariant && {
           color: theme.palette[color][lightMode ? 'dark' : 'light'],

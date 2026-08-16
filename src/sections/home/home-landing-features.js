@@ -227,7 +227,7 @@ function FeatureListsVisual() {
               ...(list.active
                 ? {
                     bgcolor: 'primary.main',
-                    color: 'common.white',
+                    color: 'primary.contrastText',
                     boxShadow: (th) => `0 4px 14px -4px ${alpha(th.palette.primary.main, 0.45)}`,
                   }
                 : {

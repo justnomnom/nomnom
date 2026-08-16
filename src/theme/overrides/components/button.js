@@ -2,6 +2,7 @@ import { alpha } from '@mui/material/styles';
 import { buttonClasses } from '@mui/material/Button';
 
 import { hoverable } from '../hoverable';
+import { PRIMARY_ON_FILL_TEXT } from '../../palette';
 
 // ----------------------------------------------------------------------
 
@@ -72,6 +73,9 @@ export function button(theme) {
       ...(ownerState.color === color && {
         ...(containedVariant && {
           boxShadow: theme.customShadows[color],
+          ...(color === 'primary' && {
+            color: PRIMARY_ON_FILL_TEXT,
+          }),
           ...hoverable({
             boxShadow:
               color === 'primary' ? theme.customShadows.primaryHover : theme.customShadows.z16,

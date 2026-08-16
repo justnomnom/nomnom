@@ -202,7 +202,13 @@ function discoverFeedChipSx(theme, selected) {
     border: `1px solid ${selected ? theme.palette.primary.main : theme.palette.divider}`,
     color: selected ? SCROLLABLE_CHIP_SELECTED_TEXT : 'text.secondary',
     '& .MuiButton-startIcon': { marginRight: '5px', marginLeft: 0 },
-    '&:hover': selected ? { bgcolor: 'primary.dark', borderColor: 'primary.dark' } : undefined,
+    '&:hover': selected
+      ? {
+          bgcolor: 'primary.dark',
+          borderColor: 'primary.dark',
+          color: SCROLLABLE_CHIP_SELECTED_TEXT,
+        }
+      : undefined,
   };
 }
 

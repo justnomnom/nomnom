@@ -6,6 +6,8 @@ import Tabs from '@mui/material/Tabs';
 import { alpha, useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
+import { PRIMARY_ON_FILL_TEXT } from 'src/theme/palette';
+
 // ----------------------------------------------------------------------
 
 /** Shared touch-friendly height for map filter buttons, list hub filter pills, and tab strips. */
@@ -15,17 +17,10 @@ export const SCROLLABLE_CHIP_PILL_MIN_HEIGHT = { xs: 44, sm: 40 };
 export const SCROLLABLE_CHIP_PILL_BORDER_RADIUS = 999;
 
 /**
- * Selected-chip label colour — white, deliberately *not* `primary.contrastText`.
- *
- * `primary.contrastText` is warm ink (`#15130f`) so filled brand surfaces clear AA
- * (see DESIGN.md §2). Chips are the sanctioned exception: the selected pill reads as
- * white-on-terracotta by design. That pairing measures 2.77:1 on `primary.main`, below
- * the 4.5:1 AA floor — chips carry a redundant selected signal (`aria-pressed` /
- * `Mui-selected`, the terracotta fill itself, and `customShadows.chipGlow`), so the
- * label colour is not the only thing distinguishing state. Contained CTAs and badges
- * keep the accessible ink; do not widen this exception to them.
+ * Selected-chip label colour — same white as contained primary buttons.
+ * Aliased to `PRIMARY_ON_FILL_TEXT` so chips cannot drift if `contrastText` is edited.
  */
-export const SCROLLABLE_CHIP_SELECTED_TEXT = '#FFFFFF';
+export const SCROLLABLE_CHIP_SELECTED_TEXT = PRIMARY_ON_FILL_TEXT;
 
 /** Horizontal scroll + hidden scrollbar — same behavior as `.MuiTabs-scroller` for plain strips (e.g. avatar links). */
 export const scrollableChipStripScrollerSx = {
@@ -106,8 +101,9 @@ function pillButtonHoverSx(theme, selected) {
       '&:hover': {
         bgcolor: 'primary.dark',
         borderColor: 'primary.dark',
-        // MUI text `Button` paints via `--variant-textBg`; keep in sync or primary sticks after toggle.
+        color: SCROLLABLE_CHIP_SELECTED_TEXT,
         '--variant-textBg': theme.palette.primary.dark,
+        '--variant-textColor': SCROLLABLE_CHIP_SELECTED_TEXT,
       },
     };
   }
@@ -130,8 +126,10 @@ function pillButtonActiveAndFocusSx(theme, selected, fill, border) {
       '&:active': {
         bgcolor: 'primary.dark',
         borderColor: 'primary.dark',
+        color: SCROLLABLE_CHIP_SELECTED_TEXT,
         boxShadow: theme.customShadows.chipGlow,
         '--variant-textBg': theme.palette.primary.dark,
+        '--variant-textColor': SCROLLABLE_CHIP_SELECTED_TEXT,
       },
       '&:focus:not(:focus-visible)': {
         outline: 'none',
@@ -284,6 +282,7 @@ export function scrollableChipSelectStyles(theme) {
         '&.Mui-selected': {
           bgcolor: 'primary.dark',
           borderColor: 'primary.dark',
+          color: SCROLLABLE_CHIP_SELECTED_TEXT,
         },
       },
       '&.Mui-disabled': {

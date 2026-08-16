@@ -359,7 +359,7 @@ Before opening a PR that adds UI, scan for these patterns:
 - [ ] Skeleton with `SkeletonTheme`? → use `useSkeletonThemeColors`
 - [ ] Password field? → use `PasswordVisibilityAdornment`
 - [ ] Inventing `borderRadius: 9999` in a `style` prop? → use `RADIUS.pill` (in `sx`, `borderRadius: 999` is the sanctioned pill shorthand per DESIGN.md §4)
-- [ ] `variant="contained"` button? → declare `color` explicitly (`color="primary"` for brand CTAs — theme default is `inherit`, which renders near-black)
+- [ ] `variant="contained"` button? → declare `color` explicitly (`color="primary"` for brand CTAs — theme default is `inherit`, which renders near-black). Labels on terracotta fills are white (`PRIMARY_ON_FILL_TEXT`) — never ink / `text.primary`
 - [ ] Inventing `minWidth/minHeight: 44`? → use `touchTargetSx` or `TOUCH_TARGET_SIZE`
 - [ ] Inventing `zIndex: 1090` etc.? → use `Z_INDEX.*`
 - [ ] Rendering numeric value that might tick? → spread `tabularNumsSx`

@@ -10,7 +10,7 @@
  *
  * Use for: accent-colored counts, unread dots, small type glyphs.
  * Do NOT use for filled brand surfaces (contained buttons, selected chips) —
- * those keep `primary.main` with `contrastText`.
+ * those keep `primary.main` with white `PRIMARY_ON_FILL_TEXT` / `contrastText`.
  *
  * @param {import('@mui/material/styles').Theme} theme
  * @returns {string}

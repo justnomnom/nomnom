@@ -137,7 +137,7 @@ export default function HomeHeroFloats() {
           sx={{
             fontSize: 11,
             fontWeight: 800,
-            color: 'common.white',
+            color: 'primary.contrastText',
             bgcolor: 'primary.main',
             px: '11px',
             py: '4px',

@@ -540,7 +540,7 @@ export default function HomeHeroShowcase() {
                 ...(chip.active
                   ? {
                       bgcolor: 'primary.main',
-                      color: 'common.white',
+                      color: 'primary.contrastText',
                       boxShadow: theme.customShadows.chipGlow,
                     }
                   : {

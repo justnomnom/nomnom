@@ -631,6 +631,7 @@ export default function SponsoredPlacementsAdminView({
           </Stack>
           <Button
             variant="contained"
+            color="primary"
             onClick={handleAdd}
             disabled={!canSubmit}
             fullWidth={isNarrow}

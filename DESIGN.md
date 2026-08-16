@@ -29,14 +29,14 @@ Source of truth: `src/theme/palette.js`
 | `primary.main` | `#FF6B35` | CTAs, active nav, links, focus states, chips |
 | `primary.dark` | `#E85A28` | Pressed state |
 | `primary.darker` | `#B8481F` | Rare emphasis |
-| `primary.contrastText` | `#15130f` | Text/icons on filled primary surfaces (warm ink, not white) — chips excepted, see below |
+| `primary.contrastText` | `#FFFFFF` | Text/icons on filled primary surfaces (white — product lock, see below) |
 
 **Rule**: Terracotta is disciplined — roughly 10% of any surface. Overuse kills its warmth. Use it for: active states, primary buttons, single accent per card, icon tint, text links.
 
-**Rule on text and terracotta (both directions).** Terracotta is a mid-tone: it fails AA against *both* white and near-black at small sizes if you pick the wrong pairing.
+**Rule on text and terracotta (both directions).** Terracotta is a mid-tone. Pair it carefully:
 
-- *Text **on** filled terracotta* uses `contrastText` (warm ink `#15130f`) — 6.54:1 on `main`, 9.29:1 on `light`, 5.23:1 on `dark`. White was 2.77:1 and failed on every step except `darker`. This covers contained CTAs and badges.
-- *Exception — selected chips* use `SCROLLABLE_CHIP_SELECTED_TEXT` (`#FFFFFF`) from `src/components/scrollable-chip-select`, not `contrastText`. White-on-terracotta is the intended chip look and is kept deliberately, accepting 2.77:1 on `main`. It is survivable only because a chip's selected state is signalled three more ways — `aria-pressed`/`Mui-selected`, the terracotta fill, and `customShadows.chipGlow` — so the label colour is never the sole cue. Don't widen this to CTAs or badges, which have no such redundancy.
+- *Text **on** filled terracotta* is **white** (`PRIMARY_ON_FILL_TEXT` / `primary.contrastText` = `#FFFFFF`). Contained primary buttons, selected chips, filled primary chips, primary FABs, and icons on a terracotta fill all use this. Do **not** flip `contrastText` to ink / `grey[900]` / `text.primary` to chase WCAG — that regression painted every primary CTA black. If a small terracotta-fill label ever needs more contrast, darken the *fill* or bump size/weight; never the label to black.
+- *Exception — dark editorial CTAs* (onboarding-style) may use explicit `bgcolor: 'text.primary'` + light label. The tell is the explicit dark `bgcolor`, not a missing `color` prop and not a dark `contrastText`.
 - *Terracotta **as** text or as a small indicator* on a light surface uses `readableAccent(theme)` from `src/theme/readable-accent.js` — it steps light mode down to `primary.darker` (4.83:1 on card) and keeps `primary.main` in dark (5.67:1). `primary.main` as small text on parchment is 2.6:1; see §19.
 
 ### Secondary — Cool Slate (intentional)
@@ -353,6 +353,8 @@ Sizes: `small` (h=30), `medium` (default), `large` (h=48, 15px font).
 
 Contained primary buttons automatically receive `customShadows.primary` and `customShadows.primaryHover` — do not override this.
 
+**Labels on contained primary are white.** `PRIMARY_ON_FILL_TEXT` (`#FFFFFF`) is set on `primary.contrastText` *and* forced in the `MuiButton` contained-primary override so a future `contrastText` tweak cannot blacken CTAs again. Do not set `color: 'text.primary'` or `grey[900]` on a terracotta fill.
+
 **Always declare `color` explicitly on `variant="contained"`.** The theme defaults `MuiButton` to `color="inherit"`, so a contained button without a color renders `grey[800]` near-black — not terracotta. Write `color="primary"` on every brand CTA; use `color="inherit"` only when you deliberately want a neutral/grey button.
 
 **Dark editorial CTA (sanctioned exception).** Onboarding and similar full-bleed editorial moments may use a dark CTA: explicit `bgcolor: 'text.primary'` + `color: 'background.paper'` + warm black shadow (see `primaryCtaSx` in `src/sections/onboarding/onboarding-wizard.js`). The tell that it's intentional is the explicit `bgcolor` — a contained button that's dark only because it *omitted* `color` is a bug, not this pattern. Don't mix dark CTAs and terracotta CTAs on the same screen.
@@ -400,7 +402,7 @@ Pill shape via `borderRadius: 10` (160px effective). Used for:
 - Map view filters (Following, Saved, More…)
 - Toggle tabs (Momentum / Trending, All / My own / Following)
 
-Active chip: `bgcolor = primary.main`, `color = SCROLLABLE_CHIP_SELECTED_TEXT` (white — the §2 chip exception, *not* `contrastText`)  
+Active chip: `bgcolor = primary.main`, `color = SCROLLABLE_CHIP_SELECTED_TEXT` / `primary.contrastText` (same white token as contained primary buttons — including homepage mock chips)  
 Inactive chip: `bgcolor = background.paper` or transparent with border, `color = text.secondary`
 
 ### Rating Badge
@@ -734,7 +736,7 @@ Missing keys silently fall back to the key string — always add both locales wh
 ## 19. Accessibility
 
 - **Minimum touch target**: 44×44px for interactive elements (buttons, nav items, list rows)
-- **WCAG AA contrast** for all body text; primary `#FF6B35` on white meets AA for large text only — do not use it as small body text colour. Reach for `readableAccent(theme)` (`src/theme/readable-accent.js`) when you want an accent-colored count, label, or indicator dot; it returns `primary.darker` in light and `primary.main` in dark
+- **WCAG AA contrast** for all body text; primary `#FF6B35` on white meets AA for large text only — do not use it as small body text colour. Reach for `readableAccent(theme)` (`src/theme/readable-accent.js`) when you want an accent-colored count, label, or indicator dot; it returns `primary.darker` in light and `primary.main` in dark. Do **not** "fix" filled-terracotta labels to ink for contrast — those stay white (`PRIMARY_ON_FILL_TEXT`)
 - **Non-text indicators** (unread dots, status glyphs, type badges) need 3:1 against their own background, same as UI components — the accent helper covers this too
 - **Focus styles**: MUI default focus ring inherits `primary.main` at `0.24` opacity — do not remove
 - **`prefers-reduced-motion`**: All non-essential animations must respect this preference
@@ -784,7 +786,8 @@ Missing keys silently fall back to the key string — always add both locales wh
 | 2026-07-03 | §5 row rhythm sub-scale documented | `py: 1.75` (14px) and `py: 2.25` (18px) are used consistently across settings/list rows and their skeletons — a de-facto rhythm the SPACE scale doesn't capture. Documented as sanctioned (like §3's compact labels) instead of churning 25+ files to 12/16px without visual verification. |
 | 2026-07-03 | §9 indicator-dot width-animation exception | Carousel pagination dots animate `width` 4→10px; `scaleX` would distort the pill radius. Codified as the one sanctioned layout-property animation (sub-16px indicators only). |
 | 2026-07-03 | Ratings localised via `fRating` (FINDING-007) | Rating displays hardcoded `.toFixed(1)` — pt users saw `4.5` instead of `4,5`, violating §17. New `fRating(value, currentLang, { trimTrailingZero })` in `src/utils/format-number.js`; UI surfaces wired to it. SEO-only pages stay en-formatted. |
-| 2026-08-16 | Selected chips carved back out to white (`SCROLLABLE_CHIP_SELECTED_TEXT`) | The `contrastText` flip below also darkened every selected filter chip, changing a look that was intentional. Chips return to white-on-terracotta; CTAs and badges keep the warm ink. The 2.77:1 label is accepted here because selection is also carried by `aria-pressed`/`Mui-selected`, the fill, and `chipGlow` — the colour is never the only cue. Applied at the shared tokens plus the two local copies (`discoverFeedChipSx`, `mapFilterChipSx`). |
-| 2026-08-16 | `primary.contrastText` flipped `#FFFFFF` → `#15130f` (warm ink) | White on terracotta measured 2.77:1 — below AA for the 12–14px labels on every filled brand surface (contained CTAs, selected chips, badges). Ink clears AA across the whole ramp (9.29 / 6.54 / 5.23) and leaves the terracotta itself untouched, so the brand colour is unchanged while its labels become readable. §2 rule added covering both directions. |
+| 2026-08-16 | White labels restored on filled terracotta (`PRIMARY_ON_FILL_TEXT`) | The ink `contrastText` flip made every contained primary button black. Product lock: labels on terracotta fills are white — buttons, chips, FABs, badges. Forced in the palette token *and* the contained-primary / filled-chip / primary-FAB overrides so a future contrast tweak cannot regress CTAs. Small terracotta-*as-text* still uses `readableAccent()`, not a dark `contrastText`. |
+| 2026-08-16 | Selected chips carved back out to white (`SCROLLABLE_CHIP_SELECTED_TEXT`) | The `contrastText` flip below also darkened every selected filter chip, changing a look that was intentional. Chips stay white-on-terracotta (now the same token as buttons). |
+| 2026-08-16 | `primary.contrastText` flipped `#FFFFFF` → `#15130f` (warm ink) — **reverted same day** | White on terracotta measured 2.77:1. Ink cleared AA but broke the brand CTA. Reverted; see the white-label lock above. |
 | 2026-08-16 | Added `readableAccent(theme)` for accent-as-text and small indicators | `primary.main` as 11–12px text or as a state dot on parchment is 2.6:1, which §19 already forbade but nothing enforced. Helper steps light mode to `primary.darker` (4.83:1) and keeps `primary.main` in dark (5.67:1). First consumers: notifications unread counts, unread dots, notification type badges. |
 | 2026-07-03 | `autoFocus` guarded on Capacitor (FINDING-008) | Bare `autoFocus` pops the iOS keyboard and shifts sheets. Standard: `autoFocus={!isCapacitorNative()}` on every autofocused field. |

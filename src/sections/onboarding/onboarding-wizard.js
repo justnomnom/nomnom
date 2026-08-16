@@ -533,8 +533,8 @@ function LocationGpsButton({ state, onRequest, onClear, t }) {
           justifyContent: 'center',
           bgcolor: granted
             ? theme.palette.success.lighter
-            : alpha(theme.palette.common.white, 0.22),
-          color: granted ? theme.palette.success.dark : theme.palette.common.white,
+            : alpha(theme.palette.primary.contrastText, 0.22),
+          color: granted ? theme.palette.success.dark : 'primary.contrastText',
         })}
       >
         {getting ? (
@@ -1480,10 +1480,10 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
                 >
                   <Box sx={{ display: 'flex' }} aria-hidden="true">
                     {[
-                      { initial: 'M', color: 'primary.main' },
-                      { initial: 'Y', color: 'info.main' },
-                      { initial: 'S', color: 'success.main' },
-                      { initial: 'D', color: 'warning.main' },
+                      { initial: 'M', color: 'primary' },
+                      { initial: 'Y', color: 'info' },
+                      { initial: 'S', color: 'success' },
+                      { initial: 'D', color: 'warning' },
                     ].map((a, i) => (
                       <Box
                         key={a.initial}
@@ -1492,8 +1492,8 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
                           height: 32,
                           borderRadius: '50%',
                           ml: i === 0 ? 0 : '-9px',
-                          bgcolor: a.color,
-                          color: muiTheme.palette.common.white,
+                          bgcolor: `${a.color}.main`,
+                          color: `${a.color}.contrastText`,
                           fontSize: 13,
                           fontWeight: 800,
                           display: 'flex',
@@ -2116,6 +2116,7 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
                             </Stack>
                             <Button
                               size="medium"
+                              color="primary"
                               variant={following ? 'outlined' : 'contained'}
                               disabled={!canFollow}
                               fullWidth
@@ -2141,12 +2142,6 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
                                   transition: 'none',
                                   '&:active:not(:disabled)': { transform: 'none' },
                                 },
-                                ...(following
-                                  ? {}
-                                  : {
-                                      bgcolor: 'primary.main',
-                                      '&:hover': { bgcolor: 'primary.dark' },
-                                    }),
                               }}
                             >
                               {(() => {
@@ -2183,6 +2178,7 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
             <Button
               fullWidth
               size="large"
+              color="primary"
               variant="contained"
               onClick={onNextFromWelcome}
               disabled={busy}
@@ -2196,6 +2192,7 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
             <Button
               fullWidth
               size="large"
+              color="primary"
               variant="contained"
               onClick={onNextFromLocation}
               disabled={
@@ -2219,6 +2216,7 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
             <Button
               fullWidth
               size="large"
+              color="primary"
               variant="contained"
               onClick={onNextFromTags}
               disabled={busy}
@@ -2236,6 +2234,7 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
             <Button
               fullWidth
               size="large"
+              color="primary"
               variant="contained"
               onClick={onFinish}
               disabled={

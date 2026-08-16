@@ -35,7 +35,7 @@ export function StyledMapControls() {
           border: 'none',
           lineHeight: '14px',
           borderRadius: '4px',
-          color: theme.palette.common.white,
+          color: theme.palette.primary.contrastText,
           fontWeight: theme.typography.fontWeightBold,
           backgroundColor: theme.palette.primary.main,
         },

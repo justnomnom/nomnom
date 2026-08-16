@@ -3,6 +3,7 @@ import { fabClasses } from '@mui/material/Fab';
 
 import { RADIUS } from '../../spacing';
 import { hoverable } from '../hoverable';
+import { PRIMARY_ON_FILL_TEXT } from '../../palette';
 
 // ----------------------------------------------------------------------
 
@@ -86,6 +87,9 @@ export function fab(theme) {
       ...(ownerState.color === color && {
         ...((circularVariant || extendedVariant) && {
           boxShadow: theme.customShadows[color],
+          ...(color === 'primary' && {
+            color: PRIMARY_ON_FILL_TEXT,
+          }),
           ...hoverable({
             boxShadow:
               color === 'primary' ? theme.customShadows.primaryHover : theme.customShadows.z16,
