@@ -125,7 +125,6 @@ export default function NotificationsPanel({
   onDelete,
   onNavigate,
   onMuteList,
-  emptyLabel,
   emptyAction,
   showListFilter = true,
 }) {
@@ -182,11 +181,11 @@ export default function NotificationsPanel({
               ? 'components.notifications.empty_filtered_title'
               : 'components.notifications.empty_title'
           )}
-          body={
+          body={t(
             filtered
-              ? t('components.notifications.empty_filtered')
-              : emptyLabel || t('components.notifications.empty')
-          }
+              ? 'components.notifications.empty_filtered'
+              : 'components.notifications.empty'
+          )}
           action={filtered ? null : emptyAction}
         />
       );
@@ -275,7 +274,6 @@ NotificationsPanel.propTypes = {
   onDelete: PropTypes.func,
   onNavigate: PropTypes.func,
   onMuteList: PropTypes.func,
-  emptyLabel: PropTypes.string,
   emptyAction: PropTypes.node,
   showListFilter: PropTypes.bool,
 };
