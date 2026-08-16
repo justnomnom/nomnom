@@ -5,6 +5,7 @@
 export const VOTER_KEY_STORAGE = 'nomnom:list-decide-voter-key:v1';
 export const LOCK_TOKEN_PREFIX = 'nomnom:list-decide-lock:';
 export const SESSION_CACHE_PREFIX = 'nomnom:list-decide-session:';
+export const MY_VOTES_PREFIX = 'nomnom:list-decide-my-votes:';
 
 const SSR_VOTER_KEY = 'ssr-placeholder-key';
 
@@ -52,6 +53,47 @@ export function readLockToken(sessionId) {
   } catch {
     return null;
   }
+}
+
+/**
+ * Your own votes for a session, keyed by restaurant.
+ *
+ * The decide payload only carries aggregate tallies (`up` / `down` / `net`) — it has
+ * no per-voter field — so the server cannot tell the UI which way *you* voted. Voting
+ * identity is already device-local (see {@link getOrCreateVoterKey}), so the vote is
+ * recorded against this device either way; remembering it here is the same identity,
+ * not a second source of truth. Persisted so a reload keeps your choice visible.
+ *
+ * @param {string | null | undefined} sessionId
+ * @returns {Record<string, 1 | -1>}
+ */
+export function readMyVotes(sessionId) {
+  if (typeof window === 'undefined' || !sessionId) return {};
+  try {
+    const raw = window.localStorage.getItem(`${MY_VOTES_PREFIX}${sessionId}`);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+/**
+ * @param {string | null | undefined} sessionId
+ * @param {string} restaurantId
+ * @param {1 | -1} vote
+ * @returns {Record<string, 1 | -1>} the updated map
+ */
+export function persistMyVote(sessionId, restaurantId, vote) {
+  const next = { ...readMyVotes(sessionId), [String(restaurantId)]: vote };
+  if (typeof window === 'undefined' || !sessionId) return next;
+  try {
+    window.localStorage.setItem(`${MY_VOTES_PREFIX}${sessionId}`, JSON.stringify(next));
+  } catch {
+    // ignore
+  }
+  return next;
 }
 
 /**

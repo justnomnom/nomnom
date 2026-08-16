@@ -8,9 +8,9 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
-import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
+import { alpha, useTheme } from '@mui/material/styles';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import { paths } from 'src/routes/paths';
@@ -30,7 +30,9 @@ import {
   fetchListDecideSession,
 } from 'src/libs/lists/actions/decide-actions';
 import {
+  readMyVotes,
   readLockToken,
+  persistMyVote,
   decideErrorMessage,
   getOrCreateVoterKey,
   canLockDecideSession,
@@ -56,6 +58,28 @@ const INNER_SURFACE_SX = {
   bgcolor: 'background.neutral',
   textAlign: 'center',
 };
+/**
+ * Vote button styling. Neutral at rest so nothing looks pre-chosen; filled in the
+ * semantic colour once it is *your* vote, which is the only signal telling you how
+ * you voted (the decide payload carries aggregate tallies only).
+ * @param {boolean} mine
+ * @param {'success' | 'error'} tone
+ */
+function voteButtonSx(mine, tone) {
+  return (theme) => ({
+    color: mine ? theme.palette[tone].darker : theme.palette.text.secondary,
+    bgcolor: mine ? alpha(theme.palette[tone].main, 0.16) : 'transparent',
+    transition: theme.transitions.create(['background-color', 'color'], {
+      duration: theme.transitions.duration.shorter,
+    }),
+    '&:hover': {
+      bgcolor: mine
+        ? alpha(theme.palette[tone].main, 0.24)
+        : alpha(theme.palette.text.primary, 0.06),
+    },
+  });
+}
+
 const VOTE_ROW_SX = {
   py: SPACE.xs,
   px: SPACE.sm,
@@ -129,6 +153,7 @@ export default function DecideSessionPanel({
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState(null);
   const [roulettePickId, setRoulettePickId] = useState(null);
+  const [myVotes, setMyVotes] = useState(/** @type {Record<string, 1 | -1>} */ ({}));
   const resultTracked = useRef(false);
   const voterKeyRef = useRef(null);
 
@@ -216,6 +241,12 @@ export default function DecideSessionPanel({
     voterKeyRef.current = getOrCreateVoterKey();
   }, []);
 
+  // Your own votes survive a reload; the 4s poll only refreshes aggregate tallies
+  // and must not clear which way you voted.
+  useEffect(() => {
+    setMyVotes(readMyVotes(sessionId));
+  }, [sessionId]);
+
   useEffect(() => {
     if (!sessionId || locked) return undefined;
     const tick = () => {
@@ -300,6 +331,7 @@ export default function DecideSessionPanel({
         return;
       }
       applySession(next);
+      setMyVotes(persistMyVote(sessionId, restaurantId, vote));
       analytics.trackVoteCast({
         list_id: listId,
         session_id: sessionId,
@@ -560,22 +592,26 @@ export default function DecideSessionPanel({
                           })}
                         </Typography>
                       </Box>
+                      {/* Both buttons rest neutral and fill in only for *your* vote.
+                          Upvote used to be hardcoded color="primary", so it looked
+                          already-chosen before you touched it and never changed after. */}
                       <IconButton
                         aria-label={t('pages.lists.decide_upvote_aria', { name: place.name })}
+                        aria-pressed={myVotes[row.restaurantId] === 1}
                         onClick={() => handleVote(row.restaurantId, 1)}
                         disabled={busy || !votingEnabled}
                         size="small"
-                        color="primary"
-                        sx={touchTargetSx}
+                        sx={[touchTargetSx, voteButtonSx(myVotes[row.restaurantId] === 1, 'success')]}
                       >
                         <Iconify icon={ic.likeBold} width={20} />
                       </IconButton>
                       <IconButton
                         aria-label={t('pages.lists.decide_downvote_aria', { name: place.name })}
+                        aria-pressed={myVotes[row.restaurantId] === -1}
                         onClick={() => handleVote(row.restaurantId, -1)}
                         disabled={busy || !votingEnabled}
                         size="small"
-                        sx={touchTargetSx}
+                        sx={[touchTargetSx, voteButtonSx(myVotes[row.restaurantId] === -1, 'error')]}
                       >
                         <Iconify icon={ic.dislikeBold} width={20} />
                       </IconButton>

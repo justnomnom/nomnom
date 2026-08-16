@@ -6,6 +6,7 @@ import { afterEach, describe, it } from 'node:test';
 
 import {
   LOCK_TOKEN_PREFIX,
+  MY_VOTES_PREFIX,
   SESSION_CACHE_PREFIX,
   VOTER_KEY_STORAGE,
   canLockDecideSession,
@@ -20,8 +21,10 @@ import {
   tonightAddSearchState,
   persistCachedSession,
   persistLockToken,
+  persistMyVote,
   readCachedSession,
   readLockToken,
+  readMyVotes,
   resolveDecideSessionId,
 } from '../list-decide-client.js';
 
@@ -441,5 +444,56 @@ describe('canLockDecideSession + lockedWinnerRestaurantId', () => {
       canLockDecideSession({ sessionId: 's', locked: false, isOwner: false, lockToken: '' }),
       false
     );
+  });
+});
+
+describe('readMyVotes / persistMyVote', () => {
+  it('returns an empty map without window', () => {
+    assert.deepEqual(readMyVotes('session-1'), {});
+  });
+
+  it('returns an empty map when the session id is missing', () => {
+    installWindow();
+    assert.deepEqual(readMyVotes(null), {});
+  });
+
+  it('round-trips a vote so a reload can restore it', () => {
+    const storage = installWindow();
+    persistMyVote('session-1', 'rest-a', 1);
+    assert.equal(storage.getItem(`${MY_VOTES_PREFIX}session-1`), '{"rest-a":1}');
+    assert.deepEqual(readMyVotes('session-1'), { 'rest-a': 1 });
+  });
+
+  it('merges additional restaurants instead of clobbering earlier votes', () => {
+    installWindow();
+    persistMyVote('session-1', 'rest-a', 1);
+    const next = persistMyVote('session-1', 'rest-b', -1);
+    assert.deepEqual(next, { 'rest-a': 1, 'rest-b': -1 });
+    assert.deepEqual(readMyVotes('session-1'), { 'rest-a': 1, 'rest-b': -1 });
+  });
+
+  it('overwrites when you change your mind on the same restaurant', () => {
+    installWindow();
+    persistMyVote('session-1', 'rest-a', 1);
+    persistMyVote('session-1', 'rest-a', -1);
+    assert.deepEqual(readMyVotes('session-1'), { 'rest-a': -1 });
+  });
+
+  it('scopes votes per session so another night does not inherit them', () => {
+    installWindow();
+    persistMyVote('session-1', 'rest-a', 1);
+    assert.deepEqual(readMyVotes('session-2'), {});
+  });
+
+  it('survives blocked storage without throwing', () => {
+    installWindow({ throwOnStorage: true });
+    assert.deepEqual(readMyVotes('session-1'), {});
+    assert.deepEqual(persistMyVote('session-1', 'rest-a', 1), { 'rest-a': 1 });
+  });
+
+  it('ignores a non-object payload left in storage', () => {
+    const storage = installWindow();
+    storage.setItem(`${MY_VOTES_PREFIX}session-1`, '["not","an","object"]');
+    assert.deepEqual(readMyVotes('session-1'), {});
   });
 });
