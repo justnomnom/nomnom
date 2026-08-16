@@ -3,3 +3,6 @@ out/
 .remotion/
 props/
 public/maps/
+# Queued batches are local artefacts; the ledger is the state worth keeping.
+content-queue/*
+!content-queue/ledger.json

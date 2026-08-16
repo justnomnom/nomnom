@@ -1,0 +1,158 @@
+{
+  "version": 1,
+  "updatedAt": "2026-08-15T23:42:13.821Z",
+  "subjects": {
+    "restaurant:4713e1cb-0813-4640-ae76-65fd8cb81905": {
+      "kind": "restaurant",
+      "id": "4713e1cb-0813-4640-ae76-65fd8cb81905",
+      "name": "Café favorito",
+      "count": 1,
+      "firstProducedAt": "2026-08-15T18:27:19.461Z",
+      "lastProducedAt": "2026-08-15T18:27:19.461Z",
+      "history": [
+        {
+          "batchId": "20260815T182342Z",
+          "producedAt": "2026-08-15T18:27:19.461Z",
+          "composition": "RestaurantReviewsReel",
+          "assets": [
+            "20260815T182342Z/restaurant-caf-favorito.mp4",
+            "20260815T182342Z/restaurant-caf-favorito.jpg"
+          ]
+        }
+      ]
+    },
+    "review:2cab0d29-8d90-4bee-b79a-738f8fe0b001": {
+      "kind": "review",
+      "id": "2cab0d29-8d90-4bee-b79a-738f8fe0b001",
+      "name": "PONTO COM Sabores - Restaurante Em Lisboa",
+      "count": 1,
+      "firstProducedAt": "2026-08-15T18:28:44.079Z",
+      "lastProducedAt": "2026-08-15T18:28:44.079Z",
+      "history": [
+        {
+          "batchId": "20260815T182342Z",
+          "producedAt": "2026-08-15T18:28:44.079Z",
+          "composition": "RestaurantSpotlight",
+          "assets": [
+            "20260815T182342Z/review-ponto-com-sabores-restaurante-em-lisboa.mp4",
+            "20260815T182342Z/review-ponto-com-sabores-restaurante-em-lisboa.jpg"
+          ]
+        }
+      ]
+    },
+    "list:092de33c-e662-44a3-a79e-0a0428f0b228": {
+      "kind": "list",
+      "id": "092de33c-e662-44a3-a79e-0a0428f0b228",
+      "name": "Must-Go",
+      "count": 1,
+      "firstProducedAt": "2026-08-15T18:30:12.374Z",
+      "lastProducedAt": "2026-08-15T18:30:12.374Z",
+      "history": [
+        {
+          "batchId": "20260815T182342Z",
+          "producedAt": "2026-08-15T18:30:12.374Z",
+          "composition": "ListShowcase",
+          "assets": [
+            "20260815T182342Z/list-must-go.mp4",
+            "20260815T182342Z/list-must-go.jpg"
+          ]
+        }
+      ]
+    },
+    "restaurant:2cab0d29-8d90-4bee-b79a-738f8fe0b001": {
+      "kind": "restaurant",
+      "id": "2cab0d29-8d90-4bee-b79a-738f8fe0b001",
+      "name": "PONTO COM Sabores - Restaurante Em Lisboa",
+      "count": 1,
+      "firstProducedAt": "2026-08-15T23:23:34.541Z",
+      "lastProducedAt": "2026-08-15T23:23:34.541Z",
+      "history": [
+        {
+          "batchId": "20260815T232057Z",
+          "producedAt": "2026-08-15T23:23:34.541Z",
+          "composition": "RestaurantReviewsReel",
+          "assets": [
+            "20260815T232057Z/restaurant-ponto-com-sabores-restaurante-em-lisboa.mp4",
+            "20260815T232057Z/restaurant-ponto-com-sabores-restaurante-em-lisboa.jpg"
+          ]
+        }
+      ]
+    },
+    "review:4713e1cb-0813-4640-ae76-65fd8cb81905": {
+      "kind": "review",
+      "id": "4713e1cb-0813-4640-ae76-65fd8cb81905",
+      "name": "Café favorito",
+      "count": 1,
+      "firstProducedAt": "2026-08-15T23:26:05.795Z",
+      "lastProducedAt": "2026-08-15T23:26:05.795Z",
+      "history": [
+        {
+          "batchId": "20260815T232057Z",
+          "producedAt": "2026-08-15T23:26:05.795Z",
+          "composition": "RestaurantSpotlight",
+          "assets": [
+            "20260815T232057Z/review-caf-favorito.mp4",
+            "20260815T232057Z/review-caf-favorito.jpg"
+          ]
+        }
+      ]
+    },
+    "list:3d0e9681-eb89-4334-918e-b35fd06db061": {
+      "kind": "list",
+      "id": "3d0e9681-eb89-4334-918e-b35fd06db061",
+      "name": "Must-Go",
+      "count": 1,
+      "firstProducedAt": "2026-08-15T23:28:00.450Z",
+      "lastProducedAt": "2026-08-15T23:28:00.450Z",
+      "history": [
+        {
+          "batchId": "20260815T232057Z",
+          "producedAt": "2026-08-15T23:28:00.450Z",
+          "composition": "ListShowcase",
+          "assets": [
+            "20260815T232057Z/list-must-go.mp4",
+            "20260815T232057Z/list-must-go.jpg"
+          ]
+        }
+      ]
+    },
+    "restaurant:e73fa073-8d47-43fa-a632-0f1864e48749": {
+      "kind": "restaurant",
+      "id": "e73fa073-8d47-43fa-a632-0f1864e48749",
+      "name": "Non Solo Pane",
+      "count": 1,
+      "firstProducedAt": "2026-08-15T23:32:51.128Z",
+      "lastProducedAt": "2026-08-15T23:32:51.128Z",
+      "history": [
+        {
+          "batchId": "20260815T232057Z",
+          "producedAt": "2026-08-15T23:32:51.128Z",
+          "composition": "RestaurantReviewsReel",
+          "assets": [
+            "20260815T232057Z/restaurant-non-solo-pane.mp4",
+            "20260815T232057Z/restaurant-non-solo-pane.jpg"
+          ]
+        }
+      ]
+    },
+    "restaurant:911dc311-9200-4c48-97f5-27ef5fc9904e": {
+      "kind": "restaurant",
+      "id": "911dc311-9200-4c48-97f5-27ef5fc9904e",
+      "name": "43 Sushi",
+      "count": 1,
+      "firstProducedAt": "2026-08-15T23:42:13.785Z",
+      "lastProducedAt": "2026-08-15T23:42:13.785Z",
+      "history": [
+        {
+          "batchId": "20260815T232057Z",
+          "producedAt": "2026-08-15T23:42:13.785Z",
+          "composition": "RestaurantReviewsReel",
+          "assets": [
+            "20260815T232057Z/restaurant-43-sushi.mp4",
+            "20260815T232057Z/restaurant-43-sushi.jpg"
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -10,9 +10,15 @@
 // Options:
 //   --out <path>       output JSON path (default props/<slug>.json)
 //   --reviews <n>      number of review scenes to include (default 3)
+//   --min-quote <n>    skip reviews shorter than n characters (default 0).
+//                      Use for RestaurantSpotlight, where one quote fills a scene.
 //   --render           render the video immediately after writing props
 //
-// Data honesty: this script never invents restaurant-specific facts. Fields
+// Data honesty: the props file must carry every top-level key its composition
+// reads. Remotion merges a composition's defaultProps underneath the file, so an
+// omitted key renders the placeholder venue instead of failing loudly.
+//
+// This script never invents restaurant-specific facts. Fields
 // with no real source (operational caveats like "book ahead", a personalized
 // "your circle" follow graph) are left empty and the corresponding scene
 // section hides itself rather than showing fabricated copy.
@@ -23,6 +29,18 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 import { createClient } from '@supabase/supabase-js';
+import {
+  AVATAR_PALETTE,
+  clamp,
+  fmtCount,
+  handleOf,
+  initials,
+  prettifyUsername,
+  slugify,
+  truncateQuote,
+  wrapName,
+} from './lib/subject-text.mjs';
+import { buildHook } from './lib/hooks.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REMOTION_ROOT = join(__dirname, '..');
@@ -56,6 +74,7 @@ const placeIdArg = flag('place-id');
 const nameArg = flag('name');
 const outArg = flag('out');
 const reviewLimit = Math.max(1, Number(flag('reviews') || 3));
+const minQuote = Math.max(0, Number(flag('min-quote') || 0));
 const shouldRender = has('render');
 
 if (!idArg && !placeIdArg && !nameArg) {
@@ -122,48 +141,8 @@ const [{ data: tagRows }, { data: reviews, count: reviewCount }] = await Promise
   ]);
 
 // ── Helpers ──────────────────────────────────────────────────────────────
-const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-const fmtCount = (n) => (n != null ? new Intl.NumberFormat('en-US').format(n) : null);
-
-function initials(name) {
-  const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
-  if (!parts.length) return '??';
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return (parts[0][0] + parts[1][0]).toUpperCase();
-}
-
-function prettifyUsername(username) {
-  if (!username) return null;
-  const stripped = username.replace(/^@/, '');
-  return stripped
-    .replace(/[._-]+/g, ' ')
-    .trim()
-    .split(/\s+/)
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(' ');
-}
-
-function handleOf(username) {
-  if (!username) return null;
-  return username.startsWith('@') ? username : `@${username}`;
-}
-
-function truncateQuote(text, maxChars = 150) {
-  const trimmed = String(text || '').trim();
-  if (trimmed.length <= maxChars) return trimmed;
-  const cut = trimmed.slice(0, maxChars);
-  const lastSpace = cut.lastIndexOf(' ');
-  return `${cut.slice(0, lastSpace > 0 ? lastSpace : maxChars)}…`;
-}
-
-function wrapName(name) {
-  const words = String(name || '').trim().split(/\s+/).filter(Boolean);
-  if (words.length <= 1) return [name || ''];
-  if (words.length === 2) return [words[0], words[1]];
-  const mid = Math.ceil(words.length / 2);
-  return [words.slice(0, mid).join(' '), words.slice(mid).join(' ')];
-}
-
+// Shared text/display helpers live in lib/subject-text.mjs; the maps below are
+// specific to what this reel renders.
 const EMOJI_BY_SLUG = {
   italian: 'spaghetti',
   pasta: 'spaghetti',
@@ -205,14 +184,6 @@ const EMOJI_BY_SLUG = {
 };
 const FALLBACK_DISH_EMOJI = 'fork-and-knife';
 const FALLBACK_VIBE_EMOJI = 'sparkles';
-
-const AVATAR_PALETTE = [
-  { tint: '#FFE8DF', ink: '#B8481F' },
-  { tint: '#FCE7C8', ink: '#B45309' },
-  { tint: '#E7DCC9', ink: '#6e6657' },
-  { tint: '#DCEAE3', ink: '#2F6B57' },
-  { tint: '#E3DEF5', ink: '#5B4B8A' },
-];
 
 // ── Derived data ─────────────────────────────────────────────────────────
 const meta = restaurant.metadata && typeof restaurant.metadata === 'object' ? restaurant.metadata : {};
@@ -270,7 +241,7 @@ const dishLabels = dishes.map((d) => (Array.isArray(d) ? d[0] : d));
 
 // ── Review pool: on-platform reviews, then Google ingest metadata ─────────
 const userReviews = (reviews || [])
-  .filter((r) => typeof r.body === 'string' && r.body.trim().length > 0)
+  .filter((r) => typeof r.body === 'string' && r.body.trim().length > Math.max(0, minQuote - 1))
   .map((r, i) => ({
     init: initials(r.author_display_name || prettifyUsername(r.author_username) || 'ND'),
     name: r.author_display_name || prettifyUsername(r.author_username) || 'NomNom diner',
@@ -288,7 +259,7 @@ if (skippedEmptyBody > 0) {
 
 // Google reviews from ingest metadata — real reviewer name, rating, text.
 const googleReviews = metaUserReviews
-  .filter((r) => typeof r.text === 'string' && r.text.trim().length > 20)
+  .filter((r) => typeof r.text === 'string' && r.text.trim().length > Math.max(20, minQuote - 1))
   .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
   .map((r, i) => ({
     init: initials(r.author_name || 'Diner'),
@@ -339,14 +310,28 @@ const pullQuote = truncateQuote(consensus?.summary || reviewPool[0]?.quote || ''
 
 const totalReviewCount = metaReviewCount ?? reviewCount ?? null;
 
+// "In your NomNom Circle" and "Loved by the NomNom community" are claims about
+// *who* wrote the reviews. When the pool is Google-sourced they are false, so
+// they follow the real source: the badge empties out (Scene3Review hides it)
+// and the community line becomes the attribution the numbers actually support.
+// Opening hook, varied per venue from real figures (see lib/hooks.mjs).
+const hook = buildHook({
+  id: restaurant.id,
+  location: cityName || stateName || null,
+  dishes,
+  rating: rating5,
+  reviewCount: totalReviewCount,
+});
+
+const fromNomNom = userReviews.length > 0;
+const badgeText = fromNomNom ? 'In your NomNom Circle' : '';
+const circleLabel = fromNomNom ? 'Loved by the NomNom community' : 'Rated on Google';
+
 // ── Real static map image (Mapbox) ───────────────────────────────────────
 // Downloaded to public/maps/<slug>.png so renders stay offline-deterministic.
 // 540x960 @2x → 1080x1920 (exact 9:16); the reel draws its own pin/halo on top,
 // so the map is requested clean (no Mapbox marker) and centered on the venue.
-const slug = restaurant.name
-  .toLowerCase()
-  .replace(/[^a-z0-9]+/g, '-')
-  .replace(/(^-|-$)/g, '');
+const slug = slugify(restaurant.name);
 
 let mapImage = null;
 const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
@@ -382,8 +367,8 @@ if (mapboxToken && Number.isFinite(lat) && Number.isFinite(lng)) {
 
 // ── Assemble props ──────────────────────────────────────────────────────
 const props = {
-  hookOverline: `${location} · right now`,
-  hookLines: ['Locals', "won't stop", 'talking about', 'this spot.'],
+  hookOverline: hook.overline,
+  hookLines: hook.lines,
   restaurant: {
     name: restaurant.name,
     nameLines: wrapName(restaurant.name),
@@ -392,12 +377,18 @@ const props = {
     rating: rating5,
     address: restaurant.address || '',
     savedBy: totalReviewCount ? `+${fmtCount(totalReviewCount)}` : '',
-    circleLabel: 'Loved by the NomNom community',
+    circleLabel,
     mapImage,
   },
   chips,
-  badgeText: 'In your NomNom Circle',
+  badgeText,
   reviews: chosenReviews,
+  // RestaurantSpotlight reads `review` and `heroPhoto` instead of `reviews`.
+  // Remotion shallow-merges a composition's defaultProps under the props file,
+  // so any key left out here silently renders the placeholder venue. Emit both
+  // even when rendering the reel: unused keys are ignored, missing ones lie.
+  review: chosenReviews[0],
+  heroPhoto: photos.length ? photos[0] : chosenReviews[0]?.photo ?? null,
   consensus: {
     quote: pullQuote,
     loves,
@@ -427,6 +418,7 @@ console.log(`Consensus: ${consensus ? `AI summary + ${loves.length} loves / ${kn
 console.log(`Dishes: ${dishes.length}${dishes[0] && Array.isArray(dishes[0]) ? ' (with mention counts)' : ''}`);
 console.log(`Photos: ${photos.length} · Tags: ${tags.length} (${cuisineVibeTags.length} chips) · Reviews total: ${totalReviewCount ?? 0}`);
 console.log(`Map: ${mapImage ? `real (${mapImage})` : 'stylized fallback'}`);
+console.log(`Hook: ${hook.template} — ${hook.lines.join(' ')}`);
 console.log(`Wrote ${outPath}`);
 
 if (shouldRender) {

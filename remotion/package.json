@@ -13,7 +13,9 @@
     "still:volta": "remotion still RestaurantReviewsReel out/volta-still.png --props=./props/volta-dos-sabores.json --frame=90",
     "still:spotlight": "remotion still RestaurantSpotlight out/restaurant-spotlight-still.png --frame=45",
     "still:list": "remotion still ListShowcase out/list-showcase-still.png --props=./props/caldas-must-gos.json --frame=60",
-    "fetch": "node scripts/fetch-restaurant-props.mjs"
+    "fetch": "node scripts/fetch-restaurant-props.mjs",
+    "pick": "node scripts/pick-subjects.mjs",
+    "test": "node --test \"scripts/__tests__/*.test.mjs\""
   },
   "dependencies": {
     "@remotion/cli": "^4.0.246",
