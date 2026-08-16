@@ -101,12 +101,14 @@ export default function ResponsiveSheet({
         endAction={closeBtn}
         sx={{ flexShrink: 0, px: 3, pt: 2.5, pb: 1 }}
       />
-      <Box sx={[sheetBodyScrollSx, { px: 3, pb: 3 }]}>
+      <Box sx={[sheetBodyScrollSx, { px: 3, pb: footer ? 2 : 3 }]}>
         <Stack spacing={2.5} sx={{ pt: 0.5 }}>
           {children}
-          {footer}
         </Stack>
       </Box>
+      {/* Actions stay pinned below the scroll region so the primary CTA is visible
+          on open at short viewport heights, instead of scrolling out of view. */}
+      {footer ? <Box sx={{ flexShrink: 0, px: 3, pb: 3, pt: 1 }}>{footer}</Box> : null}
     </Dialog>
   );
 }
