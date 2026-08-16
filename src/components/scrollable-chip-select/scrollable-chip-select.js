@@ -14,6 +14,19 @@ export const SCROLLABLE_CHIP_PILL_MIN_HEIGHT = { xs: 44, sm: 40 };
 /** Full pill radius for filter chips, map pill buttons, and tab strips (matches default MUI `Chip`). */
 export const SCROLLABLE_CHIP_PILL_BORDER_RADIUS = 999;
 
+/**
+ * Selected-chip label colour — white, deliberately *not* `primary.contrastText`.
+ *
+ * `primary.contrastText` is warm ink (`#15130f`) so filled brand surfaces clear AA
+ * (see DESIGN.md §2). Chips are the sanctioned exception: the selected pill reads as
+ * white-on-terracotta by design. That pairing measures 2.77:1 on `primary.main`, below
+ * the 4.5:1 AA floor — chips carry a redundant selected signal (`aria-pressed` /
+ * `Mui-selected`, the terracotta fill itself, and `customShadows.chipGlow`), so the
+ * label colour is not the only thing distinguishing state. Contained CTAs and badges
+ * keep the accessible ink; do not widen this exception to them.
+ */
+export const SCROLLABLE_CHIP_SELECTED_TEXT = '#FFFFFF';
+
 /** Horizontal scroll + hidden scrollbar — same behavior as `.MuiTabs-scroller` for plain strips (e.g. avatar links). */
 export const scrollableChipStripScrollerSx = {
   overflowX: 'auto',
@@ -74,7 +87,7 @@ export function scrollableChipPillCoreSx(theme, { selected = false } = {}) {
     },
     ...(selected
       ? {
-          color: 'primary.contrastText',
+          color: SCROLLABLE_CHIP_SELECTED_TEXT,
           bgcolor: 'primary.main',
           borderColor: 'primary.main',
           boxShadow: theme.customShadows.chipGlow,
@@ -125,7 +138,7 @@ function pillButtonActiveAndFocusSx(theme, selected, fill, border) {
         bgcolor: 'primary.main',
         borderColor: 'primary.main',
         '--variant-textBg': theme.palette.primary.main,
-        '--variant-textColor': theme.palette.primary.contrastText,
+        '--variant-textColor': SCROLLABLE_CHIP_SELECTED_TEXT,
       },
       '&:focus-visible': {
         outline: `2px solid ${theme.palette.primary.main}`,
@@ -181,7 +194,7 @@ export function scrollableChipPillButtonSx(theme, { selected = false } = {}) {
     ...(selected
       ? {
           '--variant-textBg': theme.palette.primary.main,
-          '--variant-textColor': theme.palette.primary.contrastText,
+          '--variant-textColor': SCROLLABLE_CHIP_SELECTED_TEXT,
         }
       : {
           '--variant-textBg': fill,
@@ -258,7 +271,7 @@ export function scrollableChipSelectStyles(theme) {
         }
       ),
       '&.Mui-selected': {
-        color: 'primary.contrastText',
+        color: SCROLLABLE_CHIP_SELECTED_TEXT,
         bgcolor: 'primary.main',
         borderColor: 'primary.main',
         boxShadow: theme.customShadows.chipGlow,

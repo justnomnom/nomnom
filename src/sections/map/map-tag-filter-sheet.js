@@ -31,6 +31,7 @@ import { useSkeletonThemeColors } from 'src/theme/use-skeleton-theme';
 import { mobileStretchButtonSx } from 'src/theme/responsive-button-sx';
 
 import Iconify from 'src/components/iconify';
+import { SCROLLABLE_CHIP_SELECTED_TEXT } from 'src/components/scrollable-chip-select';
 import {
   SheetHeaderRow,
   SheetGrabBarRail,
@@ -66,7 +67,7 @@ function mapFilterChipSx(theme, selected) {
     textTransform: 'none',
     bgcolor: selected ? 'primary.main' : 'transparent',
     border: `1px solid ${selected ? theme.palette.primary.main : theme.palette.divider}`,
-    color: selected ? theme.palette.primary.contrastText : 'text.secondary',
+    color: selected ? SCROLLABLE_CHIP_SELECTED_TEXT : 'text.secondary',
     '& .MuiButton-startIcon': { marginRight: '5px', marginLeft: 0 },
     '&:hover': selected ? { bgcolor: 'primary.dark', borderColor: 'primary.dark' } : undefined,
   };

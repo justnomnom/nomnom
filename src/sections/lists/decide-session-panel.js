@@ -8,6 +8,7 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
+import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -39,7 +40,9 @@ import {
 } from 'src/libs/lists/list-decide-client';
 
 import Iconify from 'src/components/iconify';
+import { ScrollableChipRow } from 'src/components/horizontal-scroll-row';
 import ShareFeedbackSnackbar from 'src/components/share/share-feedback-snackbar';
+import { scrollableChipPillButtonSx } from 'src/components/scrollable-chip-select';
 
 // ----------------------------------------------------------------------
 
@@ -106,6 +109,7 @@ export default function DecideSessionPanel({
   votingEnabled = true,
 }) {
   const { t } = useTranslate();
+  const theme = useTheme();
   const analytics = useListDecideAnalytics();
   const {
     share: shareLink,
@@ -484,36 +488,38 @@ export default function DecideSessionPanel({
 
           {session && !locked ? (
             <>
-              <Stack direction="row" spacing={SPACE.xs} flexWrap="wrap" useFlexGap>
+              <ScrollableChipRow gap={1} sx={{ mx: 0, width: 1 }}>
                 <Button
-                  variant="outlined"
-                  size="small"
+                  color="inherit"
+                  disableElevation
                   startIcon={<Iconify icon={ic.shareLinear} width={18} />}
                   onClick={handleShareDecide}
                   disabled={busy}
+                  sx={scrollableChipPillButtonSx(theme)}
                 >
                   {t('pages.lists.decide_share_link')}
                 </Button>
                 <Button
-                  variant="outlined"
-                  size="small"
+                  color="inherit"
+                  disableElevation
                   onClick={handleRoulette}
                   disabled={busy || restaurantIds.length < 1}
+                  sx={scrollableChipPillButtonSx(theme)}
                 >
                   {t('pages.lists.decide_spin')}
                 </Button>
                 {canLock ? (
                   <Button
-                    variant="contained"
-                    size="small"
-                    color="primary"
+                    color="inherit"
+                    disableElevation
                     onClick={handleLock}
                     disabled={busy}
+                    sx={scrollableChipPillButtonSx(theme, { selected: true })}
                   >
                     {t('pages.lists.decide_lock_cta')}
                   </Button>
                 ) : null}
-              </Stack>
+              </ScrollableChipRow>
 
               {roulettePlace ? (
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>

@@ -29,13 +29,14 @@ Source of truth: `src/theme/palette.js`
 | `primary.main` | `#FF6B35` | CTAs, active nav, links, focus states, chips |
 | `primary.dark` | `#E85A28` | Pressed state |
 | `primary.darker` | `#B8481F` | Rare emphasis |
-| `primary.contrastText` | `#15130f` | Text/icons on filled primary surfaces (warm ink, not white) |
+| `primary.contrastText` | `#15130f` | Text/icons on filled primary surfaces (warm ink, not white) — chips excepted, see below |
 
 **Rule**: Terracotta is disciplined — roughly 10% of any surface. Overuse kills its warmth. Use it for: active states, primary buttons, single accent per card, icon tint, text links.
 
 **Rule on text and terracotta (both directions).** Terracotta is a mid-tone: it fails AA against *both* white and near-black at small sizes if you pick the wrong pairing.
 
-- *Text **on** filled terracotta* uses `contrastText` (warm ink `#15130f`) — 6.54:1 on `main`, 9.29:1 on `light`, 5.23:1 on `dark`. White was 2.77:1 and failed on every step except `darker`. This covers contained CTAs, selected filter chips, and badges.
+- *Text **on** filled terracotta* uses `contrastText` (warm ink `#15130f`) — 6.54:1 on `main`, 9.29:1 on `light`, 5.23:1 on `dark`. White was 2.77:1 and failed on every step except `darker`. This covers contained CTAs and badges.
+- *Exception — selected chips* use `SCROLLABLE_CHIP_SELECTED_TEXT` (`#FFFFFF`) from `src/components/scrollable-chip-select`, not `contrastText`. White-on-terracotta is the intended chip look and is kept deliberately, accepting 2.77:1 on `main`. It is survivable only because a chip's selected state is signalled three more ways — `aria-pressed`/`Mui-selected`, the terracotta fill, and `customShadows.chipGlow` — so the label colour is never the sole cue. Don't widen this to CTAs or badges, which have no such redundancy.
 - *Terracotta **as** text or as a small indicator* on a light surface uses `readableAccent(theme)` from `src/theme/readable-accent.js` — it steps light mode down to `primary.darker` (4.83:1 on card) and keeps `primary.main` in dark (5.67:1). `primary.main` as small text on parchment is 2.6:1; see §19.
 
 ### Secondary — Cool Slate (intentional)
@@ -399,7 +400,7 @@ Pill shape via `borderRadius: 10` (160px effective). Used for:
 - Map view filters (Following, Saved, More…)
 - Toggle tabs (Momentum / Trending, All / My own / Following)
 
-Active chip: `bgcolor = primary.main`, `color = primary.contrastText`  
+Active chip: `bgcolor = primary.main`, `color = SCROLLABLE_CHIP_SELECTED_TEXT` (white — the §2 chip exception, *not* `contrastText`)  
 Inactive chip: `bgcolor = background.paper` or transparent with border, `color = text.secondary`
 
 ### Rating Badge
@@ -783,6 +784,7 @@ Missing keys silently fall back to the key string — always add both locales wh
 | 2026-07-03 | §5 row rhythm sub-scale documented | `py: 1.75` (14px) and `py: 2.25` (18px) are used consistently across settings/list rows and their skeletons — a de-facto rhythm the SPACE scale doesn't capture. Documented as sanctioned (like §3's compact labels) instead of churning 25+ files to 12/16px without visual verification. |
 | 2026-07-03 | §9 indicator-dot width-animation exception | Carousel pagination dots animate `width` 4→10px; `scaleX` would distort the pill radius. Codified as the one sanctioned layout-property animation (sub-16px indicators only). |
 | 2026-07-03 | Ratings localised via `fRating` (FINDING-007) | Rating displays hardcoded `.toFixed(1)` — pt users saw `4.5` instead of `4,5`, violating §17. New `fRating(value, currentLang, { trimTrailingZero })` in `src/utils/format-number.js`; UI surfaces wired to it. SEO-only pages stay en-formatted. |
+| 2026-08-16 | Selected chips carved back out to white (`SCROLLABLE_CHIP_SELECTED_TEXT`) | The `contrastText` flip below also darkened every selected filter chip, changing a look that was intentional. Chips return to white-on-terracotta; CTAs and badges keep the warm ink. The 2.77:1 label is accepted here because selection is also carried by `aria-pressed`/`Mui-selected`, the fill, and `chipGlow` — the colour is never the only cue. Applied at the shared tokens plus the two local copies (`discoverFeedChipSx`, `mapFilterChipSx`). |
 | 2026-08-16 | `primary.contrastText` flipped `#FFFFFF` → `#15130f` (warm ink) | White on terracotta measured 2.77:1 — below AA for the 12–14px labels on every filled brand surface (contained CTAs, selected chips, badges). Ink clears AA across the whole ramp (9.29 / 6.54 / 5.23) and leaves the terracotta itself untouched, so the brand colour is unchanged while its labels become readable. §2 rule added covering both directions. |
 | 2026-08-16 | Added `readableAccent(theme)` for accent-as-text and small indicators | `primary.main` as 11–12px text or as a state dot on parchment is 2.6:1, which §19 already forbade but nothing enforced. Helper steps light mode to `primary.darker` (4.83:1) and keeps `primary.main` in dark (5.67:1). First consumers: notifications unread counts, unread dots, notification type badges. |
 | 2026-07-03 | `autoFocus` guarded on Capacitor (FINDING-008) | Bare `autoFocus` pops the iOS keyboard and shifts sheets. Standard: `autoFocus={!isCapacitorNative()}` on every autofocused field. |

@@ -65,6 +65,7 @@ import SearchAiToggleAdornment from 'src/components/search-ai-toggle';
 import { ScrollableChipRow } from 'src/components/horizontal-scroll-row';
 import ShareFeedbackSnackbar from 'src/components/share/share-feedback-snackbar';
 import DashboardSearchFilterRow from 'src/components/dashboard-search-filter-row';
+import { SCROLLABLE_CHIP_SELECTED_TEXT } from 'src/components/scrollable-chip-select';
 
 import MapSheetSortMenu from 'src/sections/map/map-sheet-sort-menu';
 import MapSearchSuggestions from 'src/sections/map/map-search-suggestions';
@@ -199,7 +200,7 @@ function discoverFeedChipSx(theme, selected) {
     textTransform: 'none',
     bgcolor: selected ? 'primary.main' : 'transparent',
     border: `1px solid ${selected ? theme.palette.primary.main : theme.palette.divider}`,
-    color: selected ? theme.palette.primary.contrastText : 'text.secondary',
+    color: selected ? SCROLLABLE_CHIP_SELECTED_TEXT : 'text.secondary',
     '& .MuiButton-startIcon': { marginRight: '5px', marginLeft: 0 },
     '&:hover': selected ? { bgcolor: 'primary.dark', borderColor: 'primary.dark' } : undefined,
   };
