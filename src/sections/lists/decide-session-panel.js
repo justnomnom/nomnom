@@ -489,6 +489,9 @@ export default function DecideSessionPanel({
 
           {session && !locked ? (
             <>
+              {/* These are actions, not filters: the two supporting ones keep the
+                  compact neutral pill, while Lock winner is a real primary button
+                  rather than a chip wearing the "selected filter" treatment. */}
               <ScrollableChipRow gap={1} sx={{ mx: 0, width: 1 }}>
                 <Button
                   color="inherit"
@@ -496,7 +499,7 @@ export default function DecideSessionPanel({
                   startIcon={<Iconify icon={ic.shareLinear} width={18} />}
                   onClick={handleShareDecide}
                   disabled={busy}
-                  sx={scrollableChipPillButtonSx(theme)}
+                  sx={[scrollableChipPillButtonSx(theme), touchTargetSx]}
                 >
                   {t('pages.lists.decide_share_link')}
                 </Button>
@@ -505,22 +508,26 @@ export default function DecideSessionPanel({
                   disableElevation
                   onClick={handleRoulette}
                   disabled={busy || restaurantIds.length < 1}
-                  sx={scrollableChipPillButtonSx(theme)}
+                  sx={[scrollableChipPillButtonSx(theme), touchTargetSx]}
                 >
                   {t('pages.lists.decide_spin')}
                 </Button>
-                {canLock ? (
-                  <Button
-                    color="inherit"
-                    disableElevation
-                    onClick={handleLock}
-                    disabled={busy}
-                    sx={scrollableChipPillButtonSx(theme, { selected: true })}
-                  >
-                    {t('pages.lists.decide_lock_cta')}
-                  </Button>
-                ) : null}
               </ScrollableChipRow>
+
+              {/* Full width on its own row: as a pill in the scroll row it was pushed
+                  off-screen on mobile, hiding the owner's completion action. */}
+              {canLock ? (
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  onClick={handleLock}
+                  disabled={busy}
+                  sx={touchTargetSx}
+                >
+                  {t('pages.lists.decide_lock_cta')}
+                </Button>
+              ) : null}
 
               {roulettePlace ? (
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
