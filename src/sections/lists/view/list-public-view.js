@@ -909,7 +909,7 @@ export default function ListPublicView({
                 initialSessionId={searchParams.get('d') || null}
               />
             ) : null}
-            {initialMembership?.isOwner ? (
+            {Boolean(initialMembership?.isOwner) ? (
               <Button
                 fullWidth
                 size="small"
@@ -930,7 +930,7 @@ export default function ListPublicView({
                 {t('pages.lists.plan_tonight_cta')}
               </Button>
             ) : null}
-            {initialMembership?.isOwner ? (
+            {Boolean(initialMembership?.isOwner) ? (
               <PlanTonightSheet
                 open={planTonightOpen}
                 onClose={() => setPlanTonightOpen(false)}
