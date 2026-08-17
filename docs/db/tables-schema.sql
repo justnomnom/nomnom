@@ -1,0 +1,18 @@
+-- Table (share link → vote → settle) schema lives in supabase/migrations (source of truth).
+-- Canonical: supabase/migrations/20260817120000_tables_merge.sql
+--   Merges the old Share → Decide sessions and Tonight nights into one object.
+--   Drops: nights, night_places, night_guests, list_decide_sessions, list_decide_votes
+--   and every create_night / *_list_decide_* RPC.
+--
+-- Tables: tables, table_places, table_guests, table_votes (service_role only).
+-- Clients must not SELECT/DML these (guest_key privacy); use the RPCs only.
+-- Table grants: service_role only (see docs/db/api-table-grants.sql).
+--
+-- RPCs (EXECUTE → anon + authenticated + service_role):
+--   start_table, get_table, get_table_decide, join_table, cast_table_vote,
+--   add_table_place, lock_table.
+-- Internal (EXECUTE revoked from public): _table_payload, _table_touch_guest.
+--
+-- lock_token MUST NOT call gen_random_bytes() unless pgcrypto is installed on
+-- search_path. Prefer:
+--   replace(gen_random_uuid()::text || gen_random_uuid()::text, '-', '')

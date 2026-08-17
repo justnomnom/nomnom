@@ -43,8 +43,8 @@ export const paths = {
   /** Published list (share / SEO). Pass { username, slug } to get the human-readable URL. */
   listPublic: (id, opts) =>
     opts?.username && opts?.slug ? `/lists/${opts.username}/${opts.slug}` : `/lists/${id}`,
-  /** Tonight Night share page (auth-free join + Decide). */
-  tonight: (id) => `/tonight/${id}`,
+  /** Table share page (auth-free: vote, add places, settle). */
+  table: (id) => `/table/${id}`,
   /** Supabase restaurant (share link; readable without signing in). */
   restaurantPublic: (id) => `/restaurants/${id}`,
   /** Public profile by @handle. */
@@ -71,15 +71,11 @@ export const paths = {
     /** My NomNom lists hub (was historically called “Saved”; `/dashboard/saved` redirects here). */
     lists: `${ROOTS.DASHBOARD}/lists`,
     /**
-     * Lists hub with the "pick a list to start a vote" hint shown. Decide itself lives on a
-     * single list (`ListDecidePanel`), so this is the closest the hub can deep-link.
+     * Lists hub with the "open a list, then pick any restaurants" hint. Starting a
+     * Table lives on a single owned public list (`StartTableSheet`), so this is the
+     * closest the hub can deep-link.
      */
-    listsDecide: `${ROOTS.DASHBOARD}/lists?decide=1`,
-    /**
-     * Lists hub with the "open a list, then pick any restaurants" hint. Plan tonight
-     * itself lives on a single owned public list (`PlanTonightSheet`).
-     */
-    listsTonight: `${ROOTS.DASHBOARD}/lists?tonight=1`,
+    listsTable: `${ROOTS.DASHBOARD}/lists?table=1`,
     settings: `${ROOTS.DASHBOARD}/settings`,
     settingsEdit: `${ROOTS.DASHBOARD}/settings/profile/edit`,
     settingsAppearance: `${ROOTS.DASHBOARD}/settings/appearance`,

@@ -20,26 +20,20 @@ import { useShareLink } from 'src/hooks/use-share-link';
 
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
+import { useTableAnalytics } from 'src/libs/analytics/table-analytics';
+import { rankTallies, pickWinnerId } from 'src/libs/lists/table-tally';
 import { SPACE, tabularNumsSx, touchTargetSx } from 'src/theme/spacing';
-import { useListDecideAnalytics } from 'src/libs/analytics/list-decide-analytics';
-import { buildDecideWinnerReplyText } from 'src/libs/lists/build-decide-winner-reply-text';
-import { rankDecideTallies, canStartListDecide, pickDecideWinnerId } from 'src/libs/lists/list-decide-tally';
-import {
-  castListDecideVote,
-  lockListDecideSession,
-  fetchListDecideSession,
-} from 'src/libs/lists/actions/decide-actions';
+import { lockTable, castTableVote } from 'src/libs/lists/actions/table-actions';
+import { buildWinnerReplyText } from 'src/libs/lists/build-table-winner-reply-text';
 import {
   readMyVotes,
+  canLockTable,
   readLockToken,
   persistMyVote,
-  decideErrorMessage,
-  getOrCreateVoterKey,
-  canLockDecideSession,
-  persistCachedSession,
+  tableErrorMessage,
+  mapListItemsToPlaces,
   lockedWinnerRestaurantId,
-  mapListItemsToDecidePlaces,
-} from 'src/libs/lists/list-decide-client';
+} from 'src/libs/lists/table-client';
 
 import Iconify from 'src/components/iconify';
 import { ScrollableChipRow } from 'src/components/horizontal-scroll-row';
@@ -61,7 +55,7 @@ const INNER_SURFACE_SX = {
 /**
  * Vote button styling. Neutral at rest so nothing looks pre-chosen; filled in the
  * semantic colour once it is *your* vote, which is the only signal telling you how
- * you voted (the decide payload carries aggregate tallies only).
+ * you voted (the payload carries aggregate tallies only).
  * @param {boolean} mine
  * @param {'success' | 'error'} tone
  */
@@ -91,7 +85,7 @@ const VOTE_ROW_SX = {
 /**
  * Circular place thumb with a first-letter fallback when no photo is set.
  */
-function DecidePlaceThumb({ name, photo, size }) {
+function PlaceThumb({ name, photo, size }) {
   const fallback = String(name || '')
     .trim()
     .charAt(0)
@@ -103,52 +97,41 @@ function DecidePlaceThumb({ name, photo, size }) {
   );
 }
 
-DecidePlaceThumb.propTypes = {
+PlaceThumb.propTypes = {
   name: PropTypes.string,
   photo: PropTypes.string,
   size: PropTypes.number.isRequired,
 };
 
 /**
- * Shared vote / spin / lock / winner / poll UI for list Decide and Tonight.
+ * Vote / spin / lock / winner / poll UI for a Table.
+ *
+ * Voting is open to anyone holding the link — naming yourself is a separate,
+ * optional nudge (see TableView), never a gate on the first tap.
  */
-export default function DecideSessionPanel({
+export default function TableVotePanel({
+  tableId,
   listId,
-  nightId = null,
   items,
   isOwner,
-  listName,
-  ownerUsername,
-  listSlug,
-  session: sessionProp,
-  setSession: setSessionProp,
-  refreshSession: refreshSessionProp,
-  syncUrl = true,
-  showStart = true,
-  onStart,
-  castVoteFn = castListDecideVote,
-  lockFn = lockListDecideSession,
-  fetchSessionFn = fetchListDecideSession,
-  analyticsProps = null,
-  votingEnabled = true,
+  title,
+  session,
+  guestKey,
+  onTableUpdate,
+  refreshSession,
 }) {
   const { t } = useTranslate();
   const theme = useTheme();
-  const analytics = useListDecideAnalytics();
+  const analytics = useTableAnalytics();
   const {
     share: shareLink,
     feedback: shareFeedback,
     dismissFeedback: dismissShareFeedback,
   } = useShareLink({
-    copiedKey: nightId ? 'pages.tonight.link_copied' : 'pages.lists.decide_share_copied',
-    messageCopiedKey: 'pages.lists.decide_reply_copied',
-    failedKey: 'pages.lists.decide_reply_failed',
+    copiedKey: 'pages.table.link_copied',
+    messageCopiedKey: 'pages.table.reply_copied',
+    failedKey: 'pages.table.reply_failed',
   });
-
-  const [internalSession, setInternalSession] = useState(null);
-  const controlled = typeof setSessionProp === 'function';
-  const session = controlled ? sessionProp : internalSession;
-  const setSession = controlled ? setSessionProp : setInternalSession;
 
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState(null);
@@ -157,43 +140,28 @@ export default function DecideSessionPanel({
   /** Restaurant whose vote is in flight — only that row waits, not the whole panel. */
   const [pendingVoteId, setPendingVoteId] = useState(/** @type {string | null} */ (null));
   const resultTracked = useRef(false);
-  const voterKeyRef = useRef(null);
 
-  const extras = useMemo(() => {
-    const base = analyticsProps && typeof analyticsProps === 'object' ? { ...analyticsProps } : {};
-    if (nightId && !base.night_id) base.night_id = nightId;
-    return base;
-  }, [analyticsProps, nightId]);
+  const analyticsBase = useMemo(
+    () => ({ list_id: listId, table_id: tableId }),
+    [listId, tableId]
+  );
 
+  // table_places is the shortlist and the allowed set, so these rows need no
+  // further filtering — the old allowed_restaurant_ids pass is gone with it.
   const placeRows = useMemo(
-    () => mapListItemsToDecidePlaces(items, t('pages.lists.decide_unnamed_place')),
+    () => mapListItemsToPlaces(items, t('pages.table.unnamed_place')),
     [items, t]
   );
 
-  const allowedIds = useMemo(() => {
-    const raw = session?.allowed_restaurant_ids;
-    if (!Array.isArray(raw) || raw.length === 0) return null;
-    return new Set(raw.map((id) => String(id)));
-  }, [session?.allowed_restaurant_ids]);
-
-  const effectivePlaceRows = useMemo(() => {
-    if (!allowedIds) return placeRows;
-    return placeRows.filter((p) => allowedIds.has(p.restaurantId));
-  }, [placeRows, allowedIds]);
-
-  const restaurantIds = useMemo(
-    () => effectivePlaceRows.map((p) => p.restaurantId),
-    [effectivePlaceRows]
-  );
+  const restaurantIds = useMemo(() => placeRows.map((p) => p.restaurantId), [placeRows]);
   const placeById = useMemo(
-    () => new Map(effectivePlaceRows.map((p) => [p.restaurantId, p])),
-    [effectivePlaceRows]
+    () => new Map(placeRows.map((p) => [p.restaurantId, p])),
+    [placeRows]
   );
 
-  const sessionId = session?.session_id ? String(session.session_id) : null;
   const locked = session?.status === 'locked';
   const tallies = useMemo(() => session?.tallies || {}, [session?.tallies]);
-  const ranked = useMemo(() => rankDecideTallies(tallies, restaurantIds), [tallies, restaurantIds]);
+  const ranked = useMemo(() => rankTallies(tallies, restaurantIds), [tallies, restaurantIds]);
   /**
    * Rows render in the fixed shortlist order, never re-sorted by score. Ranking the
    * list live meant a row moved the instant anyone voted — including on the 4s poll —
@@ -206,65 +174,23 @@ export default function DecideSessionPanel({
   );
   const hasAnyVote = useMemo(() => displayRows.some((r) => r.up > 0 || r.down > 0), [displayRows]);
   const leaderId = hasAnyVote ? (ranked[0]?.restaurantId ?? null) : null;
-  const canStart = canStartListDecide(placeRows.length);
-  const canLock = canLockDecideSession({
-    sessionId,
+  const canLock = canLockTable({
+    tableId,
     locked,
     isOwner,
-    lockToken: sessionId ? readLockToken(sessionId) : null,
+    lockToken: tableId ? readLockToken(tableId) : null,
   });
-
-  const syncSessionUrl = useCallback(
-    (nextSessionId) => {
-      if (!syncUrl || typeof window === 'undefined' || !nextSessionId) return;
-      const url = new URL(window.location.href);
-      url.searchParams.set('d', nextSessionId);
-      window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
-    },
-    [syncUrl]
-  );
-
-  const applySession = useCallback(
-    (next) => {
-      if (!next) return;
-      setSession(next);
-      persistCachedSession(next);
-      setErr(null);
-    },
-    [setSession]
-  );
-
-  const refreshSession = useCallback(
-    async (id) => {
-      if (typeof refreshSessionProp === 'function') {
-        return refreshSessionProp(id);
-      }
-      if (!id) return null;
-      const { session: next, error } = await fetchSessionFn(id);
-      if (error) {
-        setErr(error);
-        return null;
-      }
-      applySession(next);
-      return next;
-    },
-    [refreshSessionProp, fetchSessionFn, applySession]
-  );
-
-  useEffect(() => {
-    voterKeyRef.current = getOrCreateVoterKey();
-  }, []);
 
   // Your own votes survive a reload; the 4s poll only refreshes aggregate tallies
   // and must not clear which way you voted.
   useEffect(() => {
-    setMyVotes(readMyVotes(sessionId));
-  }, [sessionId]);
+    setMyVotes(readMyVotes(tableId));
+  }, [tableId]);
 
   useEffect(() => {
-    if (!sessionId || locked) return undefined;
+    if (!tableId || locked) return undefined;
     const tick = () => {
-      refreshSession(sessionId);
+      refreshSession?.();
     };
     const onFocus = () => tick();
     const id = window.setInterval(tick, POLL_MS);
@@ -273,170 +199,100 @@ export default function DecideSessionPanel({
       window.clearInterval(id);
       window.removeEventListener('focus', onFocus);
     };
-  }, [sessionId, locked, refreshSession]);
+  }, [tableId, locked, refreshSession]);
 
   useEffect(() => {
     if (!locked || !session?.winner_restaurant_id || resultTracked.current) return;
     resultTracked.current = true;
     analytics.trackResultShown({
-      list_id: listId,
-      session_id: sessionId,
+      ...analyticsBase,
       restaurant_id: String(session.winner_restaurant_id),
-      ...extras,
     });
-  }, [locked, session, sessionId, listId, analytics, extras]);
+  }, [locked, session, analytics, analyticsBase]);
 
-  const handleStartDecide = useCallback(async () => {
-    if (!showStart || !onStart || !isOwner || !canStart || busy) return;
-    setBusy(true);
-    setErr(null);
-    try {
-      await onStart({
-        applySession,
-        syncSessionUrl,
-        setBusy,
-        setErr,
-      });
-    } finally {
-      setBusy(false);
-    }
-  }, [showStart, onStart, isOwner, canStart, busy, applySession, syncSessionUrl]);
-
-  const handleShareDecide = useCallback(async () => {
-    if (!sessionId && !nightId) return;
-    let url;
-    if (nightId && typeof window !== 'undefined') {
-      url = `${window.location.origin}${paths.tonight(nightId)}`;
-    } else if (typeof window !== 'undefined') {
-      url = window.location.href;
-    } else {
-      url = paths.listPublic(listId, { username: ownerUsername, slug: listSlug });
-    }
-    await shareLink({ url, title: listName || '' });
-    analytics.trackShareCopied({ list_id: listId, session_id: sessionId, ...extras });
-  }, [
-    sessionId,
-    nightId,
-    shareLink,
-    listName,
-    listId,
-    ownerUsername,
-    listSlug,
-    analytics,
-    extras,
-  ]);
+  const handleShare = useCallback(async () => {
+    if (!tableId || typeof window === 'undefined') return;
+    const url = `${window.location.origin}${paths.table(tableId)}`;
+    await shareLink({ url, title: title || '' });
+    analytics.trackShareCopied(analyticsBase);
+  }, [tableId, shareLink, title, analytics, analyticsBase]);
 
   const handleVote = useCallback(
     async (restaurantId, vote) => {
-      if (!votingEnabled || !sessionId || locked) return;
-      const voterKey = voterKeyRef.current || getOrCreateVoterKey();
+      if (!tableId || locked) return;
       // Show your choice immediately. A vote is an upsert keyed by
-      // (session, voter, restaurant), so re-tapping is safe and the server is
+      // (table, guest, restaurant), so re-tapping is safe and the server is
       // still the source of truth for the counts.
       setMyVotes((prev) => ({ ...prev, [String(restaurantId)]: vote }));
       setPendingVoteId(String(restaurantId));
-      const { session: next, error } = await castVoteFn({
-        sessionId,
+      const { table, error } = await castTableVote({
+        tableId,
         restaurantId,
-        voterKey,
+        guestKey,
         vote,
-        nightId,
-        guestKey: voterKey,
       });
       setPendingVoteId((cur) => (cur === String(restaurantId) ? null : cur));
-      if (error || !next) {
+      if (error || !table) {
         // Roll the optimistic mark back so the row never claims a vote the server rejected.
-        setMyVotes(readMyVotes(sessionId));
+        setMyVotes(readMyVotes(tableId));
         setErr(error || 'unknown');
         return;
       }
-      applySession(next);
-      setMyVotes(persistMyVote(sessionId, restaurantId, vote));
-      analytics.trackVoteCast({
-        list_id: listId,
-        session_id: sessionId,
-        restaurant_id: restaurantId,
-        vote,
-        ...extras,
-      });
+      setErr(null);
+      onTableUpdate?.(table);
+      setMyVotes(persistMyVote(tableId, restaurantId, vote));
+      analytics.trackVoteCast({ ...analyticsBase, restaurant_id: restaurantId, vote });
     },
-    [votingEnabled, sessionId, locked, listId, analytics, applySession, castVoteFn, nightId, extras]
+    [tableId, locked, guestKey, analytics, analyticsBase, onTableUpdate]
   );
 
   const handleRoulette = useCallback(() => {
     if (!restaurantIds.length || locked) return;
     const pick = restaurantIds[Math.floor(Math.random() * restaurantIds.length)];
     setRoulettePickId(pick);
-    analytics.trackRouletteSpin({
-      list_id: listId,
-      session_id: sessionId,
-      restaurant_id: pick,
-      ...extras,
-    });
-  }, [restaurantIds, locked, analytics, listId, sessionId, extras]);
+    analytics.trackRouletteSpin({ ...analyticsBase, restaurant_id: pick });
+  }, [restaurantIds, locked, analytics, analyticsBase]);
 
   const handleLock = useCallback(async () => {
-    if (!sessionId || locked || busy) return;
-    const lockToken = readLockToken(sessionId);
-    const winnerGuess = pickDecideWinnerId(tallies, restaurantIds);
+    if (!tableId || locked || busy) return;
+    const lockToken = readLockToken(tableId);
+    const winnerGuess = pickWinnerId(tallies, restaurantIds);
     setBusy(true);
-    const { session: next, error } = await lockFn({
-      sessionId,
+    const { table, error } = await lockTable({
+      tableId,
       lockToken,
       winnerRestaurantId: winnerGuess,
     });
     setBusy(false);
-    if (error || !next) {
+    if (error || !table) {
       setErr(error || 'unknown');
       return;
     }
-    applySession(next);
+    setErr(null);
+    onTableUpdate?.(table);
+    const winnerNow = table?.decide?.winner_restaurant_id;
     analytics.trackResultLocked({
-      list_id: listId,
-      session_id: sessionId,
-      restaurant_id: next.winner_restaurant_id ? String(next.winner_restaurant_id) : null,
-      ...extras,
+      ...analyticsBase,
+      restaurant_id: winnerNow ? String(winnerNow) : null,
     });
-  }, [sessionId, locked, busy, tallies, restaurantIds, listId, analytics, applySession, lockFn, extras]);
+  }, [tableId, locked, busy, tallies, restaurantIds, analytics, analyticsBase, onTableUpdate]);
 
   const handleReplyShare = useCallback(async () => {
     const winnerIdNow = lockedWinnerRestaurantId(session);
     const place = winnerIdNow ? placeById.get(winnerIdNow) : null;
     if (!place?.restaurantId || typeof window === 'undefined') return;
     const restaurantUrl = `${window.location.origin}${paths.restaurantPublic(place.restaurantId)}`;
-    const text = buildDecideWinnerReplyText({
-      lead: t('pages.lists.decide_reply_share_text', { name: place.name }),
+    const text = buildWinnerReplyText({
+      lead: t('pages.table.reply_share_text', { name: place.name }),
       mapsLink: place.mapsLink,
     });
     await shareLink({ url: restaurantUrl, title: place.name || '', text });
-    analytics.trackResultReplyShared({
-      list_id: listId,
-      session_id: sessionId,
-      restaurant_id: place.restaurantId,
-      ...extras,
-    });
-  }, [session, placeById, shareLink, t, analytics, listId, sessionId, extras]);
+    analytics.trackResultReplyShared({ ...analyticsBase, restaurant_id: place.restaurantId });
+  }, [session, placeById, shareLink, t, analytics, analyticsBase]);
 
   const winnerId = lockedWinnerRestaurantId(session);
   const winner = winnerId ? placeById.get(winnerId) : null;
   const roulettePlace = roulettePickId ? placeById.get(roulettePickId) : null;
-  const hideStart = !showStart;
-  let decideHint = t('pages.lists.decide_intro');
-  if (locked) decideHint = t('pages.lists.decide_locked_hint');
-  else if (session) decideHint = t('pages.lists.decide_open_hint');
-
-  if (!canStart && !session) {
-    return (
-      <Card variant="outlined" sx={CARD_SX}>
-        <Typography variant="subtitle2" component="h2" sx={{ fontWeight: 700, mb: SPACE.xxs }}>
-          {t('pages.lists.decide_title')}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {t('pages.lists.decide_need_three')}
-        </Typography>
-      </Card>
-    );
-  }
 
   return (
     <>
@@ -445,10 +301,10 @@ export default function DecideSessionPanel({
           <Stack direction="row" alignItems="center" justifyContent="space-between" gap={SPACE.xs}>
             <Box>
               <Typography variant="subtitle2" component="h2" sx={{ fontWeight: 700 }}>
-                {t('pages.lists.decide_title')}
+                {t('pages.table.vote_title')}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {decideHint}
+                {t(locked ? 'pages.table.vote_locked_hint' : 'pages.table.vote_open_hint')}
               </Typography>
             </Box>
             {busy ? <CircularProgress size={20} color="primary" /> : null}
@@ -456,36 +312,16 @@ export default function DecideSessionPanel({
 
           {err ? (
             <Typography variant="body2" color="error">
-              {decideErrorMessage(err, t)}
+              {tableErrorMessage(err, t)}
             </Typography>
           ) : null}
 
-          {!hideStart && !session && isOwner ? (
-            <Button
-              fullWidth
-              size="small"
-              variant="contained"
-              color="primary"
-              onClick={handleStartDecide}
-              disabled={busy || !canStart}
-              sx={touchTargetSx}
-            >
-              {t('pages.lists.decide_start_cta')}
-            </Button>
-          ) : null}
-
-          {!hideStart && !session && !isOwner ? (
-            <Typography variant="body2" color="text.secondary">
-              {t('pages.lists.decide_waiting_owner')}
-            </Typography>
-          ) : null}
-
-          {session && winner ? (
+          {winner ? (
             <Stack spacing={SPACE.sm} alignItems="center" sx={INNER_SURFACE_SX}>
-              <DecidePlaceThumb name={winner.name} photo={winner.photo} size={WINNER_THUMB_SIZE} />
+              <PlaceThumb name={winner.name} photo={winner.photo} size={WINNER_THUMB_SIZE} />
               <Box sx={{ textAlign: 'center' }}>
                 <Typography variant="overline" color="text.secondary">
-                  {t('pages.lists.decide_going_here')}
+                  {t('pages.table.going_here')}
                 </Typography>
                 <Typography variant="h6" sx={{ fontWeight: 700, mt: SPACE.xxs }}>
                   {winner.name}
@@ -502,7 +338,7 @@ export default function DecideSessionPanel({
                   disabled={busy}
                   sx={touchTargetSx}
                 >
-                  {t('pages.lists.decide_reply_cta')}
+                  {t('pages.table.reply_cta')}
                 </Button>
                 <Stack direction="row" spacing={SPACE.xs} sx={{ width: 1 }}>
                   <Button
@@ -513,7 +349,7 @@ export default function DecideSessionPanel({
                     fullWidth
                     sx={touchTargetSx}
                   >
-                    {t('pages.lists.decide_view_place')}
+                    {t('pages.table.view_place')}
                   </Button>
                   {winner.mapsLink ? (
                     <Button
@@ -525,7 +361,7 @@ export default function DecideSessionPanel({
                       fullWidth
                       sx={touchTargetSx}
                     >
-                      {t('pages.lists.decide_open_maps')}
+                      {t('pages.table.open_maps')}
                     </Button>
                   ) : null}
                 </Stack>
@@ -533,13 +369,7 @@ export default function DecideSessionPanel({
             </Stack>
           ) : null}
 
-          {session && !locked && !votingEnabled ? (
-            <Typography variant="body2" color="text.secondary">
-              {t('pages.lists.decide_join_to_vote_hint')}
-            </Typography>
-          ) : null}
-
-          {session && !locked ? (
+          {!locked ? (
             <>
               {/* These are actions, not filters: the two supporting ones keep the
                   compact neutral pill, while Lock winner is a real primary button
@@ -549,11 +379,11 @@ export default function DecideSessionPanel({
                   color="inherit"
                   disableElevation
                   startIcon={<Iconify icon={ic.shareLinear} width={18} />}
-                  onClick={handleShareDecide}
+                  onClick={handleShare}
                   disabled={busy}
                   sx={[scrollableChipPillButtonSx(theme), touchTargetSx]}
                 >
-                  {t('pages.lists.decide_share_link')}
+                  {t('pages.table.share_link')}
                 </Button>
                 <Button
                   color="inherit"
@@ -562,7 +392,7 @@ export default function DecideSessionPanel({
                   disabled={busy || restaurantIds.length < 1}
                   sx={[scrollableChipPillButtonSx(theme), touchTargetSx]}
                 >
-                  {t('pages.lists.decide_spin')}
+                  {t('pages.table.spin')}
                 </Button>
               </ScrollableChipRow>
 
@@ -577,13 +407,13 @@ export default function DecideSessionPanel({
                   disabled={busy}
                   sx={touchTargetSx}
                 >
-                  {t('pages.lists.decide_lock_cta')}
+                  {t('pages.table.lock_cta')}
                 </Button>
               ) : null}
 
               {roulettePlace ? (
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  {t('pages.lists.decide_spin_result', { name: roulettePlace.name })}
+                  {t('pages.table.spin_result', { name: roulettePlace.name })}
                 </Typography>
               ) : null}
 
@@ -600,7 +430,7 @@ export default function DecideSessionPanel({
                       spacing={SPACE.xs}
                       sx={VOTE_ROW_SX}
                     >
-                      <DecidePlaceThumb name={place.name} photo={place.photo} size={PLACE_THUMB_SIZE} />
+                      <PlaceThumb name={place.name} photo={place.photo} size={PLACE_THUMB_SIZE} />
                       <Box sx={{ flex: 1, minWidth: 0 }}>
                         <Typography variant="subtitle2" component="h3" noWrap sx={{ fontWeight: 700 }}>
                           {place.name}
@@ -611,11 +441,11 @@ export default function DecideSessionPanel({
                           const isLeader = row.restaurantId === leaderId;
                           if (!isLeader && !mine) return null;
                           const label = isLeader
-                            ? t('pages.lists.decide_leading')
+                            ? t('pages.table.leading')
                             : t(
                                 mine === 1
-                                  ? 'pages.lists.decide_you_voted_for'
-                                  : 'pages.lists.decide_you_voted_against'
+                                  ? 'pages.table.you_voted_for'
+                                  : 'pages.table.you_voted_against'
                               );
                           return (
                             <Typography
@@ -636,10 +466,10 @@ export default function DecideSessionPanel({
                           another restaurant mid-flight is no longer swallowed. */}
                       <Stack direction="row" alignItems="center" spacing={0.25}>
                         <IconButton
-                          aria-label={t('pages.lists.decide_upvote_aria', { name: place.name })}
+                          aria-label={t('pages.table.upvote_aria', { name: place.name })}
                           aria-pressed={mine === 1}
                           onClick={() => handleVote(row.restaurantId, 1)}
-                          disabled={!votingEnabled || pendingVoteId === row.restaurantId}
+                          disabled={pendingVoteId === row.restaurantId}
                           size="small"
                           sx={[touchTargetSx, voteButtonSx(mine === 1, 'success')]}
                         >
@@ -654,10 +484,10 @@ export default function DecideSessionPanel({
                       </Stack>
                       <Stack direction="row" alignItems="center" spacing={0.25}>
                         <IconButton
-                          aria-label={t('pages.lists.decide_downvote_aria', { name: place.name })}
+                          aria-label={t('pages.table.downvote_aria', { name: place.name })}
                           aria-pressed={mine === -1}
                           onClick={() => handleVote(row.restaurantId, -1)}
-                          disabled={!votingEnabled || pendingVoteId === row.restaurantId}
+                          disabled={pendingVoteId === row.restaurantId}
                           size="small"
                           sx={[touchTargetSx, voteButtonSx(mine === -1, 'error')]}
                         >
@@ -684,23 +514,14 @@ export default function DecideSessionPanel({
   );
 }
 
-DecideSessionPanel.propTypes = {
-  listId: PropTypes.string.isRequired,
-  nightId: PropTypes.string,
+TableVotePanel.propTypes = {
+  tableId: PropTypes.string.isRequired,
+  listId: PropTypes.string,
   items: PropTypes.array,
   isOwner: PropTypes.bool,
-  listName: PropTypes.string,
-  ownerUsername: PropTypes.string,
-  listSlug: PropTypes.string,
+  title: PropTypes.string,
   session: PropTypes.object,
-  setSession: PropTypes.func,
+  guestKey: PropTypes.string,
+  onTableUpdate: PropTypes.func,
   refreshSession: PropTypes.func,
-  syncUrl: PropTypes.bool,
-  showStart: PropTypes.bool,
-  onStart: PropTypes.func,
-  castVoteFn: PropTypes.func,
-  lockFn: PropTypes.func,
-  fetchSessionFn: PropTypes.func,
-  analyticsProps: PropTypes.object,
-  votingEnabled: PropTypes.bool,
 };

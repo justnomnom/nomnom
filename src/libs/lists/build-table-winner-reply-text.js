@@ -17,7 +17,7 @@ function clean(value) {
  * @param {unknown} [input.mapsLink] Google Maps (or similar) URL for the winner.
  * @returns {string} Message body without the restaurant page URL.
  */
-export function buildDecideWinnerReplyText({ lead, mapsLink }) {
+export function buildWinnerReplyText({ lead, mapsLink }) {
   const head = clean(lead);
   if (!head) return '';
   const maps = clean(mapsLink);

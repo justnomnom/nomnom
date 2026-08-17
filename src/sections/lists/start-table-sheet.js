@@ -17,18 +17,18 @@ import { useShareLink } from 'src/hooks/use-share-link';
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import { SPACE, touchTargetSx } from 'src/theme/spacing';
-import { createNight } from 'src/libs/lists/actions/night-actions';
-import { useNightAnalytics } from 'src/libs/analytics/night-analytics';
+import { startTable } from 'src/libs/lists/actions/table-actions';
+import { useTableAnalytics } from 'src/libs/analytics/table-analytics';
 import { searchRestaurantsForPicker } from 'src/libs/lists/actions/items-actions';
 import {
+  tablePickerRows,
   persistLockToken,
-  tonightPickerRows,
-  decideErrorMessage,
-  filterTonightPickerRows,
-  toggleTonightSelectedIds,
-  tonightSelectedPickerRows,
-  mapListItemsToDecidePlaces,
-} from 'src/libs/lists/list-decide-client';
+  tableErrorMessage,
+  toggleSelectedIds,
+  mapListItemsToPlaces,
+  filterTablePickerRows,
+  tableSelectedPickerRows,
+} from 'src/libs/lists/table-client';
 
 import Iconify from 'src/components/iconify';
 import { ResponsiveSheet } from 'src/components/sheet-shell';
@@ -38,8 +38,8 @@ import SettingsSelectionRow from 'src/sections/profile/settings-selection-row';
 
 // ----------------------------------------------------------------------
 
-const TITLE_ID = 'plan-tonight-title';
-const DESC_ID = 'plan-tonight-desc';
+const TITLE_ID = 'start-table-title';
+const DESC_ID = 'start-table-desc';
 const MIN_PLACES = 3;
 
 /**
@@ -63,29 +63,29 @@ function catalogHitToPlace(hit, unnamedPlace) {
 }
 
 /**
- * Owner sheet to create a Tonight Night (at least 3 places) and copy the share link.
+ * Owner sheet to start a Table (at least 3 places) and copy the share link.
  * Places can come from the current list or from a catalog search of any restaurant.
  */
-export default function PlanTonightSheet({ open, onClose, listId, items, isOwner }) {
+export default function StartTableSheet({ open, onClose, listId, items, isOwner }) {
   const { t } = useTranslate();
-  const analytics = useNightAnalytics();
-  const unnamedPlace = t('pages.lists.decide_unnamed_place');
+  const analytics = useTableAnalytics();
+  const unnamedPlace = t('pages.table.unnamed_place');
   const {
     copyLink,
     feedback: shareFeedback,
     dismissFeedback: dismissShareFeedback,
   } = useShareLink({
-    copiedKey: 'pages.tonight.link_copied',
-    failedKey: 'pages.tonight.link_copy_failed',
+    copiedKey: 'pages.table.link_copied',
+    failedKey: 'pages.table.link_copy_failed',
   });
 
   const placeRows = useMemo(
-    () => mapListItemsToDecidePlaces(items, unnamedPlace),
+    () => mapListItemsToPlaces(items, unnamedPlace),
     [items, unnamedPlace]
   );
   const listIdSet = useMemo(() => new Set(placeRows.map((p) => p.restaurantId)), [placeRows]);
 
-  const [title, setTitle] = useState('Tonight');
+  const [title, setTitle] = useState(() => t('pages.table.default_title'));
   const [selectedIds, setSelectedIds] = useState(() => new Set());
   const [extraById, setExtraById] = useState(() => ({}));
   const [searchQ, setSearchQ] = useState('');
@@ -98,7 +98,7 @@ export default function PlanTonightSheet({ open, onClose, listId, items, isOwner
     const justOpened = open && !wasOpenRef.current;
     wasOpenRef.current = open;
     if (!justOpened) return;
-    setTitle(t('pages.tonight.default_title'));
+    setTitle(t('pages.table.default_title'));
     setSelectedIds(new Set());
     setExtraById({});
     setSearchQ('');
@@ -138,13 +138,13 @@ export default function PlanTonightSheet({ open, onClose, listId, items, isOwner
   );
 
   const selectedPickerRows = useMemo(
-    () => tonightSelectedPickerRows(placeRows, extraRows, selectedIds),
+    () => tableSelectedPickerRows(placeRows, extraRows, selectedIds),
     [placeRows, extraRows, selectedIds]
   );
 
   const pickerRows = useMemo(() => {
-    const listVisible = isSearching ? filterTonightPickerRows(placeRows, searchQ) : placeRows;
-    const merged = tonightPickerRows(listVisible, extraRows);
+    const listVisible = isSearching ? filterTablePickerRows(placeRows, searchQ) : placeRows;
+    const merged = tablePickerRows(listVisible, extraRows);
     const shownIds = new Set(merged.map((p) => p.restaurantId));
     const catalogRows = isSearching
       ? searchHits
@@ -161,7 +161,7 @@ export default function PlanTonightSheet({ open, onClose, listId, items, isOwner
       if (!restaurantId || busy) return;
       const wasSelected = selectedIds.has(restaurantId);
 
-      setSelectedIds((prev) => toggleTonightSelectedIds(prev, restaurantId));
+      setSelectedIds((prev) => toggleSelectedIds(prev, restaurantId));
 
       if (listIdSet.has(restaurantId)) return;
 
@@ -197,32 +197,30 @@ export default function PlanTonightSheet({ open, onClose, listId, items, isOwner
     setBusy(true);
     setErr(null);
     const restaurantIds = [...selectedIds];
-    const { night, error } = await createNight({
+    const { table, error } = await startTable({
       listId,
       restaurantIds,
-      title: title.trim() || t('pages.tonight.default_title'),
+      title: title.trim() || t('pages.table.default_title'),
     });
-    if (error || !night?.night_id) {
+    if (error || !table?.table_id) {
       setBusy(false);
       setErr(error || 'unknown');
       return;
     }
-    if (night.decide_session_id && night.lock_token) {
-      persistLockToken(String(night.decide_session_id), String(night.lock_token));
+    if (table.lock_token) {
+      persistLockToken(String(table.table_id), String(table.lock_token));
     }
-    analytics.trackNightCreated({
-      night_id: String(night.night_id),
-      list_id: String(night.list_id || listId),
-    });
+    const analyticsProps = {
+      table_id: String(table.table_id),
+      list_id: String(table.list_id || listId),
+    };
+    analytics.trackTableStarted(analyticsProps);
     const url =
       typeof window !== 'undefined'
-        ? `${window.location.origin}${paths.tonight(night.night_id)}`
-        : paths.tonight(night.night_id);
+        ? `${window.location.origin}${paths.table(table.table_id)}`
+        : paths.table(table.table_id);
     await copyLink(url);
-    analytics.trackNightShareCopied({
-      night_id: String(night.night_id),
-      list_id: String(night.list_id || listId),
-    });
+    analytics.trackShareCopied(analyticsProps);
     setBusy(false);
     onClose?.();
   }, [canSubmit, selectedIds, listId, title, t, analytics, copyLink, onClose]);
@@ -234,7 +232,7 @@ export default function PlanTonightSheet({ open, onClose, listId, items, isOwner
       component="h2"
       sx={{ fontWeight: 800, flex: 1, minWidth: 0, lineHeight: 1.3, m: 0 }}
     >
-      {t('pages.lists.plan_tonight_title')}
+      {t('pages.lists.start_table_title')}
     </Typography>
   );
 
@@ -249,10 +247,10 @@ export default function PlanTonightSheet({ open, onClose, listId, items, isOwner
         disabled={!canSubmit}
         sx={touchTargetSx}
       >
-        {t('pages.lists.plan_tonight_create')}
+        {t('pages.lists.start_table_create')}
       </Button>
       <Button fullWidth size="large" variant="outlined" onClick={handleClose} disabled={busy}>
-        {t('pages.lists.plan_tonight_cancel')}
+        {t('pages.lists.start_table_cancel')}
       </Button>
     </Stack>
   );
@@ -290,14 +288,14 @@ export default function PlanTonightSheet({ open, onClose, listId, items, isOwner
         closeDisabled={busy}
       >
         <Typography id={DESC_ID} variant="body2" color="text.secondary">
-          {t('pages.lists.plan_tonight_hint', { min: MIN_PLACES })}
+          {t('pages.lists.start_table_hint', { min: MIN_PLACES })}
         </Typography>
 
         <TextField
           fullWidth
           size="small"
           autoFocus
-          label={t('pages.lists.plan_tonight_search_label')}
+          label={t('pages.lists.start_table_search_label')}
           value={searchQ}
           onChange={(e) => setSearchQ(e.target.value)}
           disabled={busy}
@@ -314,7 +312,7 @@ export default function PlanTonightSheet({ open, onClose, listId, items, isOwner
         <TextField
           fullWidth
           size="small"
-          label={t('pages.lists.plan_tonight_name_label')}
+          label={t('pages.lists.start_table_name_label')}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           disabled={busy}
@@ -323,30 +321,30 @@ export default function PlanTonightSheet({ open, onClose, listId, items, isOwner
 
         {err ? (
           <Typography variant="body2" color="error">
-            {decideErrorMessage(err, t)}
+            {tableErrorMessage(err, t)}
           </Typography>
         ) : null}
 
         <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
-          {t('pages.lists.plan_tonight_selected', { count: selectedCount })}
+          {t('pages.lists.start_table_selected', { count: selectedCount })}
         </Typography>
 
         {showEmptyHint ? (
           <Typography variant="body2" color="text.secondary">
-            {t('pages.lists.plan_tonight_empty_list')}
+            {t('pages.lists.start_table_empty_list')}
           </Typography>
         ) : null}
 
         {showSearchEmpty ? (
           <Typography variant="body2" color="text.secondary">
-            {t('pages.lists.plan_tonight_search_empty')}
+            {t('pages.lists.start_table_search_empty')}
           </Typography>
         ) : null}
 
         <Stack spacing={SPACE.xs} sx={{ maxHeight: 320, overflow: 'auto' }}>
           {selectedPickerRows.length > 0 ? (
             <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
-              {t('pages.lists.plan_tonight_picks')}
+              {t('pages.lists.start_table_picks')}
             </Typography>
           ) : null}
           {selectedPickerRows.map(renderPickerRow)}
@@ -354,8 +352,8 @@ export default function PlanTonightSheet({ open, onClose, listId, items, isOwner
             <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
               {t(
                 isSearching
-                  ? 'pages.lists.plan_tonight_search_results'
-                  : 'pages.lists.plan_tonight_from_list'
+                  ? 'pages.lists.start_table_search_results'
+                  : 'pages.lists.start_table_from_list'
               )}
             </Typography>
           ) : null}
@@ -368,7 +366,7 @@ export default function PlanTonightSheet({ open, onClose, listId, items, isOwner
   );
 }
 
-PlanTonightSheet.propTypes = {
+StartTableSheet.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   listId: PropTypes.string.isRequired,

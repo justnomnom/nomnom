@@ -8,11 +8,10 @@
 
 TRUNCATE TABLE
   public.customers,
-  public.night_guests,
-  public.night_places,
-  public.nights,
-  public.list_decide_votes,
-  public.list_decide_sessions,
+  public.table_votes,
+  public.table_guests,
+  public.table_places,
+  public.tables,
   public.list_item_must_try_dishes,
   public.list_items,
   public.list_members,

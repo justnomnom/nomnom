@@ -115,25 +115,18 @@ export default function ListsHubView() {
   const prefersReducedMotion = usePrefersReducedMotion();
   const { trackEvent } = useAnalytics();
   /**
-   * `?decide=1` from the Discover "Share → Decide" tile. Decide runs on a single list
-   * (`ListDecidePanel`), so the hub can't open it directly — it points at the next step instead.
-   * `?tonight=1` is the same pattern for Plan tonight (pick any restaurants on a list).
+   * `?table=1` from the Discover Table promo. A Table starts on a single owned public list
+   * (`StartTableSheet`), so the hub can't open it directly — it points at the next step instead.
    */
-  const showTonightHint = searchParams.get('tonight') === '1';
-  const showDecideHint = searchParams.get('decide') === '1' && !showTonightHint;
-  const showHubHint = showTonightHint || showDecideHint;
+  const showHubHint = searchParams.get('table') === '1';
   /**
    * Dismissing strips the param instead of only flipping local state, so a reload, a back
    * navigation, or a shared copy of the URL doesn't resurrect a hint the user already closed.
    */
   const handleDismissHubHint = useCallback(() => {
-    if (showTonightHint) {
-      trackEvent('tonight_hint_dismissed');
-    } else {
-      trackEvent('decide_hint_dismissed');
-    }
+    trackEvent('table_hint_dismissed');
     router.replace(paths.dashboard.lists);
-  }, [router, trackEvent, showTonightHint]);
+  }, [router, trackEvent]);
   const [createOpen, setCreateOpen] = useState(false);
   const [owned, setOwned] = useState([]);
   const [sharedWithMe, setSharedWithMe] = useState([]);
@@ -292,15 +285,11 @@ export default function ListsHubView() {
     trackEvent('saved_view_opened');
   }, [trackEvent]);
 
-  // Guarded on the hint flags so they fire once per arrival, not on every re-render, and
+  // Guarded on the hint flag so it fires once per arrival, not on every re-render, and
   // never for the plain /dashboard/lists visit.
   useEffect(() => {
-    if (showDecideHint) trackEvent('decide_hint_shown');
-  }, [showDecideHint, trackEvent]);
-
-  useEffect(() => {
-    if (showTonightHint) trackEvent('tonight_hint_shown');
-  }, [showTonightHint, trackEvent]);
+    if (showHubHint) trackEvent('table_hint_shown');
+  }, [showHubHint, trackEvent]);
 
   return (
     <SettingsDrillShell
@@ -333,24 +322,16 @@ export default function ListsHubView() {
                   }}
                 >
                   <Iconify
-                    icon={showTonightHint ? ic.usersGroupTwoRoundedBold : ic.likeBold}
+                    icon={ic.usersGroupTwoRoundedBold}
                     width={22}
                     sx={{ color: 'primary.main', flexShrink: 0, mt: 0.25 }}
                   />
                   <Stack spacing={0.25} sx={{ flex: 1, minWidth: 0 }}>
                     <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
-                      {t(
-                        showTonightHint
-                          ? 'pages.dashboard.lists.tonight_hint_title'
-                          : 'pages.dashboard.lists.decide_hint_title'
-                      )}
+                      {t('pages.dashboard.lists.table_hint_title')}
                     </Typography>
                     <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
-                      {t(
-                        showTonightHint
-                          ? 'pages.dashboard.lists.tonight_hint_body'
-                          : 'pages.dashboard.lists.decide_hint_body'
-                      )}
+                      {t('pages.dashboard.lists.table_hint_body')}
                     </Typography>
                   </Stack>
                   <Button
@@ -364,11 +345,7 @@ export default function ListsHubView() {
                       minHeight: TOUCH_TARGET_SIZE,
                     }}
                   >
-                    {t(
-                      showTonightHint
-                        ? 'pages.dashboard.lists.tonight_hint_dismiss'
-                        : 'pages.dashboard.lists.decide_hint_dismiss'
-                    )}
+                    {t('pages.dashboard.lists.table_hint_dismiss')}
                   </Button>
                 </Stack>
               </DashboardMotionSection>
@@ -677,8 +654,8 @@ export default function ListsHubView() {
                             <NomNomListLinkTile
                               list={list}
                               href={
-                                showTonightHint
-                                  ? `${paths.dashboard.listDetails(list.id)}?tonight=1`
+                                showHubHint
+                                  ? `${paths.dashboard.listDetails(list.id)}?table=1`
                                   : paths.dashboard.listDetails(list.id)
                               }
                               t={t}

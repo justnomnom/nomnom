@@ -1573,10 +1573,10 @@ export default function DiscoverView({
           </Stack>
 
           {/**
-           * One "can't decide?" card instead of three stand-alone promo rows behind two
-           * divider kickers. Plan Tonight is the hero; Decide and Roulette drop to tiles so
-           * the block reads as one choice with a default. Measured against the old shape this
-           * lifts the feed 110px on a 390px viewport and 138px on desktop.
+           * One "can't decide?" card instead of stand-alone promo rows behind divider
+           * kickers. Table is the hero; Roulette drops to a tile so the block reads as one
+           * choice with a default. Measured against the old shape this lifts the feed 110px
+           * on a 390px viewport and 138px on desktop.
            */}
           <Stack {...dashboardSubsectionStackProps}>
             <Box
@@ -1606,13 +1606,13 @@ export default function DiscoverView({
               </Typography>
 
               <DiscoverFeaturePromo
-                href={paths.dashboard.listsTonight}
+                href={paths.dashboard.listsTable}
                 icon={ic.usersGroupTwoRoundedBold}
-                iconClassName="discover-tonight-icon"
-                title={t('pages.dashboard.discover.tonight_promo_title')}
-                subtitle={t('pages.dashboard.discover.tonight_promo_sub')}
+                iconClassName="discover-table-icon"
+                title={t('pages.dashboard.discover.table_promo_title')}
+                subtitle={t('pages.dashboard.discover.table_promo_sub')}
                 rotateDeg={-3}
-                onNavigate={() => trackEvent('discover_promo_clicked', { promo: 'tonight' })}
+                onNavigate={() => trackEvent('discover_promo_clicked', { promo: 'table' })}
               />
 
               <Box
@@ -1625,42 +1625,18 @@ export default function DiscoverView({
                 }}
               />
 
-              {/* 1px middle column = the hairline between the two secondary actions. */}
-              <Box
-                sx={{
-                  display: 'grid',
-                  gridTemplateColumns: 'minmax(0, 1fr) 1px minmax(0, 1fr)',
-                  alignItems: 'stretch',
-                  gap: { xs: SPACE.xxs, sm: SPACE.xs },
-                }}
-              >
-                <DiscoverFeaturePromo
-                  variant="tile"
-                  href={paths.dashboard.listsDecide}
-                  icon={ic.likeBold}
-                  iconClassName="discover-decide-icon"
-                  title={t('pages.dashboard.discover.decide_promo_title')}
-                  subtitle={t('pages.dashboard.discover.decide_promo_sub')}
-                  rotateDeg={3}
-                  onNavigate={() => trackEvent('discover_promo_clicked', { promo: 'decide' })}
-                />
-
-                <Box
-                  aria-hidden
-                  sx={{ my: SPACE.xs, bgcolor: (tt) => alpha(tt.palette.primary.main, 0.15) }}
-                />
-
-                <DiscoverFeaturePromo
-                  variant="tile"
-                  href={paths.dashboard.roulette}
-                  icon={ic.dice5}
-                  iconClassName="discover-roulette-dice"
-                  title={t('pages.dashboard.discover.roulette_promo_title')}
-                  subtitle={t('pages.dashboard.discover.roulette_sub')}
-                  rotateDeg={3}
-                  onNavigate={() => trackEvent('discover_promo_clicked', { promo: 'roulette' })}
-                />
-              </Box>
+              {/* Decide folded into Table, so one secondary action is left: it takes the full
+                  width rather than sitting in half a two-column grid with a void beside it. */}
+              <DiscoverFeaturePromo
+                variant="tile"
+                href={paths.dashboard.roulette}
+                icon={ic.dice5}
+                iconClassName="discover-roulette-dice"
+                title={t('pages.dashboard.discover.roulette_promo_title')}
+                subtitle={t('pages.dashboard.discover.roulette_sub')}
+                rotateDeg={3}
+                onNavigate={() => trackEvent('discover_promo_clicked', { promo: 'roulette' })}
+              />
             </Box>
           </Stack>
 

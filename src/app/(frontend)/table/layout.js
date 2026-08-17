@@ -7,14 +7,14 @@ import MainLayout from 'src/layouts/main';
 // ----------------------------------------------------------------------
 
 /**
- * Public Tonight layout. Minimal chrome: a night link is a task page opened from
+ * Public Table layout. Minimal chrome: a table link is a task page opened from
  * WhatsApp, so the marketing nav, the sign-up CTA (which collapses to "Join" on
- * mobile and collided with the night's own Join) and the tall footer are dropped.
+ * mobile) and the tall footer are dropped.
  */
-export default function TonightLayout({ children }) {
+export default function TableLayout({ children }) {
   return <MainLayout minimal>{children}</MainLayout>;
 }
 
-TonightLayout.propTypes = {
+TableLayout.propTypes = {
   children: PropTypes.node,
 };

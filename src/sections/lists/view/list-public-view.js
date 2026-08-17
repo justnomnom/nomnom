@@ -54,9 +54,8 @@ import {
 import Iconify from 'src/components/iconify';
 import ShareFeedbackSnackbar from 'src/components/share/share-feedback-snackbar';
 
-import ListDecidePanel from 'src/sections/lists/list-decide-panel';
+import StartTableSheet from 'src/sections/lists/start-table-sheet';
 import MapSheetSortMenu from 'src/sections/map/map-sheet-sort-menu';
-import PlanTonightSheet from 'src/sections/lists/plan-tonight-sheet';
 import { useMapMobileSpotSheet } from 'src/sections/map/use-map-mobile-spot-sheet';
 import { MapMobileSpotSheetShell } from 'src/sections/map/map-mobile-spot-sheet-shell';
 import { useMapSheetViewerIdentity } from 'src/sections/map/use-map-sheet-viewer-identity';
@@ -191,15 +190,15 @@ export default function ListPublicView({
   const [saveSheetRestaurantId, setSaveSheetRestaurantId] = useState(null);
   const [guestAuthPromptOpen, setGuestAuthPromptOpen] = useState(false);
   const [guestAuthPromptRestaurantId, setGuestAuthPromptRestaurantId] = useState(null);
-  const [planTonightOpen, setPlanTonightOpen] = useState(false);
-  const tonightParamOpenedRef = useRef(false);
+  const [startTableOpen, setStartTableOpen] = useState(false);
+  const tableParamOpenedRef = useRef(false);
 
   useEffect(() => {
-    if (tonightParamOpenedRef.current) return;
-    if (searchParams.get('tonight') !== '1') return;
+    if (tableParamOpenedRef.current) return;
+    if (searchParams.get('table') !== '1') return;
     if (!initialMembership?.isOwner) return;
-    tonightParamOpenedRef.current = true;
-    setPlanTonightOpen(true);
+    tableParamOpenedRef.current = true;
+    setStartTableOpen(true);
   }, [searchParams, initialMembership?.isOwner]);
 
   // Deep-link: `?spot=<restaurantId>` (e.g. from a notification) highlights that
@@ -897,47 +896,41 @@ export default function ListPublicView({
         error !== 'login_required' &&
         ((items?.length ?? 0) > 0 || Boolean(initialMembership?.isOwner)) && (
           <Stack spacing={SPACE.sm} sx={{ width: 1 }}>
-            {(items?.length ?? 0) > 0 ? (
-              <ListDecidePanel
-                key={searchParams.get('d') || 'decide-idle'}
-                listId={listId}
-                listName={list.name}
-                items={items}
-                isOwner={Boolean(initialMembership?.isOwner)}
-                ownerUsername={owner?.username || null}
-                listSlug={list.slug || null}
-                initialSessionId={searchParams.get('d') || null}
-              />
-            ) : null}
-            {Boolean(initialMembership?.isOwner) ? (
-              <Button
-                fullWidth
-                size="small"
-                variant="outlined"
-                color="primary"
-                onClick={() => setPlanTonightOpen(true)}
-                sx={[
-                  touchTargetSx,
-                  /* primary.main is AA for large text only (DESIGN.md §19); a button
-                     label is small text, so step the accent down in light mode. */
-                  (muiTheme) => ({
-                    color: readableAccent(muiTheme),
-                    borderColor: alpha(muiTheme.palette.primary.main, 0.5),
-                    '&:hover': { borderColor: readableAccent(muiTheme) },
-                  }),
-                ]}
-              >
-                {t('pages.lists.plan_tonight_cta')}
-              </Button>
-            ) : null}
-            {Boolean(initialMembership?.isOwner) ? (
-              <PlanTonightSheet
-                open={planTonightOpen}
-                onClose={() => setPlanTonightOpen(false)}
-                listId={listId}
-                items={items}
-                isOwner={Boolean(initialMembership?.isOwner)}
-              />
+            {/* One CTA: starting a Table is the only way to put a list to a vote.
+                The old in-place Decide panel and its ?d= session are gone. The sheet
+                mounts for any owner (it is also opened by `?table=1`); the button only
+                appears once the list has something to vote on. */}
+            {initialMembership?.isOwner ? (
+              <>
+                {(items?.length ?? 0) > 0 ? (
+                  <Button
+                    fullWidth
+                    size="small"
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => setStartTableOpen(true)}
+                    sx={[
+                      touchTargetSx,
+                      /* primary.main is AA for large text only (DESIGN.md §19); a button
+                         label is small text, so step the accent down in light mode. */
+                      (muiTheme) => ({
+                        color: readableAccent(muiTheme),
+                        borderColor: alpha(muiTheme.palette.primary.main, 0.5),
+                        '&:hover': { borderColor: readableAccent(muiTheme) },
+                      }),
+                    ]}
+                  >
+                    {t('pages.lists.start_table_cta')}
+                  </Button>
+                ) : null}
+                <StartTableSheet
+                  open={startTableOpen}
+                  onClose={() => setStartTableOpen(false)}
+                  listId={listId}
+                  items={items}
+                  isOwner
+                />
+              </>
             ) : null}
           </Stack>
         )}

@@ -1,5 +1,5 @@
 /**
- * Pure tally helpers for list decide sessions (unit-testable).
+ * Pure tally helpers for Table voting (unit-testable).
  */
 
 /**
@@ -7,7 +7,7 @@
  * @param {string[]} restaurantIds
  * @returns {{ restaurantId: string, up: number, down: number, net: number }[]}
  */
-export function rankDecideTallies(tallies, restaurantIds) {
+export function rankTallies(tallies, restaurantIds) {
   const map = tallies && typeof tallies === 'object' ? tallies : {};
   const ids = Array.isArray(restaurantIds) ? restaurantIds.filter(Boolean).map(String) : [];
   const rows = ids.map((restaurantId) => {
@@ -29,15 +29,7 @@ export function rankDecideTallies(tallies, restaurantIds) {
  * @param {string[]} restaurantIds
  * @returns {string | null}
  */
-export function pickDecideWinnerId(tallies, restaurantIds) {
-  const ranked = rankDecideTallies(tallies, restaurantIds);
+export function pickWinnerId(tallies, restaurantIds) {
+  const ranked = rankTallies(tallies, restaurantIds);
   return ranked[0]?.restaurantId ?? null;
-}
-
-/**
- * @param {number} placeCount
- * @returns {boolean}
- */
-export function canStartListDecide(placeCount) {
-  return Number(placeCount) >= 3;
 }

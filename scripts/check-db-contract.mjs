@@ -7,7 +7,7 @@
  * migrate production. The app ships to Vercel independently of the database, so
  * a feature can go fully live with its tables and RPCs missing. That happened to
  * Tonight: every night RPC was absent on production, PostgREST returned
- * PGRST202, and `mapDecideError` collapsed it to the generic
+ * PGRST202, and the error mapper collapsed it to the generic
  * "Something went wrong. Try again." — indistinguishable from a network blip.
  *
  * This asserts the shipped code's database contract actually exists on a target
@@ -24,14 +24,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-/** Tables the app reads directly through PostgREST. */
-const REQUIRED_TABLES = [
-  'nights',
-  'night_places',
-  'night_guests',
-  'list_decide_sessions',
-  'list_decide_votes',
-];
+/** Tables the Table feature stores its state in (service_role only — probed with the service key). */
+const REQUIRED_TABLES = ['tables', 'table_places', 'table_guests', 'table_votes'];
 
 /**
  * RPCs the app calls, with arguments that fail *before* any write so the probe
@@ -40,11 +34,15 @@ const REQUIRED_TABLES = [
  */
 const ZERO_UUID = '00000000-0000-0000-0000-000000000000';
 const REQUIRED_RPCS = [
-  { name: 'create_night', args: { p_list_id: ZERO_UUID, p_restaurant_ids: [ZERO_UUID, ZERO_UUID, ZERO_UUID], p_title: 'contract-check', p_starts_at: null } },
-  { name: 'get_night', args: { p_night_id: ZERO_UUID } },
-  { name: 'get_night_decide', args: { p_night_id: ZERO_UUID } },
-  { name: 'join_night', args: { p_night_id: ZERO_UUID, p_guest_key: 'contract-check', p_display_name: 'contract-check' } },
-  { name: 'add_night_place', args: { p_night_id: ZERO_UUID, p_restaurant_id: ZERO_UUID, p_guest_key: 'contract-check' } },
+  // start_table raises not_authenticated for the service key (no auth.uid()), the rest
+  // raise table_not_found on the zero uuid — every one of them before any INSERT.
+  { name: 'start_table', args: { p_list_id: ZERO_UUID, p_restaurant_ids: [ZERO_UUID, ZERO_UUID, ZERO_UUID], p_title: 'contract-check', p_starts_at: null } },
+  { name: 'get_table', args: { p_table_id: ZERO_UUID } },
+  { name: 'get_table_decide', args: { p_table_id: ZERO_UUID } },
+  { name: 'join_table', args: { p_table_id: ZERO_UUID, p_guest_key: 'contract-check', p_display_name: 'contract-check' } },
+  { name: 'cast_table_vote', args: { p_table_id: ZERO_UUID, p_restaurant_id: ZERO_UUID, p_guest_key: 'contract-check', p_vote: 1 } },
+  { name: 'add_table_place', args: { p_table_id: ZERO_UUID, p_restaurant_id: ZERO_UUID, p_guest_key: 'contract-check' } },
+  { name: 'lock_table', args: { p_table_id: ZERO_UUID, p_lock_token: null, p_winner_restaurant_id: null } },
 ];
 
 /** @param {string} file */

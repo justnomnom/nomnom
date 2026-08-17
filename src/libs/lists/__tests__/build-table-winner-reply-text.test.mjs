@@ -1,19 +1,19 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 
-import { buildDecideWinnerReplyText } from '../build-decide-winner-reply-text.js';
+import { buildWinnerReplyText } from '../build-table-winner-reply-text.js';
 
-describe('buildDecideWinnerReplyText', () => {
+describe('buildWinnerReplyText', () => {
   test('returns lead only when maps is absent', () => {
     assert.equal(
-      buildDecideWinnerReplyText({ lead: "We're going here: Taberna" }),
+      buildWinnerReplyText({ lead: "We're going here: Taberna" }),
       "We're going here: Taberna"
     );
   });
 
   test('appends maps on a blank line', () => {
     assert.equal(
-      buildDecideWinnerReplyText({
+      buildWinnerReplyText({
         lead: "We're going here: Taberna",
         mapsLink: 'https://maps.example/x',
       }),
@@ -22,8 +22,8 @@ describe('buildDecideWinnerReplyText', () => {
   });
 
   test('trims and drops blank maps', () => {
-    assert.equal(buildDecideWinnerReplyText({ lead: '  A  ', mapsLink: '  ' }), 'A');
-    assert.equal(buildDecideWinnerReplyText({ lead: '', mapsLink: 'https://m' }), '');
-    assert.equal(buildDecideWinnerReplyText({ lead: null }), '');
+    assert.equal(buildWinnerReplyText({ lead: '  A  ', mapsLink: '  ' }), 'A');
+    assert.equal(buildWinnerReplyText({ lead: '', mapsLink: 'https://m' }), '');
+    assert.equal(buildWinnerReplyText({ lead: null }), '');
   });
 });

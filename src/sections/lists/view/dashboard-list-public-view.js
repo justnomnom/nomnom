@@ -14,7 +14,7 @@ import { useShareLink } from 'src/hooks/use-share-link';
 import { ic } from 'src/assets/icons';
 import { NAV } from 'src/config-global';
 import { useTranslate } from 'src/locales';
-import { useListDecideAnalytics } from 'src/libs/analytics/list-decide-analytics';
+import { useAnalytics } from 'src/libs/analytics/analytics-provider';
 
 import Iconify from 'src/components/iconify';
 import ShareFeedbackSnackbar from 'src/components/share/share-feedback-snackbar';
@@ -50,13 +50,14 @@ export default function DashboardListPublicView({
     feedback: shareFeedback,
     dismissFeedback: dismissShareFeedback,
   } = useShareLink();
-  const { trackShareCopied } = useListDecideAnalytics();
+  // Sharing the list itself is a list event, not a Table one — no table exists yet.
+  const { trackEvent } = useAnalytics();
 
   const handleShare = useCallback(async () => {
     const url = typeof window !== 'undefined' ? window.location.href : '';
     await shareLink({ url, title: list?.name ?? '' });
-    if (listId) trackShareCopied({ list_id: listId });
-  }, [shareLink, list?.name, listId, trackShareCopied]);
+    if (listId) trackEvent('list_share_copied', { list_id: listId });
+  }, [shareLink, list?.name, listId, trackEvent]);
 
   const endAdornment = (
     <>

@@ -6,7 +6,7 @@
 - test: `npm test` — NOT bare `node --test "src/**/__tests__/*.test.mjs"`. The real script
   is `node --import ./scripts/register-node-test-loader.mjs --test ...`; without that loader
   26 suites fail to load and ~200 tests silently never run, which reads as pre-existing
-  failures. Expected: 847 pass, 0 fail.
+  failures. Expected: 1327 pass, 0 fail (62 suites).
 - e2e: `npm run test:e2e:all` (Playwright; boots a dev server on :3032 and seeds the linked
   Supabase project via service role)
 - deadcode: npx knip
@@ -22,7 +22,7 @@ There are TWO Supabase projects: `.env.local` → `jxknitagufcuyeozlazc` (dev) a
 dev ref, so `supabase db push` can only ever reach dev. Vercel ships the app independently of
 the database, so a feature can go fully live with its tables and RPCs missing on production.
 That is exactly how Tonight shipped broken: every night RPC was absent on prod, PostgREST
-returned PGRST202, and `mapDecideError` collapsed it to "Something went wrong. Try again."
+returned PGRST202, and the error mapper collapsed it to "Something went wrong. Try again."
 
 After any migration-bearing feature, run `npm run db:check:all`. To apply migrations to
 production: `.env.production` holds `POSTGRES_PASSWORD` (not `SUPABASE_DB_PASSWORD`), so

@@ -7,6 +7,7 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+import Collapse from '@mui/material/Collapse';
 import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -16,38 +17,39 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import { SPACE, touchTargetSx } from 'src/theme/spacing';
-import { useNightAnalytics } from 'src/libs/analytics/night-analytics';
-import { lockListDecideSession } from 'src/libs/lists/actions/decide-actions';
+import { useTableAnalytics } from 'src/libs/analytics/table-analytics';
 import { searchRestaurantsForPicker } from 'src/libs/lists/actions/items-actions';
 import {
-  joinNight,
-  fetchNight,
-  addNightPlace,
-  castNightVote,
-  fetchNightDecide,
-} from 'src/libs/lists/actions/night-actions';
+  nameGuest,
+  fetchTable,
+  addTablePlace,
+  fetchTableDecide,
+} from 'src/libs/lists/actions/table-actions';
 import {
-  decideErrorMessage,
-  getOrCreateVoterKey,
-  persistCachedSession,
-  tonightAddSearchState,
-} from 'src/libs/lists/list-decide-client';
+  readCachedTable,
+  summarizeGuests,
+  tableErrorMessage,
+  persistCachedTable,
+  getOrCreateGuestKey,
+  tableAddSearchState,
+} from 'src/libs/lists/table-client';
 
 import Iconify from 'src/components/iconify';
 
-import DecideSessionPanel from 'src/sections/lists/decide-session-panel';
 import SettingsSelectionRow from 'src/sections/profile/settings-selection-row';
+
+import TableVotePanel from './table-vote-panel';
 
 // ----------------------------------------------------------------------
 
 const CARD_SX = { p: SPACE.md, borderRadius: 2 };
 
 /**
- * Map Night place rows into list-item shape for DecideSessionPanel.
+ * Map Table place rows into list-item shape for TableVotePanel.
  * @param {unknown} places
  * @param {string} unnamedPlace
  */
-function mapNightPlacesToItems(places, unnamedPlace) {
+function mapPlacesToItems(places, unnamedPlace) {
   return (Array.isArray(places) ? places : []).map((p) => ({
     restaurant_id: p?.restaurant_id,
     restaurants: {
@@ -60,12 +62,12 @@ function mapNightPlacesToItems(places, unnamedPlace) {
 }
 
 /**
- * Catalog search so anyone who joined can add a restaurant while the night is open.
+ * Catalog search so anyone at an open table can widen the shortlist.
  * @param {{ existingIds: Set<string>, busy?: boolean, onPick: (restaurantId: string) => Promise<boolean> }} props
  */
-function TonightAddPlaceSearch({ existingIds, busy, onPick }) {
+function TableAddPlaceSearch({ existingIds, busy, onPick }) {
   const { t } = useTranslate();
-  const unnamedPlace = t('pages.lists.decide_unnamed_place');
+  const unnamedPlace = t('pages.table.unnamed_place');
   const [searchQ, setSearchQ] = useState('');
   const [searchHits, setSearchHits] = useState([]);
   const [searchPending, setSearchPending] = useState(false);
@@ -93,7 +95,7 @@ function TonightAddPlaceSearch({ existingIds, busy, onPick }) {
     };
   }, [searchQ]);
 
-  const searchState = tonightAddSearchState({
+  const searchState = tableAddSearchState({
     query: searchQ,
     hits: searchHits,
     existingIds,
@@ -116,15 +118,15 @@ function TonightAddPlaceSearch({ existingIds, busy, onPick }) {
     <Card variant="outlined" sx={CARD_SX}>
       <Stack spacing={SPACE.sm}>
         <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-          {t('pages.tonight.add_place_title')}
+          {t('pages.table.add_place_title')}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {t('pages.tonight.add_place_hint')}
+          {t('pages.table.add_place_hint')}
         </Typography>
         <TextField
           fullWidth
           size="small"
-          label={t('pages.tonight.add_place_search_label')}
+          label={t('pages.table.add_place_search_label')}
           value={searchQ}
           onChange={(e) => setSearchQ(e.target.value)}
           disabled={busy}
@@ -139,12 +141,12 @@ function TonightAddPlaceSearch({ existingIds, busy, onPick }) {
         />
         {searchState === 'empty' ? (
           <Typography variant="body2" color="text.secondary">
-            {t('pages.tonight.add_place_empty')}
+            {t('pages.table.add_place_empty')}
           </Typography>
         ) : null}
-        {searchState === 'already_on_night' ? (
+        {searchState === 'already_at_table' ? (
           <Typography variant="body2" color="text.secondary">
-            {t('pages.tonight.add_place_already')}
+            {t('pages.table.add_place_already')}
           </Typography>
         ) : null}
         {rows.length > 0 ? (
@@ -171,122 +173,143 @@ function TonightAddPlaceSearch({ existingIds, busy, onPick }) {
   );
 }
 
-TonightAddPlaceSearch.propTypes = {
+TableAddPlaceSearch.propTypes = {
   existingIds: PropTypes.instanceOf(Set).isRequired,
   busy: PropTypes.bool,
   onPick: PropTypes.func.isRequired,
 };
 
 /**
- * Tonight Night page: shortlist + who’s coming + Decide; join gates voting only.
+ * Table page: shortlist + who's at the table + voting.
+ *
+ * Nothing gates the vote. Naming yourself is an optional nudge that upgrades the
+ * anonymous seat the first vote already created, so the "+N" tail shrinks as
+ * people introduce themselves.
  */
-export default function NightDecideView({ nightId }) {
+export default function TableView({ tableId }) {
   const { t } = useTranslate();
-  const analytics = useNightAnalytics();
+  const analytics = useTableAnalytics();
   const openedTracked = useRef(false);
-  const voterKeyRef = useRef(null);
+  const guestKeyRef = useRef(null);
 
-  const [night, setNight] = useState(null);
-  const [session, setSession] = useState(null);
+  const [table, setTable] = useState(null);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
   const [displayName, setDisplayName] = useState('');
-  const [joinBusy, setJoinBusy] = useState(false);
+  const [nameBusy, setNameBusy] = useState(false);
   const [addBusy, setAddBusy] = useState(false);
-  const [voterKey, setVoterKey] = useState('');
+  const [guestKey, setGuestKey] = useState('');
 
   useEffect(() => {
-    const key = getOrCreateVoterKey();
-    voterKeyRef.current = key;
-    setVoterKey(key);
+    const key = getOrCreateGuestKey();
+    guestKeyRef.current = key;
+    setGuestKey(key);
   }, []);
 
-  const applyNight = useCallback((nextNight) => {
-    if (!nextNight) return;
-    setNight(nextNight);
-    const { decide } = nextNight;
-    if (decide) {
-      setSession(decide);
-      persistCachedSession(decide);
-    }
+  const applyTable = useCallback((next) => {
+    if (!next) return;
+    setTable(next);
     setErr(null);
   }, []);
+
+  /**
+   * Cache whatever is on screen, in one place rather than at every call site. Seeded from
+   * sessionStorage below, so a revisit or an auth remount paints the last known table
+   * instead of a spinner over an empty page.
+   */
+  useEffect(() => {
+    if (table) persistCachedTable(table);
+  }, [table]);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      setLoading(true);
-      const { night: next, error } = await fetchNight(nightId);
+      const cached = readCachedTable(tableId);
+      if (cached?.table_id) {
+        setTable(cached);
+        setLoading(false);
+      } else {
+        setLoading(true);
+      }
+      const { table: next, error } = await fetchTable(tableId);
       if (cancelled) return;
       setLoading(false);
       if (error || !next) {
-        setErr(error || 'night_not_found');
+        // A table that is gone must not keep rendering from the cache behind an error
+        // line; anything else (a blip) keeps the last known state on screen.
+        if (!error || error === 'table_not_found') setTable(null);
+        setErr(error || 'table_not_found');
         return;
       }
-      applyNight(next);
+      applyTable(next);
       if (!openedTracked.current) {
         openedTracked.current = true;
-        analytics.trackNightOpen({ night_id: String(next.night_id || nightId) });
+        analytics.trackTableOpen({ table_id: String(next.table_id || tableId) });
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [nightId, applyNight, analytics]);
+  }, [tableId, applyTable, analytics]);
 
-  const guests = useMemo(
-    () => (Array.isArray(night?.guests) ? night.guests : []),
-    [night?.guests]
+  const guests = useMemo(() => (Array.isArray(table?.guests) ? table.guests : []), [table?.guests]);
+  const guestSummary = useMemo(() => summarizeGuests(guests), [guests]);
+  const hasNamed = useMemo(
+    () =>
+      Boolean(guestKey) &&
+      guests.some((g) => String(g?.guest_key) === String(guestKey) && g?.display_name),
+    [guests, guestKey]
   );
-  const hasJoined = useMemo(
-    () => Boolean(voterKey) && guests.some((g) => String(g?.guest_key) === String(voterKey)),
-    [guests, voterKey]
+  const session = table?.decide || null;
+  const locked = session?.status === 'locked';
+
+  const existingIds = useMemo(
+    () =>
+      new Set(
+        (Array.isArray(table?.places) ? table.places : [])
+          .filter((place) => place?.restaurant_id)
+          .map((place) => String(place.restaurant_id))
+      ),
+    [table?.places]
   );
-  const sessionLocked = session?.status === 'locked';
-  const existingIds = useMemo(() => {
-    const ids = new Set();
-    for (const place of Array.isArray(night?.places) ? night.places : []) {
-      if (place?.restaurant_id) ids.add(String(place.restaurant_id));
-    }
-    return ids;
-  }, [night?.places]);
 
   const items = useMemo(
-    () => mapNightPlacesToItems(night?.places, t('pages.lists.decide_unnamed_place')),
-    [night?.places, t]
+    () => mapPlacesToItems(table?.places, t('pages.table.unnamed_place')),
+    [table?.places, t]
   );
 
-  const handleJoin = useCallback(async () => {
-    if (joinBusy) return;
-    const key = voterKeyRef.current || getOrCreateVoterKey();
-    voterKeyRef.current = key;
-    setVoterKey(key);
-    setJoinBusy(true);
+  const handleName = useCallback(async () => {
+    if (nameBusy || !displayName.trim()) return;
+    const key = guestKeyRef.current || getOrCreateGuestKey();
+    guestKeyRef.current = key;
+    setGuestKey(key);
+    setNameBusy(true);
     setErr(null);
-    const { night: next, error } = await joinNight({
-      nightId,
+    const { table: next, error } = await nameGuest({
+      tableId,
       guestKey: key,
       displayName,
     });
-    setJoinBusy(false);
+    setNameBusy(false);
     if (error || !next) {
       setErr(error || 'unknown');
       return;
     }
-    applyNight(next);
-    analytics.trackNightJoin({ night_id: String(next.night_id || nightId) });
-  }, [joinBusy, nightId, displayName, applyNight, analytics]);
+    applyTable(next);
+    setDisplayName('');
+    analytics.trackTableNamed({ table_id: String(next.table_id || tableId) });
+  }, [nameBusy, tableId, displayName, applyTable, analytics]);
 
   const handleAddPlace = useCallback(
     async (restaurantId) => {
       if (addBusy || !restaurantId) return false;
-      const key = voterKeyRef.current || getOrCreateVoterKey();
-      voterKeyRef.current = key;
-      setVoterKey(key);
+      const key = guestKeyRef.current || getOrCreateGuestKey();
+      guestKeyRef.current = key;
+      setGuestKey(key);
       setAddBusy(true);
       setErr(null);
-      const { night: next, error } = await addNightPlace({
-        nightId,
+      const { table: next, error } = await addTablePlace({
+        tableId,
         restaurantId,
         guestKey: key,
       });
@@ -295,63 +318,36 @@ export default function NightDecideView({ nightId }) {
         setErr(error || 'unknown');
         return false;
       }
-      applyNight(next);
-      analytics.trackNightPlaceAdded({
-        night_id: String(next.night_id || nightId),
+      applyTable(next);
+      analytics.trackPlaceAdded({
+        table_id: String(next.table_id || tableId),
         restaurant_id: String(restaurantId),
       });
       return true;
     },
-    [addBusy, nightId, applyNight, analytics]
+    [addBusy, tableId, applyTable, analytics]
   );
 
   const refreshSession = useCallback(async () => {
-    const { slice, error } = await fetchNightDecide(nightId);
+    const { slice, error } = await fetchTableDecide(tableId);
     if (error) {
       setErr(error);
       return null;
     }
-    const decide = slice?.decide;
-    if (decide) {
-      setSession(decide);
-      persistCachedSession(decide);
-    }
-    if (slice) {
-      setNight((prev) =>
-        prev
-          ? {
-              ...prev,
-              guest_count: slice.guest_count ?? prev.guest_count,
-              guests: Array.isArray(slice.guests) ? slice.guests : prev.guests,
-              places: Array.isArray(slice.places) ? slice.places : prev.places,
-              decide: decide || prev.decide,
-            }
-          : prev
-      );
-    }
-    return decide || null;
-  }, [nightId]);
-
-  const castVoteFn = useCallback(
-    async ({ restaurantId, voterKey: key, vote }) =>
-      castNightVote({
-        nightId,
-        restaurantId,
-        guestKey: key,
-        vote,
-      }),
-    [nightId]
-  );
-
-  const lockFn = useCallback(
-    async ({ sessionId, lockToken, winnerRestaurantId }) =>
-      lockListDecideSession({
-        sessionId,
-        lockToken,
-        winnerRestaurantId,
-      }),
-    []
-  );
+    if (!slice) return null;
+    setTable((prev) =>
+      prev
+        ? {
+            ...prev,
+            guest_count: slice.guest_count ?? prev.guest_count,
+            guests: Array.isArray(slice.guests) ? slice.guests : prev.guests,
+            places: Array.isArray(slice.places) ? slice.places : prev.places,
+            decide: slice.decide || prev.decide,
+          }
+        : prev
+    );
+    return slice.decide || null;
+  }, [tableId]);
 
   if (loading) {
     return (
@@ -361,108 +357,109 @@ export default function NightDecideView({ nightId }) {
     );
   }
 
-  if (!night) {
+  if (!table) {
     return (
       <Container maxWidth="sm" sx={{ py: SPACE.xl }}>
         <Card variant="outlined" sx={CARD_SX}>
           <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-            {t('pages.tonight.not_found_title')}
+            {t('pages.table.not_found_title')}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: SPACE.xs }}>
-            {decideErrorMessage(err || 'night_not_found', t)}
+            {tableErrorMessage(err || 'table_not_found', t)}
           </Typography>
         </Card>
       </Container>
     );
   }
 
+  const whosAtTable = (() => {
+    if (guestSummary.count === 0) return t('pages.table.whos_at_table_empty');
+    const parts = [...guestSummary.names];
+    if (guestSummary.anonymous > 0) {
+      parts.push(t('pages.table.anon_suffix', { count: guestSummary.anonymous }));
+    }
+    return `${t('pages.table.whos_at_table', { count: guestSummary.count })} · ${parts.join(', ')}`;
+  })();
+
   return (
     <Container maxWidth="sm" sx={{ py: SPACE.lg }}>
       <Stack spacing={SPACE.md}>
         <Box>
           <Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>
-            {night.title || t('pages.tonight.default_title')}
+            {table.title || t('pages.table.default_title')}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: SPACE.xxs }}>
-            {t('pages.tonight.subtitle')}
+            {t('pages.table.subtitle')}
           </Typography>
-          {/* Who's coming reads as social proof under the title, not as a section
-              card competing with Join and Decide for the same visual weight. */}
+          {/* Who's at the table reads as social proof under the title, not as a section
+              card competing with the vote panel for the same visual weight. */}
           <Typography variant="body2" color="text.secondary" sx={{ mt: SPACE.xs }}>
-            {guests.length === 0
-              ? t('pages.tonight.whos_coming_empty')
-              : `${t('pages.tonight.whos_coming', { count: guests.length })} · ${guests
-                  .map((g) => g.display_name)
-                  .join(', ')}`}
+            {whosAtTable}
           </Typography>
         </Box>
 
         {err ? (
           <Typography variant="body2" color="error">
-            {decideErrorMessage(err, t)}
+            {tableErrorMessage(err, t)}
           </Typography>
         ) : null}
 
-        {hasJoined && !sessionLocked ? (
-          <TonightAddPlaceSearch existingIds={existingIds} busy={addBusy} onPick={handleAddPlace} />
-        ) : null}
+        <TableVotePanel
+          tableId={String(table.table_id || tableId)}
+          listId={String(table.list_id || '')}
+          items={items}
+          isOwner={Boolean(table.is_owner)}
+          title={table.title}
+          session={session}
+          guestKey={guestKey}
+          onTableUpdate={applyTable}
+          refreshSession={refreshSession}
+        />
 
-        {/* Join sits directly above the shortlist it unlocks, so the name field is
-            adjacent to the disabled vote controls instead of two sections away. */}
-        {!hasJoined ? (
+        {/* The nudge sits *below* the vote panel and disappears once you are named:
+            voting is the first thing you can do, naming is the follow-up. */}
+        <Collapse in={!hasNamed && !locked} unmountOnExit>
           <Card variant="outlined" sx={CARD_SX}>
             <Stack spacing={SPACE.sm}>
               <Typography variant="subtitle2" component="h2" sx={{ fontWeight: 700 }}>
-                {t('pages.tonight.join_title')}
+                {t('pages.table.name_title')}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {t('pages.tonight.join_hint')}
+                {t('pages.table.name_hint')}
               </Typography>
-              <TextField
-                fullWidth
-                size="small"
-                label={t('pages.tonight.display_name_label')}
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                disabled={joinBusy}
-                inputProps={{ maxLength: 80 }}
-              />
-              <Button
-                fullWidth
-                size="large"
-                variant="contained"
-                color="primary"
-                onClick={handleJoin}
-                disabled={joinBusy || !displayName.trim()}
-                sx={touchTargetSx}
-              >
-                {t('pages.tonight.join_cta')}
-              </Button>
+              <Stack direction="row" spacing={SPACE.xs} alignItems="flex-start">
+                <TextField
+                  fullWidth
+                  size="small"
+                  label={t('pages.table.name_label')}
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  disabled={nameBusy}
+                  inputProps={{ maxLength: 80 }}
+                />
+                <Button
+                  size="large"
+                  variant="contained"
+                  color="primary"
+                  onClick={handleName}
+                  disabled={nameBusy || !displayName.trim()}
+                  sx={[touchTargetSx, { flexShrink: 0 }]}
+                >
+                  {t('pages.table.name_cta')}
+                </Button>
+              </Stack>
             </Stack>
           </Card>
-        ) : null}
+        </Collapse>
 
-        <DecideSessionPanel
-          listId={String(night.list_id)}
-          nightId={String(night.night_id || nightId)}
-          items={items}
-          isOwner={Boolean(night.is_owner)}
-          listName={night.title}
-          session={session}
-          setSession={setSession}
-          refreshSession={refreshSession}
-          syncUrl={false}
-          showStart={false}
-          castVoteFn={castVoteFn}
-          lockFn={lockFn}
-          votingEnabled={hasJoined}
-          analyticsProps={{ night_id: String(night.night_id || nightId) }}
-        />
+        {!locked ? (
+          <TableAddPlaceSearch existingIds={existingIds} busy={addBusy} onPick={handleAddPlace} />
+        ) : null}
       </Stack>
     </Container>
   );
 }
 
-NightDecideView.propTypes = {
-  nightId: PropTypes.string.isRequired,
+TableView.propTypes = {
+  tableId: PropTypes.string.isRequired,
 };

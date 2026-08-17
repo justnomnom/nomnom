@@ -30,7 +30,7 @@ import DiscoverListsLeaderboardSkeleton from './discover-lists-leaderboard-skele
  *   1. Market context hint (label + use-location IconButton + change Button)
  *   2. Lists leaderboard (avatars row)
  *   3. Vibe chip strip (overline + 4 chips)
- *   4. Decide + Tonight + Roulette promo cards
+ *   4. Table + Roulette promo card
  *   5. Restaurant feed (locating skeleton cards)
  */
 export default function DiscoverPageLoadingSkeleton() {
@@ -109,7 +109,7 @@ export default function DiscoverPageLoadingSkeleton() {
               </Stack>
 
               {/**
-               * "Can't decide?" group card: Tonight hero + Decide / Roulette tiles.
+               * "Can't decide?" group card: Table hero + Roulette tile.
                * Mirrors the real card in `discover-view.js` and swaps to it on load, so both
                * must use the SAME `SPACE` tokens — raw numbers here would drift silently the
                * first time a token is retuned, and the card would visibly jump.
@@ -154,32 +154,12 @@ export default function DiscoverPageLoadingSkeleton() {
                     }}
                   />
 
-                  <Box
-                    sx={{
-                      display: 'grid',
-                      gridTemplateColumns: 'minmax(0, 1fr) 1px minmax(0, 1fr)',
-                      alignItems: 'stretch',
-                      gap: { xs: SPACE.xxs, sm: SPACE.xs },
-                    }}
-                  >
-                    <Stack spacing={SPACE.xs} sx={{ minWidth: 0, p: SPACE.sm }}>
-                      <Skeleton width={36} height={36} borderRadius={8} />
-                      <Skeleton height={16} width="78%" borderRadius={4} />
-                      <Skeleton height={12} width="92%" borderRadius={4} />
-                      <Skeleton height={12} width="64%" borderRadius={4} />
-                    </Stack>
-
-                    <Box
-                      sx={{ my: SPACE.xs, bgcolor: (th) => alpha(th.palette.primary.main, 0.15) }}
-                    />
-
-                    <Stack spacing={SPACE.xs} sx={{ minWidth: 0, p: SPACE.sm }}>
-                      <Skeleton width={36} height={36} borderRadius={8} />
-                      <Skeleton height={16} width="58%" borderRadius={4} />
-                      <Skeleton height={12} width="92%" borderRadius={4} />
-                      <Skeleton height={12} width="80%" borderRadius={4} />
-                    </Stack>
-                  </Box>
+                  <Stack spacing={SPACE.xs} sx={{ minWidth: 0, p: SPACE.sm }}>
+                    <Skeleton width={36} height={36} borderRadius={8} />
+                    <Skeleton height={16} width="58%" borderRadius={4} />
+                    <Skeleton height={12} width="92%" borderRadius={4} />
+                    <Skeleton height={12} width="80%" borderRadius={4} />
+                  </Stack>
                 </Box>
               </Stack>
 

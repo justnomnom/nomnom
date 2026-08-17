@@ -82,29 +82,30 @@ const EVENT_SCHEMAS = {
   // Page views
   list_viewed: { required: ['list_id'] },
   creator_profile_viewed: { required: ['creator_id'] },
-  // Share → Decide
+  // Sharing the list itself (no Table involved yet).
   list_share_copied: { required: ['list_id'] },
-  list_decide_open: { required: ['list_id', 'session_id'] },
-  list_vote_cast: { required: ['list_id', 'session_id', 'restaurant_id', 'vote'] },
-  list_roulette_spin: { required: ['list_id', 'restaurant_id'] },
-  list_result_shown: { required: ['list_id', 'session_id', 'restaurant_id'] },
-  list_result_locked: { required: ['list_id', 'session_id'] },
-  list_result_reply_shared: { required: ['list_id', 'session_id', 'restaurant_id'] },
-  // Tonight (Night object)
-  night_created: { required: ['night_id', 'list_id'] },
-  night_share_copied: { required: ['night_id', 'list_id'] },
-  night_open: { required: ['night_id'] },
-  night_join: { required: ['night_id'] },
-  night_place_added: { required: ['night_id', 'restaurant_id'] },
-  // Discover feature promos (Decide / Tonight / Roulette)
+  /**
+   * Table — one funnel now that Share → Decide and Plan Tonight are the same object:
+   * started → share_copied → open → vote_cast → result_locked. Everything keys off
+   * `table_id`; `list_id` is only guaranteed at start time, so it is never required.
+   */
+  table_started: { required: ['table_id', 'list_id'] },
+  table_share_copied: { required: ['table_id'] },
+  table_open: { required: ['table_id'] },
+  table_named: { required: ['table_id'] },
+  table_place_added: { required: ['table_id', 'restaurant_id'] },
+  table_vote_cast: { required: ['table_id', 'restaurant_id', 'vote'] },
+  table_roulette_spin: { required: ['table_id', 'restaurant_id'] },
+  table_result_shown: { required: ['table_id', 'restaurant_id'] },
+  table_result_locked: { required: ['table_id'] },
+  table_result_reply_shared: { required: ['table_id', 'restaurant_id'] },
+  // Discover feature promos (Table / Roulette)
   discover_promo_clicked: { required: ['promo'] },
-  // Landing half of the Decide promo: `?decide=1` sends users to the lists hub, which can
+  // Landing half of the Table promo: `?table=1` sends users to the lists hub, which can
   // only point at the next step. Without these, the funnel is measurable at the click and
   // blind at the destination.
-  decide_hint_shown: { required: [] },
-  decide_hint_dismissed: { required: [] },
-  tonight_hint_shown: { required: [] },
-  tonight_hint_dismissed: { required: [] },
+  table_hint_shown: { required: [] },
+  table_hint_dismissed: { required: [] },
   // List management
   list_created: { required: ['list_id'] },
   list_details_saved: { required: ['list_id'] },

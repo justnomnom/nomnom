@@ -34,7 +34,7 @@ import HeaderShadow from '../common/header-shadow';
 
 /**
  * Marketing app bar. `minimal` keeps the brand mark but drops the nav and the
- * sign-up CTA — for task pages reached by a shared link (e.g. /tonight/[id]),
+ * sign-up CTA — for task pages reached by a shared link (e.g. /table/[id]),
  * where the acquisition pill otherwise outranks the page's own action.
  */
 export default function Header({ minimal = false }) {
