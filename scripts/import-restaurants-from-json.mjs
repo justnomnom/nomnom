@@ -140,7 +140,10 @@ async function postWithRetry(item) {
 
 async function ingest(item, idx, total) {
   const key = item.place_id || `${idx}`;
-  if (done[key]) {
+  // Only ok:true (succeeded) or ok:false + skipped (permanent 422) are
+  // terminal. Hard failures (429/5xx exhausted retries, network errors) stay
+  // retryable so a resume doesn't skip them forever.
+  if (done[key] && (done[key].ok || done[key].skipped)) {
     skipped++;
     return;
   }

@@ -158,11 +158,6 @@ async function insertRestaurantTags(restaurantId, tagIds) {
  */
 export async function POST(request) {
   try {
-    const ip = getClientIp(request);
-    if (!(await rateLimitTake(`restaurants-ingest:${ip}`, 60, 60 * 60 * 1000))) {
-      return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
-    }
-
     if (!RESTAURANT_INGEST_SECRET) {
       logger.error('RESTAURANT_INGEST_SECRET is not set');
       return NextResponse.json(
@@ -173,7 +168,17 @@ export async function POST(request) {
 
     const auth = request.headers.get('authorization') || '';
     const token = auth.startsWith('Bearer ') ? auth.slice(7).trim() : '';
-    if (!token || !isValidSecret(token, RESTAURANT_INGEST_SECRET)) {
+    const authorized = Boolean(token) && isValidSecret(token, RESTAURANT_INGEST_SECRET);
+
+    // The IP limit exists to blunt unauthenticated abuse/enumeration; a request
+    // that already presented the correct bearer secret is a trusted bulk-ingest
+    // caller (e.g. scripts/import-restaurants-from-json.mjs) and shouldn't be
+    // throttled by it.
+    if (!authorized) {
+      const ip = getClientIp(request);
+      if (!(await rateLimitTake(`restaurants-ingest:${ip}`, 60, 60 * 60 * 1000))) {
+        return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+      }
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
