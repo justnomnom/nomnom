@@ -30,7 +30,7 @@ import DiscoverListsLeaderboardSkeleton from './discover-lists-leaderboard-skele
  *   1. Market context hint (label + use-location IconButton + change Button)
  *   2. Lists leaderboard (avatars row)
  *   3. Vibe chip strip (overline + 4 chips)
- *   4. Table + Roulette promo card
+ *   4. Table + Roulette promo cards
  *   5. Restaurant feed (locating skeleton cards)
  */
 export default function DiscoverPageLoadingSkeleton() {
@@ -109,57 +109,49 @@ export default function DiscoverPageLoadingSkeleton() {
               </Stack>
 
               {/**
-               * "Can't decide?" group card: Table hero + Roulette tile.
-               * Mirrors the real card in `discover-view.js` and swaps to it on load, so both
-               * must use the SAME `SPACE` tokens — raw numbers here would drift silently the
-               * first time a token is retuned, and the card would visibly jump.
+               * Matching Table + Roulette product cards. Mirrors `discover-view.js` so the
+               * skeleton does not jump on swap — same `SPACE` tokens, same two-column grid.
                */}
               <Stack {...dashboardSubsectionStackProps}>
+                <Box sx={{ px: 0.5 }}>
+                  <Skeleton height={12} width={180} borderRadius={4} />
+                </Box>
                 <Box
                   sx={{
-                    borderRadius: 2,
-                    p: { xs: SPACE.xs, sm: SPACE.sm },
-                    border: (th) => `2px solid ${alpha(th.palette.primary.main, 0.15)}`,
-                    bgcolor: (th) => alpha(th.palette.primary.main, 0.06),
+                    display: 'grid',
+                    gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
+                    gap: SPACE.sm,
+                    alignItems: 'stretch',
                   }}
                 >
-                  <Box sx={{ px: SPACE.xs, pb: SPACE.xs }}>
-                    <Skeleton height={14} width={160} borderRadius={4} />
-                  </Box>
-
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    spacing={SPACE.md}
-                    sx={{
-                      minWidth: 0,
-                      px: { xs: SPACE.xs, sm: SPACE.sm },
-                      py: { xs: 1.25, sm: SPACE.sm },
-                    }}
-                  >
-                    <Skeleton width={48} height={48} borderRadius={8} />
-                    <Stack spacing={0.75} sx={{ flex: 1, minWidth: 0 }}>
-                      <Skeleton height={20} width="52%" borderRadius={4} />
-                      <Skeleton height={14} width="72%" borderRadius={4} />
-                    </Stack>
-                    <Skeleton width={22} height={22} borderRadius={1} />
-                  </Stack>
-
-                  <Box
-                    sx={{
-                      height: '1px',
-                      my: SPACE.sm,
-                      mx: SPACE.xs,
-                      bgcolor: (th) => alpha(th.palette.primary.main, 0.15),
-                    }}
-                  />
-
-                  <Stack spacing={SPACE.xs} sx={{ minWidth: 0, p: SPACE.sm }}>
-                    <Skeleton width={36} height={36} borderRadius={8} />
-                    <Skeleton height={16} width="58%" borderRadius={4} />
-                    <Skeleton height={12} width="92%" borderRadius={4} />
-                    <Skeleton height={12} width="80%" borderRadius={4} />
-                  </Stack>
+                  {[0, 1].map((i) => (
+                    <Box
+                      key={i}
+                      sx={{
+                        borderRadius: 2,
+                        px: SPACE.md,
+                        py: SPACE.md,
+                        bgcolor: (th) => alpha(th.palette.primary.main, 0.04),
+                      }}
+                    >
+                      <Skeleton width={48} height={48} borderRadius={8} />
+                      <Box sx={{ mt: SPACE.sm }}>
+                        <Skeleton height={18} width="72%" borderRadius={4} />
+                        <Skeleton
+                          height={12}
+                          width="92%"
+                          borderRadius={4}
+                          style={{ marginTop: 8 }}
+                        />
+                        <Skeleton
+                          height={12}
+                          width="64%"
+                          borderRadius={4}
+                          style={{ marginTop: 6 }}
+                        />
+                      </Box>
+                    </Box>
+                  ))}
                 </Box>
               </Stack>
 

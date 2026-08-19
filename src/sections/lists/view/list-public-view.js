@@ -39,7 +39,6 @@ import { useAuthContext } from 'src/auth/hooks';
 import { NAV, MAPBOX_API } from 'src/config-global';
 import { useLocales, useTranslate } from 'src/locales';
 import { hoverable } from 'src/theme/overrides/hoverable';
-import { readableAccent } from 'src/theme/readable-accent';
 import { getLocaleBodyMaxWidthCh } from 'src/theme/locale-prose';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
 import { getPaywallRelativeDate } from 'src/libs/paywall/paywall-recency';
@@ -905,20 +904,11 @@ export default function ListPublicView({
                 {(items?.length ?? 0) > 0 ? (
                   <Button
                     fullWidth
-                    size="small"
-                    variant="outlined"
+                    size="large"
+                    variant="contained"
                     color="primary"
                     onClick={() => setStartTableOpen(true)}
-                    sx={[
-                      touchTargetSx,
-                      /* primary.main is AA for large text only (DESIGN.md §19); a button
-                         label is small text, so step the accent down in light mode. */
-                      (muiTheme) => ({
-                        color: readableAccent(muiTheme),
-                        borderColor: alpha(muiTheme.palette.primary.main, 0.5),
-                        '&:hover': { borderColor: readableAccent(muiTheme) },
-                      }),
-                    ]}
+                    sx={touchTargetSx}
                   >
                     {t('pages.lists.start_table_cta')}
                   </Button>

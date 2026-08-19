@@ -1573,38 +1573,35 @@ export default function DiscoverView({
           </Stack>
 
           {/**
-           * One "can't decide?" card instead of stand-alone promo rows behind divider
-           * kickers. Table is the hero; Roulette drops to a tile so the block reads as one
-           * choice with a default. Measured against the old shape this lifts the feed 110px
-           * on a 390px viewport and 138px on desktop.
+           * Table and Roulette as a matching pair of product cards — same stamp, paper,
+           * and shadow as those pages — under the same kicker as the vibe strip.
            */}
-          <Stack {...dashboardSubsectionStackProps}>
+          <Stack
+            component="section"
+            // Points at the visible kicker rather than repeating it in an aria-label, which
+            // would make a screen reader announce the same sentence twice.
+            aria-labelledby="discover-decide-group-label"
+            {...dashboardSubsectionStackProps}
+          >
+            {/* Not a heading: every other section label on this page is plain text, and a
+                lone h2 under a page with no h1 reads as a broken outline. `aria-labelledby`
+                names the region regardless of the label's tag. */}
+            <Typography
+              id="discover-decide-group-label"
+              variant="overline"
+              sx={dashboardSectionLabelSx(theme)}
+            >
+              {t('pages.dashboard.discover.decide_group_kicker')}
+            </Typography>
+
             <Box
-              component="section"
-              // Points at the visible kicker rather than repeating it in an aria-label, which
-              // would make a screen reader announce the same sentence twice.
-              aria-labelledby="discover-decide-group-label"
               sx={{
-                // `2` is the documented standard card radius (32px); the promos used to be
-                // stand-alone rows at `4`, which is far too round for a container this tall.
-                borderRadius: 2,
-                p: { xs: SPACE.xs, sm: SPACE.sm },
-                border: (tt) => `2px solid ${alpha(tt.palette.primary.main, 0.15)}`,
-                bgcolor: (tt) => alpha(tt.palette.primary.main, 0.06),
+                display: 'grid',
+                gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
+                gap: SPACE.sm,
+                alignItems: 'stretch',
               }}
             >
-              {/* Not a heading: every other section label on this page is plain text, and a
-                  lone h2 under a page with no h1 reads as a broken outline. `aria-labelledby`
-                  names the region regardless of the label's tag. */}
-              <Typography
-                id="discover-decide-group-label"
-                variant="caption"
-                color="text.secondary"
-                sx={{ display: 'block', fontWeight: 800, px: SPACE.xs, pb: SPACE.xs }}
-              >
-                {t('pages.dashboard.discover.decide_group_kicker')}
-              </Typography>
-
               <DiscoverFeaturePromo
                 href={paths.dashboard.listsTable}
                 icon={ic.usersGroupTwoRoundedBold}
@@ -1614,21 +1611,7 @@ export default function DiscoverView({
                 rotateDeg={-3}
                 onNavigate={() => trackEvent('discover_promo_clicked', { promo: 'table' })}
               />
-
-              <Box
-                aria-hidden
-                sx={{
-                  height: '1px',
-                  my: SPACE.sm,
-                  mx: SPACE.xs,
-                  bgcolor: (tt) => alpha(tt.palette.primary.main, 0.15),
-                }}
-              />
-
-              {/* Decide folded into Table, so one secondary action is left: it takes the full
-                  width rather than sitting in half a two-column grid with a void beside it. */}
               <DiscoverFeaturePromo
-                variant="tile"
                 href={paths.dashboard.roulette}
                 icon={ic.dice5}
                 iconClassName="discover-roulette-dice"

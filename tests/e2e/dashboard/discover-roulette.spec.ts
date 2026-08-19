@@ -73,19 +73,17 @@ test.describe('dashboard discover + roulette', () => {
     await expect(page.getByTestId('e2e-discover-view')).toBeVisible({ timeout: 45_000 });
 
     const table = page.getByRole('link', { name: /Start a Table|Abrir uma Mesa/i });
-    // Title is the short "Roulette" / "Roleta" — it sits in a narrow tile, so it is NOT the
-    // long-form "Try the NomNom Roulette" used elsewhere.
+    // Title is the short "Roulette" / "Roleta" on the matching promo card — not the
+    // long-form "Try the NomNom Roulette" used on the roulette page itself.
     const roulette = page.getByRole('link', { name: /^Roulette|^Roleta/i });
 
     await expect(table).toBeVisible({ timeout: 45_000 });
     await expect(roulette).toBeVisible({ timeout: 20_000 });
 
-    // Decide folded into Table, so the hero deep-links the hub hint and Roulette is the
-    // only secondary action left.
     await expect(table).toHaveAttribute('href', /\/dashboard\/lists\?table=1/);
     await expect(roulette).toHaveAttribute('href', /\/dashboard\/roulette/);
 
-    // Both live in one labelled group rather than separate divider-kicker sections.
+    // Both live in one labelled pair rather than separate divider-kicker sections.
     const group = page.locator('section[aria-labelledby="discover-decide-group-label"]');
     await expect(group).toHaveCount(1);
     await expect(group.getByRole('link')).toHaveCount(2);

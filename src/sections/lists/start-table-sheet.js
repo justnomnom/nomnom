@@ -16,7 +16,7 @@ import { useShareLink } from 'src/hooks/use-share-link';
 
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
-import { SPACE, touchTargetSx } from 'src/theme/spacing';
+import { SPACE, tabularNumsSx, touchTargetSx } from 'src/theme/spacing';
 import { startTable } from 'src/libs/lists/actions/table-actions';
 import { useTableAnalytics } from 'src/libs/analytics/table-analytics';
 import { searchRestaurantsForPicker } from 'src/libs/lists/actions/items-actions';
@@ -294,24 +294,6 @@ export default function StartTableSheet({ open, onClose, listId, items, isOwner 
         <TextField
           fullWidth
           size="small"
-          autoFocus
-          label={t('pages.lists.start_table_search_label')}
-          value={searchQ}
-          onChange={(e) => setSearchQ(e.target.value)}
-          disabled={busy}
-          inputProps={{ autoComplete: 'off' }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Iconify icon={ic.searchLinear} width={18} sx={{ color: 'text.disabled' }} />
-              </InputAdornment>
-            ),
-          }}
-        />
-
-        <TextField
-          fullWidth
-          size="small"
           label={t('pages.lists.start_table_name_label')}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -325,39 +307,63 @@ export default function StartTableSheet({ open, onClose, listId, items, isOwner 
           </Typography>
         ) : null}
 
-        <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
-          {t('pages.lists.start_table_selected', { count: selectedCount })}
-        </Typography>
-
-        {showEmptyHint ? (
-          <Typography variant="body2" color="text.secondary">
-            {t('pages.lists.start_table_empty_list')}
-          </Typography>
-        ) : null}
-
-        {showSearchEmpty ? (
-          <Typography variant="body2" color="text.secondary">
-            {t('pages.lists.start_table_search_empty')}
-          </Typography>
-        ) : null}
-
-        <Stack spacing={SPACE.xs} sx={{ maxHeight: 320, overflow: 'auto' }}>
-          {selectedPickerRows.length > 0 ? (
-            <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
+        {selectedPickerRows.length > 0 ? (
+          <Stack spacing={SPACE.xs}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ fontWeight: 700, ...tabularNumsSx }}
+            >
               {t('pages.lists.start_table_picks')}
+              {' · '}
+              {t('pages.lists.start_table_selected', { count: selectedCount })}
+            </Typography>
+            {selectedPickerRows.map(renderPickerRow)}
+          </Stack>
+        ) : (
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ fontWeight: 600, ...tabularNumsSx }}
+          >
+            {t('pages.lists.start_table_selected', { count: selectedCount })}
+          </Typography>
+        )}
+
+        <Stack spacing={SPACE.sm}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+            {t('pages.lists.start_table_from_list')}
+          </Typography>
+          <TextField
+            fullWidth
+            size="small"
+            autoFocus
+            label={t('pages.lists.start_table_search_label')}
+            value={searchQ}
+            onChange={(e) => setSearchQ(e.target.value)}
+            disabled={busy}
+            inputProps={{ autoComplete: 'off' }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Iconify icon={ic.searchLinear} width={18} sx={{ color: 'text.disabled' }} />
+                </InputAdornment>
+              ),
+            }}
+          />
+          {showEmptyHint ? (
+            <Typography variant="body2" color="text.secondary">
+              {t('pages.lists.start_table_empty_list')}
             </Typography>
           ) : null}
-          {selectedPickerRows.map(renderPickerRow)}
-          {otherPickerRows.length > 0 ? (
-            <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
-              {t(
-                isSearching
-                  ? 'pages.lists.start_table_search_results'
-                  : 'pages.lists.start_table_from_list'
-              )}
+          {showSearchEmpty ? (
+            <Typography variant="body2" color="text.secondary">
+              {t('pages.lists.start_table_search_empty')}
             </Typography>
           ) : null}
-          {otherPickerRows.map(renderPickerRow)}
+          <Stack spacing={SPACE.xs} sx={{ maxHeight: 320, overflow: 'auto' }}>
+            {otherPickerRows.map(renderPickerRow)}
+          </Stack>
         </Stack>
       </ResponsiveSheet>
 

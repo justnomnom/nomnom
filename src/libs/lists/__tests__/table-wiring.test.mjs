@@ -131,13 +131,32 @@ describe('Table entry points', () => {
     assert.doesNotMatch(view, /ListDecidePanel|searchParams\.get\('d'\)/);
   });
 
+  test('the Start a Table CTA is a contained primary, per DESIGN.md §7', () => {
+    const view = read('src/sections/lists/view/list-public-view.js');
+    // Window back from the label: setStartTableOpen appears twice (the ?table=1
+    // effect opens the sheet too), so anchor on the CTA text, not the handler.
+    const label = view.indexOf("t('pages.lists.start_table_cta')");
+    const cta = view.slice(view.lastIndexOf('<Button', label), label);
+    // Starting a Table is the only way to put a list to a vote, so it is THE primary
+    // action here. DESIGN.md §7 reserves `outlined` for destructive/neutral actions
+    // (Delete, Cancel) and gives the primary action `contained`.
+    assert.match(cta, /variant="contained"/);
+    assert.doesNotMatch(cta, /variant="outlined"/);
+    // §7 also requires an explicit color on contained (the theme defaults MuiButton to
+    // "inherit", which renders near-black instead of terracotta).
+    assert.match(cta, /color="primary"/);
+    // §19 / readable-accent.js: labels on a terracotta FILL stay white
+    // (PRIMARY_ON_FILL_TEXT). readableAccent() is for accent-as-text only.
+    assert.doesNotMatch(view, /readableAccent/);
+  });
+
   test('the CTA needs places but the sheet mounts for any owner (?table=1 opens it)', () => {
     const view = read('src/sections/lists/view/list-public-view.js');
     assert.match(view, /\(items\?\.length \?\? 0\) > 0 \? \(/);
     assert.doesNotMatch(view, /isOwner\) && \(items\?\.length \?\? 0\) >= 3/);
   });
 
-  test('Discover promotes one Table hero plus Roulette; Decide/Tonight tiles are gone', () => {
+  test('Discover promotes matching Table + Roulette cards; Decide/Tonight tiles are gone', () => {
     const view = read('src/sections/discover/view/discover-view.js');
     const promo = read('src/sections/discover/discover-feature-promo.js');
     const provider = read('src/libs/analytics/analytics-provider.js');
@@ -147,10 +166,9 @@ describe('Table entry points', () => {
     assert.match(view, /promo: 'roulette'/);
     assert.doesNotMatch(view, /promo: 'decide'|promo: 'tonight'/);
     assert.doesNotMatch(view, /listsDecide|listsTonight/);
-    // Exactly one tile is left, so the two-column hairline grid must be gone with it.
-    assert.equal((view.match(/variant="tile"/g) ?? []).length, 1);
-    assert.doesNotMatch(view, /gridTemplateColumns: 'minmax\(0, 1fr\) 1px minmax\(0, 1fr\)'/);
-    assert.match(promo, /variant: PropTypes\.oneOf\(\['hero', 'tile'\]\)/);
+    assert.doesNotMatch(view, /variant="tile"|variant="hero"/);
+    assert.match(view, /gridTemplateColumns: 'minmax\(0, 1fr\) minmax\(0, 1fr\)'/);
+    assert.doesNotMatch(promo, /variant: PropTypes/);
     assert.match(provider, /discover_promo_clicked: \{ required: \['promo'\] \}/);
     for (const lang of [en, pt]) {
       const d = lang.pages.dashboard.discover;
@@ -162,25 +180,27 @@ describe('Table entry points', () => {
     }
   });
 
-  test('neither promo variant paints its own surface (no card-inside-a-card)', () => {
+  test('each promo is its own product card (paper + card shadow, no wrapper tint)', () => {
     const promo = read('src/sections/discover/discover-feature-promo.js');
-    assert.doesNotMatch(promo, /bgcolor: 'background\.paper'/);
-    assert.match(promo, /bgcolor: 'transparent'/);
-    assert.doesNotMatch(promo, /border: \(tt\) =>/);
+    const view = read('src/sections/discover/view/discover-view.js');
+    assert.match(promo, /bgcolor: 'background\.paper'/);
+    assert.match(promo, /customShadows\.card/);
+    assert.doesNotMatch(promo, /bgcolor: 'transparent'/);
+    // The pair sits in a grid, not inside a tinted group card (that would nest cards).
+    assert.doesNotMatch(view, /alpha\(tt\.palette\.primary\.main, 0\.06\)/);
   });
 
-  test('the discover route skeleton mirrors the real group card', () => {
+  test('the discover route skeleton mirrors the real promo pair', () => {
     const skeleton = read('src/sections/discover/discover-page-loading-skeleton.js');
     const view = read('src/sections/discover/view/discover-view.js');
-    // Same single-tile shape and card radius, or the skeleton pops on swap.
-    assert.doesNotMatch(skeleton, /gridTemplateColumns: 'minmax\(0, 1fr\) 1px minmax\(0, 1fr\)'/);
-    for (const src of [skeleton, view]) assert.match(src, /borderRadius: 2,/);
+    const promo = read('src/sections/discover/discover-feature-promo.js');
+    const grid = /gridTemplateColumns: 'minmax\(0, 1fr\) minmax\(0, 1fr\)'/;
+    assert.match(skeleton, grid);
+    assert.match(view, grid);
+    for (const src of [skeleton, view]) assert.match(src, /gap: SPACE\.sm/);
+    assert.match(promo, /borderRadius: 2,/);
+    assert.match(skeleton, /borderRadius: 2,/);
     assert.doesNotMatch(skeleton, /borderRadius: 4,/);
-    // Both must express the card's padding with the SAME tokens. Raw numbers here would
-    // match today and drift the first time a SPACE token is retuned.
-    for (const src of [skeleton, view]) {
-      assert.match(src, /p: \{ xs: SPACE\.xs, sm: SPACE\.sm \}/);
-    }
     assert.match(skeleton, /import \{ SPACE \} from 'src\/theme\/spacing'/);
   });
 
@@ -310,6 +330,7 @@ describe('Table server + storage contract', () => {
     const sheet = read('src/sections/lists/start-table-sheet.js');
     assert.match(sheet, /searchRestaurantsForPicker/);
     assert.match(sheet, /start_table_search_label/);
+    assert.match(sheet, /start_table_from_list[\s\S]*start_table_search_label/);
     assert.match(sheet, /tablePickerRows/);
     assert.match(sheet, /tableSelectedPickerRows/);
     assert.match(sheet, /justOpened/);
