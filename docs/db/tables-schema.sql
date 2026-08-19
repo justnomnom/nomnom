@@ -3,6 +3,8 @@
 --   Merges the old Share → Decide sessions and Tonight nights into one object.
 --   Drops: nights, night_places, night_guests, list_decide_sessions, list_decide_votes
 --   and every create_night / *_list_decide_* RPC.
+-- Follow-up: supabase/migrations/20260819220000_table_vote_requires_name.sql
+--   join_table is the gate; unnamed guests cannot vote or add places (not_joined).
 --
 -- Tables: tables, table_places, table_guests, table_votes (service_role only).
 -- Clients must not SELECT/DML these (guest_key privacy); use the RPCs only.

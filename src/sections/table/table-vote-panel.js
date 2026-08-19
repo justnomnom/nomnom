@@ -14,7 +14,6 @@ import { alpha, useTheme } from '@mui/material/styles';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import { paths } from 'src/routes/paths';
-import { RouterLink } from 'src/routes/components';
 
 import { useShareLink } from 'src/hooks/use-share-link';
 
@@ -30,15 +29,18 @@ import {
   canLockTable,
   readLockToken,
   persistMyVote,
+  readLinkCopied,
+  clearLinkCopied,
   tableErrorMessage,
   mapListItemsToPlaces,
   lockedWinnerRestaurantId,
 } from 'src/libs/lists/table-client';
 
 import Iconify from 'src/components/iconify';
-import { ScrollableChipRow } from 'src/components/horizontal-scroll-row';
 import ShareFeedbackSnackbar from 'src/components/share/share-feedback-snackbar';
 import { scrollableChipPillButtonSx } from 'src/components/scrollable-chip-select';
+
+import TableRestaurantDetailSheet from './table-restaurant-detail-sheet';
 
 // ----------------------------------------------------------------------
 
@@ -82,6 +84,26 @@ const VOTE_ROW_SX = {
   minWidth: 0,
 };
 
+const PLACE_IDENTITY_BTN_SX = [
+  touchTargetSx,
+  {
+    display: 'flex',
+    alignItems: 'center',
+    gap: SPACE.xs,
+    flex: 1,
+    minWidth: 0,
+    border: 0,
+    bgcolor: 'transparent',
+    color: 'inherit',
+    font: 'inherit',
+    textAlign: 'left',
+    cursor: 'pointer',
+    borderRadius: 1,
+    p: 0,
+    '&:hover': { bgcolor: 'action.hover' },
+  },
+];
+
 /**
  * Circular place thumb with a first-letter fallback when no photo is set.
  */
@@ -104,10 +126,38 @@ PlaceThumb.propTypes = {
 };
 
 /**
- * Vote / spin / lock / winner / poll UI for a Table.
+ * Thumb + name that opens the restaurant detail sheet. Vote buttons stay outside
+ * so a tap on the name never casts a vote.
+ */
+function PlaceIdentityButton({ place, size, onOpen, children }) {
+  const { t } = useTranslate();
+  return (
+    <Box
+      component="button"
+      type="button"
+      onClick={() => onOpen(place)}
+      aria-label={t('pages.table.place_details_aria', { name: place.name })}
+      sx={PLACE_IDENTITY_BTN_SX}
+    >
+      <PlaceThumb name={place.name} photo={place.photo} size={size} />
+      <Box sx={{ flex: 1, minWidth: 0 }}>{children}</Box>
+      <Iconify icon={ic.chevronRightLinear} width={16} sx={{ color: 'text.disabled', flexShrink: 0 }} />
+    </Box>
+  );
+}
+
+PlaceIdentityButton.propTypes = {
+  place: PropTypes.object.isRequired,
+  size: PropTypes.number.isRequired,
+  onOpen: PropTypes.func.isRequired,
+  children: PropTypes.node,
+};
+
+/**
+ * Vote / lock / winner / poll UI for a Table.
  *
- * Voting is open to anyone holding the link — naming yourself is a separate,
- * optional nudge (see TableView), never a gate on the first tap.
+ * Voting requires a named seat (`named`). The join page is the gate; this panel
+ * still refuses a tap if that prop is missing so a stray mount cannot vote.
  */
 export default function TableVotePanel({
   tableId,
@@ -117,6 +167,8 @@ export default function TableVotePanel({
   title,
   session,
   guestKey,
+  named = false,
+  whenLabel,
   onTableUpdate,
   refreshSession,
 }) {
@@ -125,6 +177,7 @@ export default function TableVotePanel({
   const analytics = useTableAnalytics();
   const {
     share: shareLink,
+    announceCopied,
     feedback: shareFeedback,
     dismissFeedback: dismissShareFeedback,
   } = useShareLink({
@@ -135,7 +188,7 @@ export default function TableVotePanel({
 
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState(null);
-  const [roulettePickId, setRoulettePickId] = useState(null);
+  const [detailPlace, setDetailPlace] = useState(/** @type {object | null} */ (null));
   const [myVotes, setMyVotes] = useState(/** @type {Record<string, 1 | -1>} */ ({}));
   /** Restaurant whose vote is in flight — only that row waits, not the whole panel. */
   const [pendingVoteId, setPendingVoteId] = useState(/** @type {string | null} */ (null));
@@ -187,6 +240,15 @@ export default function TableVotePanel({
     setMyVotes(readMyVotes(tableId));
   }, [tableId]);
 
+  // Start-a-table copies the link then navigates here; replay the toast on arrival.
+  // Clear the flag on a timeout so React Strict Mode remounts still see it.
+  useEffect(() => {
+    if (!tableId || !readLinkCopied(tableId)) return undefined;
+    announceCopied();
+    const id = window.setTimeout(() => clearLinkCopied(tableId), 0);
+    return () => window.clearTimeout(id);
+  }, [tableId, announceCopied]);
+
   useEffect(() => {
     if (!tableId || locked) return undefined;
     const tick = () => {
@@ -210,6 +272,13 @@ export default function TableVotePanel({
     });
   }, [locked, session, analytics, analyticsBase]);
 
+  const handleOpenPlace = useCallback((place) => {
+    if (!place?.restaurantId) return;
+    setDetailPlace(place);
+  }, []);
+
+  const handleClosePlace = useCallback(() => setDetailPlace(null), []);
+
   const handleShare = useCallback(async () => {
     if (!tableId || typeof window === 'undefined') return;
     const url = `${window.location.origin}${paths.table(tableId)}`;
@@ -219,7 +288,7 @@ export default function TableVotePanel({
 
   const handleVote = useCallback(
     async (restaurantId, vote) => {
-      if (!tableId || locked) return;
+      if (!tableId || locked || !named) return;
       // Show your choice immediately. A vote is an upsert keyed by
       // (table, guest, restaurant), so re-tapping is safe and the server is
       // still the source of truth for the counts.
@@ -243,15 +312,8 @@ export default function TableVotePanel({
       setMyVotes(persistMyVote(tableId, restaurantId, vote));
       analytics.trackVoteCast({ ...analyticsBase, restaurant_id: restaurantId, vote });
     },
-    [tableId, locked, guestKey, analytics, analyticsBase, onTableUpdate]
+    [tableId, locked, named, guestKey, analytics, analyticsBase, onTableUpdate]
   );
-
-  const handleRoulette = useCallback(() => {
-    if (!restaurantIds.length || locked) return;
-    const pick = restaurantIds[Math.floor(Math.random() * restaurantIds.length)];
-    setRoulettePickId(pick);
-    analytics.trackRouletteSpin({ ...analyticsBase, restaurant_id: pick });
-  }, [restaurantIds, locked, analytics, analyticsBase]);
 
   const handleLock = useCallback(async () => {
     if (!tableId || locked || busy) return;
@@ -284,15 +346,15 @@ export default function TableVotePanel({
     const restaurantUrl = `${window.location.origin}${paths.restaurantPublic(place.restaurantId)}`;
     const text = buildWinnerReplyText({
       lead: t('pages.table.reply_share_text', { name: place.name }),
+      when: whenLabel,
       mapsLink: place.mapsLink,
     });
     await shareLink({ url: restaurantUrl, title: place.name || '', text });
     analytics.trackResultReplyShared({ ...analyticsBase, restaurant_id: place.restaurantId });
-  }, [session, placeById, shareLink, t, analytics, analyticsBase]);
+  }, [session, placeById, shareLink, t, analytics, analyticsBase, whenLabel]);
 
   const winnerId = lockedWinnerRestaurantId(session);
   const winner = winnerId ? placeById.get(winnerId) : null;
-  const roulettePlace = roulettePickId ? placeById.get(roulettePickId) : null;
 
   return (
     <>
@@ -323,9 +385,25 @@ export default function TableVotePanel({
                 <Typography variant="overline" color="text.secondary">
                   {t('pages.table.going_here')}
                 </Typography>
-                <Typography variant="h6" sx={{ fontWeight: 700, mt: SPACE.xxs }}>
-                  {winner.name}
-                </Typography>
+                <Box
+                  component="button"
+                  type="button"
+                  onClick={() => handleOpenPlace(winner)}
+                  aria-label={t('pages.table.place_details_aria', { name: winner.name })}
+                  sx={{
+                    border: 0,
+                    bgcolor: 'transparent',
+                    color: 'inherit',
+                    font: 'inherit',
+                    cursor: 'pointer',
+                    p: 0,
+                    textAlign: 'center',
+                  }}
+                >
+                  <Typography variant="h6" component="span" sx={{ fontWeight: 700, mt: SPACE.xxs, display: 'block' }}>
+                    {winner.name}
+                  </Typography>
+                </Box>
               </Box>
               <Stack spacing={SPACE.sm} sx={{ width: 1 }}>
                 <Button
@@ -342,11 +420,10 @@ export default function TableVotePanel({
                 </Button>
                 <Stack direction="row" spacing={SPACE.xs} sx={{ width: 1 }}>
                   <Button
-                    component={RouterLink}
-                    href={paths.restaurantPublic(winner.restaurantId)}
                     variant="outlined"
                     size="medium"
                     fullWidth
+                    onClick={() => handleOpenPlace(winner)}
                     sx={touchTargetSx}
                   >
                     {t('pages.table.view_place')}
@@ -371,30 +448,18 @@ export default function TableVotePanel({
 
           {!locked ? (
             <>
-              {/* These are actions, not filters: the two supporting ones keep the
-                  compact neutral pill, while Lock winner is a real primary button
-                  rather than a chip wearing the "selected filter" treatment. */}
-              <ScrollableChipRow gap={1} sx={{ mx: 0, width: 1 }}>
-                <Button
-                  color="inherit"
-                  disableElevation
-                  startIcon={<Iconify icon={ic.shareLinear} width={18} />}
-                  onClick={handleShare}
-                  disabled={busy}
-                  sx={[scrollableChipPillButtonSx(theme), touchTargetSx]}
-                >
-                  {t('pages.table.share_link')}
-                </Button>
-                <Button
-                  color="inherit"
-                  disableElevation
-                  onClick={handleRoulette}
-                  disabled={busy || restaurantIds.length < 1}
-                  sx={[scrollableChipPillButtonSx(theme), touchTargetSx]}
-                >
-                  {t('pages.table.spin')}
-                </Button>
-              </ScrollableChipRow>
+              {/* Share stays a compact supporting pill. Settle is the primary
+                  action, so it is a real contained button on its own row. */}
+              <Button
+                color="inherit"
+                disableElevation
+                startIcon={<Iconify icon={ic.shareLinear} width={18} />}
+                onClick={handleShare}
+                disabled={busy}
+                sx={[scrollableChipPillButtonSx(theme), touchTargetSx]}
+              >
+                {t('pages.table.share_link')}
+              </Button>
 
               {/* Full width on its own row: as a pill in the scroll row it was pushed
                   off-screen on mobile, hiding the owner's completion action. */}
@@ -411,12 +476,6 @@ export default function TableVotePanel({
                 </Button>
               ) : null}
 
-              {roulettePlace ? (
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  {t('pages.table.spin_result', { name: roulettePlace.name })}
-                </Typography>
-              ) : null}
-
               <Stack spacing={SPACE.xs}>
                 {displayRows.map((row) => {
                   const place = placeById.get(row.restaurantId);
@@ -430,9 +489,12 @@ export default function TableVotePanel({
                       spacing={SPACE.xs}
                       sx={VOTE_ROW_SX}
                     >
-                      <PlaceThumb name={place.name} photo={place.photo} size={PLACE_THUMB_SIZE} />
-                      <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <Typography variant="subtitle2" component="h3" noWrap sx={{ fontWeight: 700 }}>
+                      <PlaceIdentityButton
+                        place={place}
+                        size={PLACE_THUMB_SIZE}
+                        onOpen={handleOpenPlace}
+                      >
+                        <Typography variant="subtitle2" component="span" noWrap sx={{ fontWeight: 700, display: 'block' }}>
                           {place.name}
                         </Typography>
                         {/* Counts live next to the thumbs now, so this line carries the
@@ -459,7 +521,7 @@ export default function TableVotePanel({
                             </Typography>
                           );
                         })()}
-                      </Box>
+                      </PlaceIdentityButton>
                       {/* Each thumb carries its own count, so the score reads without
                           decoding "+3 / -0 · net 3". Both rest neutral and fill only for
                           *your* vote; only this row waits on its own request, so tapping
@@ -469,7 +531,7 @@ export default function TableVotePanel({
                           aria-label={t('pages.table.upvote_aria', { name: place.name })}
                           aria-pressed={mine === 1}
                           onClick={() => handleVote(row.restaurantId, 1)}
-                          disabled={pendingVoteId === row.restaurantId}
+                          disabled={!named || pendingVoteId === row.restaurantId}
                           size="small"
                           sx={[touchTargetSx, voteButtonSx(mine === 1, 'success')]}
                         >
@@ -487,7 +549,7 @@ export default function TableVotePanel({
                           aria-label={t('pages.table.downvote_aria', { name: place.name })}
                           aria-pressed={mine === -1}
                           onClick={() => handleVote(row.restaurantId, -1)}
-                          disabled={pendingVoteId === row.restaurantId}
+                          disabled={!named || pendingVoteId === row.restaurantId}
                           size="small"
                           sx={[touchTargetSx, voteButtonSx(mine === -1, 'error')]}
                         >
@@ -510,6 +572,12 @@ export default function TableVotePanel({
       </Card>
 
       <ShareFeedbackSnackbar feedback={shareFeedback} onClose={dismissShareFeedback} />
+
+      <TableRestaurantDetailSheet
+        open={Boolean(detailPlace)}
+        onClose={handleClosePlace}
+        place={detailPlace}
+      />
     </>
   );
 }
@@ -522,6 +590,8 @@ TableVotePanel.propTypes = {
   title: PropTypes.string,
   session: PropTypes.object,
   guestKey: PropTypes.string,
+  named: PropTypes.bool,
+  whenLabel: PropTypes.string,
   onTableUpdate: PropTypes.func,
   refreshSession: PropTypes.func,
 };

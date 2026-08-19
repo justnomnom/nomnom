@@ -14,13 +14,16 @@ function clean(value) {
 /**
  * @param {object} input
  * @param {unknown} input.lead Localized lead line, e.g. `We're going here: Taberna`.
+ * @param {unknown} [input.when] Localized table time, e.g. `Tonight at 20:00`.
  * @param {unknown} [input.mapsLink] Google Maps (or similar) URL for the winner.
  * @returns {string} Message body without the restaurant page URL.
  */
-export function buildWinnerReplyText({ lead, mapsLink }) {
+export function buildWinnerReplyText({ lead, when, mapsLink }) {
   const head = clean(lead);
   if (!head) return '';
+  const whenLine = clean(when);
+  const body = whenLine ? `${head}\n${whenLine}` : head;
   const maps = clean(mapsLink);
-  if (!maps) return head;
-  return `${head}\n\n${maps}`;
+  if (!maps) return body;
+  return `${body}\n\n${maps}`;
 }

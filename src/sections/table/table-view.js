@@ -6,25 +6,21 @@ import { useRef, useMemo, useState, useEffect, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import Collapse from '@mui/material/Collapse';
 import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import InputAdornment from '@mui/material/InputAdornment';
 import CircularProgress from '@mui/material/CircularProgress';
 
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
+
 import { ic } from 'src/assets/icons';
-import { useTranslate } from 'src/locales';
-import { SPACE, touchTargetSx } from 'src/theme/spacing';
+import { useLocales, useTranslate } from 'src/locales';
+import { SPACE } from 'src/theme/spacing';
 import { useTableAnalytics } from 'src/libs/analytics/table-analytics';
 import { searchRestaurantsForPicker } from 'src/libs/lists/actions/items-actions';
-import {
-  nameGuest,
-  fetchTable,
-  addTablePlace,
-  fetchTableDecide,
-} from 'src/libs/lists/actions/table-actions';
+import { fetchTable, addTablePlace, fetchTableDecide } from 'src/libs/lists/actions/table-actions';
 import {
   readCachedTable,
   summarizeGuests,
@@ -32,6 +28,9 @@ import {
   persistCachedTable,
   getOrCreateGuestKey,
   tableAddSearchState,
+  readTableNamed,
+  guestHasDisplayName,
+  formatTableWhenLabel,
 } from 'src/libs/lists/table-client';
 
 import Iconify from 'src/components/iconify';
@@ -182,12 +181,13 @@ TableAddPlaceSearch.propTypes = {
 /**
  * Table page: shortlist + who's at the table + voting.
  *
- * Nothing gates the vote. Naming yourself is an optional nudge that upgrades the
- * anonymous seat the first vote already created, so the "+N" tail shrinks as
- * people introduce themselves.
+ * An open table sends unnamed guests to `/table/[id]/join`. Settled tables skip
+ * the gate so anyone with the link can see the winner.
  */
 export default function TableView({ tableId }) {
   const { t } = useTranslate();
+  const { currentLang } = useLocales();
+  const router = useRouter();
   const analytics = useTableAnalytics();
   const openedTracked = useRef(false);
   const guestKeyRef = useRef(null);
@@ -195,8 +195,6 @@ export default function TableView({ tableId }) {
   const [table, setTable] = useState(null);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
-  const [displayName, setDisplayName] = useState('');
-  const [nameBusy, setNameBusy] = useState(false);
   const [addBusy, setAddBusy] = useState(false);
   const [guestKey, setGuestKey] = useState('');
 
@@ -254,14 +252,22 @@ export default function TableView({ tableId }) {
 
   const guests = useMemo(() => (Array.isArray(table?.guests) ? table.guests : []), [table?.guests]);
   const guestSummary = useMemo(() => summarizeGuests(guests), [guests]);
-  const hasNamed = useMemo(
-    () =>
-      Boolean(guestKey) &&
-      guests.some((g) => String(g?.guest_key) === String(guestKey) && g?.display_name),
-    [guests, guestKey]
+  const hasNamed = Boolean(
+    guestKey && (readTableNamed(tableId) || guestHasDisplayName(guests, guestKey))
   );
   const session = table?.decide || null;
   const locked = session?.status === 'locked';
+
+  useEffect(() => {
+    if (loading || !table || !guestKey) return;
+    if (!locked && !hasNamed) {
+      router.replace(paths.tableJoin(tableId));
+    }
+  }, [loading, table, guestKey, locked, hasNamed, router, tableId]);
+
+  const whenLabel = formatTableWhenLabel(table?.starts_at, t, {
+    locale: currentLang.adapterLocale,
+  });
 
   const existingIds = useMemo(
     () =>
@@ -277,28 +283,6 @@ export default function TableView({ tableId }) {
     () => mapPlacesToItems(table?.places, t('pages.table.unnamed_place')),
     [table?.places, t]
   );
-
-  const handleName = useCallback(async () => {
-    if (nameBusy || !displayName.trim()) return;
-    const key = guestKeyRef.current || getOrCreateGuestKey();
-    guestKeyRef.current = key;
-    setGuestKey(key);
-    setNameBusy(true);
-    setErr(null);
-    const { table: next, error } = await nameGuest({
-      tableId,
-      guestKey: key,
-      displayName,
-    });
-    setNameBusy(false);
-    if (error || !next) {
-      setErr(error || 'unknown');
-      return;
-    }
-    applyTable(next);
-    setDisplayName('');
-    analytics.trackTableNamed({ table_id: String(next.table_id || tableId) });
-  }, [nameBusy, tableId, displayName, applyTable, analytics]);
 
   const handleAddPlace = useCallback(
     async (restaurantId) => {
@@ -349,7 +333,7 @@ export default function TableView({ tableId }) {
     return slice.decide || null;
   }, [tableId]);
 
-  if (loading) {
+  if (loading || (!locked && table && (!guestKey || !hasNamed))) {
     return (
       <Container maxWidth="sm" sx={{ py: SPACE.xl, display: 'flex', justifyContent: 'center' }}>
         <CircularProgress color="primary" />
@@ -388,6 +372,23 @@ export default function TableView({ tableId }) {
           <Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>
             {table.title || t('pages.table.default_title')}
           </Typography>
+          {whenLabel ? (
+            <Stack
+              direction="row"
+              spacing={SPACE.xxs}
+              alignItems="center"
+              sx={{ mt: SPACE.xxs }}
+            >
+              <Iconify
+                icon={ic.clockCircleOutline}
+                width={16}
+                sx={{ color: 'text.secondary', flexShrink: 0 }}
+              />
+              <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                {whenLabel}
+              </Typography>
+            </Stack>
+          ) : null}
           <Typography variant="body2" color="text.secondary" sx={{ mt: SPACE.xxs }}>
             {t('pages.table.subtitle')}
           </Typography>
@@ -412,47 +413,13 @@ export default function TableView({ tableId }) {
           title={table.title}
           session={session}
           guestKey={guestKey}
+          named={hasNamed}
+          whenLabel={whenLabel || null}
           onTableUpdate={applyTable}
           refreshSession={refreshSession}
         />
 
-        {/* The nudge sits *below* the vote panel and disappears once you are named:
-            voting is the first thing you can do, naming is the follow-up. */}
-        <Collapse in={!hasNamed && !locked} unmountOnExit>
-          <Card variant="outlined" sx={CARD_SX}>
-            <Stack spacing={SPACE.sm}>
-              <Typography variant="subtitle2" component="h2" sx={{ fontWeight: 700 }}>
-                {t('pages.table.name_title')}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {t('pages.table.name_hint')}
-              </Typography>
-              <Stack direction="row" spacing={SPACE.xs} alignItems="flex-start">
-                <TextField
-                  fullWidth
-                  size="small"
-                  label={t('pages.table.name_label')}
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  disabled={nameBusy}
-                  inputProps={{ maxLength: 80 }}
-                />
-                <Button
-                  size="large"
-                  variant="contained"
-                  color="primary"
-                  onClick={handleName}
-                  disabled={nameBusy || !displayName.trim()}
-                  sx={[touchTargetSx, { flexShrink: 0 }]}
-                >
-                  {t('pages.table.name_cta')}
-                </Button>
-              </Stack>
-            </Stack>
-          </Card>
-        </Collapse>
-
-        {!locked ? (
+        {!locked && hasNamed ? (
           <TableAddPlaceSearch existingIds={existingIds} busy={addBusy} onPick={handleAddPlace} />
         ) : null}
       </Stack>

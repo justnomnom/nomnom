@@ -1,11 +1,15 @@
+import { format } from 'date-fns';
+
 /**
  * Browser-side helpers for Table (guest key, lock token, vote + payload cache).
  */
 
 export const GUEST_KEY_STORAGE = 'nomnom:table-guest-key:v1';
 export const LOCK_TOKEN_PREFIX = 'nomnom:table-lock:';
+export const LINK_COPIED_PREFIX = 'nomnom:table-link-copied:';
 export const TABLE_CACHE_PREFIX = 'nomnom:table-cache:';
 export const MY_VOTES_PREFIX = 'nomnom:table-my-votes:';
+export const TABLE_NAMED_PREFIX = 'nomnom:table-named:';
 
 const SSR_GUEST_KEY = 'ssr-placeholder-key';
 
@@ -52,6 +56,47 @@ export function readLockToken(tableId) {
     return window.sessionStorage.getItem(`${LOCK_TOKEN_PREFIX}${tableId}`);
   } catch {
     return null;
+  }
+}
+
+/**
+ * Remember that this device just copied the table link so the table page can
+ * still toast after we navigate away from the start sheet.
+ * @param {string} tableId
+ */
+export function persistLinkCopied(tableId) {
+  if (typeof window === 'undefined' || !tableId) return;
+  try {
+    window.sessionStorage.setItem(`${LINK_COPIED_PREFIX}${tableId}`, '1');
+  } catch {
+    // ignore
+  }
+}
+
+/**
+ * Whether this device still has a pending "link copied" toast for the table.
+ * @param {string} tableId
+ * @returns {boolean}
+ */
+export function readLinkCopied(tableId) {
+  if (typeof window === 'undefined' || !tableId) return false;
+  try {
+    return window.sessionStorage.getItem(`${LINK_COPIED_PREFIX}${tableId}`) === '1';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Drop the one-shot "link copied" flag after the table page has shown it.
+ * @param {string} tableId
+ */
+export function clearLinkCopied(tableId) {
+  if (typeof window === 'undefined' || !tableId) return;
+  try {
+    window.sessionStorage.removeItem(`${LINK_COPIED_PREFIX}${tableId}`);
+  } catch {
+    // ignore
   }
 }
 
@@ -172,6 +217,24 @@ export function mapListItemsToPlaces(items, unnamedPlace) {
 }
 
 /**
+ * Instant restaurant-detail stub from a Table place row, so the sheet can open
+ * with name + photo while the full restaurant page payload loads.
+ * @param {{ restaurantId?: string, name?: string, mapsLink?: string | null, photo?: string | null } | null | undefined} place
+ * @returns {object | null}
+ */
+export function tablePlaceToSheetRestaurant(place) {
+  const id = place?.restaurantId ? String(place.restaurantId) : '';
+  if (!id) return null;
+  const photo = typeof place.photo === 'string' && place.photo.trim() ? place.photo.trim() : null;
+  return {
+    id,
+    name: place.name || '',
+    maps_link: place.mapsLink || null,
+    restaurant_images: photo ? [{ url: photo, sort_order: 0 }] : [],
+  };
+}
+
+/**
  * Deduped shortlist picker rows: extras from catalog search first, then list places.
  * @param {{ restaurantId: string, name: string }[]} listPlaces
  * @param {{ restaurantId: string, name: string }[]} extraPlaces
@@ -283,6 +346,129 @@ export function canLockTable({ tableId, locked, isOwner, lockToken } = {}) {
 export function lockedWinnerRestaurantId(session) {
   if (session?.status !== 'locked') return null;
   return session?.winner_restaurant_id ? String(session.winner_restaurant_id) : null;
+}
+
+/**
+ * Pad a number to two digits for `datetime-local` values.
+ * @param {number} value
+ * @returns {string}
+ */
+function pad2(value) {
+  return String(value).padStart(2, '0');
+}
+
+/**
+ * Parse a table `starts_at` into a Date, or null when missing/invalid.
+ * @param {unknown} raw
+ * @returns {Date | null}
+ */
+export function parseTableStartsAt(raw) {
+  if (raw instanceof Date) return Number.isNaN(raw.getTime()) ? null : raw;
+  if (typeof raw !== 'string' || !raw.trim()) return null;
+  const date = new Date(raw);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+/**
+ * Convert an ISO timestamptz into a `datetime-local` value in the browser timezone.
+ * @param {unknown} iso
+ * @returns {string}
+ */
+export function datetimeLocalFromIso(iso) {
+  const date = parseTableStartsAt(iso);
+  if (!date) return '';
+  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}T${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
+}
+
+/**
+ * Convert a `datetime-local` value (no timezone) into an ISO string in this device's zone.
+ * Must run in the browser — a UTC server would shift dinner time.
+ * @param {unknown} value
+ * @returns {string | null}
+ */
+export function isoFromDatetimeLocal(value) {
+  if (typeof value !== 'string') return null;
+  const local = value.trim();
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(local)) return null;
+  const date = new Date(local);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+}
+
+/**
+ * Break a table start time into copy parts (today / tomorrow / later).
+ * @param {unknown} raw
+ * @param {{ now?: Date, locale?: object }} [opts]
+ * @returns {{ kind: 'today' | 'tomorrow' | 'later', time: string, dateLabel: string } | null}
+ */
+export function tableWhenParts(raw, { now = new Date(), locale } = {}) {
+  const date = parseTableStartsAt(raw);
+  if (!date) return null;
+  const startOfDayMs = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  const deltaDays = Math.round((startOfDayMs(date) - startOfDayMs(now)) / 86_400_000);
+  const kind = deltaDays === 0 ? 'today' : deltaDays === 1 ? 'tomorrow' : 'later';
+  return {
+    kind,
+    time: format(date, 'p', { locale }),
+    dateLabel: format(date, 'EEE d MMM', { locale }),
+  };
+}
+
+/**
+ * Localized "when this table is" line, or empty when no start time is set.
+ * @param {unknown} raw
+ * @param {(key: string, vars?: object) => string} t
+ * @param {{ now?: Date, locale?: object }} [opts]
+ * @returns {string}
+ */
+export function formatTableWhenLabel(raw, t, opts) {
+  const parts = tableWhenParts(raw, opts);
+  if (!parts || typeof t !== 'function') return '';
+  if (parts.kind === 'today') return t('pages.table.when_today', { time: parts.time });
+  if (parts.kind === 'tomorrow') return t('pages.table.when_tomorrow', { time: parts.time });
+  return t('pages.table.when_on', { date: parts.dateLabel, time: parts.time });
+}
+
+/**
+ * This device already took a named seat at this table (survives a reload so the
+ * vote page does not flash the join gate while guests hydrate).
+ * @param {string | null | undefined} tableId
+ * @returns {boolean}
+ */
+export function readTableNamed(tableId) {
+  if (typeof window === 'undefined' || !tableId) return false;
+  try {
+    return window.localStorage.getItem(`${TABLE_NAMED_PREFIX}${tableId}`) === '1';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Remember that this device named itself at this table.
+ * @param {string | null | undefined} tableId
+ */
+export function persistTableNamed(tableId) {
+  if (typeof window === 'undefined' || !tableId) return;
+  try {
+    window.localStorage.setItem(`${TABLE_NAMED_PREFIX}${tableId}`, '1');
+  } catch {
+    // ignore
+  }
+}
+
+/**
+ * Whether this guest_key already has a non-empty display name in the payload.
+ * @param {unknown} guests
+ * @param {string | null | undefined} guestKey
+ * @returns {boolean}
+ */
+export function guestHasDisplayName(guests, guestKey) {
+  if (!guestKey) return false;
+  const key = String(guestKey);
+  return (Array.isArray(guests) ? guests : []).some((g) => {
+    if (String(g?.guest_key) !== key) return false;
+    return Boolean(typeof g?.display_name === 'string' && g.display_name.trim());
+  });
 }
 
 /**

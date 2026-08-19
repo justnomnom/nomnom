@@ -9,6 +9,7 @@ import {
   mapTableError,
   isValidGuestKey,
   parseTablePayload,
+  normalizeStartsAt,
   TABLE_PLACES_ABUSE_CAP,
 } from 'src/libs/lists/table-payload';
 
@@ -43,7 +44,7 @@ export async function startTable({ listId, restaurantIds, title = 'Table', start
     p_list_id: id,
     p_restaurant_ids: ids,
     p_title: title || 'Table',
-    p_starts_at: startsAt || null,
+    p_starts_at: normalizeStartsAt(startsAt),
   });
   if (error) return { table: null, error: mapTableError(error.message) };
   const table = parseTablePayload(data);
@@ -86,7 +87,7 @@ export async function fetchTableDecide(tableId) {
 }
 
 /**
- * Put a name to a seat. Optional — voting never waits on this.
+ * Put a name to a seat. Required before voting or adding a place.
  * @param {{ tableId: string, guestKey: string, displayName: string }} params
  * @returns {Promise<{ table: object | null, error: string | null }>}
  */
@@ -108,7 +109,7 @@ export async function nameGuest({ tableId, guestKey, displayName }) {
 }
 
 /**
- * Cast or update an upvote (+1) / downvote (−1). Open to anyone with the link.
+ * Cast or update an upvote (+1) / downvote (−1). The guest must already be named.
  * @param {{ tableId: string, restaurantId: string, guestKey: string, vote: 1 | -1 }} params
  * @returns {Promise<{ table: object | null, error: string | null }>}
  */
@@ -131,7 +132,7 @@ export async function castTableVote({ tableId, restaurantId, guestKey, vote }) {
 }
 
 /**
- * Widen the shortlist while the Table is open.
+ * Widen the shortlist while the Table is open. The guest must already be named.
  * @param {{ tableId: string, restaurantId: string, guestKey: string }} params
  * @returns {Promise<{ table: object | null, error: string | null }>}
  */

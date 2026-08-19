@@ -24,11 +24,30 @@ export function mapTableError(message) {
   if (m.includes('not_authorized_to_lock')) return 'not_authorized_to_lock';
   if (m.includes('restaurant_not_allowed')) return 'restaurant_not_allowed';
   if (m.includes('invalid_display_name')) return 'invalid_display_name';
+  if (m.includes('not_joined')) return 'not_joined';
   if (m.includes('too_many_places')) return 'too_many_places';
   if (m.includes('invalid_restaurant_id')) return 'invalid_restaurant_id';
   // Hide raw Postgres internals (e.g. missing extension) behind a stable key.
   if (/gen_random_bytes|permission denied|PGRST|postgres/i.test(m)) return 'unknown';
   return m || 'unknown';
+}
+
+/**
+ * Accept an ISO timestamptz (must include Z or an offset). Timezone-less
+ * `datetime-local` strings are rejected so a UTC server cannot shift dinner time.
+ * @param {unknown} raw
+ * @returns {string | null}
+ */
+export function normalizeStartsAt(raw) {
+  if (raw instanceof Date) {
+    return Number.isNaN(raw.getTime()) ? null : raw.toISOString();
+  }
+  if (typeof raw !== 'string') return null;
+  const value = raw.trim();
+  if (!value) return null;
+  if (!/(Z|[+-]\d{2}:\d{2})$/i.test(value)) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
 }
 
 /**

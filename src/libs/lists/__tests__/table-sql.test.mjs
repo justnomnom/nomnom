@@ -1,6 +1,6 @@
 /**
- * Table SQL migration contracts — parses
- * supabase/migrations/20260817120000_tables_merge.sql (no live DB).
+ * Table SQL migration contracts — parses the merge file plus
+ * 20260819220000_table_vote_requires_name.sql (no live DB).
  *
  * The migration file is gitignored (see CLAUDE.md "Two databases"), so this suite is the
  * only thing in the repo that pins the shape the shipped server actions depend on.
@@ -14,12 +14,17 @@ import { describe, test } from 'node:test';
 import { mapTableError } from '../table-payload.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
-const MIGRATION_PATH = 'supabase/migrations/20260817120000_tables_merge.sql';
-const MIGRATION = fs.readFileSync(path.join(ROOT, MIGRATION_PATH), 'utf8');
+const MERGE_PATH = 'supabase/migrations/20260817120000_tables_merge.sql';
+const NAME_GATE_PATH = 'supabase/migrations/20260819220000_table_vote_requires_name.sql';
+const MIGRATION = [
+  fs.readFileSync(path.join(ROOT, MERGE_PATH), 'utf8'),
+  fs.readFileSync(path.join(ROOT, NAME_GATE_PATH), 'utf8'),
+].join('\n');
 
-/** Body of one `create or replace function public.<name>` block. */
+/** Body of the latest `create or replace function public.<name>` block. */
 function fn(name) {
-  const start = MIGRATION.indexOf(`create or replace function public.${name}(`);
+  const needle = `create or replace function public.${name}(`;
+  const start = MIGRATION.lastIndexOf(needle);
   assert.notEqual(start, -1, `missing function ${name}`);
   const end = MIGRATION.indexOf('create or replace function public.', start + 1);
   return MIGRATION.slice(start, end === -1 ? undefined : end);
@@ -64,15 +69,18 @@ describe('tables merge SQL migration', () => {
     assert.doesNotMatch(MIGRATION, /allowed_restaurant_ids uuid\[]/);
   });
 
-  test('naming yourself is a label, not a gate: display_name is nullable', () => {
+  test('naming yourself is the gate: votes and add-place require a display_name', () => {
     assert.match(MIGRATION, /display_name text,/);
     assert.match(
       MIGRATION,
       /check \(display_name is null or char_length\(btrim\(display_name\)\) between 1 and 80\)/
     );
-    // The first vote seats an anonymous guest instead of rejecting it.
-    assert.match(fn('cast_table_vote'), /PERFORM public\._table_touch_guest/);
-    assert.doesNotMatch(MIGRATION, /RAISE EXCEPTION 'not_joined'/);
+    const cast = fn('cast_table_vote');
+    assert.match(cast, /RAISE EXCEPTION 'not_joined'/);
+    assert.doesNotMatch(cast, /PERFORM public\._table_touch_guest/);
+    const add = fn('add_table_place');
+    assert.match(add, /RAISE EXCEPTION 'not_joined'/);
+    assert.doesNotMatch(add, /PERFORM public\._table_touch_guest/);
   });
 
   test('lock_token avoids gen_random_bytes (pgcrypto is not on search_path)', () => {
@@ -101,6 +109,7 @@ describe('tables merge SQL migration', () => {
     assert.match(start, /RAISE EXCEPTION 'invalid_restaurant_id'/);
     // Shortlist is any catalog restaurant, not just list_items.
     assert.doesNotMatch(start, /restaurant_not_on_list/);
+    assert.match(start, /INSERT INTO public\.tables \(list_id, created_by, title, starts_at, lock_token\)/);
     assert.match(start, /SET status = 'locked', updated_at = now\(\)\s*WHERE list_id = p_list_id AND status = 'open'/);
   });
 
@@ -139,6 +148,8 @@ describe('tables merge SQL migration', () => {
 
   test('payload keeps the decide slice, and the poll trims the immutable header', () => {
     const payload = fn('_table_payload');
+    assert.match(payload, /'title', v_tbl\.title/);
+    assert.match(payload, /'starts_at', v_tbl\.starts_at/);
     assert.match(payload, /'decide', jsonb_build_object\(/);
     assert.match(payload, /'session_id', v_tbl\.id/);
     assert.match(payload, /'tallies', v_tallies/);
@@ -186,9 +197,10 @@ describe('tables merge SQL migration', () => {
     }
   });
 
-  test('the schema doc points at this migration', () => {
+  test('the schema doc points at the merge and the name-gate follow-up', () => {
     const doc = fs.readFileSync(path.join(ROOT, 'docs/db/tables-schema.sql'), 'utf8');
-    assert.match(doc, new RegExp(MIGRATION_PATH.replace(/[/.]/g, '\\$&')));
+    assert.match(doc, new RegExp(MERGE_PATH.replace(/[/.]/g, '\\$&')));
+    assert.match(doc, new RegExp(NAME_GATE_PATH.replace(/[/.]/g, '\\$&')));
   });
 
   test('the data wipe truncates the Table tables and no longer names the old ones', () => {

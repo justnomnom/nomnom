@@ -13,17 +13,31 @@ import {
   readCachedTable,
   summarizeGuests,
   tablePickerRows,
-  persistLockToken,
-  toggleSelectedIds,
+    persistLockToken,
+    persistLinkCopied,
+    readLinkCopied,
+    clearLinkCopied,
+    toggleSelectedIds,
   tableErrorMessage,
   LOCK_TOKEN_PREFIX,
   persistCachedTable,
   GUEST_KEY_STORAGE,
+  LINK_COPIED_PREFIX,
   TABLE_CACHE_PREFIX,
+  TABLE_NAMED_PREFIX,
+  persistTableNamed,
+  readTableNamed,
+  guestHasDisplayName,
   tableAddSearchState,
   getOrCreateGuestKey,
   mapListItemsToPlaces,
+  tableWhenParts,
+  parseTableStartsAt,
+  datetimeLocalFromIso,
+  isoFromDatetimeLocal,
+  formatTableWhenLabel,
   filterTablePickerRows,
+  tablePlaceToSheetRestaurant,
   tableSelectedPickerRows,
   lockedWinnerRestaurantId,
 } from '../table-client.js';
@@ -115,8 +129,10 @@ describe('getOrCreateGuestKey', () => {
 describe('lock token + table cache', () => {
   it('no-ops persist/read without window', () => {
     persistLockToken('tid', 'tok');
+    persistLinkCopied('tid');
     persistCachedTable({ session_id: 'tid', status: 'open' });
     assert.equal(readLockToken('tid'), null);
+    assert.equal(readLinkCopied('tid'), false);
     assert.equal(readCachedTable('tid'), null);
   });
 
@@ -153,9 +169,24 @@ describe('lock token + table cache', () => {
   it('swallows sessionStorage throws on persist and read', () => {
     installWindow({ throwOnStorage: true });
     persistLockToken('tid', 'tok');
+    persistLinkCopied('tid');
     persistCachedTable({ session_id: 'tid', status: 'open' });
     assert.equal(readLockToken('tid'), null);
+    assert.equal(readLinkCopied('tid'), false);
     assert.equal(readCachedTable('tid'), null);
+  });
+
+  it('round-trips the copied flag until it is cleared', () => {
+    const storage = installWindow();
+    persistLinkCopied('tid');
+    assert.equal(storage.getItem(`${LINK_COPIED_PREFIX}tid`), '1');
+    assert.equal(readLinkCopied('tid'), true);
+    assert.equal(readLinkCopied('tid'), true);
+    clearLinkCopied('tid');
+    assert.equal(readLinkCopied('tid'), false);
+    assert.equal(storage.getItem(`${LINK_COPIED_PREFIX}tid`), null);
+    persistLinkCopied('');
+    assert.equal(readLinkCopied(''), false);
   });
 
   it('skips persist when JSON.stringify throws (circular payload)', () => {
@@ -279,6 +310,36 @@ describe('mapListItemsToPlaces', () => {
       'Restaurant'
     );
     assert.equal(row.photo, 'no-order.jpg');
+  });
+});
+
+describe('tablePlaceToSheetRestaurant', () => {
+  it('returns null without a restaurant id', () => {
+    assert.equal(tablePlaceToSheetRestaurant(null), null);
+    assert.equal(tablePlaceToSheetRestaurant({ name: 'A' }), null);
+  });
+
+  it('carries name, maps link, and a photo row for the sheet stub', () => {
+    assert.deepEqual(
+      tablePlaceToSheetRestaurant({
+        restaurantId: 'r1',
+        name: 'Cafe',
+        mapsLink: 'https://maps',
+        photo: '  pic.jpg  ',
+      }),
+      {
+        id: 'r1',
+        name: 'Cafe',
+        maps_link: 'https://maps',
+        restaurant_images: [{ url: 'pic.jpg', sort_order: 0 }],
+      }
+    );
+  });
+
+  it('omits images when there is no photo', () => {
+    const stub = tablePlaceToSheetRestaurant({ restaurantId: 'r2', name: 'B', photo: '   ' });
+    assert.deepEqual(stub.restaurant_images, []);
+    assert.equal(stub.maps_link, null);
   });
 });
 
@@ -430,6 +491,38 @@ describe('summarizeGuests', () => {
   });
 });
 
+describe('guestHasDisplayName + persistTableNamed', () => {
+  it('matches this guest_key only when the name is non-empty', () => {
+    const guests = [
+      { guest_key: 'aaa', display_name: 'Ana' },
+      { guest_key: 'bbb', display_name: '  ' },
+      { guest_key: 'ccc', display_name: null },
+    ];
+    assert.equal(guestHasDisplayName(guests, 'aaa'), true);
+    assert.equal(guestHasDisplayName(guests, 'bbb'), false);
+    assert.equal(guestHasDisplayName(guests, 'ccc'), false);
+    assert.equal(guestHasDisplayName(guests, 'missing'), false);
+    assert.equal(guestHasDisplayName(guests, ''), false);
+    assert.equal(guestHasDisplayName(null, 'aaa'), false);
+  });
+
+  it('round-trips the named flag per table', () => {
+    const storage = installWindow();
+    assert.equal(readTableNamed('table-1'), false);
+    persistTableNamed('table-1');
+    assert.equal(storage.getItem(`${TABLE_NAMED_PREFIX}table-1`), '1');
+    assert.equal(readTableNamed('table-1'), true);
+    assert.equal(readTableNamed('table-2'), false);
+  });
+
+  it('survives blocked storage without throwing', () => {
+    installWindow({ throwOnStorage: true });
+    assert.equal(readTableNamed('table-1'), false);
+    persistTableNamed('table-1');
+    assert.equal(readTableNamed('table-1'), false);
+  });
+});
+
 describe('readMyVotes / persistMyVote', () => {
   it('returns an empty map without window', () => {
     assert.deepEqual(readMyVotes('table-1'), {});
@@ -478,5 +571,51 @@ describe('readMyVotes / persistMyVote', () => {
     const storage = installWindow();
     storage.setItem(`${MY_VOTES_PREFIX}table-1`, '["not","an","object"]');
     assert.deepEqual(readMyVotes('table-1'), {});
+  });
+});
+
+describe('table start time helpers', () => {
+  it('round-trips a datetime-local value through ISO', () => {
+    const local = '2026-08-19T20:00';
+    const iso = isoFromDatetimeLocal(local);
+    assert.ok(typeof iso === 'string' && iso.endsWith('Z'));
+    assert.equal(datetimeLocalFromIso(iso), local);
+  });
+
+  it('rejects blank or malformed datetime-local values', () => {
+    assert.equal(isoFromDatetimeLocal(''), null);
+    assert.equal(isoFromDatetimeLocal('tonight'), null);
+    assert.equal(isoFromDatetimeLocal(null), null);
+    assert.equal(datetimeLocalFromIso(null), '');
+    assert.equal(parseTableStartsAt('nope'), null);
+  });
+
+  it('classifies today, tomorrow, and later against a fixed now', () => {
+    const now = new Date(2026, 7, 19, 12, 0, 0);
+    const today = tableWhenParts(new Date(2026, 7, 19, 20, 0, 0), { now });
+    const tomorrow = tableWhenParts(new Date(2026, 7, 20, 20, 0, 0), { now });
+    const later = tableWhenParts(new Date(2026, 7, 22, 13, 30, 0), { now });
+    assert.equal(today?.kind, 'today');
+    assert.equal(tomorrow?.kind, 'tomorrow');
+    assert.equal(later?.kind, 'later');
+    assert.equal(tableWhenParts(null, { now }), null);
+  });
+
+  it('formats start times through translation keys', () => {
+    const now = new Date(2026, 7, 19, 12, 0, 0);
+    const t = (key, vars) => [key, vars?.time, vars?.date].filter(Boolean).join('|');
+    assert.match(
+      formatTableWhenLabel(new Date(2026, 7, 19, 20, 0, 0), t, { now }),
+      /^pages\.table\.when_today\|/
+    );
+    assert.match(
+      formatTableWhenLabel(new Date(2026, 7, 20, 20, 0, 0), t, { now }),
+      /^pages\.table\.when_tomorrow\|/
+    );
+    assert.match(
+      formatTableWhenLabel(new Date(2026, 7, 22, 13, 30, 0), t, { now }),
+      /^pages\.table\.when_on\|/
+    );
+    assert.equal(formatTableWhenLabel(null, t, { now }), '');
   });
 });

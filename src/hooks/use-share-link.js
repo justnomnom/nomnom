@@ -23,6 +23,7 @@ import { useCopyToClipboard } from './use-copy-to-clipboard';
  * @returns {{
  *   share: (input: { url: string, title?: string, text?: string }) => Promise<'shared' | 'copied' | 'failed' | 'cancelled'>,
  *   copyLink: (url: string) => Promise<'copied' | 'failed'>,
+ *   announceCopied: () => void,
  *   feedback: { severity: 'success' | 'error', text: string } | null,
  *   dismissFeedback: () => void,
  * }}
@@ -80,6 +81,11 @@ export function useShareLink({
     [copyWithFeedback, copiedKey]
   );
 
+  /** Show the copy-success toast without writing the clipboard again. */
+  const announceCopied = useCallback(() => {
+    showFeedback('success', t(copiedKey));
+  }, [showFeedback, t, copiedKey]);
+
   /**
    * `text` becomes the message body. Most targets — WhatsApp included — ignore `title`
    * entirely and send `text` + `url`, so a share carrying only a title arrives as a bare
@@ -107,5 +113,5 @@ export function useShareLink({
     [copyWithFeedback, showFeedback, t, failedKey, copiedKey, messageCopiedKey]
   );
 
-  return { share, copyLink, feedback, dismissFeedback };
+  return { share, copyLink, announceCopied, feedback, dismissFeedback };
 }

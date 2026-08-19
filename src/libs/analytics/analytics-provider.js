@@ -95,7 +95,6 @@ const EVENT_SCHEMAS = {
   table_named: { required: ['table_id'] },
   table_place_added: { required: ['table_id', 'restaurant_id'] },
   table_vote_cast: { required: ['table_id', 'restaurant_id', 'vote'] },
-  table_roulette_spin: { required: ['table_id', 'restaurant_id'] },
   table_result_shown: { required: ['table_id', 'restaurant_id'] },
   table_result_locked: { required: ['table_id'] },
   table_result_reply_shared: { required: ['table_id', 'restaurant_id'] },

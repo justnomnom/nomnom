@@ -67,6 +67,28 @@ describe('table-actions mocked RPCs', { concurrency: false }, () => {
     assert.equal(out.table?.table_id, TABLE_ID);
     assert.equal(supabase.calls[0].rpc, 'start_table');
     assert.deepEqual(supabase.calls[0].args.p_restaurant_ids, six);
+    assert.equal(supabase.calls[0].args.p_starts_at, null);
+  });
+
+  test('startTable: forwards a timestamptz and drops timezone-less local strings', async () => {
+    authUser = { id: USER_ID };
+    supabase = makeRpcClient(() => ({ data: { table_id: TABLE_ID }, error: null }));
+    const iso = '2026-08-19T19:00:00.000Z';
+    const withIso = await startTable({
+      listId: LIST_ID,
+      restaurantIds: [uuid(1), uuid(2), uuid(3)],
+      startsAt: iso,
+    });
+    assert.equal(withIso.error, null);
+    assert.equal(supabase.calls[0].args.p_starts_at, iso);
+
+    const local = await startTable({
+      listId: LIST_ID,
+      restaurantIds: [uuid(1), uuid(2), uuid(3)],
+      startsAt: '2026-08-19T20:00',
+    });
+    assert.equal(local.error, null);
+    assert.equal(supabase.calls[1].args.p_starts_at, null);
   });
 
   test('startTable: de-dupes the shortlist before counting places', async () => {

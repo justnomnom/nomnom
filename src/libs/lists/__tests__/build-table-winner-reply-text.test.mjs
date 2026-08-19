@@ -21,6 +21,21 @@ describe('buildWinnerReplyText', () => {
     );
   });
 
+  test('inserts the table time between the lead and maps', () => {
+    assert.equal(
+      buildWinnerReplyText({
+        lead: "We're going here: Taberna",
+        when: 'Tonight at 20:00',
+        mapsLink: 'https://maps.example/x',
+      }),
+      "We're going here: Taberna\nTonight at 20:00\n\nhttps://maps.example/x"
+    );
+    assert.equal(
+      buildWinnerReplyText({ lead: "We're going here: Taberna", when: 'Tonight at 20:00' }),
+      "We're going here: Taberna\nTonight at 20:00"
+    );
+  });
+
   test('trims and drops blank maps', () => {
     assert.equal(buildWinnerReplyText({ lead: '  A  ', mapsLink: '  ' }), 'A');
     assert.equal(buildWinnerReplyText({ lead: '', mapsLink: 'https://m' }), '');

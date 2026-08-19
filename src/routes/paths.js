@@ -45,6 +45,8 @@ export const paths = {
     opts?.username && opts?.slug ? `/lists/${opts.username}/${opts.slug}` : `/lists/${id}`,
   /** Table share page (auth-free: vote, add places, settle). */
   table: (id) => `/table/${id}`,
+  /** Name-before-vote gate. Unnamed guests land here from {@link table}. */
+  tableJoin: (id) => `/table/${id}/join`,
   /** Supabase restaurant (share link; readable without signing in). */
   restaurantPublic: (id) => `/restaurants/${id}`,
   /** Public profile by @handle. */

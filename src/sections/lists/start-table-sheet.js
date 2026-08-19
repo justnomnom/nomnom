@@ -11,8 +11,9 @@ import Typography from '@mui/material/Typography';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
 
-import { useShareLink } from 'src/hooks/use-share-link';
+import { useCopyToClipboard } from 'src/hooks/use-copy-to-clipboard';
 
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
@@ -23,16 +24,17 @@ import { searchRestaurantsForPicker } from 'src/libs/lists/actions/items-actions
 import {
   tablePickerRows,
   persistLockToken,
+  persistLinkCopied,
   tableErrorMessage,
   toggleSelectedIds,
   mapListItemsToPlaces,
+  isoFromDatetimeLocal,
   filterTablePickerRows,
   tableSelectedPickerRows,
 } from 'src/libs/lists/table-client';
 
 import Iconify from 'src/components/iconify';
 import { ResponsiveSheet } from 'src/components/sheet-shell';
-import ShareFeedbackSnackbar from 'src/components/share/share-feedback-snackbar';
 
 import SettingsSelectionRow from 'src/sections/profile/settings-selection-row';
 
@@ -68,16 +70,10 @@ function catalogHitToPlace(hit, unnamedPlace) {
  */
 export default function StartTableSheet({ open, onClose, listId, items, isOwner }) {
   const { t } = useTranslate();
+  const router = useRouter();
   const analytics = useTableAnalytics();
   const unnamedPlace = t('pages.table.unnamed_place');
-  const {
-    copyLink,
-    feedback: shareFeedback,
-    dismissFeedback: dismissShareFeedback,
-  } = useShareLink({
-    copiedKey: 'pages.table.link_copied',
-    failedKey: 'pages.table.link_copy_failed',
-  });
+  const { copy } = useCopyToClipboard();
 
   const placeRows = useMemo(
     () => mapListItemsToPlaces(items, unnamedPlace),
@@ -86,6 +82,7 @@ export default function StartTableSheet({ open, onClose, listId, items, isOwner 
   const listIdSet = useMemo(() => new Set(placeRows.map((p) => p.restaurantId)), [placeRows]);
 
   const [title, setTitle] = useState(() => t('pages.table.default_title'));
+  const [startsAtLocal, setStartsAtLocal] = useState('');
   const [selectedIds, setSelectedIds] = useState(() => new Set());
   const [extraById, setExtraById] = useState(() => ({}));
   const [searchQ, setSearchQ] = useState('');
@@ -99,6 +96,7 @@ export default function StartTableSheet({ open, onClose, listId, items, isOwner 
     wasOpenRef.current = open;
     if (!justOpened) return;
     setTitle(t('pages.table.default_title'));
+    setStartsAtLocal('');
     setSelectedIds(new Set());
     setExtraById({});
     setSearchQ('');
@@ -192,6 +190,10 @@ export default function StartTableSheet({ open, onClose, listId, items, isOwner 
     onClose?.();
   }, [busy, onClose]);
 
+  /**
+   * Create the table, copy its share URL, then open it so the owner lands on
+   * the vote page instead of staying on the list.
+   */
   const handleCreate = useCallback(async () => {
     if (!canSubmit) return;
     setBusy(true);
@@ -201,6 +203,7 @@ export default function StartTableSheet({ open, onClose, listId, items, isOwner 
       listId,
       restaurantIds,
       title: title.trim() || t('pages.table.default_title'),
+      startsAt: isoFromDatetimeLocal(startsAtLocal),
     });
     if (error || !table?.table_id) {
       setBusy(false);
@@ -215,15 +218,15 @@ export default function StartTableSheet({ open, onClose, listId, items, isOwner 
       list_id: String(table.list_id || listId),
     };
     analytics.trackTableStarted(analyticsProps);
+    const tablePath = paths.table(table.table_id);
     const url =
-      typeof window !== 'undefined'
-        ? `${window.location.origin}${paths.table(table.table_id)}`
-        : paths.table(table.table_id);
-    await copyLink(url);
+      typeof window !== 'undefined' ? `${window.location.origin}${tablePath}` : tablePath;
+    const copied = await copy(url);
     analytics.trackShareCopied(analyticsProps);
+    if (copied) persistLinkCopied(String(table.table_id));
     setBusy(false);
-    onClose?.();
-  }, [canSubmit, selectedIds, listId, title, t, analytics, copyLink, onClose]);
+    router.push(tablePath, { transitionTypes: ['nav-forward'] });
+  }, [canSubmit, selectedIds, listId, title, startsAtLocal, t, analytics, copy, router]);
 
   const sheetTitle = (
     <Typography
@@ -277,16 +280,15 @@ export default function StartTableSheet({ open, onClose, listId, items, isOwner 
   );
 
   return (
-    <>
-      <ResponsiveSheet
-        open={open}
-        onClose={handleClose}
-        titleId={TITLE_ID}
-        descId={DESC_ID}
-        title={sheetTitle}
-        footer={footer}
-        closeDisabled={busy}
-      >
+    <ResponsiveSheet
+      open={open}
+      onClose={handleClose}
+      titleId={TITLE_ID}
+      descId={DESC_ID}
+      title={sheetTitle}
+      footer={footer}
+      closeDisabled={busy}
+    >
         <Typography id={DESC_ID} variant="body2" color="text.secondary">
           {t('pages.lists.start_table_hint', { min: MIN_PLACES })}
         </Typography>
@@ -299,6 +301,19 @@ export default function StartTableSheet({ open, onClose, listId, items, isOwner 
           onChange={(e) => setTitle(e.target.value)}
           disabled={busy}
           inputProps={{ maxLength: 80 }}
+        />
+
+        <TextField
+          fullWidth
+          size="small"
+          type="datetime-local"
+          label={t('pages.lists.start_table_when_label')}
+          value={startsAtLocal}
+          onChange={(e) => setStartsAtLocal(e.target.value)}
+          disabled={busy}
+          helperText={t('pages.lists.start_table_when_hint')}
+          InputLabelProps={{ shrink: true }}
+          inputProps={{ step: 60 }}
         />
 
         {err ? (
@@ -365,10 +380,7 @@ export default function StartTableSheet({ open, onClose, listId, items, isOwner 
             {otherPickerRows.map(renderPickerRow)}
           </Stack>
         </Stack>
-      </ResponsiveSheet>
-
-      <ShareFeedbackSnackbar feedback={shareFeedback} onClose={dismissShareFeedback} />
-    </>
+    </ResponsiveSheet>
   );
 }
 

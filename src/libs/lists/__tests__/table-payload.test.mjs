@@ -8,6 +8,7 @@ import {
   mapTableError,
   isValidGuestKey,
   parseTablePayload,
+  normalizeStartsAt,
   TABLE_PLACES_ABUSE_CAP,
 } from '../table-payload.js';
 
@@ -25,6 +26,7 @@ describe('mapTableError', () => {
     assert.equal(mapTableError('not_authorized_to_lock'), 'not_authorized_to_lock');
     assert.equal(mapTableError('restaurant_not_allowed'), 'restaurant_not_allowed');
     assert.equal(mapTableError('invalid_display_name'), 'invalid_display_name');
+    assert.equal(mapTableError('not_joined'), 'not_joined');
     assert.equal(mapTableError('too_many_places'), 'too_many_places');
     assert.equal(mapTableError('invalid_restaurant_id'), 'invalid_restaurant_id');
   });
@@ -103,5 +105,20 @@ describe('isValidGuestKey', () => {
 describe('TABLE_PLACES_ABUSE_CAP', () => {
   it('is 200 so start and add share the same cap', () => {
     assert.equal(TABLE_PLACES_ABUSE_CAP, 200);
+  });
+});
+
+describe('normalizeStartsAt', () => {
+  it('keeps ISO timestamptz and Date values', () => {
+    assert.equal(normalizeStartsAt('2026-08-19T19:00:00.000Z'), '2026-08-19T19:00:00.000Z');
+    assert.equal(normalizeStartsAt(new Date('2026-08-19T19:00:00.000Z')), '2026-08-19T19:00:00.000Z');
+  });
+
+  it('rejects timezone-less local strings, blanks, and invalid input', () => {
+    assert.equal(normalizeStartsAt('2026-08-19T20:00'), null);
+    assert.equal(normalizeStartsAt(''), null);
+    assert.equal(normalizeStartsAt('  '), null);
+    assert.equal(normalizeStartsAt(null), null);
+    assert.equal(normalizeStartsAt('not-a-dateZ'), null);
   });
 });

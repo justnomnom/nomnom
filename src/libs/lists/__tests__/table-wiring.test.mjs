@@ -64,7 +64,10 @@ describe('Table i18n', () => {
 
   test('every error code mapTableError can return has copy in both locales', async () => {
     const { mapTableError } = await import('../table-payload.js');
-    const migration = read('supabase/migrations/20260817120000_tables_merge.sql');
+    const migration = [
+      read('supabase/migrations/20260817120000_tables_merge.sql'),
+      read('supabase/migrations/20260819220000_table_vote_requires_name.sql'),
+    ].join('\n');
     const codes = new Set([
       ...[...migration.matchAll(/RAISE EXCEPTION '([a-z_]+)'/g)].map((m) =>
         mapTableError(m[1])
@@ -77,6 +80,7 @@ describe('Table i18n', () => {
       'invalid_voter_key',
       'invalid_vote',
       'invalid_display_name',
+      'not_joined',
       'invalid_restaurant_id',
       'unauthorized',
       'unknown',
@@ -91,10 +95,10 @@ describe('Table i18n', () => {
 
   test('interpolated copy keeps its placeholders in both locales', () => {
     for (const key of [
-      'pages.table.spin_result',
       'pages.table.reply_share_text',
       'pages.table.upvote_aria',
       'pages.table.downvote_aria',
+      'pages.table.place_details_aria',
     ]) {
       assert.match(lookup(en, key), /\{\{name\}\}/);
       assert.match(lookup(pt, key), /\{\{name\}\}/);
@@ -105,6 +109,10 @@ describe('Table i18n', () => {
       assert.match(lang.pages.lists.start_table_selected, /\{\{count\}\}/);
       assert.match(lang.pages.table.whos_at_table, /\{\{count\}\}/);
       assert.match(lang.pages.table.anon_suffix, /\{\{count\}\}/);
+      assert.match(lang.pages.table.when_today, /\{\{time\}\}/);
+      assert.match(lang.pages.table.when_tomorrow, /\{\{time\}\}/);
+      assert.match(lang.pages.table.when_on, /\{\{date\}\}/);
+      assert.match(lang.pages.table.when_on, /\{\{time\}\}/);
     }
   });
 
@@ -228,9 +236,10 @@ describe('Table entry points', () => {
     }
   });
 
-  test('paths expose one Table route and one hub deep link', () => {
+  test('paths expose the Table vote page, the join gate, and one hub deep link', () => {
     const paths = read('src/routes/paths.js');
     assert.match(paths, /table: \(id\) => `\/table\/\$\{id\}`/);
+    assert.match(paths, /tableJoin: \(id\) => `\/table\/\$\{id\}\/join`/);
     assert.match(paths, /listsTable: `\$\{ROOTS\.DASHBOARD\}\/lists\?table=1`/);
     assert.doesNotMatch(paths, /listsDecide|listsTonight|\/tonight\//);
   });
@@ -282,6 +291,9 @@ describe('Table server + storage contract', () => {
     assert.match(view, /getOrCreateGuestKey/);
     assert.match(panel, /persistMyVote/);
     assert.match(panel, /readMyVotes/);
+    assert.match(panel, /readLinkCopied/);
+    assert.match(panel, /clearLinkCopied/);
+    assert.match(panel, /announceCopied/);
     // The organiser's lock token is written where the Table is created and read where it
     // is settled, so the starter can settle from a device that never signed in.
     assert.match(
@@ -302,16 +314,40 @@ describe('Table server + storage contract', () => {
     assert.match(panel, /trackResultReplyShared/);
     assert.match(panel, /reply_copied/);
     assert.match(panel, /winner\.mapsLink/);
-    assert.match(panel, /paths\.restaurantPublic\(winner\.restaurantId\)/);
+    assert.match(panel, /paths\.restaurantPublic\(place\.restaurantId\)/);
+    assert.match(panel, /handleOpenPlace\(winner\)/);
+    assert.match(panel, /pages\.table\.view_place/);
     assert.match(panel, /touchTargetSx/);
+    assert.doesNotMatch(panel, /RouterLink/);
+    assert.doesNotMatch(panel, /pages\.table\.spin|handleRoulette|trackRouletteSpin/);
   });
 
-  test('naming yourself is optional and never blocks voting', () => {
+  test('tapping a place opens the restaurant detail sheet without leaving the table', () => {
+    const panel = read('src/sections/table/table-vote-panel.js');
+    const sheet = read('src/sections/table/table-restaurant-detail-sheet.js');
+    const action = read('src/libs/restaurant/fetch-restaurant-detail-action.js');
+    assert.match(panel, /PlaceIdentityButton/);
+    assert.match(panel, /pages\.table\.place_details_aria/);
+    assert.match(panel, /TableRestaurantDetailSheet/);
+    assert.match(sheet, /fetchRestaurantDetail/);
+    assert.match(sheet, /mapSheetMode/);
+    assert.match(sheet, /RestaurantDetailViewMapSheet/);
+    assert.match(sheet, /ResponsiveSheet|SwipeDismissBottomSheetContent/);
+    assert.match(action, /fetchRestaurantByIdForSsr/);
+    assert.match(action, /'use server'/);
+  });
+
+  test('naming yourself is required before voting', () => {
     const view = read('src/sections/table/table-view.js');
-    // The nudge disappears once you are named, and it is not a gate in front of the panel.
-    assert.match(view, /Collapse in=\{!hasNamed && !locked\}/);
-    assert.match(view, /<TableVotePanel/);
-    assert.doesNotMatch(view, /join_to_vote|not_joined/);
+    const join = read('src/sections/table/table-join-view.js');
+    const panel = read('src/sections/table/table-vote-panel.js');
+    const page = read('src/app/(frontend)/table/[id]/join/page.js');
+    assert.match(view, /paths\.tableJoin\(tableId\)/);
+    assert.match(view, /named=\{hasNamed\}/);
+    assert.match(panel, /if \(!tableId \|\| locked \|\| !named\) return/);
+    assert.match(join, /nameGuest/);
+    assert.match(join, /persistTableNamed/);
+    assert.match(page, /TableJoinView/);
   });
 
   test('anyone at an open Table can add a place', () => {
@@ -322,7 +358,7 @@ describe('Table server + storage contract', () => {
     assert.match(view, /tableAddSearchState/);
     assert.match(view, /add_place_already/);
     assert.match(view, /const ok = await onPick/);
-    assert.match(view, /\{!locked \? \(\s*<TableAddPlaceSearch/);
+    assert.match(view, /\{!locked && hasNamed \? \(\s*<TableAddPlaceSearch/);
     assert.match(actions, /rpc\('add_table_place'/);
   });
 
@@ -338,6 +374,8 @@ describe('Table server + storage contract', () => {
     assert.match(sheet, /toggleSelectedIds/);
     assert.match(sheet, /stopPropagation/);
     assert.match(sheet, /autoFocus/);
+    assert.match(sheet, /persistLinkCopied/);
+    assert.match(sheet, /router\.push\(tablePath/);
     assert.doesNotMatch(sheet, /MAX_PLACES/);
     assert.match(sheet, /selectedCount >= MIN_PLACES && !busy/);
   });
@@ -359,7 +397,7 @@ describe('Table analytics', () => {
     const analyticsSrc = read('src/libs/analytics/table-analytics.js');
     const provider = read('src/libs/analytics/analytics-provider.js');
     const names = [...analyticsSrc.matchAll(/:\s*'([a-z_]+)'/g)].map((m) => m[1]);
-    assert.ok(names.length >= 10, `expected table event names, got ${names.length}`);
+    assert.ok(names.length >= 9, `expected table event names, got ${names.length}`);
     for (const name of names) {
       assert.match(provider, new RegExp(`${name}: \\{ required:`));
     }
@@ -367,6 +405,8 @@ describe('Table analytics', () => {
     assert.ok(names.includes('table_share_copied'));
     assert.ok(names.includes('table_result_locked'));
     assert.ok(names.includes('table_result_reply_shared'));
+    assert.doesNotMatch(analyticsSrc, /ROULETTE_SPIN|trackRouletteSpin|table_roulette_spin/);
+    assert.doesNotMatch(provider, /table_roulette_spin/);
   });
 
   test('provider required fields cover the funnel payloads the UI sends', () => {

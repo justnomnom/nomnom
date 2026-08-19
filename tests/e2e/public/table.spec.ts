@@ -66,7 +66,7 @@ test.describe('table flow', () => {
     }
   });
 
-  test('guest votes without naming themselves; a name only labels the seat', async ({
+  test('guest names themselves before voting; unnamed guests cannot vote', async ({
     browser,
   }) => {
     // Two browser contexts, a cold server action each, and a 4s poll between them.
@@ -105,19 +105,22 @@ test.describe('table flow', () => {
     const g1 = await guest1.newPage();
     await g1.goto(tablePath, { waitUntil: 'domcontentloaded' });
     await expect(g1.getByText(/E2E Table/i).first()).toBeVisible({ timeout: 45_000 });
+    await expect(g1).toHaveURL(/\/join\/?$/);
 
-    // Voting is open to anyone with the link — no join gate in front of it.
+    // Voting stays behind the name gate.
+    await expect(g1.getByRole('button', { name: /upvote|votar a favor/i })).toHaveCount(0);
+
+    await g1.getByRole('textbox').first().fill('Guest One');
+    await g1.getByRole('button', { name: /take a seat|sentar à mesa/i }).click();
+    await expect(g1.getByText(/Guest One/i).first()).toBeVisible({ timeout: 20_000 });
+    await expect(g1).not.toHaveURL(/\/join\/?$/);
+
     const up1 = g1.getByRole('button', { name: /upvote|votar a favor/i }).first();
     await expect(up1).toBeEnabled({ timeout: 20_000 });
     await up1.click();
     await expect(g1.getByText(/you picked this|escolheste este/i).first()).toBeVisible({
       timeout: 20_000,
     });
-
-    // Naming yourself is the follow-up, and it renames the seat the vote already took.
-    await g1.getByRole('textbox').first().fill('Guest One');
-    await g1.getByRole('button', { name: /take a seat|sentar à mesa/i }).click();
-    await expect(g1.getByText(/Guest One/i).first()).toBeVisible({ timeout: 20_000 });
 
     const guest2 = await browser.newContext();
     const g2 = await guest2.newPage();
@@ -189,6 +192,9 @@ test.describe('table flow', () => {
     const page = await ctx.newPage();
     await page.goto(`/table/${table.table_id}`, { waitUntil: 'domcontentloaded' });
     await expect(page.getByText(/E2E Table/i).first()).toBeVisible({ timeout: 45_000 });
+    await page.getByRole('textbox').first().fill('Organiser');
+    await page.getByRole('button', { name: /take a seat|sentar à mesa/i }).click();
+    await expect(page.getByText(/Organiser/i).first()).toBeVisible({ timeout: 20_000 });
 
     const lockBtn = page.getByRole('button', { name: /settle the table|fechar a mesa/i });
     await expect(lockBtn).toBeVisible({ timeout: 20_000 });
@@ -269,7 +275,8 @@ test.describe('table flow', () => {
       await createBtn.click();
 
       // `startTable` is a server action: the first call on a cold dev server compiles first.
-      await expect(page.getByText(/table link copied/i).first()).toBeVisible({ timeout: 60_000 });
+      await expect(page).toHaveURL(/\/table\/[0-9a-f-]{36}/i, { timeout: 60_000 });
+      await expect(page.getByText(/table link copied/i).first()).toBeVisible({ timeout: 30_000 });
 
       const { data: tables, error: tablesErr } = await admin
         .from('tables')
