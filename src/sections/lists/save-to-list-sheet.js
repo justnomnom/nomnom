@@ -2,7 +2,6 @@
 
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import { m as motion, AnimatePresence } from 'framer-motion';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import { useRef, useMemo, useState, useEffect, useCallback } from 'react';
 
@@ -54,6 +53,7 @@ import {
 } from 'src/auth/actions/must-try-actions';
 
 import Iconify from 'src/components/iconify';
+import { m as motion, AnimatePresence } from 'src/components/animate';
 import DeleteDialog from 'src/components/custom-dialog/delete-dialog';
 import RemoteCoverImage from 'src/components/image/remote-cover-image';
 import {
@@ -859,8 +859,8 @@ export default function SaveToListSheet({
    * Skeleton ↔ tiles crossfade. The tiles' own per-child stagger (below) runs after the fade-in,
    * so the picker feels assembled rather than dumped on top of an empty pane.
    */
-  const sheetSwapDuration = 0.24;
-  const sheetSwapEase = [0.22, 1, 0.36, 1];
+  const sheetSwapDuration = 0.2;
+  const sheetSwapEase = 'easeOut';
   const sheetSwapInitial = prefersReducedMotion ? false : { opacity: 0 };
   const sheetSwapExit = prefersReducedMotion ? undefined : { opacity: 0 };
 

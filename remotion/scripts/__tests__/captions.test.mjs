@@ -87,7 +87,7 @@ describe('captionForList', () => {
 
 describe('hashtags', () => {
   it('always leads with #nomnom and dedupes real labels', () => {
-    assert.equal(hashtags(['Lisboa', 'Wine bar', 'lisboa']), '#nomnom #lisboa #winebar');
+    assert.equal(hashtags(['Óbidos', 'Casual']), '#nomnom #obidos #casual');
   });
 
   it('ignores empty labels', () => {

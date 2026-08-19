@@ -1,5 +1,3 @@
-import { m } from 'framer-motion';
-
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
@@ -15,7 +13,6 @@ import { useRouter } from 'src/routes/hooks';
 import { useTranslate } from 'src/locales';
 import { useAuthContext } from 'src/auth/hooks';
 
-import { varHover } from 'src/components/animate';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
@@ -61,10 +58,6 @@ export default function AccountPopover() {
   return (
     <>
       <IconButton
-        component={m.button}
-        whileTap="tap"
-        whileHover="hover"
-        variants={varHover(1.05)}
         onClick={popover.onOpen}
         aria-label={t('components.account_popover.open_aria', {
           defaultValue: 'Open account menu',
@@ -75,7 +68,13 @@ export default function AccountPopover() {
           width: 44,
           height: 44,
           WebkitTapHighlightColor: 'transparent',
+          transition: 'transform 0.15s ease, background-color 0.2s ease',
           background: (theme) => alpha(theme.palette.grey[500], 0.08),
+          '&:active': { transform: 'scale(0.98)' },
+          '@media (prefers-reduced-motion: reduce)': {
+            transition: 'background-color 0.2s ease',
+            '&:active': { transform: 'none' },
+          },
           ...(popover.open && {
             background: (theme) => theme.palette.primary.main,
           }),

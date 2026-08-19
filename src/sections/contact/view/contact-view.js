@@ -1,6 +1,5 @@
 'use client';
 
-import { m } from 'framer-motion';
 import PropTypes from 'prop-types';
 
 import Stack from '@mui/material/Stack';
@@ -9,7 +8,7 @@ import Typography from '@mui/material/Typography';
 
 import { useTranslate } from 'src/locales';
 
-import { varFade } from 'src/components/animate';
+import { varFade, MotionPart, MotionContainer } from 'src/components/animate';
 
 import {
   dashboardSubsectionStackProps,
@@ -42,14 +41,16 @@ export default function ContactView({ variant = 'page' }) {
   return (
     <Container sx={{ py: 10 }}>
       <Stack spacing={MARKETING_SPACE_HERO_TO_CONTENT} sx={{ maxWidth: 560, mx: 'auto' }}>
-        <m.div variants={varFade().inUp}>
-          <Stack {...dashboardSubsectionStackProps} sx={{ textAlign: 'center' }}>
-            <Typography variant="h2">{t('pages.contact_us.title')}</Typography>
-            <Typography sx={{ color: 'text.secondary' }}>
-              {t('pages.contact_us.form.subtitle')}
-            </Typography>
-          </Stack>
-        </m.div>
+        <MotionContainer>
+          <MotionPart variants={varFade().inUp}>
+            <Stack {...dashboardSubsectionStackProps} sx={{ textAlign: 'center' }}>
+              <Typography variant="h2">{t('pages.contact_us.title')}</Typography>
+              <Typography sx={{ color: 'text.secondary' }}>
+                {t('pages.contact_us.form.subtitle')}
+              </Typography>
+            </Stack>
+          </MotionPart>
+        </MotionContainer>
         <FaqsForm translationPrefix="pages.contact_us.form" analyticsLocation="contact_page" />
       </Stack>
     </Container>

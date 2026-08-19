@@ -3,8 +3,6 @@
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import PropTypes from 'prop-types';
-// Aliased: a helper in this file already uses `m` as a local variable name.
-import { m as motion, AnimatePresence } from 'framer-motion';
 import { useRef, useMemo, useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
@@ -61,6 +59,8 @@ import {
 import Iconify from 'src/components/iconify';
 import { ResponsiveSheet } from 'src/components/sheet-shell';
 import { DashboardDelightEmpty } from 'src/components/dashboard';
+// Aliased: a helper in this file already uses `m` as a local variable name.
+import { m as motion, AnimatePresence } from 'src/components/animate';
 import SearchAiToggleAdornment from 'src/components/search-ai-toggle';
 import { ScrollableChipRow } from 'src/components/horizontal-scroll-row';
 import ShareFeedbackSnackbar from 'src/components/share/share-feedback-snackbar';
@@ -1637,7 +1637,7 @@ export default function DiscoverView({
                       initial={prefersReducedMotion ? false : { opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={prefersReducedMotion ? undefined : { opacity: 0 }}
-                      transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                      transition={{ duration: 0.2, ease: 'easeOut' }}
                     >
                       <DiscoverLocatingSkeleton />
                     </motion.div>
@@ -1650,7 +1650,7 @@ export default function DiscoverView({
                       initial={prefersReducedMotion ? false : { opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={prefersReducedMotion ? undefined : { opacity: 0 }}
-                      transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                      transition={{ duration: 0.2, ease: 'easeOut' }}
                     >
                       <DiscoverLocatingSkeleton count={3} showTip={false} />
                     </motion.div>
@@ -1663,7 +1663,7 @@ export default function DiscoverView({
                       initial={prefersReducedMotion ? false : { opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={prefersReducedMotion ? undefined : { opacity: 0 }}
-                      transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                      transition={{ duration: 0.2, ease: 'easeOut' }}
                     >
                       <DashboardDelightEmpty
                         icon={ic.mapPointBold}
@@ -1704,7 +1704,7 @@ export default function DiscoverView({
                     initial={prefersReducedMotion ? false : { opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={prefersReducedMotion ? undefined : { opacity: 0 }}
-                    transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{ duration: 0.2, ease: 'easeOut' }}
                   >
                     <ScrollableChipRow
                       gap={{ xs: 0.75, sm: 1 }}

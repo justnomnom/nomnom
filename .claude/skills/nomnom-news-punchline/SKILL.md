@@ -3,8 +3,8 @@ name: nomnom-news-punchline
 description: >
   Searches for viral and trending news (Portugal first, global only if unavoidable), crafts
   food-themed trocadilhos/punchlines tied to NomNom, and GENERATES actual Instagram post
-  images (1080x1080 PNG). Template style: vibrant terracotta background, large bold all-caps
-  quote at top, central food hero photo, subtitle, NomNom wordmark. No emojis. Brand
+  images (1080x1080 PNG). Template matches the app: parchment paper, terracotta accent
+  bar, Libre Baskerville headline, Albert Sans chrome, NomNom wordmark. No emojis. Brand
   woven in subtly. Use this skill whenever the user asks to: "find news and make a punchline",
   "trocadilho com noticias", "conteudo instagram", "cria posts para o NomNom", "gerar
   trocadilhos", "fazer posts com as noticias", or any variant of "find news and make it funny
@@ -18,12 +18,17 @@ You are NomNom's content writer and designer. For each post you produce:
 1. **CONTENT** — trocadilho/punchline + Instagram caption
 2. **IMAGE** — a 1080x1080 PNG with the NomNom branded template
 
-Template style (reference: Licor Beirão ad aesthetic):
-- Solid terracotta (#FF6B35) background filling the whole canvas
-- Large bold ALL-CAPS quote at top — the punchline headline
-- Smaller subtitle below — news reference or setup line
-- Central food hero photo floating with a drop shadow
-- Bottom: NOMNOM wordmark left, news source + date right
+Template style (same tokens as `DESIGN.md` / `remotion/src/theme.js`):
+- Parchment canvas (`#faf9f5`) — terracotta is ~10% (10px top bar + wordmark)
+- Libre Baskerville 700 headline, sentence case, ink `#15130f`
+- Albert Sans subtitle and chrome; overline-style source label
+- Central food photo, 32px card radius, warm `grey[900]` shadow
+- Bottom: **NomNom** wordmark (Albert Sans 800, terra) + tagline left;
+  news source + date right
+- Never: full-bleed `#FF6B35`, Arial, `font-weight: 900`, cool slate
+  (`#0F172A` / `#64748B`), pure `#000` / `#fff`, emojis on the image
+
+The HTML lives in `assets/template.html`. Do not invent a second look.
 
 ---
 
@@ -77,9 +82,9 @@ Fields per post:
 
 - `news_source`: outlet (e.g. "Observador", "Público")
 - `news_date`: short Portuguese date (e.g. "14 maio")
-- `title`: ALL-CAPS headline, max 10 words. References the news, twisted food/restaurant angle.
-  Works standalone. Write in UPPERCASE in the JSON value.
-- `subtitle`: ALL-CAPS secondary line, max 60 chars. News reference or punchline setup.
+- `title`: sentence-case punchline, max 10 words. References the news, twisted
+  food/restaurant angle. Works standalone. Not ALL CAPS (overline is for the source).
+- `subtitle`: sentence-case setup, max 60 chars. News reference or punchline setup.
 - `image_query`: 2-4 English keywords for Unsplash food photo search
   (e.g. "bifana portuguese sandwich", "restaurant candle table", "caldo verde soup portugal",
   "grilled fish lisbon", "pastel de nata coffee")
@@ -87,7 +92,7 @@ Fields per post:
 - `caption`: full Instagram description (1-3 sentences). "— NomNom" sign-off optional.
 - `filename`: e.g. `post-1-restauracao.png`
 
-Tone: dry, warm, no emojis. NomNom brand subtle — joke lands first.
+Tone: dry, warm, no emojis. Spots not establishments. Joke lands first; brand is subtle.
 
 ---
 
@@ -126,14 +131,14 @@ One sentence at end on which is strongest and why.
 ## Template visual layout
 
 ```
-┌──────────────────────────────────────────┐  ← terracotta #FF6B35
+┌──────────────────────────────────────────┐  ← 10px terracotta bar
+│  Parchment #faf9f5                       │
+│  Headline in Baskerville (sentence case) │  ← ink #15130f
+│  Subtitle in Albert Sans                 │  ← ink2 #6e6657
 │                                          │
-│  "TITULO GRANDE EM CAPS AQUI"            │  ← white bold all-caps, 86px
-│  SUBTITULO MAIS PEQUENO                  │  ← white 80% opacity, 28px
+│         [ food photo, radius 32px ]      │
 │                                          │
-│         [ food photo ]                   │  ← hero image, rounded, drop shadow
-│                                          │
-│  NOMNOM            OBSERVADOR        │  ← white wordmark + news source
-│  restaurant picks…     14 MAIO          │
+│  NomNom            OBSERVADOR            │  ← terra wordmark · overline source
+│  Restaurant picks… 14 maio               │
 └──────────────────────────────────────────┘
 ```

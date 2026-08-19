@@ -787,7 +787,7 @@ const MapView = ({ dur, restaurant, reviews }) => {
               height: 72,
               borderRadius: '50%',
               background: C.terraDarker,
-              border: '9px solid #fff',
+              border: `9px solid ${C.white}`,
               boxShadow: '0 6px 16px rgba(21,19,15,0.3)',
               boxSizing: 'border-box',
             }}
@@ -837,7 +837,7 @@ const MapView = ({ dur, restaurant, reviews }) => {
             alignItems: 'center',
             gap: 10,
             background: C.terra,
-            color: '#fff',
+            color: C.white,
             borderRadius: 18,
             padding: '20px 26px',
             fontFamily: SANS,

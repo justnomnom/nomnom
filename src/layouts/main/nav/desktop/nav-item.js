@@ -1,4 +1,3 @@
-import { m } from 'framer-motion';
 import PropTypes from 'prop-types';
 import { forwardRef } from 'react';
 
@@ -181,16 +180,18 @@ export function NavItemDashboard({ path, sx, ...other }) {
           ...sx,
         }}
       >
-        <m.div
-          whileTap="tap"
-          whileHover="hover"
-          variants={{
-            hover: { scale: 1.02 },
-            tap: { scale: 0.98 },
+        <Box
+          sx={{
+            transition: 'transform 0.15s ease',
+            '&:active': { transform: 'scale(0.98)' },
+            '@media (prefers-reduced-motion: reduce)': {
+              transition: 'none',
+              '&:active': { transform: 'none' },
+            },
           }}
         >
           <Box component="img" alt="" src="/assets/content-placeholder.svg" aria-hidden />
-        </m.div>
+        </Box>
       </CardActionArea>
     </Link>
   );

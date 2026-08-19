@@ -3,9 +3,9 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 
-function getUnsplashUrl(query) {
-  const encoded = encodeURIComponent(query || 'food restaurant portugal');
-  return `https://source.unsplash.com/featured/860x460/?${encoded}`;
+function getUnsplashUrl() {
+  // source.unsplash.com 503s; keep a known images.unsplash.com food photo as last resort.
+  return 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=860&h=460&fit=crop';
 }
 
 function resolveRedirect(url) {
@@ -68,7 +68,7 @@ async function generatePosts(postsFile, outputDir) {
       .replace('{{NEWS_DATE}}', escapeHtml(post.news_date || ''));
 
     await page.setContent(html, { waitUntil: 'networkidle' });
-    await page.waitForTimeout(2000);
+    await page.evaluate(() => document.fonts.ready);
 
     const outPath = path.join(outputDir, post.filename || `post-${i+1}.png`);
     await page.screenshot({ path: outPath, fullPage: false });

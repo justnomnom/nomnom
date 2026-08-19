@@ -1,7 +1,6 @@
 'use client';
 
 import PropTypes from 'prop-types';
-import { m as motion, AnimatePresence } from 'framer-motion';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import { useMemo, useState, useEffect, useCallback } from 'react';
 
@@ -27,8 +26,8 @@ import { useSkeletonThemeColors } from 'src/theme/use-skeleton-theme';
 import { SPACE, tabularNumsSx, TOUCH_TARGET_SIZE } from 'src/theme/spacing';
 
 import Iconify from 'src/components/iconify';
-import { MotionPart, MotionContainer } from 'src/components/animate';
 import { ScrollableChipRow } from 'src/components/horizontal-scroll-row';
+import { m as motion, AnimatePresence, MotionPart, MotionContainer } from 'src/components/animate';
 import CompactToolbarIconSkeleton from 'src/components/loading-screen/compact-toolbar-icon-skeleton';
 import {
   scrollableChipPillButtonSx,
@@ -454,7 +453,7 @@ export default function ListsHubView() {
               {(() => {
                 const fadeInitial = prefersReducedMotion ? false : { opacity: 0 };
                 const fadeExit = prefersReducedMotion ? undefined : { opacity: 0 };
-                const fadeTransition = { duration: 0.26, ease: [0.22, 1, 0.36, 1] };
+                const fadeTransition = { duration: 0.2, ease: 'easeOut' };
 
                 if (loading) {
                   return (

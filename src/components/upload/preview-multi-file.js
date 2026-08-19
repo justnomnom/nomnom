@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types';
-import { m, AnimatePresence } from 'framer-motion';
 
 import Stack from '@mui/material/Stack';
 import { alpha } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
+
+import { usePrefersReducedMotion } from 'src/hooks/use-prefers-reduced-motion';
 
 import { fData } from 'src/utils/format-number';
 
@@ -12,14 +13,17 @@ import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import { touchTargetSx } from 'src/theme/spacing';
 
+import { m, varFade, AnimatePresence } from 'src/components/animate';
+
 import Iconify from '../iconify';
-import { varFade } from '../animate';
 import FileThumbnail, { fileData } from '../file-thumbnail';
 
 // ----------------------------------------------------------------------
 
 export default function MultiFilePreview({ thumbnail, files, onRemove, sx }) {
   const { t } = useTranslate();
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const fadeProps = prefersReducedMotion ? {} : varFade().inUp;
 
   return (
     <AnimatePresence initial={false}>
@@ -32,8 +36,8 @@ export default function MultiFilePreview({ thumbnail, files, onRemove, sx }) {
           return (
             <Stack
               key={key}
-              component={m.div}
-              {...varFade().inUp}
+              component={prefersReducedMotion ? 'div' : m.div}
+              {...fadeProps}
               alignItems="center"
               display="inline-flex"
               justifyContent="center"
@@ -86,8 +90,8 @@ export default function MultiFilePreview({ thumbnail, files, onRemove, sx }) {
         return (
           <Stack
             key={key}
-            component={m.div}
-            {...varFade().inUp}
+            component={prefersReducedMotion ? 'div' : m.div}
+            {...fadeProps}
             spacing={2}
             direction="row"
             alignItems="center"

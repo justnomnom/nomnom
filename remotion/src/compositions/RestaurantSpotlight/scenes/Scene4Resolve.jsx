@@ -133,7 +133,7 @@ export const Scene4Resolve = ({ restaurant, review, cta }) => {
               height: 64,
               borderRadius: '50%',
               background: C.terraDarker,
-              border: '8px solid #fff',
+              border: `8px solid ${C.white}`,
               boxShadow: '0 6px 16px rgba(21,19,15,0.3)',
               marginTop: 14,
               boxSizing: 'border-box',
@@ -194,7 +194,7 @@ export const Scene4Resolve = ({ restaurant, review, cta }) => {
               height: 132,
               borderRadius: '50%',
               boxShadow: '0 18px 40px rgba(21,19,15,0.25)',
-              border: '5px solid rgba(255,255,255,0.85)',
+              border: `5px solid ${C.white}`,
             }}
           />
           <div style={{ fontFamily: SERIF, fontWeight: 700, fontSize: 72, color: C.white, marginTop: 36, lineHeight: 1.06 }}>

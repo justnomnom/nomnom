@@ -2,7 +2,6 @@
 
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
-import { m, AnimatePresence } from 'framer-motion';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 
 import Box from '@mui/material/Box';
@@ -15,6 +14,8 @@ import { usePrefersReducedMotion } from 'src/hooks/use-prefers-reduced-motion';
 import { RADIUS } from 'src/theme/spacing';
 import { useTranslate } from 'src/locales';
 import { useSkeletonThemeColors } from 'src/theme/use-skeleton-theme';
+
+import { m, AnimatePresence } from 'src/components/animate';
 
 // ----------------------------------------------------------------------
 
@@ -77,7 +78,7 @@ export default function DiscoverLocatingSkeleton({ count = CARD_COUNT, showTip =
                 initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 4 }}
                 animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
                 exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -4 }}
-                transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
                 sx={{
                   px: 1.5,
                   py: 0.5,

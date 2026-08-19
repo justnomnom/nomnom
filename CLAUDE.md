@@ -50,7 +50,8 @@ Key routing rules:
 - Architecture → invoke /plan-eng-review
 - Design system/plan review → invoke /design-consultation or /plan-design-review
 - Full review pipeline → invoke /autoplan
-- Reels/content batches → invoke /content-machine
+- Reels/content batches / all content types → invoke /content-machine
+- Animation audit / review motion → invoke /audit-animation
 - Bugs/errors → invoke /investigate
 - QA/testing site behavior → invoke /qa or /qa-only
 - Code review/diff check → invoke /review

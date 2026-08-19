@@ -2,7 +2,6 @@
 
 import PropTypes from 'prop-types';
 import dynamic from 'next/dynamic';
-import { m, AnimatePresence } from 'framer-motion';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import { useRef, useMemo, useState, useEffect, useCallback, useLayoutEffect } from 'react';
 
@@ -21,6 +20,8 @@ import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
+
+import { usePrefersReducedMotion } from 'src/hooks/use-prefers-reduced-motion';
 
 import { groupRestaurantTagsByCategory } from 'src/utils/restaurant-tag-groups';
 
@@ -44,6 +45,7 @@ import {
 
 import Logo from 'src/components/logo';
 import Iconify from 'src/components/iconify';
+import { m, AnimatePresence } from 'src/components/animate';
 
 function RestaurantTagPickerLoadState() {
   const { t } = useTranslate();
@@ -90,7 +92,7 @@ const stepMotionVariants = {
     opacity: 1,
     x: 0,
     transition: {
-      duration: 0.26,
+      duration: 0.2,
       ease: EASE_OUT_QUINT,
       staggerChildren: 0.035,
       delayChildren: 0.02,
@@ -99,13 +101,13 @@ const stepMotionVariants = {
   exit: (direction) => ({
     opacity: 0,
     x: direction * -16,
-    transition: { duration: 0.14, ease: EASE_OUT_QUART },
+    transition: { duration: 0.15, ease: EASE_OUT_QUART },
   }),
 };
 
 const stepChildVariants = {
   enter: { opacity: 0, y: 8 },
-  center: { opacity: 1, y: 0, transition: { duration: 0.22, ease: EASE_OUT_QUINT } },
+  center: { opacity: 1, y: 0, transition: { duration: 0.2, ease: EASE_OUT_QUINT } },
   exit: { opacity: 0, transition: { duration: 0.1, ease: EASE_OUT_QUART } },
 };
 
@@ -287,6 +289,7 @@ function onboardingErrorMessage(err, t) {
 
 function Progress({ active }) {
   const progressTheme = useTheme();
+  const prefersReducedMotion = usePrefersReducedMotion();
   return (
     <Stack direction="row" spacing={{ xs: 0.75, sm: 1 }} sx={{ flex: 1, minWidth: 0 }}>
       {Array.from({ length: STEPS }, (_, i) => {
@@ -306,21 +309,26 @@ function Progress({ active }) {
             }}
           >
             <Box
-              component={m.div}
-              initial={false}
-              animate={{ scaleX: filled ? 1 : 0 }}
-              transition={{
-                duration: isCurrent ? 0.55 : 0.28,
-                ease: EASE_OUT_QUINT,
-                delay: isCurrent && active > 0 ? 0.08 : 0,
-              }}
+              component={prefersReducedMotion ? 'div' : m.div}
+              {...(prefersReducedMotion
+                ? {}
+                : {
+                    initial: false,
+                    animate: { scaleX: filled ? 1 : 0 },
+                    transition: {
+                      duration: 0.4,
+                      ease: 'easeOut',
+                      delay: isCurrent && active > 0 ? 0.08 : 0,
+                    },
+                  })}
               sx={{
                 position: 'absolute',
                 inset: 0,
                 borderRadius: 999,
                 bgcolor: progressTheme.palette.primary.main,
                 transformOrigin: 'left center',
-                willChange: 'transform',
+                transform: prefersReducedMotion ? `scaleX(${filled ? 1 : 0})` : undefined,
+                willChange: prefersReducedMotion ? undefined : 'transform',
               }}
             />
           </Box>
@@ -340,9 +348,8 @@ const tapTargetButtonSx = {
   py: { xs: 1.5, sm: 2 },
   fontSize: { xs: '1rem', sm: '1.125rem' },
   borderRadius: { xs: 2, sm: 4 },
-  transition:
-    'transform 160ms cubic-bezier(0.25, 1, 0.5, 1), background-color 200ms cubic-bezier(0.25, 1, 0.5, 1), border-color 200ms cubic-bezier(0.25, 1, 0.5, 1), box-shadow 200ms cubic-bezier(0.25, 1, 0.5, 1)',
-  '&:active:not(.Mui-disabled)': { transform: 'scale(0.97)' },
+  transition: 'transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease',
+  '&:active:not(.Mui-disabled)': { transform: 'scale(0.98)' },
   '@media (prefers-reduced-motion: reduce)': {
     transition: 'none',
     '&:active:not(.Mui-disabled)': { transform: 'none' },
@@ -367,7 +374,7 @@ const primaryCtaSx = {
   // Design signature: the trailing icon nudges away from the label on hover.
   // Animate transform (composited) rather than margin-left (triggers layout).
   '& .MuiButton-endIcon': {
-    transition: 'transform 200ms cubic-bezier(0.25, 1, 0.5, 1)',
+    transition: 'transform 0.2s ease',
   },
   '&:hover .MuiButton-endIcon': { transform: 'translateX(6px)' },
   '@media (prefers-reduced-motion: reduce)': {
@@ -415,16 +422,17 @@ const STEP_DECOR = {
 };
 
 function StepDecor({ step }) {
+  const prefersReducedMotion = usePrefersReducedMotion();
   const items = STEP_DECOR[step] ?? [];
   return items.map((it) => (
     <Box
       key={it.key}
-      component={m.div}
+      component={prefersReducedMotion || !it.animate ? 'div' : m.div}
       aria-hidden="true"
-      animate={it.animate}
+      animate={prefersReducedMotion ? undefined : it.animate}
       transition={
-        it.animate
-          ? { duration: it.duration ?? 2.5, repeat: Infinity, ease: 'easeInOut' }
+        !prefersReducedMotion && it.animate
+          ? { duration: it.duration ?? 2.5, repeat: Infinity, ease: 'easeOut' }
           : undefined
       }
       sx={{
@@ -597,6 +605,7 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
   const router = useRouter();
   const { trackEvent } = useAnalytics();
   const persistReadyRef = useRef(false);
+  const prefersReducedMotion = usePrefersReducedMotion();
   /** GPS-resolved locality id waiting for the catalog to load before picker mapping. */
   const pendingGeoLocalityRef = useRef('');
   /** One-shot auto geolocation when the Location step first opens this session. */
@@ -1424,10 +1433,14 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
                 }}
               >
                 <Box
-                  component={m.div}
+                  component={prefersReducedMotion ? 'div' : m.div}
                   variants={stepChildVariants}
-                  animate={{ y: [0, -5, 0] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                  animate={prefersReducedMotion ? undefined : { y: [0, -5, 0] }}
+                  transition={
+                    prefersReducedMotion
+                      ? undefined
+                      : { duration: 4, repeat: Infinity, ease: 'easeOut' }
+                  }
                 >
                   <Logo disabledLink sx={{ width: { xs: 168, sm: 188 }, height: 'auto' }} />
                 </Box>

@@ -1,7 +1,6 @@
 'use client';
 
 import { memo } from 'react';
-import { m } from 'framer-motion';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -21,6 +20,7 @@ import { Z_INDEX } from 'src/theme/spacing';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetNotifications } from 'src/api/notifications';
 
+import { m } from 'src/components/animate';
 import Iconify from 'src/components/iconify';
 
 import { useDashboardBottomNavItems, getDashboardBottomNavActivePath } from './config-navigation';
@@ -134,14 +134,16 @@ function NavBottom() {
                 letterSpacing: '0.04em',
                 WebkitTapHighlightColor: 'transparent',
                 touchAction: 'manipulation',
-                transition: theme.transitions.create(['color', 'transform'], {
-                  duration: theme.transitions.duration.shorter,
-                }),
+                transition: 'color 0.2s ease, transform 0.15s ease',
                 '&:hover': {
                   color: isActive ? 'primary.main' : 'text.primary',
                 },
                 '&:active': {
-                  transform: 'scale(0.97)',
+                  transform: 'scale(0.98)',
+                },
+                '@media (prefers-reduced-motion: reduce)': {
+                  transition: 'color 0.2s ease',
+                  '&:active': { transform: 'none' },
                 },
               }}
             >
@@ -166,7 +168,7 @@ function NavBottom() {
                           component: m.div,
                           initial: { scale: 0, opacity: 0 },
                           animate: { scale: 1, opacity: 1 },
-                          transition: { type: 'spring', stiffness: 520, damping: 26 },
+                          transition: { duration: 0.15, ease: 'easeOut' },
                         })}
                     sx={{
                       position: 'absolute',

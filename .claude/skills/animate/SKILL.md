@@ -8,6 +8,16 @@ argument-hint: "[target]"
 
 Analyze a feature and strategically add animations and micro-interactions that enhance understanding, provide feedback, and create delight.
 
+## NomNom override
+
+This repo's motion source of truth is `DESIGN.md` §9, not the generic
+timings or libraries below. CSS transitions + MUI `sx` only; reuse
+`src/components/animate/` if Framer is already in the tree; never add
+GSAP. Durations: `0.08s` / `0.15s` / `0.2s` / `0.4s` / `0.65s–0.7s`.
+Easing: `ease` or `ease-out`. No bounce. `usePrefersReducedMotion` on
+every non-essential motion. To **review** motion instead of adding it,
+use `audit-animation`.
+
 ## MANDATORY PREPARATION
 
 Invoke /impeccable — it contains design principles, anti-patterns, and the **Context Gathering Protocol**. Follow the protocol before proceeding — if no design context exists yet, you MUST run /impeccable teach first. Additionally gather: performance constraints.

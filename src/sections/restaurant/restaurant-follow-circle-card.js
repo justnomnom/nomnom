@@ -1,7 +1,6 @@
 'use client';
 
 import PropTypes from 'prop-types';
-import { m as motion } from 'framer-motion';
 import Skeleton from 'react-loading-skeleton';
 
 import Box from '@mui/material/Box';
@@ -20,6 +19,7 @@ import { useTranslate } from 'src/locales';
 import { followCircleMemberLabel } from 'src/libs/restaurant/follow-circle';
 
 import Iconify from 'src/components/iconify';
+import { m as motion } from 'src/components/animate';
 
 // ----------------------------------------------------------------------
 
@@ -60,7 +60,7 @@ function RenderAvatar({ avatarUrl, animate, delay, label, href }) {
       component={motion.div}
       initial={{ opacity: 0, scale: 0.55 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.36, ease: AVATAR_EASE, delay }}
+      transition={{ duration: 0.2, ease: AVATAR_EASE, delay }}
       sx={{ display: 'inline-flex', transformOrigin: 'center' }}
     >
       {node}
@@ -152,7 +152,7 @@ export default function RestaurantFollowCircleCard({
           initial: { opacity: 0, scale: 0.55 },
           animate: { opacity: 1, scale: 1 },
           transition: {
-            duration: 0.36,
+            duration: 0.2,
             ease: AVATAR_EASE,
             delay: Math.min(members.length, SLOT_COUNT) * 0.08,
           },

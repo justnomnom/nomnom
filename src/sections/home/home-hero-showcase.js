@@ -251,7 +251,10 @@ function ShowcaseFeedRow({ row, cycleOffset }) {
                   index === photoIndex
                     ? theme.palette.marketing.paper
                     : alpha(theme.palette.marketing.paper, 0.55),
-                transition: 'width 0.25s ease, background-color 0.25s ease',
+                transition: 'width 0.2s ease, background-color 0.2s ease',
+                '@media (prefers-reduced-motion: reduce)': {
+                  transition: 'none',
+                },
               }}
             />
           ))}

@@ -57,6 +57,8 @@ export const AVATAR_PALETTE = [
 /** URL-safe slug used for props/out filenames. */
 export const slugify = (name) =>
   String(name || '')
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');

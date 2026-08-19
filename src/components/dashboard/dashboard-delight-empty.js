@@ -1,6 +1,5 @@
 'use client';
 
-import { m } from 'framer-motion';
 import PropTypes from 'prop-types';
 
 import Box from '@mui/material/Box';
@@ -9,6 +8,7 @@ import { alpha, useTheme } from '@mui/material/styles';
 
 import { usePrefersReducedMotion } from 'src/hooks/use-prefers-reduced-motion';
 
+import { m } from 'src/components/animate';
 import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------

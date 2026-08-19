@@ -41,8 +41,7 @@ function fetchImage(url, hops = 6) {
 async function toDataUri(query, directUrl) {
   const sources = [
     directUrl,
-    `https://source.unsplash.com/featured/860x460/?${encodeURIComponent(query || 'food restaurant')}`,
-    `https://source.unsplash.com/featured/860x460/?food,portugal`
+    `https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=860&h=460&fit=crop`,
   ].filter(Boolean);
 
   for (const url of sources) {
@@ -86,8 +85,8 @@ async function run(postsFile, outDir) {
       .replaceAll('{{NEWS_SOURCE}}', esc(p.news_source))
       .replaceAll('{{NEWS_DATE}}', esc(p.news_date));
 
-    await page.setContent(html, { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(400);
+    await page.setContent(html, { waitUntil: 'networkidle' });
+    await page.evaluate(() => document.fonts.ready);
 
     const out = path.join(outDir, p.filename || `post-${i + 1}.png`);
     await page.screenshot({ path: out });

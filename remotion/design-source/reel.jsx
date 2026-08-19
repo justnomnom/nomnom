@@ -348,7 +348,7 @@ function MapView({ p, op }) {
         <div style={{ position: 'relative', width: 72, height: 72, marginTop: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ position: 'absolute', width: 72, height: 72, borderRadius: '50%', background: 'rgba(184,72,31,0.20)', transform: `scale(${ring.scale})`, opacity: ring.op }} />
           <div style={{ position: 'absolute', width: 150, height: 150, borderRadius: '50%', background: 'rgba(184,72,31,0.12)' }} />
-          <div style={{ width: 72, height: 72, borderRadius: '50%', background: C.terraDarker, border: '9px solid #fff', boxShadow: '0 6px 16px rgba(21,19,15,0.3)', boxSizing: 'border-box' }} />
+          <div style={{ width: 72, height: 72, borderRadius: '50%', background: C.terraDarker, border: `9px solid ${C.white}`, boxShadow: '0 6px 16px rgba(21,19,15,0.3)', boxSizing: 'border-box' }} />
         </div>
       </div>
 
@@ -361,7 +361,7 @@ function MapView({ p, op }) {
           <div style={{ fontFamily: SANS, fontWeight: 700, fontSize: 24, color: C.ink }}>Address</div>
           <div style={{ fontFamily: SANS, fontWeight: 500, fontSize: 28, color: C.ink2, marginTop: 4 }}>23 Gertrude St, Fitzroy VIC</div>
         </div>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, background: C.terra, color: '#fff', borderRadius: 18, padding: '20px 26px', fontFamily: SANS, fontWeight: 800, fontStyle: 'italic', fontSize: 22, textTransform: 'uppercase', letterSpacing: '0.1em', boxShadow: '0 12px 24px -6px rgba(255,107,53,0.4)', flexShrink: 0 }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, background: C.terra, color: C.white, borderRadius: 18, padding: '20px 26px', fontFamily: SANS, fontWeight: 800, fontStyle: 'italic', fontSize: 22, textTransform: 'uppercase', letterSpacing: '0.1em', boxShadow: '0 12px 24px -6px rgba(255,107,53,0.4)', flexShrink: 0 }}>
           <img src="https://api.iconify.design/solar/map-point-bold.svg?color=%23ffffff" alt="" style={{ width: 26, height: 26 }} />Maps
         </div>
       </div>
