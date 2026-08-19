@@ -31,22 +31,22 @@ import { translateListCollaborationError } from 'src/utils/list-collaboration-er
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import { useAuthContext } from 'src/auth/hooks';
-import { TOUCH_TARGET_SIZE } from 'src/theme/spacing';
 import { normalizeAppLocale } from 'src/libs/locale-utils';
 import { isCapacitorNative } from 'src/libs/capacitor/platform';
+import { touchTargetSx, TOUCH_TARGET_SIZE } from 'src/theme/spacing';
 import { useSkeletonThemeColors } from 'src/theme/use-skeleton-theme';
 import { useRestaurantAnalytics } from 'src/libs/analytics/restaurant-analytics';
-import {
-  fetchRestaurantReviews,
-  upsertRestaurantReview,
-  deleteRestaurantReview,
-} from 'src/auth/actions/restaurant-review-actions';
 import {
   fetchMyLists,
   restaurantInMyLists,
   addRestaurantToLists,
   removeRestaurantFromList,
 } from 'src/libs/lists/actions';
+import {
+  fetchRestaurantReviews,
+  upsertRestaurantReview,
+  deleteRestaurantReview,
+} from 'src/auth/actions/restaurant-review-actions';
 import {
   fetchRestaurantDishSuggestions,
   fetchMyMustTryDraftForRestaurant,
@@ -1129,7 +1129,7 @@ export default function SaveToListSheet({
                 busy || loading || mediaUploading || reviewMediaDraft.length >= MAX_REVIEW_MEDIA
               }
               startIcon={<Iconify icon={ic.cameraAddBold} width={18} />}
-              sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 700 }}
+              sx={[touchTargetSx, { borderRadius: '12px', textTransform: 'none', fontWeight: 700 }]}
             >
               {t('pages.dashboard.restaurant.reviews_media_add')}
             </Button>

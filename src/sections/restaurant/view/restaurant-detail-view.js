@@ -37,9 +37,9 @@ import { useTranslate } from 'src/locales';
 import { useAuthContext } from 'src/auth/hooks';
 import { useSkeletonThemeColors } from 'src/theme/use-skeleton-theme';
 import { dedupeMustTryDishesByDisplayLabel } from 'src/libs/ugc/must-try-dedupe';
-import { RADIUS, tabularNumsSx, TOUCH_TARGET_SIZE } from 'src/theme/spacing';
 import { galleryUrlsForRestaurant } from 'src/libs/restaurant/restaurant-gallery-urls';
 import { buildRestaurantShareText } from 'src/libs/restaurant/build-restaurant-share-text';
+import { RADIUS, touchTargetSx, tabularNumsSx, TOUCH_TARGET_SIZE } from 'src/theme/spacing';
 import {
   RESTAURANT_SURFACE,
   useRestaurantAnalytics,
@@ -731,12 +731,12 @@ function MentionFeedReviewCard({
               color="primary"
               onClick={onRequestEdit}
               startIcon={<Iconify icon={ic.penBold} width={16} />}
-              sx={{
+              sx={[touchTargetSx, {
                 flexShrink: 0,
                 fontWeight: 700,
                 borderRadius: '12px',
                 textTransform: 'none',
-              }}
+              }]}
             >
               {t('pages.dashboard.restaurant.reviews_edit_button')}
             </Button>

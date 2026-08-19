@@ -19,6 +19,7 @@ import { fDate } from 'src/utils/format-time';
 
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
+import { touchTargetSx } from 'src/theme/spacing';
 import { getMyFollowers } from 'src/auth/actions/profile-actions';
 import { useMyStripeConnectStatus } from 'src/api/stripe-connect-status';
 import {
@@ -374,7 +375,7 @@ export default function SettingsSubscribers({
               href={paths.dashboard.settingsBilling}
               variant="contained"
               size="small"
-              sx={darkBillingCtaSx}
+              sx={[touchTargetSx, darkBillingCtaSx]}
             >
               {t('pages.lists.paid_connect_billing_cta')}
             </Button>
@@ -535,7 +536,7 @@ export default function SettingsSubscribers({
                 variant="soft"
                 color="primary"
                 size="small"
-                sx={{ width: { xs: '100%', sm: 'auto' } }}
+                sx={[touchTargetSx, { width: { xs: '100%', sm: 'auto' } }]}
               >
                 {t('pages.dashboard.settings.subscribers.empty_cta')}
               </Button>
@@ -594,7 +595,7 @@ export default function SettingsSubscribers({
                 variant="soft"
                 color="primary"
                 size="small"
-                sx={{ width: { xs: '100%', sm: 'auto' } }}
+                sx={[touchTargetSx, { width: { xs: '100%', sm: 'auto' } }]}
               >
                 {t('pages.dashboard.settings.subscribers.empty_cta')}
               </Button>

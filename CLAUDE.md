@@ -6,7 +6,7 @@
 - test: `npm test` — NOT bare `node --test "src/**/__tests__/*.test.mjs"`. The real script
   is `node --import ./scripts/register-node-test-loader.mjs --test ...`; without that loader
   26 suites fail to load and ~200 tests silently never run, which reads as pre-existing
-  failures. Expected: 1327 pass, 0 fail (62 suites).
+  failures. Expected: 1330 pass, 0 fail (64 suites).
 - e2e: `npm run test:e2e:all` (Playwright; boots a dev server on :3032 and seeds the linked
   Supabase project via service role)
 - deadcode: npx knip

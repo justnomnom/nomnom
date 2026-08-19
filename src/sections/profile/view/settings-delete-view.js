@@ -17,6 +17,7 @@ import { RouterLink } from 'src/routes/components';
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import { useAuthContext } from 'src/auth/hooks';
+import { touchTargetSx } from 'src/theme/spacing';
 import { deleteAccount } from 'src/auth/actions/auth-actions';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
 import { getCreatorListStats } from 'src/auth/actions/creator-subscribers-actions';
@@ -135,7 +136,7 @@ export default function SettingsDeleteView() {
                   size="small"
                   component={RouterLink}
                   href={paths.dashboard.settingsSubscribers}
-                  sx={{ width: { xs: '100%', sm: 'auto' } }}
+                  sx={[touchTargetSx, { width: { xs: '100%', sm: 'auto' } }]}
                 >
                   {t('pages.dashboard.settings.delete_account.subscribers_cta')}
                 </Button>

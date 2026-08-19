@@ -13,6 +13,7 @@ import IconButton from '@mui/material/IconButton';
 
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
+import { touchTargetSx } from 'src/theme/spacing';
 import { mobileStretchButtonSx } from 'src/theme/responsive-button-sx';
 
 import Iconify from 'src/components/iconify';
@@ -119,7 +120,7 @@ export function ReviewExpandableBody({
             size="small"
             onClick={() => setExpanded((v) => !v)}
             aria-expanded={expanded}
-            sx={{
+            sx={[touchTargetSx, {
               mr: -0.75,
               px: 0.75,
               py: 0.25,
@@ -127,7 +128,7 @@ export function ReviewExpandableBody({
               textTransform: 'none',
               fontWeight: 700,
               fontSize: { xs: '0.75rem', sm: '0.8125rem' },
-            }}
+            }]}
           >
             {expanded
               ? t('pages.dashboard.restaurant.reviews_show_less')
@@ -479,13 +480,13 @@ export function RestaurantReviewMentionToolbar({
         size="small"
         onClick={onRequestWriteReview}
         startIcon={<Iconify icon={ic.addCircleBold} width={18} />}
-        sx={{
+        sx={[touchTargetSx, {
           ...mobileStretchButtonSx,
           flexShrink: 0,
           fontWeight: 700,
           borderRadius: '12px',
           textTransform: 'none',
-        }}
+        }]}
       >
         {t('pages.dashboard.restaurant.reviews_add_via_save')}
       </Button>

@@ -2,6 +2,7 @@
 
 import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
+import dynamic from 'next/dynamic';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import { useRef, Fragment, useState, useEffect, useTransition } from 'react';
 
@@ -30,15 +31,13 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { paths } from 'src/routes/paths';
 
 import { useTranslate } from 'src/locales';
-import { tabularNumsSx, TOUCH_TARGET_SIZE } from 'src/theme/spacing';
+import { touchTargetSx, tabularNumsSx, TOUCH_TARGET_SIZE } from 'src/theme/spacing';
 import { searchAdminRestaurantsForSelectAction } from 'src/auth/actions/admin-reference-actions';
 import {
   createSponsoredPlacementAction,
   deleteSponsoredPlacementAction,
   updateSponsoredPlacementAction,
 } from 'src/auth/actions/sponsored-placement-actions';
-
-import dynamic from 'next/dynamic';
 
 import DeleteDialog from 'src/components/custom-dialog/delete-dialog';
 
@@ -774,7 +773,8 @@ export default function SponsoredPlacementsAdminView({
                           color="error"
                           onClick={() => handleDelete(row.id)}
                           disabled={busy || isPending}
-                        >
+      sx={touchTargetSx}
+    >
                           {tk('delete')}
                         </Button>
                       </TableCell>

@@ -17,6 +17,7 @@ import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 import { useTranslate } from 'src/locales';
+import { touchTargetSx } from 'src/theme/spacing';
 import { fetchOwnedListsForBilling } from 'src/libs/lists/actions';
 import { useMyStripeConnectStatus } from 'src/api/stripe-connect-status';
 import { syncSubscriberListsBundlePrice } from 'src/auth/actions/stripe-list-actions';
@@ -226,12 +227,12 @@ export default function SettingsBillingPaidLists({ initialConnectStatus, initial
                 onClick={() => handleSave()}
                 loading={saving}
                 disabled={saving || !canSavePrice || !priceIsDirty}
-                sx={{
+                sx={[touchTargetSx, {
                   flexShrink: 0,
                   alignSelf: { xs: 'stretch', sm: 'auto' },
                   width: { xs: '100%', sm: 'auto' },
                   minWidth: { sm: 132 },
-                }}
+                }]}
               >
                 {t('pages.dashboard.settings.billing.paid_lists_save')}
               </Button>

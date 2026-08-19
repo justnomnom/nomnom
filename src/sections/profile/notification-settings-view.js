@@ -14,6 +14,7 @@ import Typography from '@mui/material/Typography';
 
 import { useWebPush } from 'src/api/push';
 import { useTranslate } from 'src/locales';
+import { touchTargetSx } from 'src/theme/spacing';
 import { INTEGRATION_FLAGS } from 'src/config-global';
 import {
   getMyNotificationPreferences,
@@ -117,7 +118,9 @@ export default function NotificationSettingsView() {
           <Typography variant="body2" color="success.main">
             {t('components.notifications.enabled_device')}
           </Typography>
-          <Button size="small" color="inherit" disabled={busy} onClick={disable}>
+          <Button size="small" color="inherit" disabled={busy} onClick={disable}
+      sx={touchTargetSx}
+    >
             {t('components.notifications.disable_device')}
           </Button>
         </Stack>

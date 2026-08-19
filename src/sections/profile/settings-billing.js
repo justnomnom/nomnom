@@ -14,6 +14,7 @@ import { paths } from 'src/routes/paths';
 
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
+import { touchTargetSx } from 'src/theme/spacing';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
 import { useMyStripeConnectStatus } from 'src/api/stripe-connect-status';
 
@@ -131,7 +132,7 @@ export default function SettingsBilling({ initialConnectStatus, initialPaidLists
               onClick={handleConnectStripe}
               loading={connectLoading}
               disabled={connectLoading}
-              sx={dashboardMobileStretchButtonSx}
+              sx={[touchTargetSx, dashboardMobileStretchButtonSx]}
             >
               {t(payoutButtonKey)}
             </Button>

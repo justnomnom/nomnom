@@ -39,10 +39,10 @@ import { APP, NAV } from 'src/config-global';
 import { useAuthContext } from 'src/auth/hooks';
 import { hoverable } from 'src/theme/overrides/hoverable';
 import { isCapacitorNative } from 'src/libs/capacitor/platform';
-import { SPACE, RADIUS, TOUCH_TARGET_SIZE } from 'src/theme/spacing';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
 import { listIdsByRestaurantIdsForUser } from 'src/libs/lists/actions';
 import { useRestaurantTagsCatalog } from 'src/api/restaurant-tags-catalog';
+import { SPACE, RADIUS, touchTargetSx, TOUCH_TARGET_SIZE } from 'src/theme/spacing';
 import {
   RESTAURANT_SURFACE,
   useRestaurantAnalytics,
@@ -1678,7 +1678,7 @@ export default function DiscoverView({
                             variant="soft"
                             color="primary"
                             size="small"
-                            sx={dashboardMobileStretchButtonSx}
+                            sx={[touchTargetSx, dashboardMobileStretchButtonSx]}
                             onClick={
                               // A vibe filter is the likelier cause of an empty feed than the
                               // market being wrong, so offer the fix that matches the cause.
@@ -1718,7 +1718,7 @@ export default function DiscoverView({
                             onClick={() => selectCategory(c.key)}
                             aria-pressed={selected}
                             size="small"
-                            sx={discoverFeedChipSx(theme, selected)}
+                            sx={[touchTargetSx, discoverFeedChipSx(theme, selected)]}
                           >
                             <Typography variant="caption" sx={{ fontWeight: 800 }}>
                               {c.label}
@@ -1731,7 +1731,7 @@ export default function DiscoverView({
                         aria-pressed={openNowOnly}
                         size="small"
                         startIcon={<Iconify icon={ic.clockCircleBold} width={15} />}
-                        sx={discoverFeedChipSx(theme, openNowOnly)}
+                        sx={[touchTargetSx, discoverFeedChipSx(theme, openNowOnly)]}
                       >
                         <Typography variant="caption" sx={{ fontWeight: 800 }}>
                           {t('pages.dashboard.discover.filter_open_now')}

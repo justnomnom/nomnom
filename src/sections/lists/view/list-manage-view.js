@@ -41,9 +41,9 @@ import { NAV } from 'src/config-global';
 import { useTranslate } from 'src/locales';
 import { useAuthContext } from 'src/auth/hooks';
 import { normalizeAppLocale } from 'src/libs/locale-utils';
-import { SPACE, TOUCH_TARGET_SIZE } from 'src/theme/spacing';
 import { sortListItemsByMode } from 'src/libs/lists/sort-list-items';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
+import { SPACE, touchTargetSx, TOUCH_TARGET_SIZE } from 'src/theme/spacing';
 import {
   RESTAURANT_SURFACE,
   useRestaurantAnalytics,
@@ -980,7 +980,7 @@ export default function ListManageView({ listId, isOwner, canEditItems, initial 
                           size="small"
                           onClick={() => coverFileInputRef.current?.click()}
                           disabled={busy || coverUploading}
-                          sx={dashboardMobileStretchButtonSx}
+                          sx={[touchTargetSx, dashboardMobileStretchButtonSx]}
                         >
                           {t('pages.lists.cover_upload')}
                         </Button>
@@ -1140,7 +1140,7 @@ export default function ListManageView({ listId, isOwner, canEditItems, initial 
                           href={paths.dashboard.settingsBilling}
                           variant="contained"
                           size="small"
-                          sx={darkBillingCtaSx}
+                          sx={[touchTargetSx, darkBillingCtaSx]}
                         >
                           {t('pages.lists.paid_connect_billing_cta')}
                         </Button>
@@ -1160,7 +1160,7 @@ export default function ListManageView({ listId, isOwner, canEditItems, initial 
                         href={paths.dashboard.settingsBilling}
                         variant="contained"
                         size="small"
-                        sx={darkBillingCtaSx}
+                        sx={[touchTargetSx, darkBillingCtaSx]}
                       >
                         {t('pages.lists.paid_connect_billing_cta')}
                       </Button>
@@ -1178,7 +1178,7 @@ export default function ListManageView({ listId, isOwner, canEditItems, initial 
                     size="small"
                     startIcon={<Iconify icon={ic.googleMaps} width={18} />}
                     onClick={() => setGmapsImportOpen(true)}
-                    sx={dashboardMobileStretchButtonSx}
+                    sx={[touchTargetSx, dashboardMobileStretchButtonSx]}
                   >
                     {t('pages.lists.import_from_gmaps')}
                   </Button>
@@ -1497,7 +1497,8 @@ export default function ListManageView({ listId, isOwner, canEditItems, initial 
                                   onClick={() => handleApprove(m.user_id, 'viewer')}
                                   loading={busyOp === `approve:${m.user_id}`}
                                   disabled={busy}
-                                >
+      sx={touchTargetSx}
+    >
                                   {t('pages.lists.approve')}
                                 </Button>
                                 <Button
@@ -1506,7 +1507,8 @@ export default function ListManageView({ listId, isOwner, canEditItems, initial 
                                   onClick={() => handleReject(m.user_id)}
                                   loading={busyOp === `reject:${m.user_id}`}
                                   disabled={busy}
-                                >
+      sx={touchTargetSx}
+    >
                                   {t('pages.lists.reject')}
                                 </Button>
                               </>
@@ -1571,7 +1573,8 @@ export default function ListManageView({ listId, isOwner, canEditItems, initial 
                                 color="error"
                                 onClick={() => setRemoveMemberUserId(m.user_id)}
                                 disabled={busy}
-                              >
+      sx={touchTargetSx}
+    >
                                 {t('pages.lists.remove')}
                               </Button>
                             )}

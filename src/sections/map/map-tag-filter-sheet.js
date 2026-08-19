@@ -25,7 +25,7 @@ import {
 
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
-import { RADIUS } from 'src/theme/spacing';
+import { RADIUS, touchTargetSx } from 'src/theme/spacing';
 import { hoverable } from 'src/theme/overrides/hoverable';
 import { useSkeletonThemeColors } from 'src/theme/use-skeleton-theme';
 import { mobileStretchButtonSx } from 'src/theme/responsive-button-sx';
@@ -184,7 +184,7 @@ export default function MapTagFilterSheet({
             aria-pressed={openNow}
             size="small"
             startIcon={<Iconify icon={ic.clockCircleBold} width={15} />}
-            sx={mapFilterChipSx(theme, openNow)}
+            sx={[touchTargetSx, mapFilterChipSx(theme, openNow)]}
           >
             <Typography variant="caption" sx={{ fontWeight: 800 }}>
               {openNow

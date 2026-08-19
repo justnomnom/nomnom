@@ -17,6 +17,7 @@ import { getAuthRedirectOrigin } from 'src/utils/auth-utils';
 
 import { useTranslate } from 'src/locales';
 import { useAuthContext } from 'src/auth/hooks';
+import { touchTargetSx } from 'src/theme/spacing';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
 import { compactPageActionsStackSx } from 'src/theme/responsive-button-sx';
 
@@ -176,7 +177,8 @@ export default function SupabaseVerifyView() {
               size="small"
               variant="outlined"
               color="inherit"
-            >
+      sx={touchTargetSx}
+    >
               {t(`pages.auth.verify.open_${item.key}`)}
             </Button>
           ))}

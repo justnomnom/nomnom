@@ -18,6 +18,7 @@ import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 import { useTranslate } from 'src/locales';
+import { touchTargetSx } from 'src/theme/spacing';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
 import { sendContactInquiryEmail } from 'src/auth/actions/email-actions';
 
@@ -232,7 +233,7 @@ export default function FaqsForm({
               href={paths.home}
               color="inherit"
               size="small"
-              sx={{ fontWeight: 700, whiteSpace: 'nowrap' }}
+              sx={[touchTargetSx, { fontWeight: 700, whiteSpace: 'nowrap' }]}
             >
               {t(key('success_cta'))}
             </Button>

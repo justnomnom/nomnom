@@ -964,13 +964,16 @@ export default function ListPublicView({
                   onClick={handleSubscribeToList}
                   loading={busyKey === 'subscribe'}
                   disabled={busy}
-                >
+      sx={touchTargetSx}
+    >
                   {t('pages.lists.snapshot_upsell_cta', {
                     price: formatListMoney(paidAccess.amountCents, paidAccess.currency),
                   })}
                 </Button>
               ) : (
-                <Button fullWidth size="small" component={RouterLink} href={loginHref}>
+                <Button fullWidth size="small" component={RouterLink} href={loginHref}
+      sx={touchTargetSx}
+    >
                   {t('pages.lists.snapshot_upsell_cta', {
                     price: formatListMoney(paidAccess.amountCents, paidAccess.currency),
                   })}
@@ -983,7 +986,7 @@ export default function ListPublicView({
       {error === 'login_required' && (
         <Alert severity="info" variant="outlined" role="status">
           {t('pages.lists.login_to_view_places')}
-          <Button component={RouterLink} href={loginHref} size="small" sx={{ ml: 1 }}>
+          <Button component={RouterLink} href={loginHref} size="small" sx={[touchTargetSx, { ml: 1 }]}>
             {t('pages.lists.log_in')}
           </Button>
         </Alert>
@@ -1020,7 +1023,8 @@ export default function ListPublicView({
                 }
                 router.refresh();
               }}
-            >
+      sx={touchTargetSx}
+    >
               {t('pages.lists.accept_invite')}
             </Button>
             <Button
@@ -1040,7 +1044,8 @@ export default function ListPublicView({
                 }
                 router.refresh();
               }}
-            >
+      sx={touchTargetSx}
+    >
               {t('pages.lists.decline_invite')}
             </Button>
           </Stack>
