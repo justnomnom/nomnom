@@ -99,6 +99,7 @@ describe('Table i18n', () => {
       'pages.table.upvote_aria',
       'pages.table.downvote_aria',
       'pages.table.place_details_aria',
+      'pages.table.lock_confirm_body',
     ]) {
       assert.match(lookup(en, key), /\{\{name\}\}/);
       assert.match(lookup(pt, key), /\{\{name\}\}/);
@@ -303,6 +304,18 @@ describe('Table server + storage contract', () => {
     assert.match(panel, /readLockToken\(tableId\)/);
     assert.doesNotMatch(view, /gen_random_bytes/);
     assert.doesNotMatch(panel, /gen_random_bytes/);
+  });
+
+  test('settling asks the organiser to confirm the final spot before lock_table', () => {
+    const panel = read('src/sections/table/table-vote-panel.js');
+    const sheet = read('src/sections/table/table-lock-confirm-sheet.js');
+    assert.match(panel, /onClick=\{handleOpenLockConfirm\}/);
+    assert.match(panel, /TableLockConfirmSheet/);
+    assert.match(panel, /setLockConfirmOpen\(true\)/);
+    assert.match(panel, /winnerRestaurantId: pendingWinnerId/);
+    assert.match(sheet, /pages\.table\.lock_confirm_title/);
+    assert.match(sheet, /pages\.table\.lock_confirm_cta/);
+    assert.match(sheet, /ResponsiveSheet/);
   });
 
   test('the winner block offers reply, place, and maps', () => {

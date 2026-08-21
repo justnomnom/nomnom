@@ -40,6 +40,7 @@ import Iconify from 'src/components/iconify';
 import ShareFeedbackSnackbar from 'src/components/share/share-feedback-snackbar';
 import { scrollableChipPillButtonSx } from 'src/components/scrollable-chip-select';
 
+import TableLockConfirmSheet from './table-lock-confirm-sheet';
 import TableRestaurantDetailSheet from './table-restaurant-detail-sheet';
 
 // ----------------------------------------------------------------------
@@ -188,6 +189,8 @@ export default function TableVotePanel({
 
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState(null);
+  const [lockConfirmOpen, setLockConfirmOpen] = useState(false);
+  const [pendingWinnerId, setPendingWinnerId] = useState(/** @type {string | null} */ (null));
   const [detailPlace, setDetailPlace] = useState(/** @type {object | null} */ (null));
   const [myVotes, setMyVotes] = useState(/** @type {Record<string, 1 | -1>} */ ({}));
   /** Restaurant whose vote is in flight — only that row waits, not the whole panel. */
@@ -315,15 +318,34 @@ export default function TableVotePanel({
     [tableId, locked, named, guestKey, analytics, analyticsBase, onTableUpdate]
   );
 
-  const handleLock = useCallback(async () => {
+  /**
+   * Open the confirm sheet on the current vote leader. Snapshot the id now so a
+   * later poll cannot change which restaurant the organiser is about to lock.
+   */
+  const handleOpenLockConfirm = useCallback(() => {
     if (!tableId || locked || busy) return;
+    setPendingWinnerId(pickWinnerId(tallies, restaurantIds));
+    setErr(null);
+    setLockConfirmOpen(true);
+  }, [tableId, locked, busy, tallies, restaurantIds]);
+
+  const handleCloseLockConfirm = useCallback(() => {
+    if (busy) return;
+    setLockConfirmOpen(false);
+  }, [busy]);
+
+  /**
+   * Settle the snapshotted restaurant from the confirm sheet, not a live re-rank.
+   * The organiser already named that spot; a 4s poll must not swap it under them.
+   */
+  const handleLock = useCallback(async () => {
+    if (!tableId || locked || busy || !pendingWinnerId) return;
     const lockToken = readLockToken(tableId);
-    const winnerGuess = pickWinnerId(tallies, restaurantIds);
     setBusy(true);
     const { table, error } = await lockTable({
       tableId,
       lockToken,
-      winnerRestaurantId: winnerGuess,
+      winnerRestaurantId: pendingWinnerId,
     });
     setBusy(false);
     if (error || !table) {
@@ -331,13 +353,22 @@ export default function TableVotePanel({
       return;
     }
     setErr(null);
+    setLockConfirmOpen(false);
     onTableUpdate?.(table);
     const winnerNow = table?.decide?.winner_restaurant_id;
     analytics.trackResultLocked({
       ...analyticsBase,
       restaurant_id: winnerNow ? String(winnerNow) : null,
     });
-  }, [tableId, locked, busy, tallies, restaurantIds, analytics, analyticsBase, onTableUpdate]);
+  }, [
+    tableId,
+    locked,
+    busy,
+    pendingWinnerId,
+    analytics,
+    analyticsBase,
+    onTableUpdate,
+  ]);
 
   const handleReplyShare = useCallback(async () => {
     const winnerIdNow = lockedWinnerRestaurantId(session);
@@ -372,7 +403,7 @@ export default function TableVotePanel({
             {busy ? <CircularProgress size={20} color="primary" /> : null}
           </Stack>
 
-          {err ? (
+          {err && !lockConfirmOpen ? (
             <Typography variant="body2" color="error">
               {tableErrorMessage(err, t)}
             </Typography>
@@ -468,7 +499,7 @@ export default function TableVotePanel({
                   fullWidth
                   variant="contained"
                   color="primary"
-                  onClick={handleLock}
+                  onClick={handleOpenLockConfirm}
                   disabled={busy}
                   sx={touchTargetSx}
                 >
@@ -572,6 +603,15 @@ export default function TableVotePanel({
       </Card>
 
       <ShareFeedbackSnackbar feedback={shareFeedback} onClose={dismissShareFeedback} />
+
+      <TableLockConfirmSheet
+        open={lockConfirmOpen}
+        onClose={handleCloseLockConfirm}
+        onConfirm={handleLock}
+        busy={busy}
+        place={pendingWinnerId ? placeById.get(pendingWinnerId) : null}
+        errorMessage={err ? tableErrorMessage(err, t) : null}
+      />
 
       <TableRestaurantDetailSheet
         open={Boolean(detailPlace)}
