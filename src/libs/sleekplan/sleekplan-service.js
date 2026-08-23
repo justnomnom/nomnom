@@ -161,21 +161,39 @@ export const getSleekplanFeedbackUrl = ({ productId } = {}) => {
 };
 
 /**
+ * Map our view names onto Sleekplan `$sleek.open()` arguments.
+ * `$sleek.open('home')` navigates to `#/home`, which the widget 404s ("Uh-oh,
+ * something went wrong"). The home screen is `$sleek.open()` with no args (`#/`).
+ * @param {string} [view]
+ * @returns {string|undefined} Argument to pass to `$sleek.open`, or omit for home
+ */
+export const resolveSleekplanWidgetView = (view) => {
+  if (view == null || view === '' || view === 'home') return undefined;
+  return view;
+};
+
+/**
  * Open the Sleekplan JS widget to a specific view (in-app feedback).
  * Prefer this over iframe embeds — the hosted portal blocks framing.
- * @param {string} [view='home'] - Widget view (e.g. 'home', 'feedback.add')
+ * Omit `view` (or pass `'home'`) for the default home screen. Use `'feedback'`
+ * for the board and `'feedback.add'` for the compose form.
+ * @param {string} [view] - Widget view (e.g. 'feedback', 'feedback.add')
  */
-export const openSleekplanWidget = (view = 'home') => {
+export const openSleekplanWidget = (view) => {
   if (typeof window === 'undefined' || !INTEGRATION_FLAGS.sleekplan) return;
+
+  const resolvedView = resolveSleekplanWidgetView(view);
 
   try {
     if (window.$sleek && typeof window.$sleek.open === 'function') {
-      window.$sleek.open(view);
+      if (resolvedView) window.$sleek.open(resolvedView);
+      else window.$sleek.open();
       return;
     }
     window.$sleek = window.$sleek || [];
-    window.$sleek.push(['open', view]);
+    if (resolvedView) window.$sleek.push(['open', resolvedView]);
+    else window.$sleek.push(['open']);
   } catch (error) {
-    logger.error('Failed to open Sleekplan widget', { error: error.message, view });
+    logger.error('Failed to open Sleekplan widget', { error: error.message, view: resolvedView });
   }
 };

@@ -58,8 +58,8 @@ export default function FeedbackView() {
   });
 
   const handleOpenBoard = () => {
-    trackEvent('feedback_widget_opened', { view: 'home' });
-    openSleekplanWidget('home');
+    trackEvent('feedback_widget_opened', { view: 'feedback' });
+    openSleekplanWidget('feedback');
   };
 
   const handleShareIdea = () => {
