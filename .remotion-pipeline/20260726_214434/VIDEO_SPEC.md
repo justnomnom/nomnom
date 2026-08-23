@@ -155,7 +155,7 @@ Hairline:        #d1cfc5 — borders
 - Serif headline: `Don't take` / `our word.`
 - Sub: `Take theirs. Save the spots people you trust recommend.`
 - Primary button: `Save this spot` (terra fill, white type)
-- Footer: `Join the Nom Nom Circle · nomnom.app`
+- Footer: `Join the Nom Nom Circle · justnomnom.com`
 
 **Animation Details**:
 - Headline lines stagger in

@@ -19,12 +19,12 @@ NomNom is a restaurant discovery platform built around curated lists from food c
 
 ## Key pages
 
-- Homepage: https://nomnom.app/
-- About: https://nomnom.app/about
-- Countries & city guides: https://nomnom.app/countries
-- Use cases: https://nomnom.app/use-cases
-- Pricing: https://nomnom.app/pricing
-- FAQs: https://nomnom.app/faqs
+- Homepage: https://www.justnomnom.com/
+- About: https://www.justnomnom.com/about
+- Countries & city guides: https://www.justnomnom.com/countries
+- Use cases: https://www.justnomnom.com/use-cases
+- Pricing: https://www.justnomnom.com/pricing
+- FAQs: https://www.justnomnom.com/faqs
 
 ## Pricing
 
@@ -33,5 +33,5 @@ NomNom is a restaurant discovery platform built around curated lists from food c
 
 ## Contact
 
-- Support: https://nomnom.app/contact-us
-- Email: hello@nomnom.app
+- Support: https://www.justnomnom.com/contact-us
+- Email: info@justnomnom.com

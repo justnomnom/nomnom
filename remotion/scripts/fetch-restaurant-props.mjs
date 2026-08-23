@@ -400,7 +400,7 @@ const props = {
     headlineLines: ["Don't take", 'our word.'],
     subLines: ['Take theirs. The spots people you', "trust can't stop recommending."],
     button: 'Save this spot',
-    footer: 'Join the Nom Nom Circle · nomnom.app',
+    footer: 'Join the Nom Nom Circle · justnomnom.com',
   },
 };
 

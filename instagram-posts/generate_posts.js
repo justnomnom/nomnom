@@ -65,7 +65,8 @@ async function generatePosts(postsFile, outputDir) {
       .replace('{{SUBTITLE}}', escapeHtml(post.subtitle || ''))
       .replace('{{IMAGE_URL}}', imageUrl)
       .replace('{{NEWS_SOURCE}}', escapeHtml(post.news_source || ''))
-      .replace('{{NEWS_DATE}}', escapeHtml(post.news_date || ''));
+      .replace('{{NEWS_DATE}}', escapeHtml(post.news_date || ''))
+      .replace('{{TAGLINE}}', escapeHtml(post.tagline || 'Restaurant picks from people you trust'));
 
     await page.setContent(html, { waitUntil: 'networkidle' });
     await page.evaluate(() => document.fonts.ready);

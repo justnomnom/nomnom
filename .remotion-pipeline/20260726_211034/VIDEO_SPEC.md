@@ -139,7 +139,7 @@ Volume envelope: music beds under text; duck 20% during dense quote frames if VO
 
 ### Scene 8: CTA (28.1s – 31.7s · 108 frames)
 
-**Visual:** Full terracotta card. Display: “Don’t take / our word.” Sub: “Take theirs…” Button: “Save this spot”. Footer: `Join the Nom Nom Circle · nomnom.app`
+**Visual:** Full terracotta card. Display: “Don’t take / our word.” Sub: “Take theirs…” Button: “Save this spot”. Footer: `Join the Nom Nom Circle · justnomnom.com`
 
 **Animation:**
 - Headline stagger

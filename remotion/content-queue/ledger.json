@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-15T23:42:13.821Z",
+  "updatedAt": "2026-08-19T20:56:12.529Z",
   "subjects": {
     "restaurant:4713e1cb-0813-4640-ae76-65fd8cb81905": {
       "kind": "restaurant",
@@ -150,6 +150,63 @@
           "assets": [
             "20260815T232057Z/restaurant-43-sushi.mp4",
             "20260815T232057Z/restaurant-43-sushi.jpg"
+          ]
+        }
+      ]
+    },
+    "restaurant:f7466d34-32f8-45e9-b9d1-204a106906d5": {
+      "kind": "restaurant",
+      "id": "f7466d34-32f8-45e9-b9d1-204a106906d5",
+      "name": "Allora",
+      "count": 1,
+      "firstProducedAt": "2026-08-19T20:54:21.168Z",
+      "lastProducedAt": "2026-08-19T20:54:21.168Z",
+      "history": [
+        {
+          "batchId": "20260819T205155Z",
+          "producedAt": "2026-08-19T20:54:21.168Z",
+          "composition": "RestaurantReviewsReel",
+          "assets": [
+            "20260819T205155Z/restaurant-allora.mp4",
+            "20260819T205155Z/restaurant-allora.jpg"
+          ]
+        }
+      ]
+    },
+    "review:fbeed94f-65be-4750-bc69-0eb441a2ed7d": {
+      "kind": "review",
+      "id": "fbeed94f-65be-4750-bc69-0eb441a2ed7d",
+      "name": "WOAK SUSHI",
+      "count": 1,
+      "firstProducedAt": "2026-08-19T20:55:05.549Z",
+      "lastProducedAt": "2026-08-19T20:55:05.549Z",
+      "history": [
+        {
+          "batchId": "20260819T205155Z",
+          "producedAt": "2026-08-19T20:55:05.549Z",
+          "composition": "RestaurantSpotlight",
+          "assets": [
+            "20260819T205155Z/review-woak-sushi.mp4",
+            "20260819T205155Z/review-woak-sushi.jpg"
+          ]
+        }
+      ]
+    },
+    "restaurant:d9ab0a27-6255-433c-84ca-3b4414faa2a7": {
+      "kind": "restaurant",
+      "id": "d9ab0a27-6255-433c-84ca-3b4414faa2a7",
+      "name": "Taskinha Do B3co",
+      "count": 1,
+      "firstProducedAt": "2026-08-19T20:56:12.526Z",
+      "lastProducedAt": "2026-08-19T20:56:12.526Z",
+      "history": [
+        {
+          "batchId": "20260819T205155Z",
+          "producedAt": "2026-08-19T20:56:12.526Z",
+          "composition": "RestaurantReviewsReel",
+          "assets": [
+            "20260819T205155Z/restaurant-taskinha-do-b3co.mp4",
+            "20260819T205155Z/restaurant-taskinha-do-b3co.jpg"
           ]
         }
       ]

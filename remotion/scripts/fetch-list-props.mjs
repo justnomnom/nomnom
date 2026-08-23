@@ -8,7 +8,7 @@
 //
 // Options:
 //   --out <path>       output JSON path (default props/<slug>.json)
-//   --places <n>       max spot scenes (default 6; runtime is 10s + 2.9s each)
+//   --places <n>       max spot scenes (default 6; runtime is 10s + 3.5s each)
 //   --render           render the video immediately after writing props
 //
 // Data honesty: same rule as fetch-restaurant-props.mjs. Every optional field
@@ -23,6 +23,14 @@ import { execFileSync } from 'node:child_process';
 import { getSupabase, REMOTION_ROOT } from './lib/supabase-client.mjs';
 import { AVATAR_PALETTE, handleOf, initials, prettifyUsername, slugify, wrapName } from './lib/subject-text.mjs';
 import { MIN_LIST_PLACES, listReelSeconds } from './lib/reel-readiness.mjs';
+import {
+  captionSiteOrigin,
+  listPublicUrl,
+  photoFitForAspect,
+  spotConsensusFromMetadata,
+  spotLocationFromRestaurant,
+} from '../../src/libs/lists/list-spot-fields.js';
+import { probeImageSize } from './lib/image-header.mjs';
 
 const sb = getSupabase();
 
@@ -61,17 +69,18 @@ if (!listId) {
 
 const { data: list, error: lErr } = await sb
   .from('lists')
-  .select('id, name, description, visibility, user_id, created_at')
+  .select('id, name, description, visibility, user_id, created_at, slug')
   .eq('id', listId)
   .maybeSingle();
 if (lErr) { console.error(lErr.message); process.exit(1); }
 if (!list) { console.error(`List ${listId} not found`); process.exit(1); }
 
-// ── Places, in the order they were added ─────────────────────────────────
+// ── Places, in list sort_order (created_at is a tie-break only) ───────────
 const { data: items, error: iErr } = await sb
   .from('list_items')
-  .select('restaurant_id, created_at')
+  .select('restaurant_id, sort_order, created_at')
   .eq('list_id', listId)
+  .order('sort_order', { ascending: true })
   .order('created_at', { ascending: true });
 if (iErr) { console.error(iErr.message); process.exit(1); }
 
@@ -130,16 +139,26 @@ const places = restaurantIds
       .slice(0, 2)
       .map((t) => t.label)
       .join(' · ');
+    const consensus = spotConsensusFromMetadata(r.metadata);
     return {
       id: r.id,
       name: r.name,
       nameLines: wrapName(r.name),
       tagline, // '' hides the line rather than inventing a vibe
       neighbourhood: r.home_city?.name || '',
+      location: spotLocationFromRestaurant(r),
       rating: Number.isFinite(Number(r.rating)) && r.rating !== null ? Number(r.rating) : null,
       photo: firstPhoto(r),
+      photoFit: 'cover',
+      consensus,
     };
   });
+
+for (const place of places) {
+  if (!place.photo) continue;
+  const size = await probeImageSize(place.photo);
+  place.photoFit = photoFitForAspect(size ? size.width / size.height : null);
+}
 
 const missing = restaurantIds.length - restaurantById.size;
 if (missing > 0) console.log(`Skipped ${missing} list item(s) whose restaurant row is gone.`);
@@ -160,6 +179,13 @@ const creator = {
   tintInk: AVATAR_PALETTE[0].ink,
 };
 
+const listUrl = listPublicUrl({
+  origin: captionSiteOrigin(process.env),
+  username: creatorRow?.username,
+  slug: list.slug,
+  listId: list.id,
+});
+
 // ── Assemble props ───────────────────────────────────────────────────────
 const subtitleParts = [String(list.description || '').trim(), location].filter(Boolean);
 const props = {
@@ -168,15 +194,17 @@ const props = {
     titleLines: wrapName(list.name),
     subtitle: subtitleParts.join(' · '),
     location,
+    url: listUrl,
+    slug: list.slug || '',
   },
   creator,
   places,
   cta: {
-    headlineLines: ['Save the list.'],
+    headlineLines: ['Guardar na lista.'],
     // Empty → the CTA scene builds its line from the real place count and handle.
     sub: '',
-    button: 'Save this list',
-    footer: 'Join the Nom Nom Circle · nomnom.app',
+    button: 'Guardar na lista',
+    footer: listUrl ? listUrl.replace(/^https:\/\//i, '') : 'O teu Círculo NomNom · justnomnom.com',
   },
 };
 
@@ -192,6 +220,10 @@ console.log(
     ` · with photo ${places.filter((p) => p.photo).length} · with tagline ${places.filter((p) => p.tagline).length}`
 );
 console.log(`Location: ${location || '(places span cities — line hidden)'}`);
+console.log(
+  `Spot fields: ${places.filter((p) => p.location).length}/${places.length} specific location · ${places.filter((p) => p.consensus?.summary).length}/${places.length} consensus`
+);
+console.log(`List URL: ${listUrl || '(no username/slug — id fallback empty)'}`);
 console.log(`Subtitle: ${props.list.subtitle || '(none — hidden)'}`);
 console.log(`Runtime: ~${Math.round(listReelSeconds(places.length))}s`);
 console.log(`Wrote ${outPath}`);

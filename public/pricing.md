@@ -33,4 +33,4 @@
 - Payment methods depend on region at checkout
 - Cancel Subscriptions anytime via Settings → My Subscriptions
 - Snapshots are permanent, non-refundable one-time purchases
-- Contact: https://nomnom.app/contact-us
+- Contact: https://www.justnomnom.com/contact-us

@@ -24,8 +24,8 @@ export const Scene4ListCTA = ({ list, creator, places, cta }) => {
         <Img
           src={staticFile('logo_circle.png')}
           style={{
-            width: 128,
-            height: 128,
+            width: 176,
+            height: 176,
             borderRadius: '50%',
             boxShadow: '0 18px 40px rgba(21,19,15,0.25)',
             border: '5px solid rgba(255,255,255,0.85)',
@@ -43,7 +43,7 @@ export const Scene4ListCTA = ({ list, creator, places, cta }) => {
             opacity: clamp((p - 0.08) / 0.25, 0, 1),
           }}
         >
-          {(cta.headlineLines || ['Save the list.']).map((l, i) => (
+          {(cta.headlineLines || ['Guardar na lista.']).map((l, i) => (
             <div key={i}>{l}</div>
           ))}
         </div>
@@ -59,7 +59,10 @@ export const Scene4ListCTA = ({ list, creator, places, cta }) => {
             opacity: clamp((p - 0.2) / 0.25, 0, 1),
           }}
         >
-          {cta.sub || `${places.length} spots from ${creator.handle} — ready when the group chat starts.`}
+          {cta.sub ||
+            `${places.length === 1 ? '1 sítio' : `${places.length} sítios`}${
+              creator.handle ? ` · ${creator.handle}` : ''
+            }`}
         </div>
         <div
           style={{
@@ -75,7 +78,7 @@ export const Scene4ListCTA = ({ list, creator, places, cta }) => {
             boxShadow: '0 16px 36px -12px rgba(21,19,15,0.35)',
           }}
         >
-          {cta.button || 'Save this list'}
+          {cta.button || 'Guardar na lista'}
         </div>
         <div
           style={{
@@ -87,7 +90,7 @@ export const Scene4ListCTA = ({ list, creator, places, cta }) => {
             opacity: clamp((p - 0.5) / 0.3, 0, 1),
           }}
         >
-          {cta.footer || `${list.title} · nomnom.app`}
+          {cta.footer || `${list.title} · justnomnom.com`}
         </div>
       </div>
     </SceneBox>

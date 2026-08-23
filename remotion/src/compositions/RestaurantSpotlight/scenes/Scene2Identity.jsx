@@ -42,13 +42,13 @@ export const Scene2Identity = ({ restaurant, chips, photo }) => {
           >
             <Img
               src={staticFile('logo_circle.png')}
-              style={{ width: 56, height: 56, borderRadius: '50%', boxShadow: '0 8px 20px -8px rgba(255,107,53,0.45)' }}
+              style={{ width: 88, height: 88, borderRadius: '50%', boxShadow: '0 10px 22px -8px rgba(255,107,53,0.45)' }}
             />
             <span
               style={{
                 fontFamily: SANS,
                 fontWeight: 700,
-                fontSize: 22,
+                fontSize: 28,
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
                 color: C.terra,

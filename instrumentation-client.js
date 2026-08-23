@@ -22,7 +22,7 @@ if (!isDev && INTEGRATION_FLAGS.sentry && SENTRY_API.dsn) {
         // Propagate trace headers to same-origin / API hosts (avoids CORS issues)
         tracePropagationTargets: [
             'localhost',
-            /^https:\/\/justnomnom\.com\/api/,
+            /^https:\/\/(www\.)?justnomnom\.com\/api/,
             /^https:\/\/.*\.vercel\.app\/api/,
         ],
 

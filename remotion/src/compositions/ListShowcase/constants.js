@@ -5,7 +5,7 @@ export const HEIGHT = 1920;
 
 export const SCENE_DUR = {
   intro: 3.2,
-  spot: 2.9,
+  spot: 3.5,
   recap: 3.6,
   cta: 3.2,
 };

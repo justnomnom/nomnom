@@ -145,7 +145,7 @@ app.
 > `MAIN`/`LAUNCHER` intent-filter (no `VIEW` + `BROWSABLE` + `autoVerify` for
 > `https://<domain>`), and iOS [`Info.plist`](../ios/App/App/Info.plist) has no
 > `CFBundleURLTypes` and no associated-domains entitlement. So **tapping a
-> `nomnom.app` restaurant/list link in Mail/Messages will open the mobile
+> `justnomnom.com` restaurant/list link in Mail/Messages will open the mobile
 > browser, not the app.** Until those are added, B3b can only be smoke-tested by
 > emulator intent:
 >

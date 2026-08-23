@@ -157,7 +157,7 @@ describe('scoreList', () => {
   });
 
   it('computes runtime from the composition timing', () => {
-    assert.equal(Math.round(listReelSeconds(4)), 22);
-    assert.equal(scoreList(fullList).signals.seconds, 22);
+    assert.equal(Math.round(listReelSeconds(4)), 24);
+    assert.equal(scoreList(fullList).signals.seconds, 24);
   });
 });

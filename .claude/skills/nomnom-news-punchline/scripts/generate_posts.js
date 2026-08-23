@@ -83,7 +83,8 @@ async function run(postsFile, outDir) {
       .replaceAll('{{SUBTITLE}}', esc(p.subtitle))
       .replaceAll('{{IMAGE_URL}}', imgUri)
       .replaceAll('{{NEWS_SOURCE}}', esc(p.news_source))
-      .replaceAll('{{NEWS_DATE}}', esc(p.news_date));
+      .replaceAll('{{NEWS_DATE}}', esc(p.news_date))
+      .replaceAll('{{TAGLINE}}', esc(p.tagline || 'Restaurant picks from people you trust'));
 
     await page.setContent(html, { waitUntil: 'networkidle' });
     await page.evaluate(() => document.fonts.ready);

@@ -45,7 +45,7 @@ Do not invent a format that has no producer.
 ### 6. Factual caption (`.caption.txt`)
 
 - Built only from rendered props
-- CTA: `Save it in NomNom → nomnom.app` (lists use the list CTA)
+- CTA: `Save it in NomNom → justnomnom.com` (lists use the list CTA)
 - Hashtags from real location/chip labels plus `#nomnom`
 
 ## Outbound (planned, sibling skills)

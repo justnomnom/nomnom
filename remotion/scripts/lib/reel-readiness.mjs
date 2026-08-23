@@ -27,8 +27,8 @@ export const IDEAL_QUOTE_MAX = 150;
 export const RECAP_GRID_SIZE = 4;
 /** Fewer than this and a list reel is just a slower single-spot reel. */
 export const MIN_LIST_PLACES = 3;
-/** ListShowcase runtime = 10s of fixed scenes + 2.9s per place. */
-export const listReelSeconds = (placeCount) => 10 + 2.9 * Math.max(1, placeCount);
+/** ListShowcase runtime = 10s of fixed scenes + 3.5s per place. */
+export const listReelSeconds = (placeCount) => 10 + 3.5 * Math.max(1, placeCount);
 
 /**
  * Seeded and generated accounts — `e2eacct…`, `user61f2e950_954d26bf` — whose

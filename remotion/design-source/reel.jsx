@@ -381,7 +381,7 @@ function Cta({ p, op, slide }) {
           <svg width="38" height="38" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h12a1 1 0 011 1v15l-7-4-7 4V5a1 1 0 011-1z"/></svg>
           Save this spot
         </div>
-        <div style={{ marginTop: 40, fontFamily: SANS, fontWeight: 700, fontSize: 30, color: C.white, letterSpacing: '0.02em' }}>Join the Nom Nom Circle · nomnom.app</div>
+        <div style={{ marginTop: 40, fontFamily: SANS, fontWeight: 700, fontSize: 30, color: C.white, letterSpacing: '0.02em' }}>Join the Nom Nom Circle · justnomnom.com</div>
       </div>
     </SceneBox>
   );

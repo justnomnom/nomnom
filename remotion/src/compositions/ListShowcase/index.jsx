@@ -32,7 +32,18 @@ export const defaultListShowcaseProps = {
       nameLines: ['WOAK', 'SUSHI'],
       tagline: 'Sushi · Date night',
       neighbourhood: 'Caldas da Rainha',
+      location: 'Rua da Liberdade 12 · Caldas da Rainha',
       rating: 4.9,
+      consensus: {
+        summary: 'Locals come for the omakase and stay for the quiet room.',
+        loves: ['Omakase that actually changes with the catch', 'Quiet room for a date'],
+        knows: ['Book ahead on Fridays'],
+        dishes: [
+          { label: 'Omakase', mentions: 18 },
+          { label: 'Yellowtail', mentions: 7 },
+        ],
+        reviewCount: 64,
+      },
       photo: img('ChIJWwt6hoyzGA0Rm8rScAwmRLc', 1),
     },
     {
@@ -41,7 +52,9 @@ export const defaultListShowcaseProps = {
       nameLines: ['Retiro dos', 'Cubanos'],
       tagline: 'Cuban · Group dinner',
       neighbourhood: 'Gaeiras',
+      location: 'Gaeiras · Caldas da Rainha',
       rating: 4.6,
+      consensus: { summary: '', loves: [], knows: [], dishes: [], reviewCount: null },
       photo: img('ChIJD6ZOjwO1GA0RsLV3wd8hEMM', 0),
     },
     {
@@ -64,10 +77,10 @@ export const defaultListShowcaseProps = {
     },
   ],
   cta: {
-    headlineLines: ['Save the list.'],
-    sub: 'Four spots from someone you trust — ready when the group chat starts.',
-    button: 'Save this list',
-    footer: 'Join the Nom Nom Circle · nomnom.app',
+    headlineLines: ['Guardar na lista.'],
+    sub: '',
+    button: 'Guardar na lista',
+    footer: 'O teu Círculo NomNom · justnomnom.com',
   },
 };
 

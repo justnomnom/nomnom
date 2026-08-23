@@ -12,6 +12,23 @@ import {
   getListShowcaseDuration,
 } from './compositions/ListShowcase';
 import { FPS as LIST_FPS, WIDTH as LIST_W, HEIGHT as LIST_H } from './compositions/ListShowcase/constants';
+import {
+  FeatureReel,
+  defaultFeatureReelProps,
+  getFeatureReelDuration,
+} from './compositions/FeatureShowcase';
+import {
+  FeatureSlideshow,
+  defaultFeatureSlideshowProps,
+} from './compositions/FeatureShowcase/Slideshow';
+import {
+  FPS as FEATURE_FPS,
+  REEL_W,
+  REEL_H,
+  SLIDE_W,
+  SLIDE_H,
+  getFeatureSlideshowDuration,
+} from './compositions/FeatureShowcase/constants';
 import { FPS, buildTimeline } from './timeline';
 
 // Default showcase: Volta dos Sabores (Lisboa) — mirrors props/volta-dos-sabores.json
@@ -105,7 +122,7 @@ const defaultProps = {
     headlineLines: ["Don't take", 'our word.'],
     subLines: ['Take theirs. The spots people you', "trust can't stop recommending."],
     button: 'Save this spot',
-    footer: 'Join the Nom Nom Circle · nomnom.app',
+    footer: 'Join the Nom Nom Circle · justnomnom.com',
   },
 };
 
@@ -143,6 +160,24 @@ export const RemotionRoot = () => (
       calculateMetadata={({ props }) => ({
         durationInFrames: getListShowcaseDuration(props),
       })}
+    />
+    <Composition
+      id="FeatureReel"
+      component={FeatureReel}
+      width={REEL_W}
+      height={REEL_H}
+      fps={FEATURE_FPS}
+      durationInFrames={getFeatureReelDuration()}
+      defaultProps={defaultFeatureReelProps}
+    />
+    <Composition
+      id="FeatureSlideshow"
+      component={FeatureSlideshow}
+      width={SLIDE_W}
+      height={SLIDE_H}
+      fps={FEATURE_FPS}
+      durationInFrames={getFeatureSlideshowDuration()}
+      defaultProps={defaultFeatureSlideshowProps}
     />
   </>
 );

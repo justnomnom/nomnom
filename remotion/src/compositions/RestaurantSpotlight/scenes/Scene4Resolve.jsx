@@ -190,8 +190,8 @@ export const Scene4Resolve = ({ restaurant, review, cta }) => {
           <Img
             src={staticFile('logo_circle.png')}
             style={{
-              width: 132,
-              height: 132,
+              width: 176,
+              height: 176,
               borderRadius: '50%',
               boxShadow: '0 18px 40px rgba(21,19,15,0.25)',
               border: `5px solid ${C.white}`,

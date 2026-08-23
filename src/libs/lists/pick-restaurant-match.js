@@ -30,9 +30,11 @@ export function normalizeName(name) {
 
 /**
  * 3 = exact, 2 = one name contains the other (≥3 chars), 0 = no match.
+ * @param {unknown} placeName
+ * @param {unknown} candidateName
  * @returns {number}
  */
-function nameMatchScore(placeName, candidateName) {
+export function nameMatchScore(placeName, candidateName) {
   const a = normalizeName(placeName);
   const b = normalizeName(candidateName);
   if (!a || !b) return 0;
@@ -78,3 +80,58 @@ export function pickRestaurantMatch(place, candidates) {
   );
   return best.candidate;
 }
+
+/**
+ * Score a candidate shortlist for an article extract (no coordinates).
+ * Does not search the database — callers recall candidates first.
+ *
+ * @param {{ name: string, candidates?: { id: string, name: string, address?: string, city?: string }[] }} input
+ * @returns {{
+ *   status: 'matched' | 'ambiguous' | 'not_found',
+ *   restaurant_id: string | null,
+ *   candidates: { id: string, name: string, address?: string, city?: string }[],
+ *   decision: 'accept' | 'drop' | null,
+ * }}
+ */
+export function matchRestaurantByName({ name, candidates } = {}) {
+  const list = Array.isArray(candidates) ? candidates.filter((c) => c?.id && c?.name) : [];
+  const scored = list
+    .map((candidate) => ({ candidate, score: nameMatchScore(name, candidate.name) }))
+    .filter((row) => row.score >= 2);
+
+  const exact = scored.filter((row) => row.score === 3);
+  const contain = scored.filter((row) => row.score === 2);
+
+  const toShortlist = (rows) =>
+    rows.map(({ candidate }) => ({
+      id: candidate.id,
+      name: candidate.name,
+      address: candidate.address ?? '',
+      city: candidate.city ?? '',
+    }));
+
+  if (exact.length === 1) {
+    return {
+      status: 'matched',
+      restaurant_id: exact[0].candidate.id,
+      candidates: [],
+      decision: 'accept',
+    };
+  }
+  if (exact.length >= 2 || contain.length >= 1) {
+    const shortlist = exact.length >= 2 ? exact : contain;
+    return {
+      status: 'ambiguous',
+      restaurant_id: null,
+      candidates: toShortlist(shortlist),
+      decision: null,
+    };
+  }
+  return {
+    status: 'not_found',
+    restaurant_id: null,
+    candidates: [],
+    decision: 'drop',
+  };
+}
+

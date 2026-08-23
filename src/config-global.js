@@ -11,8 +11,8 @@ export const APP = {
     'Restaurant picks from people you trust. Not algorithms. Follow creators and locals who actually eat where they recommend.',
   themeColor: '#FF6B35',
   /** Bare domain (no scheme) shown in user-facing copy (e.g. legal pages). */
-  domain: process.env.NEXT_PUBLIC_APP_DOMAIN || 'nomnom.app',
-  supportEmailDefault: process.env.NEXT_PUBLIC_CONTACT_EMAIL,
+  domain: process.env.NEXT_PUBLIC_APP_DOMAIN || 'justnomnom.com',
+  supportEmailDefault: process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'info@justnomnom.com',
   /** Public App Store product URL — enables “verify rating” links on the homepage when set. */
   appStoreUrl: process.env.NEXT_PUBLIC_APP_STORE_URL || '',
   socials: {
@@ -134,8 +134,8 @@ export const SUPABASE_API = {
 
 export const RESEND_API = {
   key: process.env.RESEND_API_KEY,
-  from: process.env.RESEND_FROM_EMAIL,
-  to: process.env.RESEND_TO_EMAIL,
+  from: process.env.RESEND_FROM_EMAIL || 'info@justnomnom.com',
+  to: process.env.RESEND_TO_EMAIL || 'info@justnomnom.com',
 };
 
 /** Server-only: required for `POST /api/email/send` (Bearer). Public forms use server actions instead. */

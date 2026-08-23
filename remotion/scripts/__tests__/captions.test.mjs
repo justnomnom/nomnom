@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { captionFor, captionForList, captionForRestaurant, captionForReview, hashtags } from '../lib/captions.mjs';
+import { captionFor, captionForList, captionForListSpot, captionForRestaurant, captionForReview, hashtags } from '../lib/captions.mjs';
 
 const restaurantProps = {
   restaurant: { name: 'Casa Lupo', tagline: 'Italian · Wine bar · Lisboa', location: 'Lisboa', rating: 4.9, address: 'Rua da Prata 12' },
@@ -17,12 +17,12 @@ describe('captionForRestaurant', () => {
     assert.match(caption, /Most mentioned: Carbonara, Tiramisu, Focaccia/);
     assert.ok(!caption.includes('Negroni'), 'caps the dish list at three');
     assert.match(caption, /Rua da Prata 12/);
-    assert.match(caption, /nomnom\.app/);
+    assert.match(caption, /justnomnom\.com/);
   });
 
   it('drops every line whose source is missing rather than filling it in', () => {
     const caption = captionForRestaurant({ restaurant: { name: 'Bare' }, chips: [], consensus: {} });
-    assert.deepEqual(caption.split('\n'), ['Bare', 'Save it in NomNom → nomnom.app', '#nomnom']);
+    assert.deepEqual(caption.split('\n'), ['Bare', 'Guardar no NomNom → justnomnom.com', '#nomnom']);
   });
 
   it('accepts plain-string dishes as well as [label, mentions] pairs', () => {
@@ -73,15 +73,69 @@ const listProps = {
 describe('captionForList', () => {
   it('numbers the places the reel shows, in order', () => {
     const lines = captionForList(listProps).split('\n');
-    assert.equal(lines[0], 'Caldas must-gos — 2 spots by @andre');
+    assert.equal(lines[0], 'Caldas must-gos — 2 sítios de @andre');
     assert.equal(lines[1], 'Worth the drive · Caldas da Rainha');
-    assert.equal(lines[2], '1. WOAK SUSHI ★4.9');
-    assert.equal(lines[3], '2. Retiro dos Cubanos', 'a place with no rating gets no star');
+    assert.equal(lines[2], '1. WOAK SUSHI ★4.9 · Caldas da Rainha');
+    assert.equal(lines[3], '2. Retiro dos Cubanos · Gaeiras');
   });
 
   it('handles an anonymous creator and a single place', () => {
     const caption = captionForList({ list: { title: 'Solo' }, creator: {}, places: [{ name: 'One' }] });
-    assert.equal(caption.split('\n')[0], 'Solo — 1 spot');
+    assert.equal(caption.split('\n')[0], 'Solo — 1 sítio');
+  });
+
+  it('puts the list URL in the caption when the props carry one', () => {
+    const caption = captionForList({
+      ...listProps,
+      list: { ...listProps.list, url: 'https://www.justnomnom.com/lists/andre/caldas-must-gos' },
+    });
+    assert.match(caption, /https:\/\/www\.justnomnom\.com\/lists\/andre\/caldas-must-gos/);
+    assert.ok(!caption.includes('justnomnom.com\n#'), 'generic CTA is replaced by the real URL');
+  });
+});
+
+describe('captionForListSpot', () => {
+  it('uses specific location and community consensus when they exist', () => {
+    const caption = captionForListSpot(
+      {
+        name: 'Tia Alice',
+        location: 'Negrais · Sintra',
+        rating: 4.6,
+        consensus: { summary: 'Locals praise the suckling pig.' },
+      },
+      { url: 'https://www.justnomnom.com/lists/andre/weekend-tables', location: 'Sintra' }
+    );
+    const lines = caption.split('\n');
+    assert.equal(lines[0], 'Tia Alice');
+    assert.equal(lines[1], 'Negrais · Sintra');
+    assert.equal(lines[2], '★ 4.6');
+    assert.equal(lines[3], 'Locals praise the suckling pig.');
+    assert.equal(lines[5], 'https://www.justnomnom.com/lists/andre/weekend-tables');
+  });
+
+  it('hides consensus and street when ingest did not store them', () => {
+    const caption = captionForListSpot({ name: 'Bare' }, {});
+    assert.deepEqual(caption.split('\n'), ['Bare', 'Guardar na lista → justnomnom.com', '#nomnom']);
+  });
+
+  it('prints loves, things to know, and dishes when ingest stored them', () => {
+    const caption = captionForListSpot(
+      {
+        name: 'Tia Alice',
+        consensus: {
+          summary: 'Locals praise the suckling pig.',
+          loves: ['Crispy skin', 'Good value'],
+          knows: ['Gets busy on Sundays'],
+          dishes: [{ label: 'suckling pig', mentions: 12 }],
+          reviewCount: 184,
+        },
+      },
+      {}
+    );
+    assert.match(caption, /O que adoram\n• Crispy skin\n• Good value/);
+    assert.match(caption, /A ter em conta\n• Gets busy on Sundays/);
+    assert.match(caption, /Pratos mencionados\n• suckling pig · 12/);
+    assert.match(caption, /Com base em 184 avaliações/);
   });
 });
 

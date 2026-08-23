@@ -12,7 +12,8 @@ When a new piece of copy doesn't have an obvious answer, pick the choice that so
 | Use this | Not this |
 |---|---|
 | NomNom | NomNom, NomNom, Nomnom, nom-nom, NomNom. |
-| nomnom.app (domain) | nomnom.app |
+| justnomnom.com (domain) | nomnom.app |
+| info@justnomnom.com (email) | hello@nomnom.app |
 | @nomnom (handle) | @nomnom |
 
 **Verb / playful forms** — same compound as the brand mark (no space). Gerund: **NomNomming**.

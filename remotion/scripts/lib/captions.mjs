@@ -6,8 +6,8 @@
 
 import { slugify } from './subject-text.mjs';
 
-const CTA = 'Save it in NomNom → nomnom.app';
-const LIST_CTA = 'Save the list in NomNom → nomnom.app';
+const CTA = 'Guardar no NomNom → justnomnom.com';
+const LIST_CTA = 'Guardar na lista → justnomnom.com';
 
 // Review bodies carry their author's line breaks. In the video those collapse
 // as HTML whitespace, but in a caption file each one would split the line.
@@ -82,19 +82,81 @@ export function captionForList(props) {
   const lines = [];
 
   const by = clean(creator.handle) || clean(creator.name);
-  const count = `${places.length} spot${places.length === 1 ? '' : 's'}`;
-  lines.push([clean(list.title), by ? `${count} by ${by}` : count].filter(Boolean).join(' — '));
+  const count = places.length === 1 ? '1 sítio' : `${places.length} sítios`;
+  lines.push([clean(list.title), by ? `${count} de ${by}` : count].filter(Boolean).join(' — '));
 
   if (clean(list.subtitle)) lines.push(clean(list.subtitle));
 
   places.forEach((p, i) => {
     const rating = Number.isFinite(Number(p.rating)) && p.rating !== null ? ` ★${Number(p.rating).toFixed(1)}` : '';
-    lines.push(`${i + 1}. ${clean(p.name)}${rating}`);
+    const loc = clean(p.location) || clean(p.neighbourhood);
+    lines.push(`${i + 1}. ${clean(p.name)}${rating}${loc ? ` · ${loc}` : ''}`);
   });
 
-  lines.push(LIST_CTA);
+  const listUrl = clean(list.url);
+  if (listUrl) {
+    lines.push('Guardar na lista');
+    lines.push(listUrl);
+  } else {
+    lines.push(LIST_CTA);
+  }
   const cityLabels = [...new Set(places.map((p) => clean(p.neighbourhood)).filter(Boolean))].slice(0, 2);
   lines.push(hashtags([clean(list.location), ...cityLabels].filter(Boolean)));
+  return lines.join('\n');
+}
+
+/**
+ * Caption for one list-spot still. Never invents a quote or street —
+ * missing consensus/location simply omit those lines.
+ */
+export function captionForListSpot(place, list) {
+  const p = place ?? {};
+  const lines = [];
+  if (clean(p.name)) lines.push(clean(p.name));
+  const loc = clean(p.location) || clean(p.neighbourhood);
+  if (loc) lines.push(loc);
+  if (Number.isFinite(Number(p.rating)) && p.rating !== null) {
+    lines.push(`★ ${Number(p.rating).toFixed(1)}`);
+  }
+  const consensus = p.consensus && typeof p.consensus === 'object' ? p.consensus : {};
+  const summary = clean(consensus.summary);
+  if (summary) lines.push(summary);
+  const loves = Array.isArray(consensus.loves) ? consensus.loves.map(clean).filter(Boolean) : [];
+  if (loves.length) {
+    lines.push('O que adoram');
+    loves.forEach((item) => lines.push(`• ${item}`));
+  }
+  const knows = Array.isArray(consensus.knows) ? consensus.knows.map(clean).filter(Boolean) : [];
+  if (knows.length) {
+    lines.push('A ter em conta');
+    knows.forEach((item) => lines.push(`• ${item}`));
+  }
+  const dishes = Array.isArray(consensus.dishes)
+    ? consensus.dishes
+        .map((d) => {
+          if (typeof d === 'string') return clean(d);
+          const label = clean(d?.label);
+          if (!label) return '';
+          const n = d.mentions ?? d.mentions;
+          return Number(n) > 0 ? `${label} · ${n}` : label;
+        })
+        .filter(Boolean)
+    : [];
+  if (dishes.length) {
+    lines.push('Pratos mencionados');
+    dishes.forEach((item) => lines.push(`• ${item}`));
+  }
+  if (Number(consensus.reviewCount) > 0) {
+    lines.push(`Com base em ${Number(consensus.reviewCount)} avaliações`);
+  }
+  const listUrl = clean(list?.url);
+  if (listUrl) {
+    lines.push('Guardar na lista');
+    lines.push(listUrl);
+  } else {
+    lines.push(LIST_CTA);
+  }
+  lines.push(hashtags([clean(p.neighbourhood), clean(list?.location)].filter(Boolean)));
   return lines.join('\n');
 }
 
