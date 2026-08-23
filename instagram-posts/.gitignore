@@ -1,0 +1,8 @@
+# Rendered stills and per-batch copy — regenerate with generate_posts.js
+*.png
+*.jpg
+posts.json
+
+# Scratch copies (BOM-stripped / session-path variants of generate_posts.js)
+generate_posts_clean.js
+generate_posts_nobom.js

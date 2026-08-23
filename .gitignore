@@ -72,3 +72,6 @@ src/graphify-out/
 # (mode 160000, no .gitmodules entry), which made every Vercel build warn
 # "Failed to fetch one or more git submodules". Keep them out of the index.
 .claude/worktrees/
+
+# Restaurant ingest run state (rewritten by import-restaurants-from-json.mjs)
+scripts/.ingest-*
