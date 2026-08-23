@@ -431,10 +431,7 @@ export default function HomeLandingFeatures() {
       sx={{
         py: { xs: 5, sm: 7, md: 12 },
         px: { xs: 0 },
-        bgcolor: (th) =>
-          th.palette.mode === 'light'
-            ? alpha(th.palette.marketing.parchment, 1)
-            : alpha(th.palette.grey[500], 0.1),
+        bgcolor: 'transparent',
       }}
     >
       <Container component={MotionViewport} maxWidth="lg" sx={{ px: { xs: 2, sm: 3 } }}>

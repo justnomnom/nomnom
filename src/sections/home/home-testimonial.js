@@ -34,10 +34,7 @@ export default function HomeTestimonial() {
       sx={{
         py: { xs: 5, sm: 7, md: 9 },
         px: { xs: 0 },
-        bgcolor: (th) =>
-          th.palette.mode === 'light'
-            ? alpha(th.palette.marketing.parchment, 0.55)
-            : alpha(th.palette.grey[500], 0.06),
+        bgcolor: 'transparent',
       }}
     >
       <Container component={MotionViewport} maxWidth="md" sx={{ px: { xs: 2, sm: 3 } }}>

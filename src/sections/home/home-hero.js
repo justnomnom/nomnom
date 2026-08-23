@@ -16,7 +16,6 @@ import { RouterLink } from 'src/routes/components';
 
 import { ic } from 'src/assets/icons';
 import { APP } from 'src/config-global';
-import { bgGradient } from 'src/theme/css';
 import { useLocales, useTranslate } from 'src/locales';
 import { getLocaleBodyMaxWidthCh } from 'src/theme/locale-prose';
 import { useAuthContext } from 'src/auth/hooks/use-auth-context';
@@ -82,7 +81,7 @@ function HeroBlobs() {
     position: 'absolute',
     borderRadius: '50%',
     filter: 'blur(60px)',
-    opacity: 0.68,
+    opacity: 0.55,
     ...REDUCED_MOTION_NONE,
   };
 
@@ -96,7 +95,7 @@ function HeroBlobs() {
           top: -120,
           left: -100,
           background: (th) =>
-            `radial-gradient(circle, ${alpha(th.palette.primary.main, 0.28)}, transparent 70%)`,
+            `radial-gradient(circle, ${alpha(th.palette.primary.main, 0.22)}, transparent 70%)`,
           animation: `${drift1} 22s ease-in-out infinite`,
         }}
       />
@@ -108,7 +107,7 @@ function HeroBlobs() {
           top: 40,
           right: -120,
           background: (th) =>
-            `radial-gradient(circle, ${alpha(th.palette.warning.main, 0.22)}, transparent 70%)`,
+            `radial-gradient(circle, ${alpha(th.palette.warning.main, 0.14)}, transparent 70%)`,
           animation: `${drift2} 26s ease-in-out infinite`,
         }}
       />
@@ -120,7 +119,7 @@ function HeroBlobs() {
           bottom: -140,
           left: '38%',
           background: (th) =>
-            `radial-gradient(circle, ${alpha(th.palette.primary.light, 0.22)}, transparent 70%)`,
+            `radial-gradient(circle, ${alpha(th.palette.primary.light, 0.16)}, transparent 70%)`,
           animation: `${drift3} 30s ease-in-out infinite`,
         }}
       />
@@ -129,20 +128,9 @@ function HeroBlobs() {
 }
 
 const StyledRoot = styled('div')(({ theme }) => ({
-  ...bgGradient({
-    direction: 'to bottom',
-    startColor:
-      theme.palette.mode === 'light'
-        ? alpha(theme.palette.marketing.parchment, 0.88)
-        : alpha(theme.palette.marketing.surfaceDark, 0.82),
-    // End on the exact parchment the next section uses so the hero hands off
-    // seamlessly instead of leaving a darker band/line under the showcase card.
-    endColor:
-      theme.palette.mode === 'light'
-        ? theme.palette.marketing.parchment
-        : alpha(theme.palette.marketing.surfaceDarker, 0.9),
-  }),
   width: '100%',
+  // Page wash lives on the marketing `<main>` so the hero stays transparent
+  // and the terracotta/peach gradient continues into the sections below.
   position: 'relative',
   overflow: 'hidden',
   display: 'flex',
