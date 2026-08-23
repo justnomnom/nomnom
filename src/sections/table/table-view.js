@@ -16,19 +16,19 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { ic } from 'src/assets/icons';
-import { useLocales, useTranslate } from 'src/locales';
 import { SPACE } from 'src/theme/spacing';
+import { useLocales, useTranslate } from 'src/locales';
 import { useTableAnalytics } from 'src/libs/analytics/table-analytics';
 import { searchRestaurantsForPicker } from 'src/libs/lists/actions/items-actions';
 import { fetchTable, addTablePlace, fetchTableDecide } from 'src/libs/lists/actions/table-actions';
 import {
+  readTableNamed,
   readCachedTable,
   summarizeGuests,
   tableErrorMessage,
   persistCachedTable,
   getOrCreateGuestKey,
   tableAddSearchState,
-  readTableNamed,
   guestHasDisplayName,
   formatTableWhenLabel,
 } from 'src/libs/lists/table-client';
@@ -373,12 +373,7 @@ export default function TableView({ tableId }) {
             {table.title || t('pages.table.default_title')}
           </Typography>
           {whenLabel ? (
-            <Stack
-              direction="row"
-              spacing={SPACE.xxs}
-              alignItems="center"
-              sx={{ mt: SPACE.xxs }}
-            >
+            <Stack direction="row" spacing={SPACE.xxs} alignItems="center" sx={{ mt: SPACE.xxs }}>
               <Iconify
                 icon={ic.clockCircleOutline}
                 width={16}

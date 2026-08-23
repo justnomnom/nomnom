@@ -28,7 +28,10 @@ export function resolveExtractDecision(row) {
 
   if (decision === 'drop') {
     if (restaurantId || pickedId) {
-      return { ok: false, error: `drop must not set restaurant_id or picked_id (${row.name ?? 'row'})` };
+      return {
+        ok: false,
+        error: `drop must not set restaurant_id or picked_id (${row.name ?? 'row'})`,
+      };
     }
     return { ok: true, restaurantId: null };
   }

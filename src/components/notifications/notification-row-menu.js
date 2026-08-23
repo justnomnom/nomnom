@@ -43,19 +43,32 @@ export default function NotificationRowMenu({ isUnread, onMarkRead, onMute, onDe
     setAnchorEl(null);
   }, []);
 
-  const runAction = useCallback((action) => (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setAnchorEl(null);
-    action?.();
-  }, []);
+  const runAction = useCallback(
+    (action) => (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setAnchorEl(null);
+      action?.();
+    },
+    []
+  );
 
   const items = [
     isUnread && onMarkRead
-      ? { key: 'read', icon: ic.checkReadBold, label: t('components.notifications.mark_read'), onSelect: onMarkRead }
+      ? {
+          key: 'read',
+          icon: ic.checkReadBold,
+          label: t('components.notifications.mark_read'),
+          onSelect: onMarkRead,
+        }
       : null,
     onMute
-      ? { key: 'mute', icon: ic.bellOffLinear, label: t('components.notifications.mute_list'), onSelect: onMute }
+      ? {
+          key: 'mute',
+          icon: ic.bellOffLinear,
+          label: t('components.notifications.mute_list'),
+          onSelect: onMute,
+        }
       : null,
     onDelete
       ? {
@@ -125,9 +138,7 @@ export default function NotificationRowMenu({ isUnread, onMarkRead, onMute, onDe
             <ListItemIcon sx={{ color: 'inherit' }}>
               <Iconify icon={item.icon} width={18} />
             </ListItemIcon>
-            <ListItemText
-              primaryTypographyProps={{ fontSize: '0.875rem', fontWeight: 600 }}
-            >
+            <ListItemText primaryTypographyProps={{ fontSize: '0.875rem', fontWeight: 600 }}>
               {item.label}
             </ListItemText>
           </MenuItem>

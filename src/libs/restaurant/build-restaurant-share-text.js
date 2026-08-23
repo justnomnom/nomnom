@@ -95,4 +95,3 @@ export function buildRestaurantShareText({
   const quoted = [`“${clampSentence(summary)}”`, clean(consensusBasis)].filter(Boolean).join('\n');
   return [facts, quoted].join('\n\n');
 }
-

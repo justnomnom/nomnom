@@ -173,7 +173,7 @@ export function resolveOpeningStatus(metadata, now = new Date()) {
 export function normalizeOpeningStatus(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
   const src = /** @type {Record<string, unknown>} */ (value);
-  const {status} = src;
+  const { status } = src;
   if (
     status !== 'open' &&
     status !== 'closed' &&

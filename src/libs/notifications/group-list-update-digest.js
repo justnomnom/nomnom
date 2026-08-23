@@ -58,11 +58,11 @@ export function omitActiveSubscriptionsFromDigest(byUser, subscriptionEdges) {
     if (!uid || !listId) return;
     subscribed.add(`${String(uid)}|${String(listId)}`);
   });
-  for (const [uid, lists] of byUser) {
-    for (const listId of [...lists.keys()]) {
+  [...byUser].forEach(([uid, lists]) => {
+    [...lists.keys()].forEach((listId) => {
       if (subscribed.has(`${uid}|${listId}`)) lists.delete(listId);
-    }
+    });
     if (lists.size === 0) byUser.delete(uid);
-  }
+  });
   return byUser;
 }

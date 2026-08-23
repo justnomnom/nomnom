@@ -50,9 +50,9 @@ export async function renderListOgImage(listId: string | null) {
     meta && listId ? fetchOgListRestaurantThumbs(listId, 4) : Promise.resolve([]),
   ]);
 
-  const thumbImages = (
-    await Promise.all(thumbUrls.map((url) => loadRemoteImage(url)))
-  ).filter(Boolean) as string[];
+  const thumbImages = (await Promise.all(thumbUrls.map((url) => loadRemoteImage(url)))).filter(
+    Boolean
+  ) as string[];
 
   const bylineParts = [
     spotCount ? ogPlural('pages.lists.spot_count', spotCount) : null,
@@ -60,70 +60,70 @@ export async function renderListOgImage(listId: string | null) {
   ].filter(Boolean);
 
   return new ImageResponse(
-    (
-      <OgFrame>
-        <div style={{ display: 'flex', alignItems: 'flex-end', gap: px(SPACE['2xl']) }}>
-          <div style={{ display: 'flex', flexDirection: 'column', flex: 1, gap: px(SPACE.md) }}>
-            <OgOverline>{ogText('pages.lists.og_list_kicker')}</OgOverline>
-            <div style={{ display: 'flex', ...OG_TYPE.display, color: OG_COLORS.text }}>{name}</div>
-            {bylineParts.length ? (
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: px(SPACE.xs),
-                  ...OG_TYPE.meta,
-                  color: OG_COLORS.textSecondary,
-                  flexWrap: 'wrap',
-                }}
-              >
-                {spotCount ? (
-                  <div style={{ display: 'flex' }}>{ogPlural('pages.lists.spot_count', spotCount)}</div>
-                ) : null}
-                {spotCount && owner ? <div style={{ display: 'flex' }}> · </div> : null}
-                {owner ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: px(SPACE.xs) }}>
-                    <div style={{ display: 'flex' }}>{ogText('pages.lists.og_list_by_prefix')}</div>
-                    <OgHandle inline>{owner}</OgHandle>
-                  </div>
-                ) : null}
-              </div>
-            ) : null}
-          </div>
-          {cover && thumbImages.length === 0 ? <OgCoverThumb src={cover} /> : null}
+    <OgFrame>
+      <div style={{ display: 'flex', alignItems: 'flex-end', gap: px(SPACE['2xl']) }}>
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, gap: px(SPACE.md) }}>
+          <OgOverline>{ogText('pages.lists.og_list_kicker')}</OgOverline>
+          <div style={{ display: 'flex', ...OG_TYPE.display, color: OG_COLORS.text }}>{name}</div>
+          {bylineParts.length ? (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: px(SPACE.xs),
+                ...OG_TYPE.meta,
+                color: OG_COLORS.textSecondary,
+                flexWrap: 'wrap',
+              }}
+            >
+              {spotCount ? (
+                <div style={{ display: 'flex' }}>
+                  {ogPlural('pages.lists.spot_count', spotCount)}
+                </div>
+              ) : null}
+              {spotCount && owner ? <div style={{ display: 'flex' }}> · </div> : null}
+              {owner ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: px(SPACE.xs) }}>
+                  <div style={{ display: 'flex' }}>{ogText('pages.lists.og_list_by_prefix')}</div>
+                  <OgHandle inline>{owner}</OgHandle>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
         </div>
+        {cover && thumbImages.length === 0 ? <OgCoverThumb src={cover} /> : null}
+      </div>
 
-        {thumbImages.length > 0 ? (
-          <div style={{ display: 'flex', gap: px(SPACE.sm), marginTop: px(SPACE.md) }}>
-            {thumbImages.map((src, index) => (
-              // eslint-disable-next-line react/no-array-index-key -- static OG collage
-              <div
-                key={`thumb-${index}`}
-                style={{
-                  display: 'flex',
-                  width: 140,
-                  height: 140,
-                  borderRadius: 16,
-                  overflow: 'hidden',
-                  backgroundColor: OG_COLORS.brandLighter,
-                }}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={src}
-                  alt=""
-                  width={140}
-                  height={140}
-                  style={{ objectFit: 'cover', width: 140, height: 140 }}
-                />
-              </div>
-            ))}
-          </div>
-        ) : null}
+      {thumbImages.length > 0 ? (
+        <div style={{ display: 'flex', gap: px(SPACE.sm), marginTop: px(SPACE.md) }}>
+          {thumbImages.map((src, index) => (
+            // eslint-disable-next-line react/no-array-index-key -- static OG collage
+            <div
+              key={`thumb-${index}`}
+              style={{
+                display: 'flex',
+                width: 140,
+                height: 140,
+                borderRadius: 16,
+                overflow: 'hidden',
+                backgroundColor: OG_COLORS.brandLighter,
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={src}
+                alt=""
+                width={140}
+                height={140}
+                style={{ objectFit: 'cover', width: 140, height: 140 }}
+              />
+            </div>
+          ))}
+        </div>
+      ) : null}
 
-        <OgTagline>{ogText('pages.lists.og_profile_tagline')}</OgTagline>
-      </OgFrame>
-    ),
+      <OgTagline>{ogText('pages.lists.og_profile_tagline')}</OgTagline>
+    </OgFrame>,
     ogImageOptions(OG_SIZE)
   );
 }

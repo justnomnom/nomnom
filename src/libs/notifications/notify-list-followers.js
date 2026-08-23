@@ -2,8 +2,8 @@ import { insertNotifications } from 'src/libs/notifications/create-notification'
 import { buildListUpdateRecipients } from 'src/libs/notifications/build-list-update-recipients';
 import { resolveListUpdateNotificationAudiences } from 'src/libs/notifications/filter-notification-recipients';
 import {
-  buildListUpdateNotificationData,
   shouldFanOutListUpdate,
+  buildListUpdateNotificationData,
 } from 'src/libs/notifications/list-update-notify-helpers';
 
 /**

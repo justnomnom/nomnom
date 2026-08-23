@@ -27,7 +27,7 @@ import { SPACE, tabularNumsSx, TOUCH_TARGET_SIZE } from 'src/theme/spacing';
 
 import Iconify from 'src/components/iconify';
 import { ScrollableChipRow } from 'src/components/horizontal-scroll-row';
-import { m as motion, AnimatePresence, MotionPart, MotionContainer } from 'src/components/animate';
+import { MotionPart, m as motion, AnimatePresence, MotionContainer } from 'src/components/animate';
 import CompactToolbarIconSkeleton from 'src/components/loading-screen/compact-toolbar-icon-skeleton';
 import {
   scrollableChipPillButtonSx,

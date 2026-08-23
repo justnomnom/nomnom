@@ -348,7 +348,8 @@ const tapTargetButtonSx = {
   py: { xs: 1.5, sm: 2 },
   fontSize: { xs: '1rem', sm: '1.125rem' },
   borderRadius: { xs: 2, sm: 4 },
-  transition: 'transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease',
+  transition:
+    'transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease',
   '&:active:not(.Mui-disabled)': { transform: 'scale(0.98)' },
   '@media (prefers-reduced-motion: reduce)': {
     transition: 'none',
@@ -1147,59 +1148,62 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
    *   Location-step prompt; when the user already picked a city while GPS was in
    *   flight, auto results are ignored so we never override their primary.
    */
-  const requestGeo = useCallback((options = {}) => {
-    if (!navigator.geolocation) {
-      setLocationGranted(false);
-      pendingGeoLocalityRef.current = '';
-      return;
-    }
-    const fromAuto = Boolean(options?.fromAuto);
-    const gen = ++geoRequestGenRef.current;
-    geoFromAutoRef.current = fromAuto;
-    setErr(null);
-    setGeoLoading(true);
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        if (gen !== geoRequestGenRef.current) return;
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-        try {
-          const { location: matched, error } = await resolveLocalityFromCoordinates(lng, lat);
-          if (gen !== geoRequestGenRef.current) return;
-          // Auto-geo lost the race to a manual city pick — leave their selection alone.
-          if (geoFromAutoRef.current && selectedLocalityIdsRef.current.length > 0) {
-            return;
-          }
-          // Coords obtained (permission granted). Keep "Location is on" even when
-          // resolve fails / is outside coverage so the user can clear or pick manually.
-          setLocationGranted(true);
-          if (error) {
-            // Network/RPC failure — not the same as "coords outside supported area".
-            devWarn('[OnboardingWizard] resolve locality:', error);
-            setErr('gps_resolve_failed');
-            return;
-          }
-          if (matched?.id) {
-            applyGeoResolvedLocality(matched.id);
-            return;
-          }
-          // Coords ok but no supported locality — button stays "on"; user must pick a city.
-          setErr('gps_outside_supported');
-        } finally {
-          if (gen === geoRequestGenRef.current) {
-            setGeoLoading(false);
-          }
-        }
-      },
-      () => {
-        if (gen !== geoRequestGenRef.current) return;
+  const requestGeo = useCallback(
+    (options = {}) => {
+      if (!navigator.geolocation) {
         setLocationGranted(false);
         pendingGeoLocalityRef.current = '';
-        setGeoLoading(false);
-      },
-      { enableHighAccuracy: true, maximumAge: 60_000, timeout: 10_000 }
-    );
-  }, [applyGeoResolvedLocality]);
+        return;
+      }
+      const fromAuto = Boolean(options?.fromAuto);
+      const gen = ++geoRequestGenRef.current;
+      geoFromAutoRef.current = fromAuto;
+      setErr(null);
+      setGeoLoading(true);
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          if (gen !== geoRequestGenRef.current) return;
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          try {
+            const { location: matched, error } = await resolveLocalityFromCoordinates(lng, lat);
+            if (gen !== geoRequestGenRef.current) return;
+            // Auto-geo lost the race to a manual city pick — leave their selection alone.
+            if (geoFromAutoRef.current && selectedLocalityIdsRef.current.length > 0) {
+              return;
+            }
+            // Coords obtained (permission granted). Keep "Location is on" even when
+            // resolve fails / is outside coverage so the user can clear or pick manually.
+            setLocationGranted(true);
+            if (error) {
+              // Network/RPC failure — not the same as "coords outside supported area".
+              devWarn('[OnboardingWizard] resolve locality:', error);
+              setErr('gps_resolve_failed');
+              return;
+            }
+            if (matched?.id) {
+              applyGeoResolvedLocality(matched.id);
+              return;
+            }
+            // Coords ok but no supported locality — button stays "on"; user must pick a city.
+            setErr('gps_outside_supported');
+          } finally {
+            if (gen === geoRequestGenRef.current) {
+              setGeoLoading(false);
+            }
+          }
+        },
+        () => {
+          if (gen !== geoRequestGenRef.current) return;
+          setLocationGranted(false);
+          pendingGeoLocalityRef.current = '';
+          setGeoLoading(false);
+        },
+        { enableHighAccuracy: true, maximumAge: 60_000, timeout: 10_000 }
+      );
+    },
+    [applyGeoResolvedLocality]
+  );
 
   /**
    * Auto-request device location after the city catalog is ready so a GPS match

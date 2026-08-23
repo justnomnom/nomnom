@@ -55,7 +55,12 @@ export function spotLocationFromRestaurant(row) {
       : {};
   const city = String(row?.home_city?.name || complete.city || '').trim();
   const borough = String(
-    complete.borough || complete.neighborhood || complete.neighbourhood || complete.suburb || complete.district || ''
+    complete.borough ||
+      complete.neighborhood ||
+      complete.neighbourhood ||
+      complete.suburb ||
+      complete.district ||
+      ''
   ).trim();
   const street = streetFromRestaurant(row);
   const lower = (s) => s.toLowerCase();
@@ -92,7 +97,10 @@ function tidyText(value) {
 export function spotConsensusFromMetadata(metadata) {
   const empty = { summary: '', loves: [], knows: [], dishes: [], reviewCount: null };
   const consensus =
-    metadata && typeof metadata === 'object' && metadata.review_consensus && typeof metadata.review_consensus === 'object'
+    metadata &&
+    typeof metadata === 'object' &&
+    metadata.review_consensus &&
+    typeof metadata.review_consensus === 'object'
       ? metadata.review_consensus
       : null;
   if (!consensus) return empty;
@@ -103,11 +111,7 @@ export function spotConsensusFromMetadata(metadata) {
   const knows = (Array.isArray(consensus.weaknesses) ? consensus.weaknesses : [])
     .map(tidyText)
     .filter(Boolean);
-  const rawDishes = Array.isArray(consensus.signature_dishes)
-    ? consensus.signature_dishes
-    : Array.isArray(consensus.signature_dishes)
-      ? consensus.signature_dishes
-      : [];
+  const rawDishes = Array.isArray(consensus.signature_dishes) ? consensus.signature_dishes : [];
   const dishes = rawDishes
     .map((item) => {
       if (typeof item === 'string') {
@@ -125,7 +129,8 @@ export function spotConsensusFromMetadata(metadata) {
     })
     .filter(Boolean);
 
-  const analyzed = consensus.reviews_analyzed ?? consensus.reviews_analyzed ?? consensus.reviews_analyzed;
+  const analyzed =
+    consensus.reviews_analyzed ?? consensus.reviews_analyzed ?? consensus.reviews_analyzed;
   const n = typeof analyzed === 'number' ? analyzed : parseInt(String(analyzed ?? ''), 10);
 
   return {
@@ -150,7 +155,8 @@ export function listPublicUrl({ origin, username, slug, listId } = {}) {
     .trim()
     .replace(/^@/, '');
   const listSlug = String(slug || '').trim();
-  if (user && listSlug) return `${base}/lists/${encodeURIComponent(user)}/${encodeURIComponent(listSlug)}`;
+  if (user && listSlug)
+    return `${base}/lists/${encodeURIComponent(user)}/${encodeURIComponent(listSlug)}`;
   const id = String(listId || '').trim();
   if (id) return `${base}/lists/${id}`;
   return '';

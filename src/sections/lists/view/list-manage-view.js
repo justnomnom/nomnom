@@ -1497,8 +1497,8 @@ export default function ListManageView({ listId, isOwner, canEditItems, initial 
                                   onClick={() => handleApprove(m.user_id, 'viewer')}
                                   loading={busyOp === `approve:${m.user_id}`}
                                   disabled={busy}
-      sx={touchTargetSx}
-    >
+                                  sx={touchTargetSx}
+                                >
                                   {t('pages.lists.approve')}
                                 </Button>
                                 <Button
@@ -1507,8 +1507,8 @@ export default function ListManageView({ listId, isOwner, canEditItems, initial 
                                   onClick={() => handleReject(m.user_id)}
                                   loading={busyOp === `reject:${m.user_id}`}
                                   disabled={busy}
-      sx={touchTargetSx}
-    >
+                                  sx={touchTargetSx}
+                                >
                                   {t('pages.lists.reject')}
                                 </Button>
                               </>
@@ -1573,8 +1573,8 @@ export default function ListManageView({ listId, isOwner, canEditItems, initial 
                                 color="error"
                                 onClick={() => setRemoveMemberUserId(m.user_id)}
                                 disabled={busy}
-      sx={touchTargetSx}
-    >
+                                sx={touchTargetSx}
+                              >
                                 {t('pages.lists.remove')}
                               </Button>
                             )}

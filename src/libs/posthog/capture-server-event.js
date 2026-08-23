@@ -1,5 +1,4 @@
 import { randomUUID } from 'crypto';
-
 import { PostHog } from 'posthog-node';
 
 import { POSTHOG_API, INTEGRATION_FLAGS } from 'src/config-global';
@@ -39,11 +38,13 @@ export function resolveServerAnalyticsDistinctId(properties = {}, fallbackDistin
     fallbackDistinctId,
   ];
 
-  for (const value of candidates) {
-    if (typeof value !== 'string') continue;
+  const matched = candidates.find((value) => {
+    if (typeof value !== 'string') return false;
     const trimmed = value.trim();
-    if (!trimmed || POOLED_DISTINCT_IDS.has(trimmed)) continue;
-    return { distinctId: trimmed, processPersonProfile: true };
+    return Boolean(trimmed) && !POOLED_DISTINCT_IDS.has(trimmed);
+  });
+  if (matched) {
+    return { distinctId: matched.trim(), processPersonProfile: true };
   }
 
   // No known user: unique anon id so events are not pooled onto one person.
@@ -75,12 +76,9 @@ export async function captureServerEvent(eventName, properties = {}, options = {
     properties,
     options.distinctId
   );
-  const source =
-    typeof options.source === 'string' && options.source.trim()
-      ? options.source.trim()
-      : typeof properties.source === 'string' && properties.source.trim()
-        ? properties.source.trim()
-        : 'server';
+  const optionSource = typeof options.source === 'string' ? options.source.trim() : '';
+  const propertySource = typeof properties.source === 'string' ? properties.source.trim() : '';
+  const source = optionSource || propertySource || 'server';
 
   try {
     const client = getPostHogNodeClient(String(key), String(host).replace(/\/+$/, ''));

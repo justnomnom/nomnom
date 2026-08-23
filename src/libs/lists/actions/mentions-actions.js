@@ -1,14 +1,10 @@
 'use server';
 
+import { normUuid, enrichListItemsWithReviewsAndMustTry } from 'src/libs/lists/actions/_shared';
 import {
   getSupabaseAuthUser,
   createSupabaseServerClient,
 } from 'src/libs/supabase/supabase-server-client';
-
-import {
-  normUuid,
-  enrichListItemsWithReviewsAndMustTry,
-} from 'src/libs/lists/actions/_shared';
 
 async function filterListItemsToViewerLists(supabase, userId, items) {
   const raw = items ?? [];

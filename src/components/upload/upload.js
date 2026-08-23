@@ -123,9 +123,13 @@ export default function Upload({
         sx={{ '& .MuiButton-root': { width: { xs: '100%', sm: 'auto' } } }}
       >
         {onRemoveAll && (
-          <Button color="inherit" variant="outlined" size="small" onClick={onRemoveAll}
-      sx={touchTargetSx}
-    >
+          <Button
+            color="inherit"
+            variant="outlined"
+            size="small"
+            onClick={onRemoveAll}
+            sx={touchTargetSx}
+          >
             {t('components.upload.remove_all')}
           </Button>
         )}
@@ -137,8 +141,8 @@ export default function Upload({
             color="primary"
             onClick={onUpload}
             startIcon={<Iconify icon={ic.cloudUploadFill} />}
-      sx={touchTargetSx}
-    >
+            sx={touchTargetSx}
+          >
             {t('components.upload.upload')}
           </Button>
         )}

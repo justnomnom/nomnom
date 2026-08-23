@@ -1,8 +1,8 @@
 import {
   emailsByUserFromAdminLookups,
+  shouldStampLiveListNotifiedAt,
   isWithinLiveListNotifyCooldown,
   resolveLiveListEmailRecipients,
-  shouldStampLiveListNotifiedAt,
 } from 'src/libs/notifications/live-list-notify-cooldown';
 
 /**

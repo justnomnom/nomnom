@@ -177,8 +177,8 @@ export default function SupabaseVerifyView() {
               size="small"
               variant="outlined"
               color="inherit"
-      sx={touchTargetSx}
-    >
+              sx={touchTargetSx}
+            >
               {t(`pages.auth.verify.open_${item.key}`)}
             </Button>
           ))}

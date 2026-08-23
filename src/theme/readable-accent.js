@@ -16,7 +16,5 @@
  * @returns {string}
  */
 export function readableAccent(theme) {
-  return theme.palette.mode === 'dark'
-    ? theme.palette.primary.main
-    : theme.palette.primary.darker;
+  return theme.palette.mode === 'dark' ? theme.palette.primary.main : theme.palette.primary.darker;
 }

@@ -100,7 +100,12 @@ export default function NotificationsBell() {
         max={9}
         color="primary"
         overlap="circular"
-        sx={{ '& .MuiBadge-badge': { fontWeight: 700, boxShadow: `0 0 0 2px ${theme.palette.background.paper}` } }}
+        sx={{
+          '& .MuiBadge-badge': {
+            fontWeight: 700,
+            boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+          },
+        }}
       >
         <Iconify icon={ic.bellBold} width={24} />
       </Badge>

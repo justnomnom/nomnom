@@ -93,13 +93,14 @@ export function shouldAttemptWebPush(userIds) {
  * @returns {string[]}
  */
 export function listIdsNewlyReceivingRestaurant(listIds, existingListIds) {
-  const already = new Set(
-    existingListIds == null
-      ? []
-      : Array.isArray(existingListIds)
-        ? existingListIds
-        : [...existingListIds]
-  );
-  const ids = listIds == null ? [] : Array.isArray(listIds) ? listIds : [...listIds];
+  let existing = [];
+  if (existingListIds != null) {
+    existing = Array.isArray(existingListIds) ? existingListIds : [...existingListIds];
+  }
+  const already = new Set(existing);
+  let ids = [];
+  if (listIds != null) {
+    ids = Array.isArray(listIds) ? listIds : [...listIds];
+  }
   return ids.filter((id) => id && !already.has(id));
 }

@@ -31,41 +31,39 @@ export const contentType = OG_CONTENT_TYPE;
  */
 export default function LisboaRouletteOpenGraphImage() {
   return new ImageResponse(
-    (
-      <OgFrame>
-        <div
-          style={{
-            display: 'flex',
-            alignSelf: 'flex-start',
-            alignItems: 'center',
-            padding: `${px(SPACE.sm)}px ${px(SPACE.lg)}px`,
-            borderRadius: RADIUS.pill,
-            background: OG_COLORS.brandLighter,
-            ...OG_TYPE.overline,
-            color: OG_COLORS.brand,
-          }}
-        >
-          {ogText('pages.public.roulette.lisboa.scope_footer')}
-        </div>
+    <OgFrame>
+      <div
+        style={{
+          display: 'flex',
+          alignSelf: 'flex-start',
+          alignItems: 'center',
+          padding: `${px(SPACE.sm)}px ${px(SPACE.lg)}px`,
+          borderRadius: RADIUS.pill,
+          background: OG_COLORS.brandLighter,
+          ...OG_TYPE.overline,
+          color: OG_COLORS.brand,
+        }}
+      >
+        {ogText('pages.public.roulette.lisboa.scope_footer')}
+      </div>
 
-        <div style={{ display: 'flex', ...OG_TYPE.display, color: OG_COLORS.text, maxWidth: 960 }}>
-          {ogText('pages.public.roulette.lisboa.title')}
-        </div>
+      <div style={{ display: 'flex', ...OG_TYPE.display, color: OG_COLORS.text, maxWidth: 960 }}>
+        {ogText('pages.public.roulette.lisboa.title')}
+      </div>
 
-        <div
-          style={{
-            display: 'flex',
-            ...OG_TYPE.body,
-            color: OG_COLORS.textSecondary,
-            maxWidth: 900,
-          }}
-        >
-          {ogText('pages.public.roulette.lisboa.subtitle')}
-        </div>
+      <div
+        style={{
+          display: 'flex',
+          ...OG_TYPE.body,
+          color: OG_COLORS.textSecondary,
+          maxWidth: 900,
+        }}
+      >
+        {ogText('pages.public.roulette.lisboa.subtitle')}
+      </div>
 
-        <OgTagline>{ogText('pages.public.roulette.lisboa.og_no_account')}</OgTagline>
-      </OgFrame>
-    ),
+      <OgTagline>{ogText('pages.public.roulette.lisboa.og_no_account')}</OgTagline>
+    </OgFrame>,
     ogImageOptions(OG_SIZE)
   );
 }

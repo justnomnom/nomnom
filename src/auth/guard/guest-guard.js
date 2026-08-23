@@ -29,10 +29,7 @@ function Container({ children }) {
 
   const searchParams = useSearchParams();
 
-  const returnTo = sanitizeAuthReturnPath(
-    searchParams.get('returnTo'),
-    paths.dashboard.discover
-  );
+  const returnTo = sanitizeAuthReturnPath(searchParams.get('returnTo'), paths.dashboard.discover);
 
   const { authenticated } = useAuthContext();
 

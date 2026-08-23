@@ -24,11 +24,11 @@ import {
   SwipeDismissBottomSheetContent,
 } from 'src/components/sheet-shell';
 
+import RestaurantPublicAuthPrompt from 'src/sections/restaurant/restaurant-public-auth-prompt';
 import {
   RestaurantDetailViewMapSheet,
   RestaurantDetailViewMapSheetLoading,
 } from 'src/sections/map/map-restaurant-detail-view';
-import RestaurantPublicAuthPrompt from 'src/sections/restaurant/restaurant-public-auth-prompt';
 
 // ----------------------------------------------------------------------
 

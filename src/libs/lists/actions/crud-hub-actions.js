@@ -2,16 +2,15 @@
 
 import { filterE2eTestListsForDisplay } from 'src/utils/filter-e2e-test-lists';
 
+import { ensureListSlug } from 'src/libs/lists/ensure-list-slug';
 import { supabaseAdminClient } from 'src/libs/supabase/supabase-admin';
 import { normalizeListVisibility } from 'src/libs/lists/list-visibility';
+import { normUuid, itemCountFromListItemsEmbed } from 'src/libs/lists/actions/_shared';
 import { mergeSnapshotPurchaseCapturedItemIds } from 'src/libs/lists/merge-snapshot-purchase-captured-item-ids';
 import {
   getSupabaseAuthUser,
   createSupabaseServerClient,
 } from 'src/libs/supabase/supabase-server-client';
-
-import { ensureListSlug } from 'src/libs/lists/ensure-list-slug';
-import { normUuid, itemCountFromListItemsEmbed } from 'src/libs/lists/actions/_shared';
 
 const MY_LISTS_FOR_SAVE_SELECT = `
       id,
@@ -570,10 +569,11 @@ export async function restaurantInMyLists(restaurantId) {
     );
   }
   const itemResults = await Promise.all(itemLookups);
-  for (const { data: items, error: iErr } of itemResults) {
-    if (iErr) return { listIds: [...hit], lists: [], error: iErr.message };
+  const failed = itemResults.find((result) => result.error);
+  if (failed) return { listIds: [...hit], lists: [], error: failed.error.message };
+  itemResults.forEach(({ data: items }) => {
     (items ?? []).forEach((r) => hit.add(r.list_id));
-  }
+  });
   return summarizeListsForViewer(supabase, hit);
 }
 

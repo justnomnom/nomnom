@@ -77,7 +77,6 @@ export default function PWAInstallPrompt() {
     if (isStandalone()) return undefined;
     if (wasRecentlyDismissed()) return undefined;
 
-    let timer;
     let cancelled = false;
 
     const onBeforeInstall = (e) => {
@@ -101,7 +100,7 @@ export default function PWAInstallPrompt() {
     // unreliable (engagement heuristics, race before mount, missing installability
     // criteria) — without a fallback Android never opens the sheet. When the event
     // does fire, onBeforeInstall upgrades the sheet with a one-tap Install button.
-    timer = window.setTimeout(() => {
+    const timer = window.setTimeout(() => {
       if (!cancelled && !wasRecentlyDismissed()) setOpen(true);
     }, SHOW_DELAY_MS);
 

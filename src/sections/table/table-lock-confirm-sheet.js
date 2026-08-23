@@ -7,8 +7,8 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
-import { useTranslate } from 'src/locales';
 import { SPACE } from 'src/theme/spacing';
+import { useTranslate } from 'src/locales';
 
 import {
   ResponsiveSheet,
@@ -34,11 +34,7 @@ export default function TableLockConfirmSheet({
 }) {
   const { t } = useTranslate();
   const name = place?.name || t('pages.table.unnamed_place');
-  const fallback =
-    String(name)
-      .trim()
-      .charAt(0)
-      .toUpperCase() || '?';
+  const fallback = String(name).trim().charAt(0).toUpperCase() || '?';
 
   const title = (
     <Typography

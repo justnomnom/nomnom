@@ -1,14 +1,14 @@
 'use server';
 
 import {
-  buildNotificationPreferenceUpsert,
-  mergeNotificationPreferences,
-  NOTIFICATION_PREF_DEFAULTS,
-} from 'src/libs/notifications/notification-preference-helpers';
-import {
   getSupabaseAuthUser,
   createSupabaseServerClient,
 } from 'src/libs/supabase/supabase-server-client';
+import {
+  NOTIFICATION_PREF_DEFAULTS,
+  mergeNotificationPreferences,
+  buildNotificationPreferenceUpsert,
+} from 'src/libs/notifications/notification-preference-helpers';
 
 /**
  * Read the current user's notification preferences. Missing row → defaults.

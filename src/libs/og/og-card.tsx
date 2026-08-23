@@ -160,7 +160,13 @@ export function OgTagline({ children }: { children: ReactNode }) {
  *
  * @param src a `data:` URI from `loadRemoteImage`, or `null` to render nothing.
  */
-export function OgCoverThumb({ src, size: thumbSize = 256 }: { src: string | null; size?: number }) {
+export function OgCoverThumb({
+  src,
+  size: thumbSize = 256,
+}: {
+  src: string | null;
+  size?: number;
+}) {
   if (!src) return null;
   return (
     <img

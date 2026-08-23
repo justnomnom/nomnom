@@ -203,9 +203,8 @@ export function mapListItemsToPlaces(items, unnamedPlace) {
       if (!id) return null;
       const images = Array.isArray(r?.restaurant_images) ? r.restaurant_images : [];
       const photo =
-        images
-          .toSorted((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
-          .find((img) => img?.url)?.url || null;
+        images.toSorted((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)).find((img) => img?.url)
+          ?.url || null;
       return {
         restaurantId: String(id),
         name: r?.name || unnamedPlace,
@@ -282,7 +281,11 @@ export function filterTablePickerRows(places, query) {
     .trim()
     .toLowerCase();
   if (q.length < 2) return rows;
-  return rows.filter((p) => String(p.name || '').toLowerCase().includes(q));
+  return rows.filter((p) =>
+    String(p.name || '')
+      .toLowerCase()
+      .includes(q)
+  );
 }
 
 /**
@@ -405,7 +408,9 @@ export function tableWhenParts(raw, { now = new Date(), locale } = {}) {
   if (!date) return null;
   const startOfDayMs = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
   const deltaDays = Math.round((startOfDayMs(date) - startOfDayMs(now)) / 86_400_000);
-  const kind = deltaDays === 0 ? 'today' : deltaDays === 1 ? 'tomorrow' : 'later';
+  let kind = 'later';
+  if (deltaDays === 0) kind = 'today';
+  else if (deltaDays === 1) kind = 'tomorrow';
   return {
     kind,
     time: format(date, 'p', { locale }),

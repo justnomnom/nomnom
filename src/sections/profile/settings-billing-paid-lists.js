@@ -227,12 +227,15 @@ export default function SettingsBillingPaidLists({ initialConnectStatus, initial
                 onClick={() => handleSave()}
                 loading={saving}
                 disabled={saving || !canSavePrice || !priceIsDirty}
-                sx={[touchTargetSx, {
-                  flexShrink: 0,
-                  alignSelf: { xs: 'stretch', sm: 'auto' },
-                  width: { xs: '100%', sm: 'auto' },
-                  minWidth: { sm: 132 },
-                }]}
+                sx={[
+                  touchTargetSx,
+                  {
+                    flexShrink: 0,
+                    alignSelf: { xs: 'stretch', sm: 'auto' },
+                    width: { xs: '100%', sm: 'auto' },
+                    minWidth: { sm: 132 },
+                  },
+                ]}
               >
                 {t('pages.dashboard.settings.billing.paid_lists_save')}
               </Button>

@@ -2,8 +2,8 @@ import { cache } from 'react';
 
 import { openingStatusForRow } from 'src/libs/restaurant/opening-hours';
 import { RESTAURANT_ID_UUID_RE } from 'src/libs/restaurant/restaurant-id-uuid';
-import { slimRestaurantCardMetadata } from 'src/libs/restaurant/slim-restaurant-card-metadata';
 import { createSupabaseServerClient } from 'src/libs/supabase/supabase-server-client';
+import { slimRestaurantCardMetadata } from 'src/libs/restaurant/slim-restaurant-card-metadata';
 
 export { RESTAURANT_ID_UUID_RE };
 

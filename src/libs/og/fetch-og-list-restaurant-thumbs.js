@@ -5,6 +5,7 @@
 import { createClient } from '@supabase/supabase-js';
 
 import { SUPABASE_API } from 'src/config-global';
+
 import { pickOgListRestaurantThumbUrls } from './pick-og-list-restaurant-thumbs';
 
 // ----------------------------------------------------------------------

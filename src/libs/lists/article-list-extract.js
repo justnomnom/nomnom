@@ -3,7 +3,7 @@
  * chunk merge, cap. No LLM, no database.
  */
 
-import { normalizeName } from './pick-restaurant-match.js';
+import { normalizeName } from './pick-restaurant-match';
 
 const SCRIPT_STYLE_RE = /<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi;
 const TAG_RE = /<[^>]+>/g;

@@ -773,8 +773,8 @@ export default function SponsoredPlacementsAdminView({
                           color="error"
                           onClick={() => handleDelete(row.id)}
                           disabled={busy || isPending}
-      sx={touchTargetSx}
-    >
+                          sx={touchTargetSx}
+                        >
                           {tk('delete')}
                         </Button>
                       </TableCell>

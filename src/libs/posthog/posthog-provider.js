@@ -11,8 +11,8 @@ import {
   identifyUser,
   getFeatureFlag,
   getPostHogClient,
-  setUserProperties,
   captureException,
+  setUserProperties,
 } from 'src/libs/posthog/posthog-service';
 
 // Create PostHog context

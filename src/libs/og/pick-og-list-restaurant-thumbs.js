@@ -9,15 +9,15 @@ export function pickOgListRestaurantThumbUrls(items, limit = 4) {
   if (!Array.isArray(items)) return [];
 
   const urls = [];
-  for (const row of items) {
+  items.some((row) => {
     const images = row?.restaurants?.restaurant_images;
-    if (!Array.isArray(images) || !images.length) continue;
+    if (!Array.isArray(images) || !images.length) return false;
     const sorted = images
       .filter((img) => img?.url && img.moderation_status !== 'rejected')
       .toSorted((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
     const first = sorted[0]?.url;
     if (first && !urls.includes(first)) urls.push(first);
-    if (urls.length >= max) break;
-  }
+    return urls.length >= max;
+  });
   return urls;
 }

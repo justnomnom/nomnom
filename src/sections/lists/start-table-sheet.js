@@ -17,9 +17,9 @@ import { useCopyToClipboard } from 'src/hooks/use-copy-to-clipboard';
 
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
-import { SPACE, tabularNumsSx, touchTargetSx } from 'src/theme/spacing';
 import { startTable } from 'src/libs/lists/actions/table-actions';
 import { useTableAnalytics } from 'src/libs/analytics/table-analytics';
+import { SPACE, tabularNumsSx, touchTargetSx } from 'src/theme/spacing';
 import { searchRestaurantsForPicker } from 'src/libs/lists/actions/items-actions';
 import {
   tablePickerRows,
@@ -75,10 +75,7 @@ export default function StartTableSheet({ open, onClose, listId, items, isOwner 
   const unnamedPlace = t('pages.table.unnamed_place');
   const { copy } = useCopyToClipboard();
 
-  const placeRows = useMemo(
-    () => mapListItemsToPlaces(items, unnamedPlace),
-    [items, unnamedPlace]
-  );
+  const placeRows = useMemo(() => mapListItemsToPlaces(items, unnamedPlace), [items, unnamedPlace]);
   const listIdSet = useMemo(() => new Set(placeRows.map((p) => p.restaurantId)), [placeRows]);
 
   const [title, setTitle] = useState(() => t('pages.table.default_title'));
@@ -166,9 +163,9 @@ export default function StartTableSheet({ open, onClose, listId, items, isOwner 
       setExtraById((map) => {
         if (wasSelected) {
           if (!(restaurantId in map)) return map;
-          const copy = { ...map };
-          delete copy[restaurantId];
-          return copy;
+          const next = { ...map };
+          delete next[restaurantId];
+          return next;
         }
         return {
           ...map,
@@ -219,8 +216,7 @@ export default function StartTableSheet({ open, onClose, listId, items, isOwner 
     };
     analytics.trackTableStarted(analyticsProps);
     const tablePath = paths.table(table.table_id);
-    const url =
-      typeof window !== 'undefined' ? `${window.location.origin}${tablePath}` : tablePath;
+    const url = typeof window !== 'undefined' ? `${window.location.origin}${tablePath}` : tablePath;
     const copied = await copy(url);
     analytics.trackShareCopied(analyticsProps);
     if (copied) persistLinkCopied(String(table.table_id));
@@ -289,97 +285,97 @@ export default function StartTableSheet({ open, onClose, listId, items, isOwner 
       footer={footer}
       closeDisabled={busy}
     >
-        <Typography id={DESC_ID} variant="body2" color="text.secondary">
-          {t('pages.lists.start_table_hint', { min: MIN_PLACES })}
+      <Typography id={DESC_ID} variant="body2" color="text.secondary">
+        {t('pages.lists.start_table_hint', { min: MIN_PLACES })}
+      </Typography>
+
+      <TextField
+        fullWidth
+        size="small"
+        label={t('pages.lists.start_table_name_label')}
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        disabled={busy}
+        inputProps={{ maxLength: 80 }}
+      />
+
+      <TextField
+        fullWidth
+        size="small"
+        type="datetime-local"
+        label={t('pages.lists.start_table_when_label')}
+        value={startsAtLocal}
+        onChange={(e) => setStartsAtLocal(e.target.value)}
+        disabled={busy}
+        helperText={t('pages.lists.start_table_when_hint')}
+        InputLabelProps={{ shrink: true }}
+        inputProps={{ step: 60 }}
+      />
+
+      {err ? (
+        <Typography variant="body2" color="error">
+          {tableErrorMessage(err, t)}
         </Typography>
+      ) : null}
 
-        <TextField
-          fullWidth
-          size="small"
-          label={t('pages.lists.start_table_name_label')}
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          disabled={busy}
-          inputProps={{ maxLength: 80 }}
-        />
-
-        <TextField
-          fullWidth
-          size="small"
-          type="datetime-local"
-          label={t('pages.lists.start_table_when_label')}
-          value={startsAtLocal}
-          onChange={(e) => setStartsAtLocal(e.target.value)}
-          disabled={busy}
-          helperText={t('pages.lists.start_table_when_hint')}
-          InputLabelProps={{ shrink: true }}
-          inputProps={{ step: 60 }}
-        />
-
-        {err ? (
-          <Typography variant="body2" color="error">
-            {tableErrorMessage(err, t)}
-          </Typography>
-        ) : null}
-
-        {selectedPickerRows.length > 0 ? (
-          <Stack spacing={SPACE.xs}>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{ fontWeight: 700, ...tabularNumsSx }}
-            >
-              {t('pages.lists.start_table_picks')}
-              {' · '}
-              {t('pages.lists.start_table_selected', { count: selectedCount })}
-            </Typography>
-            {selectedPickerRows.map(renderPickerRow)}
-          </Stack>
-        ) : (
+      {selectedPickerRows.length > 0 ? (
+        <Stack spacing={SPACE.xs}>
           <Typography
             variant="caption"
             color="text.secondary"
-            sx={{ fontWeight: 600, ...tabularNumsSx }}
+            sx={{ fontWeight: 700, ...tabularNumsSx }}
           >
+            {t('pages.lists.start_table_picks')}
+            {' · '}
             {t('pages.lists.start_table_selected', { count: selectedCount })}
           </Typography>
-        )}
-
-        <Stack spacing={SPACE.sm}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-            {t('pages.lists.start_table_from_list')}
-          </Typography>
-          <TextField
-            fullWidth
-            size="small"
-            autoFocus
-            label={t('pages.lists.start_table_search_label')}
-            value={searchQ}
-            onChange={(e) => setSearchQ(e.target.value)}
-            disabled={busy}
-            inputProps={{ autoComplete: 'off' }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Iconify icon={ic.searchLinear} width={18} sx={{ color: 'text.disabled' }} />
-                </InputAdornment>
-              ),
-            }}
-          />
-          {showEmptyHint ? (
-            <Typography variant="body2" color="text.secondary">
-              {t('pages.lists.start_table_empty_list')}
-            </Typography>
-          ) : null}
-          {showSearchEmpty ? (
-            <Typography variant="body2" color="text.secondary">
-              {t('pages.lists.start_table_search_empty')}
-            </Typography>
-          ) : null}
-          <Stack spacing={SPACE.xs} sx={{ maxHeight: 320, overflow: 'auto' }}>
-            {otherPickerRows.map(renderPickerRow)}
-          </Stack>
+          {selectedPickerRows.map(renderPickerRow)}
         </Stack>
+      ) : (
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ fontWeight: 600, ...tabularNumsSx }}
+        >
+          {t('pages.lists.start_table_selected', { count: selectedCount })}
+        </Typography>
+      )}
+
+      <Stack spacing={SPACE.sm}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+          {t('pages.lists.start_table_from_list')}
+        </Typography>
+        <TextField
+          fullWidth
+          size="small"
+          autoFocus
+          label={t('pages.lists.start_table_search_label')}
+          value={searchQ}
+          onChange={(e) => setSearchQ(e.target.value)}
+          disabled={busy}
+          inputProps={{ autoComplete: 'off' }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Iconify icon={ic.searchLinear} width={18} sx={{ color: 'text.disabled' }} />
+              </InputAdornment>
+            ),
+          }}
+        />
+        {showEmptyHint ? (
+          <Typography variant="body2" color="text.secondary">
+            {t('pages.lists.start_table_empty_list')}
+          </Typography>
+        ) : null}
+        {showSearchEmpty ? (
+          <Typography variant="body2" color="text.secondary">
+            {t('pages.lists.start_table_search_empty')}
+          </Typography>
+        ) : null}
+        <Stack spacing={SPACE.xs} sx={{ maxHeight: 320, overflow: 'auto' }}>
+          {otherPickerRows.map(renderPickerRow)}
+        </Stack>
+      </Stack>
     </ResponsiveSheet>
   );
 }

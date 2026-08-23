@@ -109,10 +109,11 @@ const PLACE_IDENTITY_BTN_SX = [
  * Circular place thumb with a first-letter fallback when no photo is set.
  */
 function PlaceThumb({ name, photo, size }) {
-  const fallback = String(name || '')
-    .trim()
-    .charAt(0)
-    .toUpperCase() || '?';
+  const fallback =
+    String(name || '')
+      .trim()
+      .charAt(0)
+      .toUpperCase() || '?';
   return (
     <Avatar src={photo || undefined} alt="" sx={{ width: size, height: size, flexShrink: 0 }}>
       {fallback}
@@ -142,7 +143,11 @@ function PlaceIdentityButton({ place, size, onOpen, children }) {
     >
       <PlaceThumb name={place.name} photo={place.photo} size={size} />
       <Box sx={{ flex: 1, minWidth: 0 }}>{children}</Box>
-      <Iconify icon={ic.chevronRightLinear} width={16} sx={{ color: 'text.disabled', flexShrink: 0 }} />
+      <Iconify
+        icon={ic.chevronRightLinear}
+        width={16}
+        sx={{ color: 'text.disabled', flexShrink: 0 }}
+      />
     </Box>
   );
 }
@@ -197,10 +202,7 @@ export default function TableVotePanel({
   const [pendingVoteId, setPendingVoteId] = useState(/** @type {string | null} */ (null));
   const resultTracked = useRef(false);
 
-  const analyticsBase = useMemo(
-    () => ({ list_id: listId, table_id: tableId }),
-    [listId, tableId]
-  );
+  const analyticsBase = useMemo(() => ({ list_id: listId, table_id: tableId }), [listId, tableId]);
 
   // table_places is the shortlist and the allowed set, so these rows need no
   // further filtering — the old allowed_restaurant_ids pass is gone with it.
@@ -210,10 +212,7 @@ export default function TableVotePanel({
   );
 
   const restaurantIds = useMemo(() => placeRows.map((p) => p.restaurantId), [placeRows]);
-  const placeById = useMemo(
-    () => new Map(placeRows.map((p) => [p.restaurantId, p])),
-    [placeRows]
-  );
+  const placeById = useMemo(() => new Map(placeRows.map((p) => [p.restaurantId, p])), [placeRows]);
 
   const locked = session?.status === 'locked';
   const tallies = useMemo(() => session?.tallies || {}, [session?.tallies]);
@@ -360,15 +359,7 @@ export default function TableVotePanel({
       ...analyticsBase,
       restaurant_id: winnerNow ? String(winnerNow) : null,
     });
-  }, [
-    tableId,
-    locked,
-    busy,
-    pendingWinnerId,
-    analytics,
-    analyticsBase,
-    onTableUpdate,
-  ]);
+  }, [tableId, locked, busy, pendingWinnerId, analytics, analyticsBase, onTableUpdate]);
 
   const handleReplyShare = useCallback(async () => {
     const winnerIdNow = lockedWinnerRestaurantId(session);
@@ -431,7 +422,11 @@ export default function TableVotePanel({
                     textAlign: 'center',
                   }}
                 >
-                  <Typography variant="h6" component="span" sx={{ fontWeight: 700, mt: SPACE.xxs, display: 'block' }}>
+                  <Typography
+                    variant="h6"
+                    component="span"
+                    sx={{ fontWeight: 700, mt: SPACE.xxs, display: 'block' }}
+                  >
                     {winner.name}
                   </Typography>
                 </Box>
@@ -525,7 +520,12 @@ export default function TableVotePanel({
                         size={PLACE_THUMB_SIZE}
                         onOpen={handleOpenPlace}
                       >
-                        <Typography variant="subtitle2" component="span" noWrap sx={{ fontWeight: 700, display: 'block' }}>
+                        <Typography
+                          variant="subtitle2"
+                          component="span"
+                          noWrap
+                          sx={{ fontWeight: 700, display: 'block' }}
+                        >
                           {place.name}
                         </Typography>
                         {/* Counts live next to the thumbs now, so this line carries the

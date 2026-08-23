@@ -1,7 +1,10 @@
 'use server';
 
 import { notifyLiveListSubscribers } from 'src/libs/notifications/list-live-update-notify';
-import { matchRestaurantDishTag, fetchDishTagsForRestaurant } from 'src/libs/dish-tags/dish-tag-resolve';
+import {
+  matchRestaurantDishTag,
+  fetchDishTagsForRestaurant,
+} from 'src/libs/dish-tags/dish-tag-resolve';
 import {
   getSupabaseAuthUser,
   createSupabaseServerClient,

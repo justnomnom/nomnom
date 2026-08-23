@@ -19,13 +19,13 @@ import { ic } from 'src/assets/icons';
 import { useLocales, useTranslate } from 'src/locales';
 import { SPACE, touchTargetSx } from 'src/theme/spacing';
 import { useTableAnalytics } from 'src/libs/analytics/table-analytics';
-import { fetchTable, nameGuest } from 'src/libs/lists/actions/table-actions';
+import { nameGuest, fetchTable } from 'src/libs/lists/actions/table-actions';
 import {
+  readTableNamed,
   readCachedTable,
   summarizeGuests,
   tableErrorMessage,
   persistTableNamed,
-  readTableNamed,
   persistCachedTable,
   getOrCreateGuestKey,
   guestHasDisplayName,

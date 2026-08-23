@@ -2,21 +2,20 @@
 
 import { filterE2eTestListsForDisplay } from 'src/utils/filter-e2e-test-lists';
 
+import { normUuid } from 'src/libs/lists/actions/_shared';
 import { supabaseAdminClient } from 'src/libs/supabase/supabase-admin';
 import { normalizeFollowCircle } from 'src/libs/restaurant/follow-circle';
 import { normalizeOpeningStatus } from 'src/libs/restaurant/opening-hours';
-import { slimRestaurantCardMetadata } from 'src/libs/restaurant/slim-restaurant-card-metadata';
 import { buildFollowingListOwnersMap } from 'src/libs/restaurant/following-list-owners';
-import {
-  fetchAllSupabasePages,
-  SUPABASE_DEFAULT_PAGE_SIZE,
-} from 'src/libs/supabase/supabase-fetch-all-pages';
+import { slimRestaurantCardMetadata } from 'src/libs/restaurant/slim-restaurant-card-metadata';
 import {
   getSupabaseAuthUser,
   createSupabaseServerClient,
 } from 'src/libs/supabase/supabase-server-client';
-
-import { normUuid } from 'src/libs/lists/actions/_shared';
+import {
+  fetchAllSupabasePages,
+  SUPABASE_DEFAULT_PAGE_SIZE,
+} from 'src/libs/supabase/supabase-fetch-all-pages';
 
 export async function fetchSavedRestaurantsForMap(options = {}) {
   const {

@@ -9,11 +9,6 @@ import {
   createSupabaseServerClient,
 } from 'src/libs/supabase/supabase-server-client';
 import {
-  executeSearchPlan,
-  mapUserQueryToSearchPlan,
-  fetchLastResortRestaurants,
-} from 'src/libs/restaurant-search/restaurant-search-agent';
-import {
   logInfo,
   logWarn,
   setUser,
@@ -21,6 +16,11 @@ import {
   setConversationId,
   setIsolationAttributes,
 } from 'src/libs/sentry/sentry-service';
+import {
+  executeSearchPlan,
+  mapUserQueryToSearchPlan,
+  fetchLastResortRestaurants,
+} from 'src/libs/restaurant-search/restaurant-search-agent';
 
 const ALLOWED_PROVIDERS = new Set(RESTAURANT_SEARCH_AI_PROVIDERS);
 

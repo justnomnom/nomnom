@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
-import { parseNotificationListOffset } from 'src/libs/notifications/notification-api-helpers';
 import { getSupabaseAuthUser } from 'src/libs/supabase/supabase-server-client';
+import { parseNotificationListOffset } from 'src/libs/notifications/notification-api-helpers';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';

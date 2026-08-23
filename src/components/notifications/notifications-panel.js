@@ -182,9 +182,7 @@ export default function NotificationsPanel({
               : 'components.notifications.empty_title'
           )}
           body={t(
-            filtered
-              ? 'components.notifications.empty_filtered'
-              : 'components.notifications.empty'
+            filtered ? 'components.notifications.empty_filtered' : 'components.notifications.empty'
           )}
           action={filtered ? null : emptyAction}
         />
@@ -195,7 +193,10 @@ export default function NotificationsPanel({
       <Stack sx={{ pb: 0.5 }}>
         {sections.map((section) => (
           <Box key={section.key} component="section">
-            <Typography component="h3" sx={{ ...sectionLabelSx(theme), px: ROW_PX, pt: 1.5, pb: 0.75 }}>
+            <Typography
+              component="h3"
+              sx={{ ...sectionLabelSx(theme), px: ROW_PX, pt: 1.5, pb: 0.75 }}
+            >
               {t(SECTION_LABEL_KEYS[section.key])}
             </Typography>
 
@@ -567,7 +568,10 @@ function NotificationRow({
         />
       }
     >
-      <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: isUnread ? 500 : 400 }}>
+      <Typography
+        variant="body2"
+        sx={{ color: 'text.secondary', fontWeight: isUnread ? 500 : 400 }}
+      >
         {sentence}
       </Typography>
       <RowMeta>{relativeTime(notification.created_at, isPt)}</RowMeta>

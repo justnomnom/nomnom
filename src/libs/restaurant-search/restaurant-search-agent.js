@@ -12,7 +12,11 @@ import {
   getRestaurantSearchLanguageModel,
 } from 'src/libs/restaurant-search/restaurant-search-llm';
 
-export { scoreRow, filterSlugs, ratingFromRow } from 'src/libs/restaurant-search/restaurant-search-scoring';
+export {
+  scoreRow,
+  filterSlugs,
+  ratingFromRow,
+} from 'src/libs/restaurant-search/restaurant-search-scoring';
 
 const FETCH_LIMIT = 120;
 

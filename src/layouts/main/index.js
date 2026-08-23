@@ -20,7 +20,7 @@ import Header from './header';
  * `mainSx` tints the content column (homepage terracotta wash) without
  * changing header or footer chrome.
  */
-export default function MainLayout({ children, minimal = false, mainSx }) {
+export default function MainLayout({ children, minimal = false, mainSx = undefined }) {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: 1 }}>
       <SkipToMainLink />

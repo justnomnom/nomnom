@@ -14,10 +14,7 @@ import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import * as ConfigGlobal from 'src/config-global';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
-import {
-  openSleekplanWidget,
-  getSleekplanFeedbackUrl,
-} from 'src/libs/sleekplan/sleekplan-service';
+import { openSleekplanWidget, getSleekplanFeedbackUrl } from 'src/libs/sleekplan/sleekplan-service';
 
 import { HubNavRow } from 'src/sections/profile/view/settings-hub-view';
 import SettingsDrillShell from 'src/sections/profile/view/settings-drill-shell';

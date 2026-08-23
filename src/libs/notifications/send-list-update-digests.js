@@ -1,10 +1,10 @@
+import { chunkArray } from 'src/libs/notifications/chunk';
+import { digestWindowSinceIso } from 'src/libs/notifications/list-update-notify-helpers';
 import {
   groupListUpdatesByUserForDigest,
-  filterDigestRecipientsByEmailPreference,
   omitActiveSubscriptionsFromDigest,
+  filterDigestRecipientsByEmailPreference,
 } from 'src/libs/notifications/group-list-update-digest';
-import { digestWindowSinceIso } from 'src/libs/notifications/list-update-notify-helpers';
-import { chunkArray } from 'src/libs/notifications/chunk';
 
 /**
  * Build and send the "new spots on lists you follow" email digest.
@@ -56,9 +56,7 @@ export async function sendListUpdateDigests({ windowHours = 24 } = {}) {
 
     // Drop lists the recipient already pays for (Live List email covers those).
     const listIds = [
-      ...new Set(
-        [...enabled].flatMap((uid) => [...(byUser.get(uid)?.keys() ?? [])])
-      ),
+      ...new Set([...enabled].flatMap((uid) => [...(byUser.get(uid)?.keys() ?? [])])),
     ];
     const subscriptionEdges = [];
     if (listIds.length > 0) {

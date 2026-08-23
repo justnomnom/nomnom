@@ -2,12 +2,11 @@
  * PostgREST name recall for article matching. No unaccent() SQL.
  */
 
-import { normalizeName } from './pick-restaurant-match.js';
+import { normalizeName } from './pick-restaurant-match';
 
 const RECALL_LIMIT = 25;
 const NAME_CONCURRENCY = 5;
-const SELECT =
-  'id, name, address, home_city:cities!restaurants_municipality_id_fkey ( name )';
+const SELECT = 'id, name, address, home_city:cities!restaurants_municipality_id_fkey ( name )';
 
 /**
  * Escape `%` and `_` so they are literals in ilike patterns.

@@ -30,7 +30,11 @@ export function mergeNotificationPreferences(row) {
  * @param {string} [updatedAt]
  * @returns {{ user_id: string, updated_at: string, list_updates_in_app?: boolean, list_updates_push?: boolean, list_updates_email?: boolean } | null}
  */
-export function buildNotificationPreferenceUpsert(userId, patch, updatedAt = new Date().toISOString()) {
+export function buildNotificationPreferenceUpsert(
+  userId,
+  patch,
+  updatedAt = new Date().toISOString()
+) {
   if (!userId) return null;
   const row = { user_id: userId, updated_at: updatedAt };
   let hasField = false;

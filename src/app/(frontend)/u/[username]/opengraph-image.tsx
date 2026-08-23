@@ -63,66 +63,64 @@ export default async function ProfileOpenGraphImage({
     : [];
 
   return new ImageResponse(
-    (
-      <OgFrame>
-        <div style={{ display: 'flex', alignItems: 'center', gap: px(SPACE.xl) }}>
-          {avatar ? (
-            <img
-              src={avatar}
-              width={AVATAR_SIZE}
-              height={AVATAR_SIZE}
-              alt=""
-              style={{
-                width: AVATAR_SIZE,
-                height: AVATAR_SIZE,
-                borderRadius: RADIUS.pill,
-                objectFit: 'cover',
-                border: `${px(SPACE.xs)}px solid ${OG_COLORS.surface}`,
-              }}
-            />
-          ) : (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: AVATAR_SIZE,
-                height: AVATAR_SIZE,
-                borderRadius: RADIUS.pill,
-                background: OG_COLORS.brandLighter,
-                border: `${px(SPACE.xs)}px solid ${OG_COLORS.surface}`,
-                fontSize: 72,
-                fontWeight: 800,
-                color: OG_COLORS.brand,
-              }}
-            >
-              {monogram}
-            </div>
-          )}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: px(SPACE.xs) }}>
-            <div style={{ display: 'flex', ...OG_TYPE.display, color: OG_COLORS.text }}>{name}</div>
-            {handle ? <OgHandle>@{handle}</OgHandle> : null}
-          </div>
-        </div>
-
-        {bio ? (
+    <OgFrame>
+      <div style={{ display: 'flex', alignItems: 'center', gap: px(SPACE.xl) }}>
+        {avatar ? (
+          <img
+            src={avatar}
+            width={AVATAR_SIZE}
+            height={AVATAR_SIZE}
+            alt=""
+            style={{
+              width: AVATAR_SIZE,
+              height: AVATAR_SIZE,
+              borderRadius: RADIUS.pill,
+              objectFit: 'cover',
+              border: `${px(SPACE.xs)}px solid ${OG_COLORS.surface}`,
+            }}
+          />
+        ) : (
           <div
             style={{
               display: 'flex',
-              ...OG_TYPE.body,
-              color: OG_COLORS.text,
-              maxWidth: 940,
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: AVATAR_SIZE,
+              height: AVATAR_SIZE,
+              borderRadius: RADIUS.pill,
+              background: OG_COLORS.brandLighter,
+              border: `${px(SPACE.xs)}px solid ${OG_COLORS.surface}`,
+              fontSize: 72,
+              fontWeight: 800,
+              color: OG_COLORS.brand,
             }}
           >
-            {bio}
+            {monogram}
           </div>
-        ) : null}
+        )}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: px(SPACE.xs) }}>
+          <div style={{ display: 'flex', ...OG_TYPE.display, color: OG_COLORS.text }}>{name}</div>
+          {handle ? <OgHandle>@{handle}</OgHandle> : null}
+        </div>
+      </div>
 
-        <OgStatRow items={stats} />
+      {bio ? (
+        <div
+          style={{
+            display: 'flex',
+            ...OG_TYPE.body,
+            color: OG_COLORS.text,
+            maxWidth: 940,
+          }}
+        >
+          {bio}
+        </div>
+      ) : null}
 
-        <OgTagline>{ogText('pages.lists.og_profile_tagline')}</OgTagline>
-      </OgFrame>
-    ),
+      <OgStatRow items={stats} />
+
+      <OgTagline>{ogText('pages.lists.og_profile_tagline')}</OgTagline>
+    </OgFrame>,
     ogImageOptions(size)
   );
 }

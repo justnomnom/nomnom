@@ -731,12 +731,15 @@ function MentionFeedReviewCard({
               color="primary"
               onClick={onRequestEdit}
               startIcon={<Iconify icon={ic.penBold} width={16} />}
-              sx={[touchTargetSx, {
-                flexShrink: 0,
-                fontWeight: 700,
-                borderRadius: '12px',
-                textTransform: 'none',
-              }]}
+              sx={[
+                touchTargetSx,
+                {
+                  flexShrink: 0,
+                  fontWeight: 700,
+                  borderRadius: '12px',
+                  textTransform: 'none',
+                },
+              ]}
             >
               {t('pages.dashboard.restaurant.reviews_edit_button')}
             </Button>

@@ -146,15 +146,17 @@ const GRANT_LINE_RE =
  */
 export function expandTablePrivileges(privileges) {
   const out = new Set();
-  for (const raw of privileges ?? []) {
-    const p = String(raw ?? '').trim().toUpperCase();
-    if (!p) continue;
+  [...(privileges ?? [])].forEach((raw) => {
+    const p = String(raw ?? '')
+      .trim()
+      .toUpperCase();
+    if (!p) return;
     if (p === 'ALL') {
       ALL_TABLE_PRIVILEGES.forEach((priv) => out.add(priv));
-      continue;
+      return;
     }
     out.add(p);
-  }
+  });
   return out;
 }
 
@@ -169,15 +171,18 @@ export function parseApiTableGrantSql(sql) {
   const byTable = new Map();
   const lines = String(sql ?? '').split(/\r?\n/);
 
-  for (const line of lines) {
+  lines.forEach((line) => {
     const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith('--')) continue;
+    if (!trimmed || trimmed.startsWith('--')) return;
 
     const match = trimmed.match(GRANT_LINE_RE);
-    if (!match) continue;
+    if (!match) return;
 
     const privileges = expandTablePrivileges(
-      match[1].split(',').map((p) => p.trim()).filter(Boolean)
+      match[1]
+        .split(',')
+        .map((p) => p.trim())
+        .filter(Boolean)
     );
     const table = match[2];
     const role = match[3];
@@ -187,7 +192,7 @@ export function parseApiTableGrantSql(sql) {
     if (!byRole.has(role)) byRole.set(role, new Set());
     const privs = byRole.get(role);
     privileges.forEach((p) => privs.add(p));
-  }
+  });
 
   return byTable;
 }
@@ -201,14 +206,14 @@ export function parseApiTableGrantSql(sql) {
 export function findMissingApiSelectGrants(grantMap) {
   /** @type {Array<{ table: string, role: string }>} */
   const missing = [];
-  for (const [table, byRole] of grantMap.entries()) {
-    for (const role of selectRolesForTable(table)) {
+  [...grantMap.entries()].forEach(([table, byRole]) => {
+    selectRolesForTable(table).forEach((role) => {
       const privs = byRole.get(role);
       if (!privs?.has('SELECT')) {
         missing.push({ table, role });
       }
-    }
-  }
+    });
+  });
   return missing;
 }
 
@@ -223,25 +228,25 @@ export function findForbiddenApiTableGrants(grantMap) {
   /** @type {Array<{ table: string, role: string, privilege: string }>} */
   const forbidden = [];
 
-  for (const table of API_GRANT_SERVICE_ROLE_ONLY_TABLES) {
+  API_GRANT_SERVICE_ROLE_ONLY_TABLES.forEach((table) => {
     const byRole = grantMap.get(table);
-    if (!byRole) continue;
-    for (const role of ['anon', 'authenticated']) {
+    if (!byRole) return;
+    ['anon', 'authenticated'].forEach((role) => {
       const privs = byRole.get(role);
-      if (!privs?.size) continue;
-      for (const privilege of privs) {
+      if (!privs?.size) return;
+      privs.forEach((privilege) => {
         forbidden.push({ table, role, privilege });
-      }
-    }
-  }
+      });
+    });
+  });
 
-  for (const table of API_GRANT_NO_ANON_TABLES) {
+  API_GRANT_NO_ANON_TABLES.forEach((table) => {
     const privs = grantMap.get(table)?.get('anon');
-    if (!privs?.size) continue;
-    for (const privilege of privs) {
+    if (!privs?.size) return;
+    privs.forEach((privilege) => {
       forbidden.push({ table, role: 'anon', privilege });
-    }
-  }
+    });
+  });
 
   return forbidden;
 }
@@ -259,14 +264,14 @@ export function findMissingCriticalAuthenticatedWriteGrants(
 ) {
   /** @type {Array<{ table: string, role: string, privilege: string }>} */
   const missing = [];
-  for (const [table, privileges] of Object.entries(required)) {
+  Object.entries(required).forEach(([table, privileges]) => {
     const have = grantMap.get(table)?.get('authenticated');
-    for (const privilege of privileges) {
+    privileges.forEach((privilege) => {
       if (!have?.has(privilege)) {
         missing.push({ table, role: 'authenticated', privilege });
       }
-    }
-  }
+    });
+  });
   return missing;
 }
 
@@ -283,11 +288,11 @@ export function findMissingCriticalAuthenticatedSelectGrants(
 ) {
   /** @type {Array<{ table: string, role: string, privilege: string }>} */
   const missing = [];
-  for (const table of tables) {
+  tables.forEach((table) => {
     if (!grantMap.get(table)?.get('authenticated')?.has('SELECT')) {
       missing.push({ table, role: 'authenticated', privilege: 'SELECT' });
     }
-  }
+  });
   return missing;
 }
 
@@ -304,14 +309,14 @@ export function findMissingCriticalServiceRoleWriteGrants(
 ) {
   /** @type {Array<{ table: string, role: string, privilege: string }>} */
   const missing = [];
-  for (const [table, privileges] of Object.entries(required)) {
+  Object.entries(required).forEach(([table, privileges]) => {
     const have = grantMap.get(table)?.get('service_role');
-    for (const privilege of privileges) {
+    privileges.forEach((privilege) => {
       if (!have?.has(privilege)) {
         missing.push({ table, role: 'service_role', privilege });
       }
-    }
-  }
+    });
+  });
   return missing;
 }
 
@@ -324,16 +329,16 @@ export function findMissingCriticalServiceRoleWriteGrants(
 export function buildLiveGrantMap(liveRows) {
   /** @type {Map<string, Map<string, Set<string>>>} */
   const live = new Map();
-  for (const row of liveRows ?? []) {
+  (liveRows ?? []).forEach((row) => {
     const table = row.table_name;
     const role = row.grantee;
     const priv = String(row.privilege_type ?? '').toUpperCase();
-    if (!table || !role || !priv) continue;
+    if (!table || !role || !priv) return;
     if (!live.has(table)) live.set(table, new Map());
     const byRole = live.get(table);
     if (!byRole.has(role)) byRole.set(role, new Set());
     expandTablePrivileges([priv]).forEach((p) => byRole.get(role).add(p));
-  }
+  });
   return live;
 }
 
@@ -356,20 +361,18 @@ export function diffLiveApiTableGrants(expected, liveRows) {
   /** @type {Array<{ table: string, role: string, privilege: string }>} */
   const missingPrivileges = [];
 
-  for (const [table, byRole] of expected.entries()) {
-    for (const [role, expectedPrivs] of byRole.entries()) {
+  [...expected.entries()].forEach(([table, byRole]) => {
+    [...byRole.entries()].forEach(([role, expectedPrivs]) => {
       const livePrivs = live.get(table)?.get(role);
-      for (const privilege of expectedPrivs) {
-        if (livePrivs?.has(privilege)) continue;
+      expectedPrivs.forEach((privilege) => {
+        if (livePrivs?.has(privilege)) return;
         missingPrivileges.push({ table, role, privilege });
-        if (privilege === 'SELECT') {
-          if (selectRolesForTable(table).includes(role)) {
-            missingSelect.push({ table, role });
-          }
+        if (privilege === 'SELECT' && selectRolesForTable(table).includes(role)) {
+          missingSelect.push({ table, role });
         }
-      }
-    }
-  }
+      });
+    });
+  });
 
   return {
     missingSelect,

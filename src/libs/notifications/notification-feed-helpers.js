@@ -8,7 +8,10 @@ export const NOTIFICATION_LIST_FILTER_ALL = '__all__';
  * @param {string} [listFilter]
  * @returns {Array}
  */
-export function filterNotificationsByListId(notifications, listFilter = NOTIFICATION_LIST_FILTER_ALL) {
+export function filterNotificationsByListId(
+  notifications,
+  listFilter = NOTIFICATION_LIST_FILTER_ALL
+) {
   const rows = Array.isArray(notifications) ? notifications : [];
   if (!listFilter || listFilter === NOTIFICATION_LIST_FILTER_ALL) return rows;
   return rows.filter((n) => n?.data?.list_id === listFilter);

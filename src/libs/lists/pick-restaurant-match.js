@@ -134,4 +134,3 @@ export function matchRestaurantByName({ name, candidates } = {}) {
     decision: 'drop',
   };
 }
-

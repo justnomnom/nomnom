@@ -39,7 +39,13 @@ import NotificationsPageSkeleton from './notifications-page-skeleton';
 
 // ----------------------------------------------------------------------
 
-function NotificationsToolbarActions({ unreadCount, hasItems, loading, onMarkAllRead, onDeleteAll }) {
+function NotificationsToolbarActions({
+  unreadCount,
+  hasItems,
+  loading,
+  onMarkAllRead,
+  onDeleteAll,
+}) {
   const { t } = useTranslate();
   const theme = useTheme();
 
