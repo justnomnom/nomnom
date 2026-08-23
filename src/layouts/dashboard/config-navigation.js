@@ -75,25 +75,14 @@ export function useNavData(options = {}) {
       // FEEDBACK (sidebar only)
       // ----------------------------------------------------------------------
       {
-        subheader: t('navigation.feedback'),
         items: [
           {
-            title: t('navigation.report_bug'),
+            title: t('navigation.feedback'),
             path: paths.dashboard.feedback,
-            icon: I(ic.dangerLinear),
+            icon: I(ic.chatRoundLineLinear),
             bottomNavIconify: {
-              active: ic.dangerBold,
-              inactive: ic.dangerLinear,
-            },
-            hideBottomNav: true,
-          },
-          {
-            title: t('navigation.suggest_feature'),
-            path: paths.dashboard.feedback,
-            icon: I(ic.rocketLinear),
-            bottomNavIconify: {
-              active: ic.rocketBold,
-              inactive: ic.rocketLinear,
+              active: ic.chatRoundLineLinear,
+              inactive: ic.chatRoundLineLinear,
             },
             hideBottomNav: true,
           },
