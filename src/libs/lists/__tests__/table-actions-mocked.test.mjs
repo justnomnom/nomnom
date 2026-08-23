@@ -27,9 +27,8 @@ mock.module('src/libs/supabase/supabase-server-client.js', {
   },
 });
 
-const { startTable, addTablePlace, castTableVote, nameGuest, lockTable } = await import(
-  '../actions/table-actions.js'
-);
+const { startTable, fetchTable, fetchTableDecide, addTablePlace, castTableVote, nameGuest, lockTable } =
+  await import('../actions/table-actions.js');
 
 /**
  * @param {(ctx: { rpc: string, args: object }) => object} handler
@@ -229,5 +228,135 @@ describe('table-actions mocked RPCs', { concurrency: false }, () => {
       table: null,
       error: 'not_authorized_to_lock',
     });
+  });
+
+  test('startTable: empty title becomes Table; RPC errors and missing table_id map cleanly', async () => {
+    authUser = { id: USER_ID };
+    supabase = makeRpcClient(() => ({ data: { table_id: TABLE_ID }, error: null }));
+    const titled = await startTable({
+      listId: LIST_ID,
+      restaurantIds: [uuid(1), uuid(2), uuid(3)],
+      title: '',
+    });
+    assert.equal(titled.error, null);
+    assert.equal(supabase.calls[0].args.p_title, 'Table');
+
+    supabase = makeRpcClient(() => ({ data: null, error: { message: 'list_not_public' } }));
+    assert.deepEqual(
+      await startTable({ listId: LIST_ID, restaurantIds: [uuid(1), uuid(2), uuid(3)] }),
+      { table: null, error: 'list_not_public' }
+    );
+
+    supabase = makeRpcClient(() => ({ data: { status: 'open' }, error: null }));
+    assert.deepEqual(
+      await startTable({ listId: LIST_ID, restaurantIds: [uuid(1), uuid(2), uuid(3)] }),
+      { table: null, error: 'unknown' }
+    );
+  });
+
+  test('startTable: non-array and all-blank ids never reach the RPC', async () => {
+    authUser = { id: USER_ID };
+    supabase = makeRpcClient(() => ({ data: { table_id: TABLE_ID }, error: null }));
+    assert.deepEqual(await startTable({ listId: LIST_ID, restaurantIds: null }), {
+      table: null,
+      error: 'need_three_places',
+    });
+    assert.deepEqual(await startTable({ listId: LIST_ID, restaurantIds: ['', null, ''] }), {
+      table: null,
+      error: 'need_three_places',
+    });
+    assert.equal(supabase.calls.length, 0);
+  });
+
+  test('fetchTable / fetchTableDecide: reject empty ids, map RPC errors, and parse payloads', async () => {
+    supabase = makeRpcClient(() => ({ data: { table_id: TABLE_ID }, error: null }));
+    assert.deepEqual(await fetchTable(''), { table: null, error: 'table_not_found' });
+    assert.deepEqual(await fetchTableDecide(null), { slice: null, error: 'table_not_found' });
+    assert.equal(supabase.calls.length, 0);
+
+    supabase = makeRpcClient(() => ({ data: null, error: { message: 'table_not_found' } }));
+    assert.deepEqual(await fetchTable(TABLE_ID), { table: null, error: 'table_not_found' });
+    assert.equal(supabase.calls[0].rpc, 'get_table');
+
+    supabase = makeRpcClient(() => ({ data: null, error: null }));
+    assert.deepEqual(await fetchTable(TABLE_ID), { table: null, error: 'table_not_found' });
+    assert.deepEqual(await fetchTableDecide(TABLE_ID), { slice: null, error: 'table_not_found' });
+
+    supabase = makeRpcClient(() => ({
+      data: JSON.stringify({ table_id: TABLE_ID, guest_count: 2 }),
+      error: null,
+    }));
+    const full = await fetchTable(TABLE_ID);
+    assert.equal(full.error, null);
+    assert.equal(full.table?.table_id, TABLE_ID);
+
+    const slice = await fetchTableDecide(TABLE_ID);
+    assert.equal(slice.error, null);
+    assert.equal(slice.slice?.guest_count, 2);
+    assert.equal(supabase.calls[1].rpc, 'get_table_decide');
+  });
+
+  test('nameGuest / castTableVote / addTablePlace / lockTable: more pre-RPC guards', async () => {
+    supabase = makeRpcClient(() => ({ data: { table_id: TABLE_ID }, error: null }));
+    assert.deepEqual(
+      await nameGuest({ tableId: '', guestKey: GUEST_KEY, displayName: 'Ana' }),
+      { table: null, error: 'table_not_found' }
+    );
+    assert.deepEqual(
+      await nameGuest({ tableId: TABLE_ID, guestKey: 'short', displayName: 'Ana' }),
+      { table: null, error: 'invalid_voter_key' }
+    );
+    assert.deepEqual(
+      await nameGuest({ tableId: TABLE_ID, guestKey: GUEST_KEY, displayName: 12 }),
+      { table: null, error: 'invalid_display_name' }
+    );
+    assert.deepEqual(
+      await castTableVote({
+        tableId: '',
+        restaurantId: RESTAURANT_ID,
+        guestKey: GUEST_KEY,
+        vote: 1,
+      }),
+      { table: null, error: 'table_not_found' }
+    );
+    assert.deepEqual(
+      await castTableVote({
+        tableId: TABLE_ID,
+        restaurantId: RESTAURANT_ID,
+        guestKey: 'tiny',
+        vote: 1,
+      }),
+      { table: null, error: 'invalid_voter_key' }
+    );
+    assert.deepEqual(
+      await lockTable({ tableId: '' }),
+      { table: null, error: 'table_not_found' }
+    );
+    assert.equal(supabase.calls.length, 0);
+
+    const up = await castTableVote({
+      tableId: TABLE_ID,
+      restaurantId: RESTAURANT_ID,
+      guestKey: GUEST_KEY,
+      vote: 1,
+    });
+    assert.equal(up.error, null);
+    assert.equal(supabase.calls[0].args.p_vote, 1);
+
+    supabase = makeRpcClient(() => ({ data: { places: [] }, error: null }));
+    assert.deepEqual(
+      await addTablePlace({
+        tableId: TABLE_ID,
+        restaurantId: RESTAURANT_ID,
+        guestKey: GUEST_KEY,
+      }),
+      { table: null, error: 'unknown' }
+    );
+
+    supabase = makeRpcClient(() => ({ data: { table_id: TABLE_ID, status: 'locked' }, error: null }));
+    const locked = await lockTable({ tableId: TABLE_ID, lockToken: '', winnerRestaurantId: '' });
+    assert.equal(locked.error, null);
+    assert.equal(supabase.calls[0].args.p_lock_token, null);
+    assert.equal(supabase.calls[0].args.p_winner_restaurant_id, null);
   });
 });

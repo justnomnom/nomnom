@@ -124,6 +124,14 @@ describe('getOrCreateGuestKey', () => {
     assert.match(key, /^gk-\d+-/);
     assert.equal(storage.getItem(GUEST_KEY_STORAGE), key);
   });
+
+  it('mints a UUID when storage is empty and replaces a blank stored key', () => {
+    const storage = installWindow();
+    assert.equal(getOrCreateGuestKey(), '11111111-1111-4111-8111-111111111111');
+    assert.equal(storage.getItem(GUEST_KEY_STORAGE), '11111111-1111-4111-8111-111111111111');
+    storage.setItem(GUEST_KEY_STORAGE, '');
+    assert.equal(getOrCreateGuestKey(), '11111111-1111-4111-8111-111111111111');
+  });
 });
 
 describe('lock token + table cache', () => {
@@ -196,6 +204,17 @@ describe('lock token + table cache', () => {
     persistCachedTable(session);
     assert.equal(storage.getItem(`${TABLE_CACHE_PREFIX}tid`), null);
   });
+
+  it('keys the cache on table_id and no-ops empty lock tokens', () => {
+    const storage = installWindow();
+    persistCachedTable({ table_id: 'tid-2', status: 'open' });
+    assert.deepEqual(readCachedTable('tid-2'), { table_id: 'tid-2', status: 'open' });
+    persistLockToken('', 'tok');
+    persistLockToken('tid-2', '');
+    assert.equal(readLockToken('tid-2'), null);
+    persistLockToken('tid-2', 'tok');
+    assert.equal(readLockToken('tid-2'), 'tok');
+  });
 });
 
 describe('tableErrorMessage', () => {
@@ -216,6 +235,7 @@ describe('tableErrorMessage', () => {
   it('falls back to generic copy for unknown codes', () => {
     assert.equal(tableErrorMessage('not_a_real_code', t), 'Something went wrong. Try again.');
     assert.equal(tableErrorMessage('', t), null);
+    assert.equal(tableErrorMessage(undefined, t), null);
   });
 });
 
@@ -373,6 +393,10 @@ describe('tablePickerRows + filterTablePickerRows', () => {
       filterTablePickerRows(places, 'ram').map((r) => r.restaurantId),
       ['a']
     );
+    assert.deepEqual(
+      filterTablePickerRows(places, 'RAM').map((r) => r.restaurantId),
+      ['a']
+    );
     assert.deepEqual(filterTablePickerRows(null, 'ra'), []);
     assert.deepEqual(tablePickerRows(null, undefined), []);
   });
@@ -411,6 +435,8 @@ describe('toggleSelectedIds', () => {
     assert.equal(toggleSelectedIds(full, '6', 5), full);
     const fromNull = toggleSelectedIds(null, 'z');
     assert.deepEqual([...fromNull], ['z']);
+    const removedAtCap = toggleSelectedIds(full, '5', 5);
+    assert.deepEqual([...removedAtCap].sort(), ['1', '2', '3', '4']);
   });
 });
 
@@ -432,6 +458,14 @@ describe('tableAddSearchState', () => {
     );
     assert.equal(
       tableAddSearchState({ query: 'ram', hits: [{ id: 'b' }], existingIds, pending: false }),
+      'results'
+    );
+    assert.equal(
+      tableAddSearchState({ query: 'ram', hits: [{ id: '' }, { name: 'no-id' }], existingIds }),
+      'empty'
+    );
+    assert.equal(
+      tableAddSearchState({ query: 'ram', hits: [{ id: 'a' }], existingIds: ['a'] }),
       'results'
     );
   });
@@ -504,6 +538,7 @@ describe('guestHasDisplayName + persistTableNamed', () => {
     assert.equal(guestHasDisplayName(guests, 'missing'), false);
     assert.equal(guestHasDisplayName(guests, ''), false);
     assert.equal(guestHasDisplayName(null, 'aaa'), false);
+    assert.equal(guestHasDisplayName([{ guest_key: 12345678, display_name: 'N' }], 12345678), true);
   });
 
   it('round-trips the named flag per table', () => {
@@ -572,6 +607,12 @@ describe('readMyVotes / persistMyVote', () => {
     storage.setItem(`${MY_VOTES_PREFIX}table-1`, '["not","an","object"]');
     assert.deepEqual(readMyVotes('table-1'), {});
   });
+
+  it('ignores malformed JSON', () => {
+    const storage = installWindow();
+    storage.setItem(`${MY_VOTES_PREFIX}table-1`, '{');
+    assert.deepEqual(readMyVotes('table-1'), {});
+  });
 });
 
 describe('table start time helpers', () => {
@@ -590,14 +631,25 @@ describe('table start time helpers', () => {
     assert.equal(parseTableStartsAt('nope'), null);
   });
 
+  it('parses Date inputs and keeps seconds on datetime-local strings', () => {
+    const date = new Date(2026, 7, 19, 20, 0, 0);
+    assert.equal(parseTableStartsAt(date), date);
+    assert.equal(parseTableStartsAt(new Date(Number.NaN)), null);
+    assert.equal(datetimeLocalFromIso(date), '2026-08-19T20:00');
+    const iso = isoFromDatetimeLocal('2026-08-19T20:00:00');
+    assert.ok(typeof iso === 'string' && iso.endsWith('Z'));
+  });
+
   it('classifies today, tomorrow, and later against a fixed now', () => {
     const now = new Date(2026, 7, 19, 12, 0, 0);
     const today = tableWhenParts(new Date(2026, 7, 19, 20, 0, 0), { now });
     const tomorrow = tableWhenParts(new Date(2026, 7, 20, 20, 0, 0), { now });
     const later = tableWhenParts(new Date(2026, 7, 22, 13, 30, 0), { now });
+    const yesterday = tableWhenParts(new Date(2026, 7, 18, 20, 0, 0), { now });
     assert.equal(today?.kind, 'today');
     assert.equal(tomorrow?.kind, 'tomorrow');
     assert.equal(later?.kind, 'later');
+    assert.equal(yesterday?.kind, 'later');
     assert.equal(tableWhenParts(null, { now }), null);
   });
 
@@ -617,5 +669,6 @@ describe('table start time helpers', () => {
       /^pages\.table\.when_on\|/
     );
     assert.equal(formatTableWhenLabel(null, t, { now }), '');
+    assert.equal(formatTableWhenLabel(new Date(2026, 7, 19, 20, 0, 0), null, { now }), '');
   });
 });

@@ -109,4 +109,14 @@ describe('table-tally', () => {
     const [row] = rankTallies({ a: { up: 'nope', down: null } }, ['a']);
     assert.deepEqual(row, { restaurantId: 'a', up: 0, down: 0, net: 0 });
   });
+
+  it('still picks a winner when every place is net-negative', () => {
+    assert.equal(
+      pickWinnerId(
+        { a: { up: 0, down: 3, net: -3 }, b: { up: 1, down: 2, net: -1 } },
+        ['a', 'b']
+      ),
+      'b'
+    );
+  });
 });

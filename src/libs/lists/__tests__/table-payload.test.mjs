@@ -121,4 +121,12 @@ describe('normalizeStartsAt', () => {
     assert.equal(normalizeStartsAt(null), null);
     assert.equal(normalizeStartsAt('not-a-dateZ'), null);
   });
+
+  it('accepts offsets, trims, and rejects invalid Dates and non-strings', () => {
+    assert.equal(normalizeStartsAt('2026-08-19T20:00:00+01:00'), '2026-08-19T19:00:00.000Z');
+    assert.equal(normalizeStartsAt('  2026-08-19T19:00:00.000Z  '), '2026-08-19T19:00:00.000Z');
+    assert.equal(normalizeStartsAt(new Date(Number.NaN)), null);
+    assert.equal(normalizeStartsAt(0), null);
+    assert.equal(normalizeStartsAt(12), null);
+  });
 });
