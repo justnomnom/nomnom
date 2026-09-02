@@ -50,7 +50,7 @@ export const defaultRestaurantSpotlightProps = {
     headlineLines: ["Don't take", 'our word.'],
     subLines: ['Take theirs. Save the spots people you trust recommend.'],
     button: 'Save this spot',
-    footer: 'Join the Nom Nom Circle · justnomnom.com',
+    footer: 'Join the NomNom Circle · justnomnom.com',
   },
 };
 

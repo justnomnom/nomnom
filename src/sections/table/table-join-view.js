@@ -154,6 +154,14 @@ export default function TableJoinView({ tableId }) {
           <Typography variant="body2" color="text.secondary" sx={{ mt: SPACE.xs }}>
             {tableErrorMessage(err || 'table_not_found', t)}
           </Typography>
+          <Button
+            href={paths.home}
+            color="primary"
+            variant="contained"
+            sx={{ mt: SPACE.md, textTransform: 'none' }}
+          >
+            {t('pages.table.go_home')}
+          </Button>
         </Card>
       </Container>
     );

@@ -16,6 +16,13 @@
     "countries": "Countries",
     "blog": "Blog",
     "resources": "Resources",
+    "features": "Features",
+    "features_all": "All features",
+    "feature_feed": "Feed",
+    "feature_lists": "Lists",
+    "feature_map": "Map",
+    "feature_roulette": "NomNom Roulette",
+    "feature_table": "Table",
     "use_cases": "Use cases",
     "about": "About",
     "pricing": "Pricing",
@@ -31,6 +38,7 @@
     "planning_trip": "Planning a food trip",
     "use_case_foodies": "Foodies",
     "use_case_creators": "Creators & locals",
+    "use_case_hosts": "Hosts",
     "use_case_restaurants": "Restaurants",
     "use_cases_all": "All use cases",
     "main_navigation_aria": "Main navigation"
@@ -224,8 +232,8 @@
       "request_join": "Request to join",
       "request_sent": "Request sent.",
       "request_pending": "Your join request is pending.",
-      "by_handle": "NomNom list by {{handle}}",
-      "by_handle_lead": "NomNom list by",
+      "by_handle": "NomNom List by {{handle}}",
+      "by_handle_lead": "NomNom List by",
       "pending_invite_hint": "You’ve been invited to collaborate.",
       "accept_invite": "Accept",
       "decline_invite": "Decline",
@@ -258,7 +266,7 @@
       "paid_price_invalid": "Enter a valid price.",
       "paid_error_public_published": "Set audience to “Subscribers”, publish the list, then enable paid access.",
       "paid_error_connect": "Finish getting paid by subscribers (under Billing & payouts) before turning on paid access.",
-      "paid_error_generic": "Something went wrong. Try again in a moment.",
+      "paid_error_generic": "Something went wrong — try again in a moment.",
       "paid_error_stripe": "The payment service returned an error. Try again or contact support if it persists.",
       "paid_price_bounds": "Price must be between €{{min}} and €{{max}}.",
       "paid_checkout_error_generic": "Checkout could not be started. Try again in a moment.",
@@ -381,6 +389,7 @@
       "when_tomorrow": "Tomorrow at {{time}}",
       "when_on": "{{date}} at {{time}}",
       "not_found_title": "Table not found",
+      "go_home": "Take me home",
       "unnamed_place": "Restaurant",
       "whos_at_table": "{{count}} at the table",
       "whos_at_table_empty": "Nobody yet — you’re the first at the table.",
@@ -420,8 +429,8 @@
       "add_place_search_label": "Search any restaurant",
       "add_place_empty": "No restaurants match that search.",
       "add_place_already": "Those places are already at this table.",
-      "error_generic": "Something went wrong. Try again.",
-      "error_unknown": "Something went wrong. Try again.",
+      "error_generic": "Something went wrong — try again in a moment.",
+      "error_unknown": "Something went wrong — try again in a moment.",
       "error_unauthorized": "Sign in as the list owner to start a Table.",
       "error_only_owner": "Only the list owner can start a Table.",
       "error_list_not_public": "Tables work on public lists only.",
@@ -440,17 +449,17 @@
       "error_not_authorized_to_lock": "Only the organiser can settle the table."
     },
     "home": {
-      "title": "Restaurant picks from people who know",
+      "title": "Restaurant picks from people you trust",
       "hero": {
         "headline": "Stop guessing where to eat.",
-        "headlineSuffix": "Start following who knows.",
-        "description": "Follow the food creators and locals you like. See where they actually eat, save the spots you want to try, and always know where to go next.",
+        "headlineSuffix": "Start following people you trust.",
+        "description": "Follow the food creators and locals you like. See where they actually eat, save the spots you want to try, and decide together when the group stalls.",
         "getStarted": "Let’s NomNom!",
         "signIn": "Sign in",
         "ctaFootnote": "Free forever · No credit card · Takes under a minute",
         "trustedBy": "A growing crowd of people who care where they eat.",
         "appStoreVerify": "Read reviews on the App Store →",
-        "appStoreComingSoon": "Always free · You pick the voices · You stay in control",
+        "appStoreComingSoon": "The app stays free · You pick the voices · You stay in control",
         "floats": {
           "pizzeria": "Pizzeria spots",
           "sushi": "Sushi night",
@@ -469,15 +478,15 @@
             "brunch": "Brunch",
             "wine": "Wine"
           },
-          "recommendThis": "{{names}} recommend this",
+          "recommendThis": "{{names}} +{{count}} more recommend this",
           "savedTo": "Saved to"
         }
       },
       "landing": {
         "foodSpreadAlt": "Table spread of colourful dishes — discovery and variety for your next meal out.",
         "features": {
-          "sectionTitle": "Feed your feelings",
-          "sectionSubtitle": "Follow people whose taste you trust. Browse their lists. Save the spots they keep going back to.",
+          "sectionTitle": "How NomNom works",
+          "sectionSubtitle": "Follow people you trust. Browse their lists. Decide together when the group stalls.",
           "vibe": {
             "title": "Your feed, your people",
             "body": "Follow the locals and creators whose taste you trust. See where they actually eat, with their photos and notes."
@@ -487,8 +496,8 @@
             "body": "Locals and creators build lists by neighbourhood, occasion, or cuisine. Browse one, save any spot, or follow it to get their new picks."
           },
           "creator": {
-            "title": "Map it, save it, share it",
-            "body": "Pan the map to find spots near you, save the ones you want to try, and text your shortlist to whoever’s coming."
+            "title": "Map it, then decide",
+            "body": "Pan the neighbourhood, save pins to a list, and send a Table link so friends can vote — even without the app. Stuck? NomNom Roulette picks from that same pool."
           },
           "visuals": {
             "vibeDate": "Date Night",
@@ -504,7 +513,7 @@
         },
         "builtFor": {
           "titleLine1": "Restaurant picks",
-          "titleHighlight": "from people who know",
+          "titleHighlight": "from people you trust",
           "description": "It feels like your social feed but works like a restaurant guide. Open a spot, see who recommended it, save it. Every pick has a real person behind it.",
           "ratingValue": "Soon",
           "ratingLabel": "App Store",
@@ -538,16 +547,16 @@
           "lateNight": "Late night"
         },
         "headlineLines": [
-          "Your next favorite spot",
-          "is one tap away."
+          "Restaurant picks from",
+          "people you trust."
         ]
       },
       "trustStrip": {
         "title": "What makes us different",
         "items": {
           "free": {
-            "title": "Always free to start",
-            "body": "Create an account, set your tastes, and start discovering in minutes. Upgrade only if premium features make sense for you."
+            "title": "The app stays free",
+            "body": "Create an account, set your tastes, and start discovering in minutes. The app stays free — you only pay if you buy a creator’s list."
           },
           "voices": {
             "title": "You pick the voices",
@@ -582,7 +591,7 @@
         "title_prefix": "You’re in. ",
         "title_highlight": "Let’s NomNom!",
         "title_suffix": " 🍜",
-        "subtitle": "Restaurant picks from the people you trust.",
+        "subtitle": "Restaurant picks from people you trust.",
         "social_proof": "A growing crowd of locals already NomNomming",
         "body": "Turn on location for better nearby picks — or set it later in settings.",
         "enable_location": "Enable location",
@@ -636,20 +645,20 @@
       },
       "creators": {
         "title": "Who’s your hero? 🦸",
-        "body": "Follow the creators and locals who know your area.",
+        "body": "Follow people whose taste you already trust.",
         "follow": "Follow",
         "following": "Following",
         "preview": "Preview",
         "fetch_error": "Could not load suggested creators. Check your connection and try again.",
         "retry": "Retry",
         "empty_title": "No suggested creators yet",
-        "empty_body": "You’ll find people to follow on Discover — continue below to get started."
+        "empty_body": "You’ll find people to follow on Discover — continue below."
       },
       "cta": {
         "lets_nomnom": "Let’s NomNom!",
         "keep": "Keep going",
         "almost": "Almost there",
-        "start": "Start exploring!",
+        "start": "Let’s NomNom!",
         "enter": "Enter NomNom"
       },
       "done": {
@@ -701,7 +710,7 @@
         "locating_tip_2": "Finding spots locals actually go to…",
         "locating_tip_3": "Lining up picks for tonight…",
         "search_placeholder": "Search spots…",
-        "ai_search_placeholder": "Ask AI — e.g. cosy ramen for a rainy night",
+        "ai_search_placeholder": "What’s the vibe? — e.g. cosy ramen for a rainy night",
         "submit_search_aria": "Search",
         "search_loading_1": "Reading between the lines of your craving…",
         "search_loading_2": "Browsing spots in your city…",
@@ -729,10 +738,10 @@
         "vibe_friends": "Friends",
         "vibe_cheap": "Cheap Eats",
         "vibe_corporate": "Corporate",
-        "roulette_sub": "Feeling lucky? Shake for a random gem",
+        "roulette_sub": "Can’t decide? Spin for a pick from people you follow",
         "table_promo_title": "Start a Table",
         "table_promo_sub": "Pick a few places, share a link, vote together",
-        "lists_leaderboard_title": "NomNom list leaderboard",
+        "lists_leaderboard_title": "NomNom List leaderboard",
         "lists_leaderboard_subtitle": "Across all NomNom lists — spots, reviews, and must-try picks.",
         "lists_leaderboard_mode_interaction": "Momentum",
         "lists_leaderboard_mode_followers": "Trending",
@@ -755,15 +764,15 @@
         "feed_load_more": "Show more spots",
         "feed_card_open_aria": "Open details for {{name}}",
         "sponsored_badge": "Sponsored",
-        "empty_market_title": "Pick your home turf",
+        "empty_market_title": "Pick your home area",
         "empty_market_body": "We load spots from your home area first. Finish location in onboarding, or update it in your profile.",
         "empty_market_cta": "Set location",
         "fab_label": "NomNom?",
         "feed_empty_vibe": "No spots match that vibe here yet. Try another, or clear the filter.",
         "feed_empty_clear_vibe": "Clear filter",
         "filter_open_now": "Open now",
-        "decide_group_kicker": "Can't decide where to eat?",
-        "roulette_promo_title": "Roulette"
+        "decide_group_kicker": "Can’t decide where to eat?",
+        "roulette_promo_title": "NomNom Roulette"
       },
       "admin": {
         "hub": {
@@ -825,10 +834,10 @@
         "title": "Map",
         "subtitle": "Browse spots around you. Filters and map data will connect here next.",
         "search_placeholder": "Search spots or areas…",
-        "ai_search_placeholder": "Ask AI — e.g. cosy ramen for a rainy night",
-        "search_ai_label": "AI",
-        "search_ai_enter_aria": "Switch to AI search",
-        "search_ai_exit_aria": "Exit AI search",
+        "ai_search_placeholder": "What’s the vibe? — e.g. cosy ramen for a rainy night",
+        "search_ai_label": "Ask",
+        "search_ai_enter_aria": "Switch to vibe search",
+        "search_ai_exit_aria": "Back to place search",
         "chip_hot": "Hot NomNoms",
         "chip_rated": "Top rated",
         "chip_saved": "Saved",
@@ -876,8 +885,8 @@
         "sheet_empty_following": "No spots from people you follow yet. Follow people to see their lists here.",
         "sheet_login_following": "Sign in to see spots from people you follow.",
         "sheet_pick_spot": "Tap a pin on the map to see details.",
-        "sheet_spots_in_view": "NomNom List",
-        "sheet_spots_in_view_count": "NomNom List ({{count}})",
+        "sheet_spots_in_view": "Spots in this view",
+        "sheet_spots_in_view_count": "Spots in this view ({{count}})",
         "sheet_list_aria": "NomNom List",
         "sheet_load_more": "Show more spots",
         "sheet_following_loading_aria": "Loading friends on this spot",
@@ -911,7 +920,7 @@
         "public_guest_prompt_title": "Want the full experience?",
         "public_guest_prompt_body": "Create a free account or sign in to save this place, write reviews, and get personalised picks.",
         "public_guest_sign_in": "Sign in",
-        "public_guest_sign_up": "Create account",
+        "public_guest_sign_up": "Let’s NomNom!",
         "save_coming_soon": "Save to a list",
         "open_maps": "Open in Maps",
         "open_maps_aria": "Open this place in maps in a new tab",
@@ -1029,7 +1038,7 @@
         "tab_restaurants": "Spots",
         "tab_lists": "My lists",
         "empty_restaurants_title": "No saved spots yet",
-        "empty_restaurants": "Tap the bookmark on any spot to build your personal go-to stash.",
+        "empty_restaurants": "Tap the bookmark on any restaurant to start.",
         "empty_lists_title": "Your first list is waiting",
         "empty_lists": "Group spots into lists — a weekend brunch rotation, places to visit with friends, a local guide when guests come to town.",
         "empty_lists_body": "Tap Save on any spot to add it to a list. Create as many lists as you like — they can be private or shared.",
@@ -1042,12 +1051,12 @@
         "meta_title": "NomNom Roulette",
         "result_meta_title": "Your pick",
         "title": "NomNom Roulette",
-        "subtitle_before": "Shake for a random hit of deliciousness. No thinking, just",
-        "subtitle_highlight": "NomNomming!",
-        "cta_spin": "Spin the Noms!",
+        "subtitle_before": "Can’t decide? Spin for a pick from people you follow. Just",
+        "subtitle_highlight": "NomNomming.",
+        "cta_spin": "Spin NomNom Roulette",
         "spin_loading": "Spinning…",
-        "spin_suspense_1": "Rolling the dice…",
-        "spin_suspense_2": "The noms are deciding…",
+        "spin_suspense_1": "Gathering the spots…",
+        "spin_suspense_2": "Picking one…",
         "spin_suspense_3": "Almost there…",
         "spin_again": "Spin again",
         "circle_footer": "From your NomNom Circle",
@@ -1055,10 +1064,10 @@
         "close_aria": "Close",
         "fab_aria": "Open NomNom Roulette",
         "nav_promo_kicker": "Stuck for ideas?",
-        "nav_promo_title": "Try the NomNom Roulette",
-        "nav_promo_cta": "Shake it up",
-        "result_badge": "The Winning NomNom!",
-        "result_badge_first": "Your first NomNom pick!",
+        "nav_promo_title": "NomNom Roulette",
+        "nav_promo_cta": "Spin NomNom Roulette",
+        "result_badge": "Your pick",
+        "result_badge_first": "Your first pick",
         "circle_title": "Your NomNom Circle",
         "circle_subtitle": "Recommended by people you follow",
         "view_details": "View NomNom details",
@@ -1067,7 +1076,7 @@
         "result_missing_body": "This place isn’t in today’s pool anymore. Spin again for a fresh pick.",
         "result_hero_alt": "Restaurant photo",
         "skip_visited": "Skip spots I’ve been to",
-        "skip_visited_all_seen": "You’ve been to everything in your circle — spinning them all."
+        "skip_visited_all_seen": "You’ve been to everything in your NomNom Circle — spinning them all."
       },
       "settings": {
         "title": "Settings",
@@ -1115,7 +1124,7 @@
           "row_admin_subtitle": "Sponsored placements and other internal tools.",
           "group_danger": "Danger zone",
           "group_session": "Session",
-          "go_home": "Go home"
+          "go_home": "Take me home"
         },
         "back_to_hub": "Back to settings",
         "edit": {
@@ -1330,9 +1339,9 @@
       "google": {
         "brand_line1": "NomNom",
         "brand_line2": "",
-        "tagline_before": "A trusted feed for",
-        "tagline_highlight": "real-deal",
-        "tagline_after": "food discovery.",
+        "tagline_before": "Restaurant picks from",
+        "tagline_highlight": "people you trust.",
+        "tagline_after": "",
         "cta_google": "Continue with Google",
         "swap_register_prompt": "New user?",
         "swap_register_action": "Create account",
@@ -1375,7 +1384,7 @@
         "email_label": "Email address",
         "send_request": "Send reset link",
         "return_to_sign_in": "Back to sign in",
-        "submit_error": "Something went wrong sending the reset link. Please try again."
+        "submit_error": "We couldn’t send the reset link. Check your connection and try again."
       },
       "new_password": {
         "title": "New password",
@@ -1419,23 +1428,23 @@
     },
     "error": {
       "403": {
-        "eyebrow": "Error 403 — reserved seating",
-        "title": "This table is reserved.",
-        "description": "You don’t have access to this page yet. It might be locked to a specific account, a paid list, or a creator-only area. If you think that’s a mistake, drop us a line from Feedback.",
+        "eyebrow": "Error 403",
+        "title": "You don’t have access to this page.",
+        "description": "It might be locked to a specific account, a paid list, or a creator-only area. If you think that’s a mistake, send us a note from Feedback.",
         "goToHome": "Take me home",
-        "exploreMap": "Explore the map"
+        "seeHowItWorks": "See how it works"
       },
       "404": {
-        "eyebrow": "Error 404 — off the menu",
-        "title": "This dish isn’t on the menu.",
-        "description": "The page you’re craving isn’t here. The link might be stale, the URL a little off, or the spot may have closed for good. Let’s get you back to something tasty.",
+        "eyebrow": "Error 404",
+        "title": "This page isn’t here.",
+        "description": "The link might be out of date, or the URL might have a typo. Head home, or see how NomNom works.",
         "goToHome": "Take me home",
-        "exploreMap": "Explore the map"
+        "seeHowItWorks": "See how it works"
       },
       "500": {
-        "eyebrow": "Error 500 — kitchen mishap",
-        "title": "Something burned in the kitchen.",
-        "description": "Our end dropped the plate on this one. Give it another shot in a moment — if it keeps happening, drop us a line from Feedback and we’ll dig into it.",
+        "eyebrow": "Error 500",
+        "title": "Something broke on our end.",
+        "description": "Give it another shot in a moment — if it keeps happening, send us a note from Feedback and we’ll look into it.",
         "action": "Take me home",
         "refresh": "Refresh"
       }
@@ -1443,27 +1452,27 @@
     "public": {
       "roulette": {
         "lisboa": {
-          "meta_title": "Lisbon restaurant roulette",
-          "metaDescription": "Can’t decide where to eat in Lisbon? Spin the free NomNom Roulette and land on a real restaurant — no account needed.",
-          "title": "Lisbon restaurant roulette",
+          "meta_title": "NomNom Roulette in Lisbon",
+          "metaDescription": "Can’t decide where to eat in Lisbon? Spin NomNom Roulette for a real restaurant — no account needed.",
+          "title": "NomNom Roulette in Lisbon",
           "subtitle": "Stuck on where to eat? Spin once and we’ll pick a restaurant in Greater Lisbon.",
-          "cta_spin": "Spin the roulette",
+          "cta_spin": "Spin NomNom Roulette",
           "spin_loading": "Loading spots…",
-          "spin_suspense_1": "Shuffling the deck…",
-          "spin_suspense_2": "Consulting the food gods…",
+          "spin_suspense_1": "Gathering the spots…",
+          "spin_suspense_2": "Picking one…",
           "spin_suspense_3": "Almost there…",
           "empty_pool": "No spots available right now. Try again in a bit.",
           "scope_footer": "Spots in Greater Lisbon",
           "signup_prompt": "Want your own picks and lists?",
-          "signup_cta": "Create a free account",
-          "result_badge": "Your Lisbon roulette pick",
+          "signup_cta": "Let’s NomNom!",
+          "result_badge": "Your Lisbon NomNom Roulette pick",
           "og_no_account": "Free, no account needed"
         }
       }
     },
     "maintenance": {
-      "title": "Kitchen’s closed for a quick clean-up.",
-      "description": "We’re tidying things up behind the scenes. Back in a bit.",
+      "title": "We’ll be back in a moment.",
+      "description": "We’re doing a bit of work behind the scenes. Try again shortly.",
       "goToHome": "Take me home"
     },
     "contact_us": {
@@ -1507,7 +1516,7 @@
       "free_title": "Free for everyone",
       "free_body": "Create an account, set your tastes, and start discovering. No premium tier, no paywall on the platform itself.",
       "free_item_browse": "Browse free lists, follow creators and locals, build your own lists",
-      "free_item_features": "Maps, search, vibe filters (Date Night, Friends, Cheap Eats, Corporate), and NomNom Roulette when you can’t decide",
+      "free_item_features": "Maps, search, vibe filters, NomNom Roulette when you can’t decide, and Table so a group can vote without installing the app",
       "paid_title": "Paid lists",
       "paid_body": "Some creators paywall part of their lists. The first few spots on a paid list stay free; the rest unlock when you buy a Snapshot or subscribe to that creator. Payment goes to the creator (via Stripe); NomNom takes a small platform fee.",
       "snapshot_overline": "One-time",
@@ -1531,8 +1540,8 @@
       "questions_read_faqs": "Read the FAQs",
       "questions_or": " or ",
       "questions_contact": "contact us",
-      "get_started": "Get started",
-      "link_create_account": "Create a free account",
+      "get_started": "Let’s NomNom!",
+      "link_create_account": "Let’s NomNom!",
       "link_use_cases": "How people use NomNom",
       "link_faqs": "FAQs"
     },
@@ -1542,15 +1551,57 @@
       "breadcrumb_home": "Home",
       "breadcrumb_about": "About",
       "body_1_prefix": "NomNom is built for anyone who’s tired of juggling maps, social apps, and random “best of” articles just to choose one place. We surface spots tied to ",
-      "body_1_emphasis": "voices you choose",
+      "body_1_emphasis": "people you trust",
       "body_1_suffix": " — creators and locals — with the context and photos that anonymous star ratings rarely give you.",
       "body_2_prefix": "Tell us what you like and where you are, pick a vibe when it helps, and save places to lists you can share with the people you actually eat with. When you’re stuck, ",
       "body_2_roulette": "NomNom Roulette",
-      "body_2_suffix": " pulls from curated picks — not whatever ranked first in a generic search.",
+      "body_2_suffix": " pulls from a pool you already trust — not whatever ranked first in a generic search. For a group, share a Table link and vote without installing another app.",
       "explore": "Explore",
-      "link_create_account": "Create a free account",
+      "link_create_account": "Let’s NomNom!",
       "link_faqs": "FAQs",
       "link_portugal": "Portugal hub"
+    },
+    "contentHub": {
+      "home": "Home",
+      "countries": "Countries",
+      "explore_title": "Explore by country",
+      "explore_description": "Pick a country to see cities, restaurant directories, and creator guides.",
+      "country_description": "Cities, local creators, and collections — keep the context when you pick a spot.",
+      "cities": "Cities",
+      "creators": "Creators",
+      "view_all_creators": "View all creators",
+      "collections": "Country collections",
+      "global_label": "Global: {{name}}",
+      "city_description": "Dining in {{city}}, {{country}} — lists, maps, and guides with the person attached.",
+      "restaurants": "Restaurants",
+      "browse_directory": "Browse the full directory",
+      "listings_or_vibe": "({{count}} listings) or filter by vibe:",
+      "city_context": "City and country context",
+      "collection_label": "Collection: {{name}}",
+      "guide_label": "Guide: {{name}}",
+      "creators_in": "Creators in {{country}}",
+      "back_to": "Back to {{country}}",
+      "creators_title": "Creators in {{country}}",
+      "creators_description": "People whose lists and notes you can follow — restaurants, collections, and trip planning in one place.",
+      "more_to_explore": "More to explore",
+      "overview": "{{country}} overview",
+      "profile_label": "Profile: {{name}}",
+      "keep_exploring": "Keep exploring",
+      "collections_creators": "Collections and creators",
+      "read_label": "Read: {{name}}",
+      "restaurants_in": "Restaurants in {{city}}",
+      "restaurants_in_tagged": "Restaurants in {{city}} — {{tag}}",
+      "directory_description": "{{count}} places. Page {{page}} of {{pages}}.",
+      "directory_description_tagged": "{{count}} places tagged {{tag}}. Page {{page}} of {{pages}}.",
+      "previous_page": "Previous page",
+      "next_page": "Next page",
+      "clear_tag_filter": "Clear tag filter",
+      "continue_reading": "Continue reading",
+      "city_directory": "City restaurant directory",
+      "country_creators": "Country creators",
+      "restaurant_label": "Restaurant: {{name}}",
+      "creator_label": "Creator: {{name}}",
+      "hub_label": "{{name}} hub"
     },
     "faqs": {
       "title": "FAQs",
@@ -1589,11 +1640,11 @@
       "general": {
         "general-1": {
           "question": "What is NomNom?",
-          "answer": "NomNom is where food creators in Lisbon and Porto publish their restaurant recommendations as curated lists. Instead of scrolling through TikTok saves or lost WhatsApp messages, you get one link with every place a creator recommends — organised, searchable, and shareable."
+          "answer": "NomNom is restaurant picks from people you trust — creators and locals you choose to follow. You save spots into lists, share a Table link so a group can vote without installing the app, and spin NomNom Roulette when nobody can choose. Some creator lists are paid; the app itself is free."
         },
         "general-2": {
           "question": "How does it work?",
-          "answer": "Creators build lists of restaurants they’ve visited and trust. To see a paid list, you buy a Snapshot (one-time) or subscribe to their lists (monthly)."
+          "answer": "Follow people whose taste you already trust. Their spots show up in your feed, on the map, and in lists you can save or follow. When a group has to pick, share a Table link — friends vote without the app. If you’re still stuck, NomNom Roulette spins a pool from people you follow, not a generic ranking. Paid lists are optional: a Snapshot buys one list as it stands today; a Subscription unlocks all of that creator’s paid lists."
         },
         "general-3": {
           "question": "How is NomNom different from Google Maps or TripAdvisor?",
@@ -1631,7 +1682,7 @@
     },
     "coming_soon": {
       "title": "Almost ready",
-      "description": "Not quite ready to plate. Leave your email and we’ll let you know when we launch.",
+      "description": "Leave your email and we’ll write when NomNom is ready.",
       "days": "Days",
       "hours": "Hours",
       "minutes": "Minutes",
@@ -1687,8 +1738,8 @@
       "alt_text": "empty content",
       "no_posts": {
         "title": "No posts found",
-        "description": "Looks like there are no blog posts here yet. Check back soon or head back to the home page.",
-        "return_home": "Return to home"
+        "description": "No blog posts yet. Check back soon, or head home.",
+        "return_home": "Take me home"
       },
       "post_not_found": {
         "title": "Post not found",
@@ -1752,12 +1803,12 @@
       "aria_bell": "Open notifications",
       "mark_all_read": "Mark all as read",
       "delete_all": "Delete all",
-      "delete_all_confirm": "Delete all notifications? This can't be undone.",
+      "delete_all_confirm": "Delete all notifications? This can’t be undone.",
       "mark_read": "Mark as read",
       "delete": "Delete",
-      "empty": "Calm for now. Check back later.",
+      "empty": "Nothing new yet. Check Discover for spots from people you follow.",
       "empty_filtered": "Nothing here for this list.",
-      "empty_title": "You're all caught up",
+      "empty_title": "You’re all caught up",
       "empty_filtered_title": "Nothing for this list",
       "empty_cta": "Discover spots",
       "section_today": "Today",
@@ -1774,7 +1825,7 @@
       "enable_device_hint": "Get notified when creators you follow add new spots.",
       "enable_device_blocked": "Notifications are blocked. Enable them in your browser settings.",
       "enable_device_ios_hint": "Add this app to your Home Screen to enable notifications.",
-      "enable_device_unsupported": "Push notifications aren't supported in this browser.",
+      "enable_device_unsupported": "Push notifications aren’t supported in this browser.",
       "enabled_device": "Notifications enabled on this device",
       "pref_title": "List updates",
       "pref_in_app": "Show in the app",
@@ -1858,10 +1909,16 @@
     }
   },
   "footer": {
-    "description": "Discover restaurants from people you trust — creators and locals you choose to follow.",
+    "description": "Restaurant picks from people you trust — creators and locals you choose to follow.",
     "copyright": "© 2026 NomNom. All rights reserved",
     "links": {
+      "explore": "Explore",
       "company": "NomNom",
+      "about": "About",
+      "features": "Features",
+      "use_cases": "Use cases",
+      "resources": "Resources",
+      "pricing": "Pricing",
       "contact_us": "Contact us",
       "faqs": "FAQs",
       "contact": "Contact",

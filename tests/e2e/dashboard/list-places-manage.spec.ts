@@ -10,7 +10,7 @@ import {
 } from '../support/test-credentials';
 
 /**
- * Places-tab management: a seeded list item renders, and removing it via the UI deletes the
+ * Places-tab management (TEST-PLAN L5): a seeded list item renders, and removing it via the UI deletes the
  * list_items row. (Add-via-save-sheet is a separate multi-step flow; the item is seeded so
  * this focuses on the render + remove mechanism.)
  */

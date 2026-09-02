@@ -22,7 +22,8 @@ import {
 } from '../support/seed';
 
 /**
- * Paid-list PAYWALL CONTENT GATING on the public list page (`/lists/:id`), WITHOUT live Stripe.
+ * Paid-list PAYWALL CONTENT GATING on the public list page (`/lists/:id`), WITHOUT live Stripe
+ * (TEST-PLAN B15).
  *
  * A monetized `public_subscribers` list is seeded (service role) with N places of varying recency,
  * then access rows are inserted directly into the tables the app reads (`list_subscriptions`,

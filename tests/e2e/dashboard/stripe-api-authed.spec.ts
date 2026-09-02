@@ -59,4 +59,30 @@ test.describe('stripe checkout — authed guard rails', () => {
     expect(res.status()).toBe(400);
     expect((await res.json()).error).toBe('invalid_json');
   });
+
+  test('billing-portal invalid JSON → 400 invalid_json', async ({ request }) => {
+    const res = await request.post('/api/stripe/billing-portal', {
+      headers: { 'content-type': 'application/json' },
+      data: Buffer.from('not-json{{{'),
+    });
+    skipIfStripeUnconfigured(res);
+    expect(res.status()).toBe(400);
+    expect((await res.json()).error).toBe('invalid_json');
+  });
+
+  test('billing-portal missing id → 400 invalid_id', async ({ request }) => {
+    const res = await request.post('/api/stripe/billing-portal', { data: {} });
+    skipIfStripeUnconfigured(res);
+    expect(res.status()).toBe(400);
+    expect((await res.json()).error).toBe('invalid_id');
+  });
+
+  test('billing-portal unknown subscription → 404 not_found', async ({ request }) => {
+    const res = await request.post('/api/stripe/billing-portal', {
+      data: { listSubscriptionId: '00000000-0000-4000-8000-000000000000' },
+    });
+    skipIfStripeUnconfigured(res);
+    expect(res.status()).toBe(404);
+    expect((await res.json()).error).toBe('not_found');
+  });
 });

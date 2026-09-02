@@ -5,7 +5,7 @@ import { TermsView } from 'src/sections/legal/view';
 // ----------------------------------------------------------------------
 
 export const metadata = pageMetadata({
-  title: 'Terms of Service',
+  title: 'Terms of service',
   description: 'The terms and conditions that govern your use of NomNom.',
   path: '/terms',
 });

@@ -12,6 +12,7 @@ import { suggestByTags } from '@/content-platform/related-content';
 import type { ParsedMdxDocument } from '@/content-platform/types';
 import { fetchTinaInfluencer, fetchTinaSeoCollection } from '@/content-platform/tina-queries';
 import { getSiteUrl } from '@/content-platform/site-url';
+import { contentHubT, displaySlug } from '@/content-platform/content-hub-t';
 
 import { APP, APP_OG_IMAGE_PATH } from 'src/config-global';
 
@@ -31,6 +32,7 @@ export async function buildStandardDocLinks({
   cityContext,
   countryContext,
 }: BuildLinksArgs) {
+  const t = await contentHubT();
   const links: { href: string; label: string }[] = [];
 
   const add = (href: string | null | undefined, label: string) => {
@@ -38,13 +40,16 @@ export async function buildStandardDocLinks({
   };
 
   for (const slug of doc.frontmatter.relatedCollectionSlugs ?? []) {
-    add(`/collections/${slug}`, `Collection: ${slug.replace(/-/g, ' ')}`);
+    add(`/collections/${slug}`, t('collection_label', { name: displaySlug(slug) }));
   }
 
   for (const slug of doc.frontmatter.relatedRestaurantSlugs ?? []) {
     const r = getRestaurantBySlug(slug);
     if (r) {
-      add(`/countries/${r.country}/${r.city}/restaurants/${r.slug}`, `Restaurant: ${r.name}`);
+      add(
+        `/countries/${r.country}/${r.city}/restaurants/${r.slug}`,
+        t('restaurant_label', { name: r.name })
+      );
     }
   }
 
@@ -52,27 +57,27 @@ export async function buildStandardDocLinks({
     const inf = relatedPool.find((d) => d.slug === slug && d.filePath.includes('/influencers/'));
     const country = inf?.frontmatter.country;
     if (country) {
-      add(`/countries/${country}/influencers/${slug}`, `Creator: ${slug.replace(/-/g, ' ')}`);
+      add(
+        `/countries/${country}/influencers/${slug}`,
+        t('creator_label', { name: displaySlug(slug) })
+      );
     }
   }
 
   if (cityContext) {
     add(
       `/countries/${cityContext.country}/${cityContext.city}`,
-      `${cityContext.city.replace(/-/g, ' ')} hub`
+      t('hub_label', { name: displaySlug(cityContext.city) })
     );
-    add(
-      `/countries/${cityContext.country}/${cityContext.city}/restaurants`,
-      'City restaurant directory'
-    );
+    add(`/countries/${cityContext.country}/${cityContext.city}/restaurants`, t('city_directory'));
   }
 
   if (countryContext) {
     add(
       `/countries/${countryContext.country}`,
-      `${countryContext.country.replace(/-/g, ' ')} overview`
+      t('overview', { country: displaySlug(countryContext.country) })
     );
-    add(`/countries/${countryContext.country}/influencers`, 'Country creators');
+    add(`/countries/${countryContext.country}/influencers`, t('country_creators'));
   }
 
   for (const r of suggestByTags(doc, relatedPool, 3)) {
@@ -179,6 +184,8 @@ export async function MdxDocumentView({
     cityContext,
     countryContext,
   });
+  const hubT = await contentHubT();
+  const continueTitle = hubT('continue_reading');
 
   return (
     <>
@@ -200,7 +207,7 @@ export async function MdxDocumentView({
           </Alert>
         ) : null}
         {body}
-        <RelatedLinksSection title="Continue reading" links={related.slice(0, 12)} />
+        <RelatedLinksSection title={continueTitle} links={related.slice(0, 12)} />
       </ContentPageShell>
     </>
   );

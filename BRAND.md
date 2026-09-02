@@ -122,7 +122,7 @@ Title Case is reserved for: brand mark (`NomNom`), branded product features (`No
 
 ### CTAs
 - One sentence, sentence case, no period: "Create account", "Sign in", "Save pricing".
-- Playful CTAs reserved for marketing/onboarding: "Let's NomNom!", "Spin the Noms!".
+- Playful CTAs reserved for marketing/onboarding: "Let's NomNom!", "Spin NomNom Roulette".
 - Stripe/billing CTAs stay plain: "Set up", "Continue setup", "Manage payouts" — never four verbs for the same step.
 
 ---

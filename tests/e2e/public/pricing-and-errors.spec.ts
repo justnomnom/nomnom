@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 import { expectAppShellMainVisible } from '../support/page-assertions';
 
 /**
- * Pricing content assertions (TEST-PLAN P1) and error/404 shells (E1, M1 negative path).
+ * Pricing content assertions (TEST-PLAN P1 + P2 reachability) and error/404 shells (E1, M1 negative path).
  * `smoke-public.spec.ts` only checks that /pricing loads; this checks the content contract.
  */
 test.describe('pricing page content', () => {
@@ -19,6 +19,15 @@ test.describe('pricing page content', () => {
     // Raw i18n keys leaking into the page means a missing translation.
     const body = await page.locator('main').innerText();
     expect(body).not.toContain('pages.pricing.');
+  });
+
+  test('P2 pricing is reachable from the marketing footer', async ({ page }) => {
+    test.setTimeout(180_000);
+    await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 120_000 });
+    await expectAppShellMainVisible(page, { timeout: 45_000 });
+    await page.getByRole('contentinfo').getByRole('link', { name: /^pricing$/i }).click();
+    await expect(page).toHaveURL(/\/pricing/);
+    await expectAppShellMainVisible(page, { timeout: 45_000 });
   });
 });
 

@@ -188,8 +188,7 @@ export default function StartTableSheet({ open, onClose, listId, items, isOwner 
   }, [busy, onClose]);
 
   /**
-   * Create the table, copy its share URL, then open it so the owner lands on
-   * the vote page instead of staying on the list.
+   * Create the table, open the vote page, and copy the share URL in the background.
    */
   const handleCreate = useCallback(async () => {
     if (!canSubmit) return;
@@ -217,11 +216,14 @@ export default function StartTableSheet({ open, onClose, listId, items, isOwner 
     analytics.trackTableStarted(analyticsProps);
     const tablePath = paths.table(table.table_id);
     const url = typeof window !== 'undefined' ? `${window.location.origin}${tablePath}` : tablePath;
-    const copied = await copy(url);
-    analytics.trackShareCopied(analyticsProps);
-    if (copied) persistLinkCopied(String(table.table_id));
     setBusy(false);
+    // Navigate first: clipboard can hang in some browsers (Playwright included) and
+    // used to block the owner from ever leaving the list page.
     router.push(tablePath, { transitionTypes: ['nav-forward'] });
+    copy(url).then((copied) => {
+      analytics.trackShareCopied(analyticsProps);
+      if (copied) persistLinkCopied(String(table.table_id));
+    });
   }, [canSubmit, selectedIds, listId, title, startsAtLocal, t, analytics, copy, router]);
 
   const sheetTitle = (

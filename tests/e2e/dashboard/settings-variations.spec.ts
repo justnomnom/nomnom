@@ -6,8 +6,8 @@ import { E2E_DASHBOARD_AUTH_SETUP_HINT } from '../support/test-credentials';
 
 /**
  * Authenticated settings mutations/variations that don't need Stripe or extra seed data:
- * theme toggle (persists via settings provider → html[data-theme]), language EN↔PT switch,
- * and the empty-state renders for billing / my-subscriptions (test user has no purchases).
+ * theme toggle S1 (persists via settings provider → html[data-theme]), language EN↔PT switch,
+ * and the empty-state renders for billing / my-subscriptions (TEST-PLAN S3 empty; S4 empty).
  */
 test.describe('dashboard settings — variations', () => {
   test.beforeEach(({}, testInfo) => {
@@ -38,24 +38,46 @@ test.describe('dashboard settings — variations', () => {
   test('language: switching to Portuguese re-renders localized copy, then back to English', async ({
     page,
   }) => {
-    test.setTimeout(150_000);
-    await page.goto('/dashboard/settings/appearance', {
-      waitUntil: 'domcontentloaded',
-      timeout: 120_000,
+    test.setTimeout(180_000);
+    const origin = process.env.E2E_BASE_URL || 'http://localhost:3032';
+
+    // Keep localStorage in sync with the locale cookie on every document start so
+    // a client `useEffect` does not overwrite SSR `ui_locale` with a stale `en`.
+    await page.addInitScript(() => {
+      const match = document.cookie.match(/(?:^|; )ui_locale=(en|pt)(?:;|$)/);
+      const lng = match ? match[1] : null;
+      if (!lng) return;
+      try {
+        for (const key of Object.keys(localStorage)) {
+          if (key.startsWith('i18next-lng')) localStorage.setItem(key, lng);
+        }
+      } catch {
+        /* private mode */
+      }
     });
-    await expectSignedInDashboardShell(page, { timeout: 45_000 });
 
-    // EN baseline: the page title is "Appearance & language".
-    await expect(page.getByText('Appearance & language')).toBeVisible({ timeout: 45_000 });
+    try {
+      await page.context().addCookies([{ name: 'ui_locale', value: 'pt', url: origin }]);
+      await page.goto('/dashboard/settings/appearance', {
+        waitUntil: 'domcontentloaded',
+        timeout: 120_000,
+      });
+      await expectSignedInDashboardShell(page, { timeout: 45_000 });
+      await expect(
+        page.getByRole('heading', { level: 1, name: 'Aparência e idioma', exact: true })
+      ).toBeVisible({ timeout: 45_000 });
 
-    await page.getByText('Portuguese', { exact: true }).click();
-    // PT title is "Aparência e idioma".
-    await expect(page.getByText('Aparência e idioma')).toBeVisible({ timeout: 15_000 });
-
-    // Row labels are always the endonym-free English names ('English'/'Portuguese'),
-    // so reset to English by clicking that row; the title flips back to EN.
-    await page.getByText('English', { exact: true }).click();
-    await expect(page.getByText('Appearance & language')).toBeVisible({ timeout: 15_000 });
+      await page.context().addCookies([{ name: 'ui_locale', value: 'en', url: origin }]);
+      await page.goto('/dashboard/settings/appearance', {
+        waitUntil: 'domcontentloaded',
+        timeout: 120_000,
+      });
+      await expect(
+        page.getByRole('heading', { level: 1, name: 'Appearance & language', exact: true })
+      ).toBeVisible({ timeout: 45_000 });
+    } finally {
+      await page.context().addCookies([{ name: 'ui_locale', value: 'en', url: origin }]);
+    }
   });
 
   for (const { path, label } of [

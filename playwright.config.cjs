@@ -19,13 +19,19 @@ module.exports = defineConfig({
   workers: Number(process.env.PW_WORKERS) || 1,
   reporter: [['list'], ['html', { open: 'never', outputFolder: 'playwright-report' }]],
   globalSetup: './tests/e2e/global-setup.ts',
-  timeout: 60_000,
+  /** Webpack first-compile of a cold dashboard route often exceeds 60s. Override: PW_TIMEOUT. */
+  timeout: Number(process.env.PW_TIMEOUT) || 120_000,
   expect: { timeout: 15_000 },
   use: {
     baseURL,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
+    /**
+     * `retain-on-failure` still records every test, then keeps failures. On a near-full
+     * disk that filled C: mid-run (ENOSPC writing error-context.md / videos). Opt in with
+     * PW_VIDEO=1 when debugging a specific failure.
+     */
+    video: process.env.PW_VIDEO === '1' ? 'retain-on-failure' : 'off',
     locale: 'en-US',
   },
   projects: [
@@ -66,6 +72,7 @@ module.exports = defineConfig({
         env: {
           ...process.env,
           NEXT_PUBLIC_SHOW_E2E_LISTS_IN_UI: 'true',
+          WEBPACK_CACHE: 'off',
         },
       },
 });

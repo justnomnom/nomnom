@@ -9,6 +9,7 @@ import {
   contentTagPillLinkClassName,
 } from 'src/components/content-platform/ui/content-inline-link-classname';
 import { JsonLd } from '@/components/content-platform/seo/json-ld';
+import { contentHubT, displaySlug } from '@/content-platform/content-hub-t';
 import {
   getCitySlugsForCountry,
   getCountrySlugs,
@@ -21,15 +22,6 @@ import {
 import { getSiteUrl } from '@/content-platform/site-url';
 
 export const revalidate = 60;
-
-/** Slug or space-separated segment → Title Case for metadata and display. */
-function slugToTitle(slug: string): string {
-  return slug
-    .split(/[-\s]+/)
-    .filter(Boolean)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(' ');
-}
 
 type PageProps = { params: Promise<{ country: string; city: string }> };
 
@@ -45,8 +37,8 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { country, city } = await params;
-  const cityTitle = slugToTitle(city);
-  const countryTitle = slugToTitle(country);
+  const cityTitle = displaySlug(city);
+  const countryTitle = displaySlug(country);
   const title = `${cityTitle}, ${countryTitle} — restaurants & guides`;
   const description = `Restaurants, collections, and maps for ${cityTitle} in ${countryTitle}.`;
   const canonical = `${getSiteUrl()}/countries/${country}/${city}`;
@@ -62,6 +54,9 @@ export default async function CityPage({ params }: PageProps) {
     notFound();
   }
 
+  const t = await contentHubT();
+  const cityName = displaySlug(city);
+  const countryName = displaySlug(country);
   const restaurants = getRestaurantsByCity(country, city);
   const cityCols = collectionSlugsForCity(country, city);
   const globalCols = sampleGlobalCollectionSlugs(2);
@@ -73,18 +68,18 @@ export default async function CityPage({ params }: PageProps) {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: `${site}` },
-      { '@type': 'ListItem', position: 2, name: 'Countries', item: `${site}/countries` },
+      { '@type': 'ListItem', position: 1, name: t('home'), item: `${site}` },
+      { '@type': 'ListItem', position: 2, name: t('countries'), item: `${site}/countries` },
       {
         '@type': 'ListItem',
         position: 3,
-        name: country.replace(/-/g, ' '),
+        name: countryName,
         item: `${site}/countries/${country}`,
       },
       {
         '@type': 'ListItem',
         position: 4,
-        name: city.replace(/-/g, ' '),
+        name: cityName,
         item: `${site}/countries/${country}/${city}`,
       },
     ],
@@ -94,25 +89,25 @@ export default async function CityPage({ params }: PageProps) {
     <>
       <JsonLd data={breadcrumbLd} />
       <ContentPageShell
-        title={`${city.replace(/-/g, ' ')}`}
-        description={`Dining in ${city.replace(/-/g, ' ')}, ${country.replace(/-/g, ' ')} — curated lists, maps, and editorial deep dives.`}
+        title={cityName}
+        description={t('city_description', { city: cityName, country: countryName })}
         breadcrumbs={[
-          { name: 'Home', href: '/' },
-          { name: 'Countries', href: '/countries' },
-          { name: country.replace(/-/g, ' '), href: `/countries/${country}` },
-          { name: city.replace(/-/g, ' '), href: `/countries/${country}/${city}` },
+          { name: t('home'), href: '/' },
+          { name: t('countries'), href: '/countries' },
+          { name: countryName, href: `/countries/${country}` },
+          { name: cityName, href: `/countries/${country}/${city}` },
         ]}
       >
         <section className="not-prose mb-8">
-          <h2 className="text-xl font-semibold">Restaurants</h2>
+          <h2 className="text-xl font-semibold">{t('restaurants')}</h2>
           <p className="mt-2 text-muted-foreground">
             <Link
               href={`/countries/${country}/${city}/restaurants`}
               className={contentInlineLinkSemiboldUnderlineClassName}
             >
-              Browse the full directory
+              {t('browse_directory')}
             </Link>{' '}
-            ({restaurants.length} listings) or filter by vibe:
+            {t('listings_or_vibe', { count: restaurants.length })}
           </p>
           <ul className="mt-3 flex flex-wrap gap-2">
             {categories.map((tag) => (
@@ -121,7 +116,7 @@ export default async function CityPage({ params }: PageProps) {
                   href={`/countries/${country}/${city}/restaurants/tag/${encodeURIComponent(tag)}`}
                   className={contentTagPillLinkClassName}
                 >
-                  {tag.replace(/-/g, ' ')}
+                  {displaySlug(tag)}
                 </Link>
               </li>
             ))}
@@ -129,21 +124,21 @@ export default async function CityPage({ params }: PageProps) {
         </section>
 
         <RelatedLinksSection
-          title="City & country context"
+          title={t('city_context')}
           links={[
             ...cityCols.map((slug) => ({
               href: `/countries/${country}/${city}/collections/${slug}`,
-              label: `Collection: ${slug.replace(/-/g, ' ')}`,
+              label: t('collection_label', { name: displaySlug(slug) }),
             })),
             ...globalCols.map((slug) => ({
               href: `/collections/${slug}`,
-              label: `Guide: ${slug.replace(/-/g, ' ')}`,
+              label: t('guide_label', { name: displaySlug(slug) }),
             })),
             {
               href: `/countries/${country}/influencers`,
-              label: `Creators in ${country.replace(/-/g, ' ')}`,
+              label: t('creators_in', { country: countryName }),
             },
-            { href: `/countries/${country}`, label: `Back to ${country.replace(/-/g, ' ')}` },
+            { href: `/countries/${country}`, label: t('back_to', { country: countryName }) },
           ]}
         />
       </ContentPageShell>

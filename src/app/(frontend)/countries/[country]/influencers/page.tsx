@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { RelatedLinksSection } from '@/components/content-platform/sections/related-links';
 import { ContentPageShell } from '@/components/content-platform/sections/content-page-shell';
 import { contentInfluencerDirectoryRowLinkClassName } from 'src/components/content-platform/ui/content-inline-link-classname';
+import { contentHubT, displaySlug } from '@/content-platform/content-hub-t';
 import { getCountrySlugs, readMdxFilesInDir } from '@/content-platform/fs-content';
 import {
   influencerSlugsForCountry,
@@ -22,10 +23,10 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { country } = await params;
-  const title = `Creators — ${country.replace(/-/g, ' ')}`;
+  const title = `Creators — ${displaySlug(country)}`;
   return {
     title,
-    description: `Food and travel voices covering ${country.replace(/-/g, ' ')}.`,
+    description: `Food and travel voices covering ${displaySlug(country)}.`,
     alternates: { canonical: `${getSiteUrl()}/countries/${country}/influencers` },
   };
 }
@@ -37,19 +38,21 @@ export default async function CountryInfluencersIndex({ params }: PageProps) {
   const { country } = await params;
   if (!getCountrySlugs().includes(country)) notFound();
 
+  const t = await contentHubT();
+  const countryName = displaySlug(country);
   const influencers = readMdxFilesInDir('influencers').filter(
     (d) => d.frontmatter.country === country
   );
 
   return (
     <ContentPageShell
-      title={`Creators in ${country.replace(/-/g, ' ')}`}
-      description="Authority pages that bridge restaurants, collections, and itinerary planning."
+      title={t('creators_title', { country: countryName })}
+      description={t('creators_description')}
       breadcrumbs={[
-        { name: 'Home', href: '/' },
-        { name: 'Countries', href: '/countries' },
-        { name: country.replace(/-/g, ' '), href: `/countries/${country}` },
-        { name: 'Creators', href: `/countries/${country}/influencers` },
+        { name: t('home'), href: '/' },
+        { name: t('countries'), href: '/countries' },
+        { name: countryName, href: `/countries/${country}` },
+        { name: t('creators'), href: `/countries/${country}/influencers` },
       ]}
     >
       <ul className="not-prose space-y-3">
@@ -66,18 +69,18 @@ export default async function CountryInfluencersIndex({ params }: PageProps) {
       </ul>
 
       <RelatedLinksSection
-        title="More to explore"
+        title={t('more_to_explore')}
         links={[
-          { href: `/countries/${country}`, label: `${country.replace(/-/g, ' ')} overview` },
+          { href: `/countries/${country}`, label: t('overview', { country: countryName }) },
           ...influencerSlugsForCountry(country)
             .slice(0, 2)
             .map((slug) => ({
               href: `/countries/${country}/influencers/${slug}`,
-              label: `Profile: ${slug.replace(/-/g, ' ')}`,
+              label: t('profile_label', { name: displaySlug(slug) }),
             })),
           ...sampleGlobalCollectionSlugs(3).map((slug) => ({
             href: `/collections/${slug}`,
-            label: `Guide: ${slug.replace(/-/g, ' ')}`,
+            label: t('guide_label', { name: displaySlug(slug) }),
           })),
         ]}
       />

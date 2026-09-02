@@ -17,6 +17,7 @@ import { RouterLink } from 'src/routes/components';
 import { ic } from 'src/assets/icons';
 import { APP } from 'src/config-global';
 import { useLocales, useTranslate } from 'src/locales';
+import { readableAccent } from 'src/theme/readable-accent';
 import { getLocaleBodyMaxWidthCh } from 'src/theme/locale-prose';
 import { useAuthContext } from 'src/auth/hooks/use-auth-context';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
@@ -440,11 +441,11 @@ function HeroActions() {
             variant="caption"
             sx={{
               textAlign: 'center',
-              color: 'primary.dark',
+              color: (th) => readableAccent(th),
               fontWeight: 600,
               letterSpacing: '0.02em',
               textDecoration: 'none',
-              borderBottom: (th) => `1px solid ${alpha(th.palette.primary.dark, 0.45)}`,
+              borderBottom: (th) => `1px solid ${alpha(readableAccent(th), 0.45)}`,
               pb: 0.25,
               '&:hover': {
                 color: 'primary.darker',
@@ -568,7 +569,7 @@ export default function HomeHero() {
         <Box component="span" sx={{ color: 'text.primary' }}>
           <HeadlineWords text={headlineAccent} />
         </Box>{' '}
-        <Box component="span" sx={{ color: 'primary.main' }}>
+        <Box component="span" sx={{ color: (theme) => readableAccent(theme) }}>
           <HeadlineWords
             text={headlineSuffix}
             startIndex={headlineAccent.split(' ').filter(Boolean).length}
@@ -660,7 +661,7 @@ export default function HomeHero() {
                 border: (theme) => `3px solid ${theme.palette.background.default}`,
                 ml: -2,
                 bgcolor: (theme) => alpha(theme.palette.primary.main, 0.14),
-                color: 'primary.dark',
+                color: (theme) => readableAccent(theme),
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',

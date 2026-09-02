@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-19T20:56:12.529Z",
+  "updatedAt": "2026-08-24T13:37:32.035Z",
   "subjects": {
     "restaurant:4713e1cb-0813-4640-ae76-65fd8cb81905": {
       "kind": "restaurant",
@@ -207,6 +207,44 @@
           "assets": [
             "20260819T205155Z/restaurant-taskinha-do-b3co.mp4",
             "20260819T205155Z/restaurant-taskinha-do-b3co.jpg"
+          ]
+        }
+      ]
+    },
+    "restaurant:a4052876-3587-4304-ae50-327badf6ca33": {
+      "kind": "restaurant",
+      "id": "a4052876-3587-4304-ae50-327badf6ca33",
+      "name": "Restaurante do Capador",
+      "count": 1,
+      "firstProducedAt": "2026-08-24T13:33:13.298Z",
+      "lastProducedAt": "2026-08-24T13:33:13.298Z",
+      "history": [
+        {
+          "batchId": "20260824T132641Z",
+          "producedAt": "2026-08-24T13:33:13.298Z",
+          "composition": "RestaurantReviewsReel",
+          "assets": [
+            "20260824T132641Z/restaurant-restaurante-do-capador.mp4",
+            "20260824T132641Z/restaurant-restaurante-do-capador.jpg"
+          ]
+        }
+      ]
+    },
+    "review:45bdb477-c0c6-405e-b2f2-c7aa1ed44add": {
+      "kind": "review",
+      "id": "45bdb477-c0c6-405e-b2f2-c7aa1ed44add",
+      "name": "Casa das Ostras Praia Aguda",
+      "count": 1,
+      "firstProducedAt": "2026-08-24T13:37:32.031Z",
+      "lastProducedAt": "2026-08-24T13:37:32.031Z",
+      "history": [
+        {
+          "batchId": "20260824T133554Z",
+          "producedAt": "2026-08-24T13:37:32.031Z",
+          "composition": "RestaurantSpotlight",
+          "assets": [
+            "20260824T133554Z/review-casa-das-ostras-praia-aguda.mp4",
+            "20260824T133554Z/review-casa-das-ostras-praia-aguda.jpg"
           ]
         }
       ]

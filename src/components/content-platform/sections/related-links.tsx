@@ -39,7 +39,7 @@ export function RelatedLinksSection({ title, links }: RelatedLinksProps) {
             key={l.href}
             component={NextLink}
             href={l.href}
-            variant="outlined"
+            variant={l.href === '/auth/register' ? 'contained' : 'outlined'}
             color="primary"
             sx={{
               borderRadius: RADIUS.pill,

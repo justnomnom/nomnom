@@ -317,6 +317,9 @@ export default function MapView() {
     }
     let cancelled = false;
     setNameSuggestionsLoading(true);
+    const loadingTimeoutId = setTimeout(() => {
+      if (!cancelled) setNameSuggestionsLoading(false);
+    }, 8000);
     searchRestaurantsByName(q, { limit: 25 })
       .then(({ restaurants, error }) => {
         if (cancelled) return;
@@ -328,10 +331,12 @@ export default function MapView() {
         }
       })
       .finally(() => {
+        clearTimeout(loadingTimeoutId);
         if (!cancelled) setNameSuggestionsLoading(false);
       });
     return () => {
       cancelled = true;
+      clearTimeout(loadingTimeoutId);
     };
   }, [debouncedQuery, isAiSearchMode]);
 
@@ -2468,12 +2473,8 @@ export default function MapView() {
                     open={
                       !isAiSearchMode &&
                       suggestionsOpen &&
-                      !!debouncedQuery &&
-                      !mapNlLoading &&
-                      (nameSuggestionsLoading ||
-                        inViewSuggestions.length > 0 ||
-                        elsewhereSuggestions.length > 0 ||
-                        locationSuggestions.length > 0)
+                      Boolean(String(debouncedQuery || '').trim()) &&
+                      !mapNlLoading
                     }
                     anchorEl={searchAnchorRef.current}
                     query={debouncedQuery}

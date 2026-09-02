@@ -80,7 +80,7 @@ export const defaultListShowcaseProps = {
     headlineLines: ['Guardar na lista.'],
     sub: '',
     button: 'Guardar na lista',
-    footer: 'O teu Círculo NomNom · justnomnom.com',
+    footer: 'O teu NomNom Circle · justnomnom.com',
   },
 };
 

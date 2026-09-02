@@ -11,6 +11,7 @@ import { alpha, useTheme, keyframes } from '@mui/material/styles';
 import { ic } from 'src/assets/icons';
 import { RADIUS } from 'src/theme/spacing';
 import { useLocales, useTranslate } from 'src/locales';
+import { readableAccent } from 'src/theme/readable-accent';
 import { getLocaleBodyMaxWidthCh } from 'src/theme/locale-prose';
 
 import Iconify from 'src/components/iconify';
@@ -31,13 +32,16 @@ const FEATURE_ICONS = [
     icon: ic.usersGroupRoundedBold,
     sx: {
       bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1),
-      color: 'primary.dark',
+      color: (theme) => readableAccent(theme),
     },
   },
   {
     // Card 2: curated lists from creators you follow
     icon: ic.bookmarkBold,
-    sx: { bgcolor: (theme) => alpha(theme.palette.primary.main, 0.14), color: 'primary.main' },
+    sx: {
+      bgcolor: (theme) => alpha(theme.palette.primary.main, 0.14),
+      color: (theme) => readableAccent(theme),
+    },
   },
   {
     // Card 3: map, save, share
@@ -192,7 +196,11 @@ function FeatureListsVisual() {
             transition: 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)',
           }}
         >
-          <Iconify icon={list.icon} width={18} sx={{ color: 'primary.main', flexShrink: 0 }} />
+          <Iconify
+            icon={list.icon}
+            width={18}
+            sx={{ color: (th) => readableAccent(th), flexShrink: 0 }}
+          />
           <Box sx={{ minWidth: 0, flex: 1 }}>
             <Box
               component="b"
@@ -232,7 +240,7 @@ function FeatureListsVisual() {
                   }
                 : {
                     bgcolor: (th) => alpha(th.palette.primary.main, 0.12),
-                    color: 'primary.main',
+                    color: (th) => readableAccent(th),
                   }),
             }}
           >

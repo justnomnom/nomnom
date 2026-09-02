@@ -13,6 +13,7 @@ import { palette, PRIMARY_ON_FILL_TEXT } from '../palette.js';
 import { button } from '../overrides/components/button.js';
 import { chip } from '../overrides/components/chip.js';
 import { fab } from '../overrides/components/fab.js';
+import { link } from '../overrides/components/link.js';
 
 const require = createRequire(import.meta.url);
 const { createTheme } = require('@mui/material/styles');
@@ -61,6 +62,20 @@ describe('PRIMARY_ON_FILL_TEXT product lock', () => {
     assert.notEqual(palette('light').primary.contrastText.toLowerCase(), INK_ON_TERRACOTTA);
   });
 
+  it('outlined and text primary Buttons use readableAccent, not fill terracotta', () => {
+    const theme = themeWithShadows();
+    const root = button(theme).MuiButton.styleOverrides.root;
+    const outlined = flattenStyleResult(
+      root({ ownerState: { color: 'primary', variant: 'outlined', size: 'medium' } })
+    );
+    const text = flattenStyleResult(
+      root({ ownerState: { color: 'primary', variant: 'text', size: 'medium' } })
+    );
+    assert.equal(outlined.color, theme.palette.primary.darker);
+    assert.equal(text.color, theme.palette.primary.darker);
+    assert.notEqual(outlined.color, theme.palette.primary.main);
+  });
+
   it('contained primary Button label is white even if contrastText is edited later', () => {
     const theme = themeWithShadows();
     const root = button(theme).MuiButton.styleOverrides.root;
@@ -77,6 +92,16 @@ describe('PRIMARY_ON_FILL_TEXT product lock', () => {
       root({ ownerState: { color: 'primary', variant: 'filled' } })
     );
     assert.equal(styles.color, PRIMARY_ON_FILL_TEXT);
+  });
+
+  it('outlined primary Chip label uses readableAccent, not fill terracotta', () => {
+    const theme = themeWithShadows();
+    const root = chip(theme).MuiChip.styleOverrides.root;
+    const styles = flattenStyleResult(
+      root({ ownerState: { color: 'primary', variant: 'outlined' } })
+    );
+    assert.equal(styles.color, theme.palette.primary.darker);
+    assert.notEqual(styles.color, theme.palette.primary.main);
   });
 
   it('circular primary Fab label is white', () => {
@@ -109,4 +134,25 @@ describe('PRIMARY_ON_FILL_TEXT product lock', () => {
       assert.equal(mixed.test(src), false, `${path.basename(file)} still pairs terracotta with common.white`);
     }
   });
+
+
+  it('primary MuiLink text uses readableAccent, not fill terracotta', () => {
+    const theme = themeWithShadows();
+    const root = link(theme).MuiLink.styleOverrides.root;
+    const styles = flattenStyleResult(root({ ownerState: { color: 'primary' } }));
+    assert.equal(styles.color, theme.palette.primary.darker);
+    assert.notEqual(styles.color, theme.palette.primary.main);
+  });
+
+  it('content Tailwind token splits fill terracotta from readable text', () => {
+    const css = fs.readFileSync(
+      path.join(REPO_THEME, '../../components/ui/globals.css'),
+      'utf8'
+    );
+    assert.match(css, /--color-primary:\s*#ff6b35/i);
+    assert.match(css, /--color-primary-readable:\s*#b8481f/i);
+    const darkBlock = css.split("html[data-theme='dark']")[1] || '';
+    assert.match(darkBlock, /--color-primary-readable:\s*#ff6b35/i);
+  });
+
 });

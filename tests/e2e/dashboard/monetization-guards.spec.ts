@@ -21,9 +21,10 @@ import {
 
 /**
  * Monetized-list access control at the checkout boundary, using seeded data and NO live
- * Stripe: a seeded creator (no Connect account) owns the lists, and the buyer is the signed-in
- * test user. Every asserted branch returns before the route touches Stripe, so this validates
- * the money mechanism's gating deterministically.
+ * Stripe (TEST-PLAN B4, B5, C3 creator_not_ready). A seeded creator (no Connect account)
+ * owns the lists, and the buyer is the signed-in test user. Every asserted branch returns
+ * before the route touches Stripe, so this validates the money mechanism's gating
+ * deterministically.
  */
 test.describe.configure({ mode: 'serial' });
 

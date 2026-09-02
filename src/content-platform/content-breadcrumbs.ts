@@ -3,6 +3,7 @@ import {
   collectionSlugsForCity,
   collectionSlugsForCountry,
 } from '@/content-platform/internal-graph';
+import { formatSlugLabel, siblingHubHref } from '@/content-platform/content-breadcrumbs-links';
 
 export type BreadcrumbLink = { name: string; href: string };
 
@@ -15,21 +16,7 @@ const EDITORIAL_SECTION_LABEL = {
 
 export type EditorialSection = keyof typeof EDITORIAL_SECTION_LABEL;
 
-function formatSlugLabel(slug: string): string {
-  return slug.replace(/-/g, ' ');
-}
-
-/** When multiple siblings exist, link the section label to another doc in the same folder (never the current page). */
-function siblingHubHref(
-  slugs: string[],
-  currentSlug: string,
-  hrefForSlug: (s: string) => string
-): string | null {
-  const sorted = [...new Set(slugs)].sort();
-  if (sorted.length <= 1) return null;
-  const other = sorted.find((s) => s !== currentSlug);
-  return hrefForSlug(other ?? sorted[0]);
-}
+const HUB_INDEX_SECTIONS = new Set(['resources', 'features', 'use-cases']);
 
 /**
  * Breadcrumbs for top-level MDX hubs: /resources, /features, /use-cases, /collections.
@@ -42,7 +29,9 @@ export function editorialDocBreadcrumbs(
   const slugs = readMdxFilesInDir(section).map((d) => d.slug);
   const prefix = `/${section}`;
   const hrefForSlug = (s: string) => `${prefix}/${s}`;
-  const hubHref = siblingHubHref(slugs, slug, hrefForSlug);
+  const hubHref = HUB_INDEX_SECTIONS.has(section)
+    ? prefix
+    : siblingHubHref(slugs, slug, hrefForSlug);
 
   const crumbs: BreadcrumbLink[] = [{ name: 'Home', href: '/' }];
   if (hubHref) {

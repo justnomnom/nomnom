@@ -10,6 +10,7 @@ import {
   completeOnboardingWithoutHome,
 } from '../support/seed';
 import { E2E_DASHBOARD_AUTH_SETUP_HINT } from '../support/test-credentials';
+import { APP_NOT_FOUND_HEADING } from '../support/page-assertions';
 
 /**
  * TEST-PLAN §11 AD1 — a NON-admin authenticated user must never see admin content.
@@ -46,7 +47,7 @@ test.describe('admin routes — non-admin user is blocked (AD1)', () => {
     try {
       for (const path of ['/dashboard/admin', '/dashboard/admin/sponsored-placements']) {
         await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 180_000 });
-        const notFound = page.getByRole('heading', { name: /isn.t on the menu/i });
+        const notFound = page.getByRole('heading', { name: APP_NOT_FOUND_HEADING });
         try {
           await expect(notFound).toBeVisible({ timeout: 45_000 });
         } catch {

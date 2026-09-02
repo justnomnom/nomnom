@@ -35,6 +35,7 @@ import {
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import { useAuthContext } from 'src/auth/hooks';
+import { readableAccent } from 'src/theme/readable-accent';
 import { useSkeletonThemeColors } from 'src/theme/use-skeleton-theme';
 import { dedupeMustTryDishesByDisplayLabel } from 'src/libs/ugc/must-try-dedupe';
 import { galleryUrlsForRestaurant } from 'src/libs/restaurant/restaurant-gallery-urls';
@@ -123,7 +124,7 @@ const DETAIL_TAG_MORE_SX = {
   fontWeight: 700,
   fontSize: { xs: '0.6875rem', sm: '0.75rem' },
   lineHeight: 1,
-  color: 'primary.main',
+  color: (theme) => readableAccent(theme),
   '&:hover': { bgcolor: (t) => alpha(t.palette.primary.main, 0.08) },
 };
 
@@ -703,7 +704,11 @@ function MentionFeedReviewCard({
                     bgcolor: (tt) => alpha(tt.palette.primary.main, 0.08),
                   }}
                 >
-                  <Iconify icon={ic.userBold} width={24} sx={{ color: 'primary.main' }} />
+                  <Iconify
+                    icon={ic.userBold}
+                    width={24}
+                    sx={{ color: (theme) => readableAccent(theme) }}
+                  />
                 </Box>
               )}
             </Box>
@@ -1705,7 +1710,7 @@ export default function RestaurantDetailView({
                   sx={{
                     flexShrink: 0,
                     bgcolor: (tt) => alpha(tt.palette.primary.main, 0.1),
-                    color: 'primary.main',
+                    color: readableAccent(theme),
                     px: { xs: 1.25, sm: 1.5 },
                     py: { xs: 0.625, sm: 0.75 },
                     borderRadius: '12px',
@@ -1907,7 +1912,7 @@ export default function RestaurantDetailView({
                       borderColor: 'background.paper',
                       boxShadow: 2,
                       bgcolor: (tt) => alpha(tt.palette.primary.main, 0.12),
-                      color: 'primary.main',
+                      color: readableAccent(theme),
                       '&:hover': {
                         bgcolor: (tt) => alpha(tt.palette.primary.main, 0.22),
                       },
@@ -2058,7 +2063,7 @@ export default function RestaurantDetailView({
                             sx={{
                               fontWeight: 600,
                               borderColor: (tt) => alpha(tt.palette.primary.main, 0.4),
-                              color: 'primary.dark',
+                              color: (tt) => readableAccent(tt),
                               '& .MuiChip-label': { px: 1 },
                             }}
                           />
@@ -2318,7 +2323,7 @@ export default function RestaurantDetailView({
                                       <Iconify
                                         icon={ic.userBold}
                                         width={24}
-                                        sx={{ color: 'primary.main' }}
+                                        sx={{ color: readableAccent(theme) }}
                                       />
                                     </Box>
                                   )}

@@ -4,8 +4,8 @@ import { escapeHtml } from 'src/libs/email/escape-html';
 // Live List update notification email
 // ---------------------------------------------------------------------------
 //
-// Design: NomNom brand — parchment (#faf9f5) background, terracotta (#FF6B35)
-// CTA, Albert Sans with Georgia/serif fallbacks. Text-only wordmark (no img tag —
+// Design: NomNom brand — parchment (#faf9f5) background, terracotta CTA (#FF6B35),
+// readable wordmark (#B8481F / primary.darker), Albert Sans with Georgia/serif fallbacks. Text-only wordmark (no img tag —
 // email clients block images by default). Tested rendering targets: Gmail web,
 // Apple Mail, Outlook 2019+.
 
@@ -40,7 +40,7 @@ export function liveListUpdateHtml({ listName, creatorName, listUrl, manageUrl }
           <tr>
             <td style="padding:28px 32px 20px;border-bottom:1px solid #e8e6dc">
               <span style="font-family:'Albert Sans',Georgia,serif;font-size:20px;
-                           font-weight:800;color:#FF6B35;letter-spacing:-0.02em;
+                           font-weight:800;color:#B8481F;letter-spacing:-0.02em;
                            text-decoration:none">
                 NomNom
               </span>
@@ -51,13 +51,13 @@ export function liveListUpdateHtml({ listName, creatorName, listUrl, manageUrl }
           <tr>
             <td style="padding:32px 32px 24px">
               <p style="margin:0 0 8px;font-family:'Albert Sans',Georgia,serif;
-                        font-size:22px;font-weight:700;line-height:1.3;color:#121110">
-                ${safeCreator} just added new spots 🍽️
+                        font-size:22px;font-weight:700;line-height:1.3;color:#15130f">
+                ${safeCreator} just added new spots
               </p>
               <p style="margin:0 0 24px;font-family:'Albert Sans',Georgia,serif;
-                        font-size:16px;font-weight:400;line-height:1.6;color:#475569">
-                They added new places to <strong style="color:#121110;font-weight:600">${safeList}</strong>.
-                Go see what's been added — you might find your next favourite spot.
+                        font-size:16px;font-weight:400;line-height:1.6;color:#6e6657">
+                They added new places to <strong style="color:#15130f;font-weight:600">${safeList}</strong>.
+                Go see what&rsquo;s been added — you might find your next favourite spot.
               </p>
 
               <!-- CTA button -->
@@ -83,13 +83,13 @@ export function liveListUpdateHtml({ listName, creatorName, listUrl, manageUrl }
           <tr>
             <td style="padding:20px 32px 24px;border-top:1px solid #e8e6dc">
               <p style="margin:0;font-family:'Albert Sans',Georgia,serif;
-                        font-size:12px;line-height:1.6;color:#94A3B8">
+                        font-size:12px;line-height:1.6;color:#948c7c">
                 You received this because you subscribe to
                 <a href="${safeListUrl}"
-                   style="color:#94A3B8;text-decoration:underline">${safeList}</a>.
+                   style="color:#948c7c;text-decoration:underline">${safeList}</a>.
                 &nbsp;&middot;&nbsp;
                 <a href="${safeManageUrl}"
-                   style="color:#94A3B8;text-decoration:underline">Manage subscriptions</a>
+                   style="color:#948c7c;text-decoration:underline">Manage subscriptions</a>
               </p>
             </td>
           </tr>
@@ -126,9 +126,9 @@ export function listUpdateDigestHtml({ items, manageUrl }) {
                 <td style="padding:12px 0;border-bottom:1px solid #e8e6dc">
                   <a href="${safeUrl}"
                      style="font-family:'Albert Sans',Georgia,serif;font-size:16px;
-                            font-weight:700;color:#121110;text-decoration:none">${safeList}</a>
+                            font-weight:700;color:#15130f;text-decoration:none">${safeList}</a>
                   <div style="font-family:'Albert Sans',Georgia,serif;font-size:14px;
-                              color:#475569;margin-top:2px">${label}</div>
+                              color:#6e6657;margin-top:2px">${label}</div>
                 </td>
               </tr>`;
     })
@@ -154,14 +154,14 @@ export function listUpdateDigestHtml({ items, manageUrl }) {
           <tr>
             <td style="padding:28px 32px 20px;border-bottom:1px solid #e8e6dc">
               <span style="font-family:'Albert Sans',Georgia,serif;font-size:20px;
-                           font-weight:800;color:#FF6B35;letter-spacing:-0.02em">NomNom</span>
+                           font-weight:800;color:#B8481F;letter-spacing:-0.02em">NomNom</span>
             </td>
           </tr>
           <tr>
             <td style="padding:32px 32px 8px">
               <p style="margin:0 0 8px;font-family:'Albert Sans',Georgia,serif;
-                        font-size:22px;font-weight:700;line-height:1.3;color:#121110">
-                New spots on lists you follow 🍽️
+                        font-size:22px;font-weight:700;line-height:1.3;color:#15130f">
+                New spots on lists you follow
               </p>
               <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
                 ${rows}
@@ -171,11 +171,11 @@ export function listUpdateDigestHtml({ items, manageUrl }) {
           <tr>
             <td style="padding:20px 32px 24px;border-top:1px solid #e8e6dc">
               <p style="margin:0;font-family:'Albert Sans',Georgia,serif;
-                        font-size:12px;line-height:1.6;color:#94A3B8">
+                        font-size:12px;line-height:1.6;color:#948c7c">
                 You received this digest because email updates are on.
                 &nbsp;&middot;&nbsp;
                 <a href="${safeManageUrl}"
-                   style="color:#94A3B8;text-decoration:underline">Manage notifications</a>
+                   style="color:#948c7c;text-decoration:underline">Manage notifications</a>
               </p>
             </td>
           </tr>

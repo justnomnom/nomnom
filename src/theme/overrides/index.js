@@ -6,6 +6,7 @@ import { chip } from './components/chip';
 import { tabs } from './components/tabs';
 import { menu } from './components/menu';
 import { list } from './components/list';
+import { link } from './components/link';
 import { table } from './components/table';
 import { alert } from './components/alert';
 import { badge } from './components/badge';
@@ -84,7 +85,8 @@ export function componentsOverrides(theme) {
     breadcrumbs(theme),
     cssBaseline(theme),
     autocomplete(theme),
-    toggleButton(theme)
+    toggleButton(theme),
+    link(theme)
   );
 
   return components;

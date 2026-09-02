@@ -8,6 +8,8 @@ import { alpha, useTheme } from '@mui/material/styles';
 
 import { usePrefersReducedMotion } from 'src/hooks/use-prefers-reduced-motion';
 
+import { readableAccent } from 'src/theme/readable-accent';
+
 import { m } from 'src/components/animate';
 import Iconify from 'src/components/iconify';
 
@@ -71,7 +73,7 @@ export default function DashboardDelightEmpty({ icon, title, body, action, sx })
             }}
           />
           <Box {...floatMotion} sx={{ position: 'relative', zIndex: 1, lineHeight: 0 }}>
-            <Iconify icon={icon} width={40} sx={{ color: 'primary.main' }} />
+            <Iconify icon={icon} width={40} sx={{ color: readableAccent(theme) }} />
           </Box>
         </Box>
       </Box>

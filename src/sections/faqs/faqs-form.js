@@ -150,7 +150,7 @@ export default function FaqsForm({
       });
 
       if (!result.ok) {
-        throw new Error(result.error || 'Failed to send email');
+        throw new Error(result.error || 'We couldn’t send that. Try again in a moment.');
       }
 
       analytics.trackFormSubmit('faq_contact_form', {
@@ -176,15 +176,9 @@ export default function FaqsForm({
         topic: nextData.topic,
       });
 
-      const serverMessage = typeof error?.message === 'string' ? error.message.trim() : '';
-      const isUserFacing =
-        serverMessage &&
-        !serverMessage.startsWith('resend_') &&
-        serverMessage !== 'Failed to send email';
-
       setNotification({
         open: true,
-        message: isUserFacing ? serverMessage : t(key('error')),
+        message: t(key('error')),
         severity: 'error',
       });
     } finally {

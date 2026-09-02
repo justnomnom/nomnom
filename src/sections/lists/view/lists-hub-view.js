@@ -20,6 +20,7 @@ import { usePrefersReducedMotion } from 'src/hooks/use-prefers-reduced-motion';
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import { fetchMyListsHub } from 'src/libs/lists/actions';
+import { readableAccent } from 'src/theme/readable-accent';
 import { fetchMyVisitSummary } from 'src/auth/actions/visit-actions';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
 import { useSkeletonThemeColors } from 'src/theme/use-skeleton-theme';
@@ -67,7 +68,7 @@ function NewListIconButton({ onClick }) {
       sx={{
         width: TOUCH_TARGET_SIZE,
         height: TOUCH_TARGET_SIZE,
-        color: 'primary.main',
+        color: readableAccent(theme),
         WebkitTapHighlightColor: 'transparent',
         touchAction: 'manipulation',
         '&:hover': {
@@ -323,7 +324,7 @@ export default function ListsHubView() {
                   <Iconify
                     icon={ic.usersGroupTwoRoundedBold}
                     width={22}
-                    sx={{ color: 'primary.main', flexShrink: 0, mt: 0.25 }}
+                    sx={{ color: readableAccent(theme), flexShrink: 0, mt: 0.25 }}
                   />
                   <Stack spacing={0.25} sx={{ flex: 1, minWidth: 0 }}>
                     <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>

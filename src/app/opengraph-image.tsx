@@ -29,7 +29,7 @@ export default function OpenGraphImage() {
   return new ImageResponse(
     <OgFrame>
       <div style={{ display: 'flex', ...OG_TYPE.display, color: OG_COLORS.text, maxWidth: 900 }}>
-        Restaurant picks from people who know
+        Restaurant picks from people you trust
       </div>
       <OgTagline>Follow creators and locals. Not algorithms.</OgTagline>
     </OgFrame>,

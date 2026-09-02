@@ -9,6 +9,10 @@ import { RESEND_API, FEEDBACK_INBOUND_EMAIL } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 
+const ERR_RATE_LIMIT = 'You’ve sent a few already — try again in a bit.';
+const ERR_SEND = 'We couldn’t send that. Try again in a moment.';
+const ERR_UNCONFIGURED = 'We can’t send email right now. Try again in a moment.';
+
 async function clientIpKey(prefix) {
   const h = await headers();
   const xff = h.get('x-forwarded-for');
@@ -24,12 +28,12 @@ async function clientIpKey(prefix) {
 export async function sendContactInquiryEmail(input) {
   const key = await clientIpKey('contact-email');
   if (!(await rateLimitTake(key, 5, 60 * 60 * 1000))) {
-    return { ok: false, error: 'Too many submissions. Please try again later.' };
+    return { ok: false, error: ERR_RATE_LIMIT };
   }
 
   const { to } = RESEND_API;
   if (!to || !RESEND_API.key || !RESEND_API.from) {
-    return { ok: false, error: 'Email service is not configured.' };
+    return { ok: false, error: ERR_UNCONFIGURED };
   }
 
   const name = typeof input?.name === 'string' ? input.name.trim() : '';
@@ -71,7 +75,7 @@ export async function sendContactInquiryEmail(input) {
     return { ok: true };
   } catch (e) {
     console.error('[sendContactInquiryEmail]', e);
-    return { ok: false, error: 'Failed to send message. Please try again later.' };
+    return { ok: false, error: ERR_SEND };
   }
 }
 
@@ -93,12 +97,12 @@ const LLM_FEEDBACK_CONTENT_TYPE_LABELS = {
 export async function submitLlmFeedbackEmail(payload) {
   const key = await clientIpKey('llm-feedback-email');
   if (!(await rateLimitTake(key, 20, 60 * 60 * 1000))) {
-    return { ok: false, error: 'Too many submissions. Please try again later.' };
+    return { ok: false, error: ERR_RATE_LIMIT };
   }
 
   const to = FEEDBACK_INBOUND_EMAIL;
   if (!to || !RESEND_API.key || !RESEND_API.from) {
-    return { ok: false, error: 'Email service is not configured.' };
+    return { ok: false, error: ERR_UNCONFIGURED };
   }
 
   const contentType = typeof payload?.contentType === 'string' ? payload.contentType : '';
@@ -189,6 +193,6 @@ export async function submitLlmFeedbackEmail(payload) {
     return { ok: true };
   } catch (e) {
     console.error('[submitLlmFeedbackEmail]', e);
-    return { ok: false, error: 'Failed to send feedback.' };
+    return { ok: false, error: ERR_SEND };
   }
 }

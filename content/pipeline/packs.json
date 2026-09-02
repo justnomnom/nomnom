@@ -1,0 +1,497 @@
+{
+  "version": 1,
+  "packs": [
+    {
+      "id": "maps-graveyard",
+      "pillar": "P1",
+      "featureId": "lists",
+      "seoPath": "/resources/export-google-maps-saved-places",
+      "types": ["carousel", "thread", "story", "ugc_prompt", "feature_reel", "seo_resource", "ads"],
+      "facts": [
+        "NomNom can import a public Google Maps list from a share URL.",
+        "Only places already in NomNom are added. Unmatched names are reported, not invented."
+      ],
+      "copy": {
+        "hook_pt": "Os teus guardados do Maps não são uma lista. São um cemitério.",
+        "myth_1_pt": "Mito: se está nos Guardados, vais lá.",
+        "truth_1_pt": "Verdade: está no telemóvel, misturado com postos de gasolina e um sítio de 2019.",
+        "myth_2_pt": "Mito: precisas de mais uma app de mapas.",
+        "truth_2_pt": "Verdade: precisas de uma lista que podes partilhar e girar.",
+        "before_pt": "847 sítios no Maps. Zero planos para sábado.",
+        "after_pt": "Uma NomNom List que podes mandar no WhatsApp.",
+        "step_1_pt": "No Maps, abre a lista e partilha o link (tem de ser pública).",
+        "step_2_pt": "No NomNom: Listas → Import from Google Maps.",
+        "step_3_pt": "Cola o link. Escolhe os sítios que já existem. O resto a equipa vê.",
+        "rule_1_pt": "Uma lista por ocasião, não um balde 'Lisboa'.",
+        "rule_2_pt": "Se não consegues explicar quem recomendou, não entra.",
+        "rule_3_pt": "Roleta só gira o que já está na lista.",
+        "cta_pt": "Importa os guardados → justnomnom.com",
+        "poll_a_pt": "Maps",
+        "poll_b_pt": "Screenshots",
+        "question_pt": "Quantos sítios tens guardados e nunca visitaste?",
+        "prompt_pt": "Manda print dos teus Guardados. Sem julgamentos. Quase."
+      }
+    },
+    {
+      "id": "whatsapp-40",
+      "pillar": "P2",
+      "featureId": "table",
+      "seoPath": "/resources/decide-dinner-without-the-group-chat",
+      "types": ["carousel", "thread", "story", "ugc_prompt", "feature_reel", "seo_resource", "ads"],
+      "facts": [
+        "NomNom Table lets a group shortlist spots and vote.",
+        "Friends can vote from a link without installing the app."
+      ],
+      "copy": {
+        "hook_pt": "O jantar não falhou na reserva. Falhou na mensagem 37.",
+        "myth_1_pt": "Mito: mais opções ajuda o grupo.",
+        "truth_1_pt": "Verdade: mais links no chat = ninguém escolhe.",
+        "myth_2_pt": "Mito: tens de instalar mais uma app para votar.",
+        "truth_2_pt": "Verdade: na Mesa, os amigos votam no link.",
+        "before_pt": "Quatro prints, dois 'tanto faz', uma pessoa a desistir.",
+        "after_pt": "Três sítios, uma Mesa, um sítio com votos.",
+        "step_1_pt": "Escolhe 3–5 sítios de uma lista em que confias.",
+        "step_2_pt": "Abre uma Mesa e manda o link.",
+        "step_3_pt": "Votam. O que ganhar, reserva.",
+        "rule_1_pt": "Nunca mais de cinco sítios no voto.",
+        "rule_2_pt": "Quem organiza escolhe a lista, o grupo escolhe o sítio.",
+        "rule_3_pt": "Se ninguém votar até às 16h, gira a Roleta.",
+        "cta_pt": "Abre uma Mesa → justnomnom.com",
+        "poll_a_pt": "Eu escolho",
+        "poll_b_pt": "O grupo vota",
+        "question_pt": "Quantas mensagens até alguém dizer 'pode ser'?",
+        "prompt_pt": "Responde com o número de mensagens do último jantar de grupo."
+      }
+    },
+    {
+      "id": "stars-mean-little",
+      "pillar": "P3",
+      "featureId": "feed",
+      "seoPath": "/resources/why-star-ratings-stopped-meaning-anything",
+      "types": ["carousel", "thread", "story", "ugc_prompt", "feature_reel", "seo_resource", "ads"],
+      "facts": [
+        "NomNom shows who recommended a spot, not only an average score.",
+        "NomNom Circle is activity from people you follow on a given restaurant."
+      ],
+      "copy": {
+        "hook_pt": "4,6 estrelas já não é um sinal. É o valor por defeito.",
+        "myth_1_pt": "Mito: a média diz-te se vais gostar.",
+        "truth_1_pt": "Verdade: a média mistura turistas, almoços de escritório e um jantar teu.",
+        "myth_2_pt": "Mito: mais reviews = mais verdade.",
+        "truth_2_pt": "Verdade: mais reviews = mais gente que tu não conheces.",
+        "before_pt": "Ordenar por estrelas e acabar no mesmo sítio de sempre.",
+        "after_pt": "Abrir o sítio e ver quem da tua gente lá esteve.",
+        "step_1_pt": "Segue pessoas cujo paladar reconheces.",
+        "step_2_pt": "O feed deixa de ser um ranking anónimo.",
+        "step_3_pt": "No sítio, abre o NomNom Circle.",
+        "rule_1_pt": "Uma recomendação com nome vence uma média sem nome.",
+        "rule_2_pt": "Se não consegues apontar quem sugeriu, não é uma sugestão.",
+        "rule_3_pt": "Publicidade no NomNom vai marcada. Não fingimos o contrário.",
+        "cta_pt": "Segue gente com bom gosto → justnomnom.com",
+        "poll_a_pt": "Estrelas",
+        "poll_b_pt": "Uma pessoa em quem confio",
+        "question_pt": "Quando foi a última vez que 4,7 te salvou de um jantar mau?",
+        "prompt_pt": "Nomeia uma pessoa cuja lista seguirias de olhos fechados."
+      }
+    },
+    {
+      "id": "friday-spin",
+      "pillar": "P2",
+      "featureId": "roulette",
+      "seoPath": "/features/roulette",
+      "types": ["carousel", "thread", "story", "ugc_prompt", "feature_reel", "seo_resource"],
+      "facts": [
+        "NomNom Roulette picks from a pool tied to people you follow, not a generic ranking.",
+        "Public Lisbon roulette lives at /roleta/lisboa."
+      ],
+      "copy": {
+        "hook_pt": "Sexta, 19h. Ninguém quer escolher. A NomNom Roulette quer.",
+        "myth_1_pt": "Mito: aleatório = mau.",
+        "truth_1_pt": "Verdade: aleatório dentro da tua gente ainda é a tua gente.",
+        "myth_2_pt": "Mito: tens de estar indeciso para sempre.",
+        "truth_2_pt": "Verdade: um spin, um sítio, sai de casa.",
+        "before_pt": "Scroll infinito no Maps à porta do prédio.",
+        "after_pt": "Gira a NomNom Roulette. Vai ao que calhar.",
+        "step_1_pt": "Abre uma lista em que já confias.",
+        "step_2_pt": "Gira a NomNom Roulette.",
+        "step_3_pt": "Se calhar mal, gira outra vez. Duas vezes é o máximo.",
+        "rule_1_pt": "A NomNom Roulette não substitui uma lista má.",
+        "rule_2_pt": "Dois spins. Depois vais.",
+        "rule_3_pt": "O grupo pode votar na Mesa se o spin dividir a sala.",
+        "cta_pt": "Girar a NomNom Roulette → justnomnom.com/roleta",
+        "poll_a_pt": "Eu escolho",
+        "poll_b_pt": "Que gire",
+        "question_pt": "NomNom Roulette ou veto de uma pessoa?",
+        "prompt_pt": "Comenta o último sítio que a indecisão vos roubou."
+      }
+    },
+    {
+      "id": "creator-dms",
+      "pillar": "P4",
+      "featureId": "lists",
+      "seoPath": "/resources/fewer-where-is-it-dms",
+      "types": ["carousel", "thread", "story", "ugc_prompt", "feature_reel", "seo_resource", "ads"],
+      "facts": [
+        "Creators can publish public lists for free.",
+        "Paid lists use Snapshot (one-time, that version) or Subscription (monthly, all paid lists)."
+      ],
+      "copy": {
+        "hook_pt": "A DM 'onde é?' é um produto. Ainda não te pagaram por ela.",
+        "myth_1_pt": "Mito: o sítio no ecrã chega.",
+        "truth_1_pt": "Verdade: o sítio no ecrã desaparece às 24h.",
+        "myth_2_pt": "Mito: tens de paywallear tudo.",
+        "truth_2_pt": "Verdade: a lista pública é o íman. Snapshot e Subscription são opt-in.",
+        "before_pt": "Respostas copiadas, pin perdido, crédito nenhum.",
+        "after_pt": "Um perfil, listas com o teu nome, link que não expira.",
+        "step_1_pt": "Publica a lista que já mandas em privado.",
+        "step_2_pt": "Deixa os primeiros sítios abertos.",
+        "step_3_pt": "Se fizer sentido, Snapshot ou Subscription.",
+        "rule_1_pt": "O crédito vai no sítio, não no screenshot.",
+        "rule_2_pt": "Paywall só depois de a lista pública trabalhar.",
+        "rule_3_pt": "Tu escolhes o preço. O NomNom não é uma membership no meio.",
+        "cta_pt": "Mete as listas num sítio → justnomnom.com",
+        "poll_a_pt": "Ainda respondo DMs",
+        "poll_b_pt": "Mando o link",
+        "question_pt": "Quantas DMs 'onde é?' esta semana?",
+        "prompt_pt": "Criadores: responde com o número de DMs desta semana."
+      }
+    },
+    {
+      "id": "named-source",
+      "pillar": "P3",
+      "featureId": "feed",
+      "seoPath": "/features/feed",
+      "types": ["carousel", "thread", "story", "feature_reel", "ads"],
+      "facts": [
+        "Every recommendation stays tied to a real profile.",
+        "The Discover feed is built from people you follow."
+      ],
+      "copy": {
+        "hook_pt": "Não queremos o sítio mais votado. Queremos o sítio da Inês.",
+        "myth_1_pt": "Mito: um feed tem de ser um algoritmo de todos.",
+        "truth_1_pt": "Verdade: o teu feed são as tuas pessoas.",
+        "myth_2_pt": "Mito: contexto é um parágrafo de SEO.",
+        "truth_2_pt": "Verdade: contexto é uma foto e uma nota de alguém que tu escolheste.",
+        "before_pt": "Um pin. Uma média. Zero pessoas.",
+        "after_pt": "Um sítio com nome, foto e quem o pôs na lista.",
+        "step_1_pt": "Segue três pessoas que comem como tu.",
+        "step_2_pt": "Abre o feed. Não é um ranking mundial.",
+        "step_3_pt": "Guarda o sítio na tua lista, não no rolo da câmara.",
+        "rule_1_pt": "Se não há nome, não há recomendação.",
+        "rule_2_pt": "Seguir pessoas > seguir bairros.",
+        "rule_3_pt": "A nota curta vence o ensaio de 800 palavras que ninguém leu.",
+        "cta_pt": "O teu feed, as tuas pessoas → justnomnom.com",
+        "poll_a_pt": "Ranking",
+        "poll_b_pt": "A Inês",
+        "question_pt": "De quem é a lista que realmente usas?",
+        "prompt_pt": "Marca a pessoa cuja lista já te tirou de um jantar mau."
+      }
+    },
+    {
+      "id": "shortlist-not-top50",
+      "pillar": "P1",
+      "featureId": "lists",
+      "seoPath": "/features/lists",
+      "types": ["carousel", "thread", "story", "ugc_prompt", "feature_reel", "seo_resource"],
+      "facts": [
+        "NomNom Lists are saved, shareable, public or private.",
+        "You can follow a list and get new spots as they are added."
+      ],
+      "copy": {
+        "hook_pt": "Ninguém precisa dos 50 melhores de Lisboa. Precisa de 7 para quinta.",
+        "myth_1_pt": "Mito: uma lista grande é uma lista boa.",
+        "truth_1_pt": "Verdade: uma lista grande é um segundo Maps.",
+        "myth_2_pt": "Mito: 'os melhores' é um serviço.",
+        "truth_2_pt": "Verdade: 'os melhores para o teu grupo, esta noite' é um serviço.",
+        "before_pt": "Artigo de 50 sítios. Fechas o tab.",
+        "after_pt": "Uma lista curta, com dono, que podes seguir.",
+        "step_1_pt": "Cria a lista da ocasião: grupos, tarde, dois, miúdos.",
+        "step_2_pt": "Mete só sítios que recomendarias de cara.",
+        "step_3_pt": "Partilha ou segue a de alguém que já fez o trabalho.",
+        "rule_1_pt": "Se não cabe num ecrã, corta.",
+        "rule_2_pt": "Título = ocasião, não 'Lisboa 2026'.",
+        "rule_3_pt": "Cada sítio precisa de um porquê de uma linha.",
+        "cta_pt": "Segue uma lista, não um ranking → justnomnom.com",
+        "poll_a_pt": "Top 50",
+        "poll_b_pt": "Sete sítios",
+        "question_pt": "Qual é a tua lista de quinta-feira?",
+        "prompt_pt": "Comenta o bairro. Nós (e a tua gente) fazemos a lista curta."
+      }
+    },
+    {
+      "id": "map-then-list",
+      "pillar": "P1",
+      "featureId": "map",
+      "seoPath": "/features/map",
+      "types": ["carousel", "story", "feature_reel", "seo_resource"],
+      "facts": [
+        "The map is for nearby pins you already care about, then save and share.",
+        "A shortlist can be sent to whoever is coming with you."
+      ],
+      "copy": {
+        "hook_pt": "O mapa não é para descobrir 400 pins. É para os 6 que já te interessam.",
+        "myth_1_pt": "Mito: mais pins = melhor mapa.",
+        "truth_1_pt": "Verdade: mais pins é o Maps outra vez.",
+        "myth_2_pt": "Mito: o mapa substitui a lista.",
+        "truth_2_pt": "Verdade: o mapa mostra; a lista decide.",
+        "before_pt": "Zoom out, pânico, zoom in no mesmo italiano.",
+        "after_pt": "Percorre o bairro, toca no pin, mete na lista.",
+        "step_1_pt": "Abre o mapa no bairro onde vais estar.",
+        "step_2_pt": "Toca nos pins da tua gente.",
+        "step_3_pt": "Mete na lista e manda a shortlist.",
+        "rule_1_pt": "Primeiro as pessoas, depois o raio.",
+        "rule_2_pt": "Se o pin não tem dono, trata-o como um rumor.",
+        "rule_3_pt": "A shortlist sai do mapa; o jantar não se decide em cima do pin.",
+        "cta_pt": "No mapa, na lista, partilhado → justnomnom.com",
+        "poll_a_pt": "Mapa cheio",
+        "poll_b_pt": "Seis pins",
+        "question_pt": "Em que bairro estás à noite?",
+        "prompt_pt": "Diz o bairro. A shortlist faz-se com pins com nome."
+      }
+    },
+    {
+      "id": "visiting-friends",
+      "pillar": "P1",
+      "featureId": "lists",
+      "seoPath": "/resources/planning-a-food-trip",
+      "types": ["carousel", "thread", "story", "ugc_prompt", "seo_resource"],
+      "facts": [
+        "A public NomNom List is the unit you send to visiting friends.",
+        "Roulette and Table work on top of a list you already trust."
+      ],
+      "copy": {
+        "hook_pt": "Amigos de fora na sexta. A lista tinha de existir na terça.",
+        "myth_1_pt": "Mito: improvisar no centro é autêntico.",
+        "truth_1_pt": "Verdade: improvisar no centro é a fila do mesmo sítio.",
+        "myth_2_pt": "Mito: um artigo 'onde comer' chega.",
+        "truth_2_pt": "Verdade: eles precisam de uma lista visitável, não de um ensaio.",
+        "before_pt": "Dez prints no WhatsApp, ninguém com reserva.",
+        "after_pt": "Uma lista, uma Mesa se forem muitos, Roleta se travarem.",
+        "step_1_pt": "Faz a lista 'amigos de fora' com 8–12 sítios.",
+        "step_2_pt": "Marca o que precisa de reserva.",
+        "step_3_pt": "Manda o link. Não mandes prints.",
+        "rule_1_pt": "Um sítio caminhável entre o hotel e o jantar.",
+        "rule_2_pt": "Um sítio para o domingo cansado.",
+        "rule_3_pt": "Zero sítios que tu não recomendarias à tua cara.",
+        "cta_pt": "Manda a lista, não os prints → justnomnom.com",
+        "poll_a_pt": "Prints",
+        "poll_b_pt": "Uma lista",
+        "question_pt": "Quem vem aí este mês?",
+        "prompt_pt": "Responde com a cidade deles. A lista é tua."
+      }
+    },
+    {
+      "id": "date-night-pattern",
+      "pillar": "P1",
+      "featureId": "lists",
+      "seoPath": "/features/lists",
+      "types": ["carousel", "story", "ugc_prompt", "thread"],
+      "facts": [
+        "Occasion lists (date night, groups, cheap eats) are a first-class use of NomNom Lists."
+      ],
+      "copy": {
+        "hook_pt": "Jantar a dois não é 'os 50 românticos'. É uma lista de 6 com horário que aguenta.",
+        "myth_1_pt": "Mito: romântico = velas no Google.",
+        "truth_1_pt": "Verdade: romântico = sítio que a tua pessoa ainda não viu 40 vezes.",
+        "myth_2_pt": "Mito: tens de gastar para parecer que pensaste.",
+        "truth_2_pt": "Verdade: pensaste se a lista existia antes das 19h.",
+        "before_pt": "TheFork no metro, a discutir 'asiático ou italiano'.",
+        "after_pt": "Uma lista 'nós dois', já partilhada.",
+        "step_1_pt": "Cria a lista da dupla — não da cidade.",
+        "step_2_pt": "Mete restrições na nota: ruído, preço, hora.",
+        "step_3_pt": "Se travarem, Roleta em cima dessa lista.",
+        "rule_1_pt": "Nada que precise de 12 pessoas na mesa.",
+        "rule_2_pt": "Um sítio onde ainda se oiça.",
+        "rule_3_pt": "Um plano B a 10 minutos a pé.",
+        "cta_pt": "Faz a lista dos dois → justnomnom.com",
+        "poll_a_pt": "Surpresa",
+        "poll_b_pt": "Lista partilhada",
+        "question_pt": "Quem escolhe o sítio esta semana?",
+        "prompt_pt": "Uma regra da vossa lista de jantares. Só uma."
+      }
+    },
+    {
+      "id": "group-policy",
+      "pillar": "P2",
+      "featureId": "table",
+      "seoPath": "/features/table",
+      "types": ["carousel", "thread", "story", "feature_reel", "seo_resource", "ads"],
+      "facts": [
+        "Table is built for the person who has to land a booking by Wednesday.",
+        "The shortlist is the product, not a screenshot pile."
+      ],
+      "copy": {
+        "hook_pt": "Até quarta precisas de três sítios que aceitam o teu grupo. Não de uma vibe.",
+        "myth_1_pt": "Mito: o anfitrião tem de sofrer sozinho.",
+        "truth_1_pt": "Verdade: a Mesa existe para o voto não viver no chat.",
+        "myth_2_pt": "Mito: 'qualquer coisa serve' é uma decisão.",
+        "truth_2_pt": "Verdade: 'qualquer coisa' é como se acaba no sítio mais alto do Maps.",
+        "before_pt": "Excel mental, três apps, zero respostas.",
+        "after_pt": "Três sítios, política de grupo na nota, votos no link.",
+        "step_1_pt": "Filtra a lista: tamanho da mesa, hora, zona.",
+        "step_2_pt": "Abre a Mesa com esses sítios.",
+        "step_3_pt": "Fecha votos. Reserva o que ganhou.",
+        "rule_1_pt": "Quem reserva, escolhe o universo. O grupo escolhe dentro.",
+        "rule_2_pt": "Notas: grupos, metro, hora de cozinha.",
+        "rule_3_pt": "Sem votos? Roleta. Sem drama.",
+        "cta_pt": "Deixa o grupo votar → justnomnom.com",
+        "poll_a_pt": "Eu reservo",
+        "poll_b_pt": "Eles votam",
+        "question_pt": "Quantas pessoas à mesa?",
+        "prompt_pt": "Anfitriões: qual é a vossa regra de grupo inegociável?"
+      }
+    },
+    {
+      "id": "screenshot-tax",
+      "pillar": "P4",
+      "featureId": "lists",
+      "seoPath": "/use-cases/creators",
+      "types": ["carousel", "thread", "ugc_prompt", "ads"],
+      "facts": [
+        "Stories disappear. A NomNom profile and list do not.",
+        "The diner should land on a named recommendation, not a crop of a Reel."
+      ],
+      "copy": {
+        "hook_pt": "O screenshot é um elogio. Também é um roubo de crédito.",
+        "myth_1_pt": "Mito: se gravaram o Reel, já te seguem.",
+        "truth_1_pt": "Verdade: gravaram o prato. O teu nome ficou fora do crop.",
+        "myth_2_pt": "Mito: um link na bio chega.",
+        "truth_2_pt": "Verdade: o sítio tem de viver ao lado do teu perfil, não abaixo de 14 links.",
+        "before_pt": "O prato viaja. O teu handle não.",
+        "after_pt": "Lista com o teu nome. Sítio com a tua nota.",
+        "step_1_pt": "Cada Reel que nomeia um sítio, o sítio está na lista.",
+        "step_2_pt": "A bio aponta para o perfil NomNom, não para um dump.",
+        "step_3_pt": "Quando perguntarem, mandas a lista. Não o print.",
+        "rule_1_pt": "Se não está na lista, não existiu.",
+        "rule_2_pt": "Crédito no sítio, sempre.",
+        "rule_3_pt": "Stories vendem. Listas ficam.",
+        "cta_pt": "Deixa de viver no screenshot → justnomnom.com",
+        "poll_a_pt": "Ainda mando prints",
+        "poll_b_pt": "Mando a lista",
+        "question_pt": "Quantos prints de restaurantes tens neste momento?",
+        "prompt_pt": "Conta os prints. Só os de sítios. Diz o número."
+      }
+    },
+    {
+      "id": "follow-the-list",
+      "pillar": "P1",
+      "featureId": "lists",
+      "seoPath": "/features/lists",
+      "types": ["carousel", "story", "feature_reel", "ugc_prompt"],
+      "facts": [
+        "You can follow a list to receive new spots as the owner adds them."
+      ],
+      "copy": {
+        "hook_pt": "Não precisas de seguir a pessoa inteira. Podes seguir a lista do bairro.",
+        "myth_1_pt": "Mito: follow é tudo ou nada.",
+        "truth_1_pt": "Verdade: a lista do almoço e a lista do date night não são a mesma pessoa.",
+        "myth_2_pt": "Mito: se não vês o Reel, perdes o sítio.",
+        "truth_2_pt": "Verdade: se segues a lista, o sítio novo chega sem o algoritmo.",
+        "before_pt": "Perder o sítio porque o Story morreu.",
+        "after_pt": "A lista atualiza. Tu já estás a seguir.",
+        "step_1_pt": "Encontra uma lista de um bairro ou ocasião.",
+        "step_2_pt": "Segue a lista.",
+        "step_3_pt": "Quando entra um sítio novo, já o tens.",
+        "rule_1_pt": "Segue poucas listas. Usa-as.",
+        "rule_2_pt": "Unfollow rankings. Follow pessoas.",
+        "rule_3_pt": "Uma lista morta há 8 meses não é uma lista.",
+        "cta_pt": "Segue a lista, não o ranking → justnomnom.com",
+        "poll_a_pt": "Seguir pessoas",
+        "poll_b_pt": "Seguir a lista",
+        "question_pt": "Que lista querias que existisse?",
+        "prompt_pt": "Escreve o título da lista que alguém devia publicar."
+      }
+    },
+    {
+      "id": "late-dinner",
+      "pillar": "P1",
+      "featureId": "lists",
+      "seoPath": "/resources/planning-a-food-trip",
+      "types": ["carousel", "story", "ugc_prompt", "thread"],
+      "facts": [
+        "Occasion lists are how NomNom beats generic 'best of' roundups."
+      ],
+      "copy": {
+        "hook_pt": "Jantar tarde em Lisboa não é um filtro no Maps. É uma lista de quem já se queimou.",
+        "myth_1_pt": "Mito: 'aberto agora' chega.",
+        "truth_1_pt": "Verdade: aberto agora inclui sítio de turista com cozinha fechada às 22.",
+        "myth_2_pt": "Mito: o bairro inteiro janta às 23.",
+        "truth_2_pt": "Verdade: três sítios na tua lista de 'tarde' bastam.",
+        "before_pt": "Chegar com fome e aceitar o que ainda tem luz.",
+        "after_pt": "Lista 'jantar tarde' feita num domingo, usada a uma quinta.",
+        "step_1_pt": "Cria a lista só com sítios que já te aguentaram depois das 22.",
+        "step_2_pt": "Nota na ficha: última entrada, não o horário do Google.",
+        "step_3_pt": "Partilha com o grupo que sempre chega atrasado.",
+        "rule_1_pt": "Não copies horários de artigos. Confirma com quem foi.",
+        "rule_2_pt": "Três sítios fiáveis > doze 'talvez'.",
+        "rule_3_pt": "Se a cozinha fecha, a lista mente — tira o sítio.",
+        "cta_pt": "Faz a lista das 22h → justnomnom.com",
+        "poll_a_pt": "Janto às 21",
+        "poll_b_pt": "Janto às 23",
+        "question_pt": "A que horas a tua gente se senta?",
+        "prompt_pt": "Diz a hora. Sem o sítio, se não quiseres. A hora já diz tudo."
+      }
+    },
+    {
+      "id": "pub-labelled",
+      "pillar": "P3",
+      "featureId": "feed",
+      "seoPath": "/resources/why-star-ratings-stopped-meaning-anything",
+      "types": ["carousel", "thread", "ads"],
+      "facts": [
+        "NomNom marks sponsored placements. Do not claim there is no advertising.",
+        "Creator list rankings stay editorial and are not sold."
+      ],
+      "copy": {
+        "hook_pt": "Não dizemos que não há pub. Dizemos quando há.",
+        "myth_1_pt": "Mito: uma app 'autêntica' não tem anúncios.",
+        "truth_1_pt": "Verdade: esconder o anúncio é o truque. Marcá-lo é o produto.",
+        "myth_2_pt": "Mito: se pagares, entras nas listas das pessoas.",
+        "truth_2_pt": "Verdade: as listas dos criadores continuam a ser deles.",
+        "before_pt": "#pub escondido no terceiro slide.",
+        "after_pt": "Sponsored no Discover, rotulado. Listas, editoriais.",
+        "step_1_pt": "Lê o sítio. Vê se há nome.",
+        "step_2_pt": "Se for sponsored, está escrito.",
+        "step_3_pt": "A lista de um criador não se compra por ranking.",
+        "rule_1_pt": "Nunca fingir que somos 'sem publicidade'.",
+        "rule_2_pt": "Nunca vender o paladar de alguém.",
+        "rule_3_pt": "O diner merece saber quem está a falar.",
+        "cta_pt": "Recomendações com nome → justnomnom.com",
+        "poll_a_pt": "Escondam o pub",
+        "poll_b_pt": "Digam que é pub",
+        "question_pt": "Preferes um anúncio marcado ou um 4,8 misterioso?",
+        "prompt_pt": "Uma regra tua para distinguir rec de anúncio."
+      }
+    },
+    {
+      "id": "empty-list-start",
+      "pillar": "P1",
+      "featureId": "lists",
+      "seoPath": "/use-cases/foodies",
+      "types": ["carousel", "story", "ugc_prompt", "feature_reel"],
+      "facts": [
+        "You can start a list empty and add spots from the feed, map, or import."
+      ],
+      "copy": {
+        "hook_pt": "A primeira lista não tem de estar cheia. Tem de ter um nome honesto.",
+        "myth_1_pt": "Mito: só publico quando tiver 20 sítios.",
+        "truth_1_pt": "Verdade: 20 sítios sem critério é o Maps outra vez.",
+        "myth_2_pt": "Mito: listas privadas não contam.",
+        "truth_2_pt": "Verdade: privadas são como se pensa. Públicas são como se partilha.",
+        "before_pt": "Esperar pelo guia perfeito.",
+        "after_pt": "Uma lista 'Alfama a pé' com três sítios que tu defende.",
+        "step_1_pt": "Cria a lista com o nome da ocasião.",
+        "step_2_pt": "Adiciona três sítios que já recomendaste este mês.",
+        "step_3_pt": "Importa o resto do Maps se estiver lá.",
+        "rule_1_pt": "Três sítios com cara > quinze 'talvez'.",
+        "rule_2_pt": "O título é uma promessa. Cumpre-a.",
+        "rule_3_pt": "Privado primeiro está bem.",
+        "cta_pt": "Cria a primeira lista → justnomnom.com",
+        "poll_a_pt": "Ainda está na cabeça",
+        "poll_b_pt": "Já tem nome",
+        "question_pt": "Como se chama a tua primeira lista?",
+        "prompt_pt": "Escreve o título. Só o título. O resto vem."
+      }
+    }
+  ]
+}

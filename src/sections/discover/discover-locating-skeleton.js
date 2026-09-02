@@ -13,6 +13,7 @@ import { usePrefersReducedMotion } from 'src/hooks/use-prefers-reduced-motion';
 
 import { RADIUS } from 'src/theme/spacing';
 import { useTranslate } from 'src/locales';
+import { readableAccent } from 'src/theme/readable-accent';
 import { useSkeletonThemeColors } from 'src/theme/use-skeleton-theme';
 
 import { m, AnimatePresence } from 'src/components/animate';
@@ -89,7 +90,11 @@ export default function DiscoverLocatingSkeleton({ count = CARD_COUNT, showTip =
               >
                 <Typography
                   variant="caption"
-                  sx={{ fontWeight: 700, color: 'primary.main', letterSpacing: '0.01em' }}
+                  sx={{
+                    fontWeight: 700,
+                    color: (theme) => readableAccent(theme),
+                    letterSpacing: '0.01em',
+                  }}
                 >
                   {t(LOADING_TIP_KEYS[tipIndex])}
                 </Typography>

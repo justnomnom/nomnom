@@ -16,6 +16,8 @@ const ITEM_ID = 'dddddddd-dddd-4ddd-8ddd-dddddddddddd';
 let authUser = { id: USER_ID };
 /** @type {ReturnType<typeof makeSupabaseMock> | null} */
 let supabase = null;
+/** Admin `list_items` result used by map-by-list-ids (mutable so happy paths can return rows). */
+let adminListItemsResult = { data: null, error: null };
 
 const ensureSlugCalls = [];
 const notifyFollowersCalls = [];
@@ -41,9 +43,9 @@ mock.module('src/libs/supabase/supabase-admin.js', {
           gt() {
             return this;
           },
-          maybeSingle: async () => ({ data: null, error: null }),
+          maybeSingle: async () => adminListItemsResult,
           then(resolve, reject) {
-            return Promise.resolve({ data: null, error: null, count: 0 }).then(resolve, reject);
+            return Promise.resolve(adminListItemsResult).then(resolve, reject);
           },
         };
       },
@@ -77,6 +79,20 @@ mock.module('src/libs/notifications/notify-list-followers.js', {
   },
 });
 
+mock.module('src/libs/notifications/create-notification.js', {
+  exports: {
+    insertNotifications: async () => {},
+  },
+});
+
+mock.module('src/libs/notifications/social-notification-payloads.js', {
+  exports: {
+    buildListSocialNotificationData: () => ({}),
+    resolveOwnerRecipientExcludingActor: () => null,
+    shouldEmitDirectNotification: () => false,
+  },
+});
+
 mock.module('src/libs/notifications/list-live-update-notify.js', {
   exports: {
     notifyLiveListSubscribers: (_sb, listId) => {
@@ -86,11 +102,48 @@ mock.module('src/libs/notifications/list-live-update-notify.js', {
   },
 });
 
-const { createList } = await import('../actions/crud-hub-actions.js');
-const { addRestaurantToLists } = await import('../actions/items-actions.js');
-const { fetchListPage, resolveListSlug, fetchListForManage } = await import(
-  '../actions/list-page-actions.js'
-);
+const { createList, fetchMyLists, fetchMyListsHub, deleteList, fetchOwnedListsForBilling, updateListMeta, restaurantInMyLists, fetchListSummariesForViewer } =
+  await import('../actions/crud-hub-actions.js');
+const {
+  addRestaurantToLists,
+  searchRestaurantsForPicker,
+  listIdsByRestaurantIdsForUser,
+  addListItem,
+  fetchViewerSavedListMap,
+  removeRestaurantFromList,
+} = await import('../actions/items-actions.js');
+const {
+  fetchSavedRestaurantsForMap,
+  fetchFollowingRestaurantsForMap,
+  fetchMyOwnedListsForMapDropdown,
+  fetchMyCollaboratorListsForMapDropdown,
+  fetchSavedRestaurantsForMapByListIds,
+  fetchFollowingRestaurantsForMapByListIds,
+  fetchFollowingListsForMapDropdown,
+  fetchFollowingListOwnersForRestaurants,
+  fetchViewerFollowingOwnersMap,
+  fetchFollowCircleForRestaurant,
+} = await import('../actions/map-actions.js');
+const { fetchRestaurantListMentions, fetchPublicListItemsForRestaurant, fetchViewerFollowingIds } =
+  await import('../actions/mentions-actions.js');
+const {
+  fetchListPage,
+  resolveListSlug,
+  fetchListForManage,
+  fetchListMetadata,
+  fetchListMembershipForViewer,
+} = await import('../actions/list-page-actions.js');
+const {
+  inviteToList,
+  acceptListInvite,
+  declineListInvite,
+  removeListMember,
+  approveListJoinRequest,
+  rejectListJoinRequest,
+  setListMemberRole,
+  fetchPublicProfileActivityPage,
+  resolveUsernameToUserId,
+} = await import('../actions/members-profile-actions.js');
 
 /**
  * Chainable PostgREST stub. `handler` returns `{ data, error }` (or a thenable) per call.
@@ -186,7 +239,14 @@ function makeSupabaseMock(handler) {
       return builder(table);
     },
     rpc(name, args) {
-      return resolve({ kind: 'rpc', rpc: name, args });
+      const p = resolve({ kind: 'rpc', rpc: name, args });
+      return {
+        range() {
+          return p;
+        },
+        then: p.then.bind(p),
+        catch: p.catch.bind(p),
+      };
     },
   };
 }
@@ -195,6 +255,20 @@ function resetSideEffects() {
   ensureSlugCalls.length = 0;
   notifyFollowersCalls.length = 0;
   notifyLiveCalls.length = 0;
+  adminListItemsResult = { data: null, error: null };
+}
+
+function mapRestaurantRow(overrides = {}) {
+  return {
+    id: RESTAURANT_ID,
+    name: 'Spot',
+    latitude: 38.72,
+    longitude: -9.14,
+    municipality_id: null,
+    metadata: {},
+    is_sponsored: false,
+    ...overrides,
+  };
 }
 
 function publicListRow(overrides = {}) {
@@ -225,6 +299,25 @@ test('createList: unauthorized without a session', async () => {
     supabase.calls.some((c) => c.kind === 'rpc'),
     false
   );
+  assert.deepEqual(await fetchMyLists(), { lists: [], error: 'unauthorized' });
+  const hub = await fetchMyListsHub();
+  assert.equal(hub.error, 'unauthorized');
+  assert.deepEqual(hub.owned, []);
+  assert.deepEqual(await deleteList(LIST_ID), { error: 'unauthorized' });
+});
+
+test('map saved/following: logged-out viewers get empty restaurants', async () => {
+  authUser = null;
+  supabase = makeSupabaseMock(() => {
+    throw new Error('should not query');
+  });
+  assert.deepEqual(await fetchSavedRestaurantsForMap(), { restaurants: [], error: null });
+  assert.deepEqual(await fetchFollowingRestaurantsForMap(), { restaurants: [], error: null });
+});
+
+test('fetchRestaurantListMentions: missing restaurant id is empty', async () => {
+  assert.deepEqual(await fetchRestaurantListMentions(''), { items: [], error: null });
+  assert.deepEqual(await fetchRestaurantListMentions(null), { items: [], error: null });
 });
 
 test('createList: trims name, defaults visibility, rpc success + slug', async () => {
@@ -273,6 +366,16 @@ test('addRestaurantToLists: unauthorized / invalid input', async () => {
   authUser = { id: USER_ID };
   assert.deepEqual(await addRestaurantToLists('', [LIST_ID]), { error: 'invalid' });
   assert.deepEqual(await addRestaurantToLists(RESTAURANT_ID, []), { error: 'invalid' });
+});
+
+test('searchRestaurantsForPicker: queries shorter than 2 chars skip the table', async () => {
+  authUser = { id: USER_ID };
+  supabase = makeSupabaseMock(() => {
+    throw new Error('should not query restaurants');
+  });
+  assert.deepEqual(await searchRestaurantsForPicker('a'), { restaurants: [], error: null });
+  assert.deepEqual(await searchRestaurantsForPicker('  '), { restaurants: [], error: null });
+  assert.deepEqual(await searchRestaurantsForPicker(null), { restaurants: [], error: null });
 });
 
 test('addRestaurantToLists: upserts prepended sort_order and notifies only new lists', async () => {
@@ -667,5 +770,346 @@ test('addRestaurantToLists: min-sort and existing-row selects both run', async (
   assert.equal(selects.length, 2);
   assert.ok(selects.some((c) => String(c.select).includes('sort_order')));
   assert.ok(selects.some((c) => c.filter.restaurant_id === RESTAURANT_ID));
+});
+
+test('list collaboration: unauthorized invites/accept/decline/remove skip RPCs', async () => {
+  authUser = null;
+  supabase = makeSupabaseMock(() => ({ data: null, error: null }));
+  assert.deepEqual(await inviteToList(LIST_ID, OTHER_USER_ID, 'editor'), { error: 'unauthorized' });
+  assert.deepEqual(await acceptListInvite(LIST_ID), { error: 'unauthorized' });
+  assert.deepEqual(await declineListInvite(LIST_ID), { error: 'unauthorized' });
+  assert.deepEqual(await removeListMember(LIST_ID, OTHER_USER_ID), { error: 'unauthorized' });
+  assert.deepEqual(await approveListJoinRequest(LIST_ID, OTHER_USER_ID, 'viewer'), {
+    error: 'unauthorized',
+  });
+  assert.deepEqual(await rejectListJoinRequest(LIST_ID, OTHER_USER_ID), { error: 'unauthorized' });
+  assert.deepEqual(await setListMemberRole(LIST_ID, OTHER_USER_ID, 'editor'), {
+    error: 'unauthorized',
+  });
+  assert.equal(
+    supabase.calls.some((c) => c.kind === 'rpc'),
+    false
+  );
+
+  authUser = { id: USER_ID };
+  supabase = makeSupabaseMock((ctx) => {
+    if (ctx.rpc === 'invite_to_list') {
+      return { data: null, error: { message: 'already_member' } };
+    }
+    return { data: null, error: null };
+  });
+  assert.deepEqual(await inviteToList(LIST_ID, OTHER_USER_ID, 'viewer'), {
+    error: 'already_member',
+  });
+
+  supabase = makeSupabaseMock(() => ({ data: null, error: null }));
+  assert.deepEqual(await acceptListInvite(LIST_ID), { error: null });
+  assert.deepEqual(await declineListInvite(LIST_ID), { error: null });
+  assert.deepEqual(await approveListJoinRequest(LIST_ID, OTHER_USER_ID, 'editor'), { error: null });
+  assert.deepEqual(await rejectListJoinRequest(LIST_ID, OTHER_USER_ID), { error: null });
+  assert.deepEqual(await setListMemberRole(LIST_ID, OTHER_USER_ID, 'viewer'), { error: null });
+  assert.deepEqual(await removeListMember(LIST_ID, OTHER_USER_ID), { error: null });
+  assert.equal(
+    supabase.calls.filter((c) => c.kind === 'rpc').map((c) => c.rpc).sort().join(','),
+    [
+      'accept_list_invite',
+      'approve_list_join_request',
+      'decline_list_invite',
+      'reject_list_join_request',
+      'remove_list_member',
+      'set_list_member_role',
+    ].join(',')
+  );
+});
+
+test('hub/map/mentions remaining exports: unauthorized, empty input, slim RPC mapping', async () => {
+  resetSideEffects();
+  authUser = null;
+  supabase = makeSupabaseMock(() => ({ data: null, error: null }));
+  assert.deepEqual(await fetchOwnedListsForBilling(), { lists: [], error: 'unauthorized' });
+  assert.deepEqual(await updateListMeta(LIST_ID, { name: 'x' }), { error: 'unauthorized' });
+  assert.deepEqual(await addListItem(LIST_ID, RESTAURANT_ID), { error: 'unauthorized' });
+  assert.deepEqual(await restaurantInMyLists(RESTAURANT_ID), {
+    listIds: [],
+    lists: [],
+    error: null,
+  });
+  assert.deepEqual(await fetchListSummariesForViewer([LIST_ID]), { lists: [], error: null });
+  assert.deepEqual(await listIdsByRestaurantIdsForUser([RESTAURANT_ID]), { map: {}, error: null });
+  assert.deepEqual(await fetchMyOwnedListsForMapDropdown(), { lists: [], error: null });
+  assert.deepEqual(await fetchMyCollaboratorListsForMapDropdown(), { lists: [], error: null });
+  assert.deepEqual(await fetchFollowingListsForMapDropdown(), { lists: [], error: null });
+  assert.deepEqual(await fetchSavedRestaurantsForMapByListIds([]), { restaurants: [], error: null });
+  assert.deepEqual(await fetchFollowingRestaurantsForMapByListIds([LIST_ID]), {
+    restaurants: [],
+    error: null,
+  });
+  assert.deepEqual(await fetchFollowingListOwnersForRestaurants([RESTAURANT_ID]), {
+    map: {},
+    error: null,
+  });
+  assert.deepEqual(await fetchViewerFollowingOwnersMap(), {
+    map: {},
+    complete: false,
+    error: null,
+  });
+  assert.deepEqual(await fetchFollowCircleForRestaurant(''), { circle: null, error: null });
+  assert.deepEqual(await fetchFollowCircleForRestaurant(RESTAURANT_ID), { circle: null, error: null });
+  assert.deepEqual(await fetchViewerFollowingIds(), new Set());
+  assert.deepEqual(await fetchPublicListItemsForRestaurant(''), []);
+  assert.deepEqual(await resolveUsernameToUserId('  '), { userId: null, error: 'invalid' });
+  assert.deepEqual(await fetchPublicProfileActivityPage(''), { activity: [], error: 'invalid' });
+  assert.deepEqual(await fetchViewerSavedListMap(), { map: {}, complete: false, error: null });
+  assert.deepEqual(await fetchListMembershipForViewer(LIST_ID), {
+    isOwner: false,
+    isEditor: false,
+    isMember: false,
+    pending: null,
+    error: null,
+  });
+  assert.deepEqual(await removeRestaurantFromList(LIST_ID, RESTAURANT_ID), { error: 'unauthorized' });
+
+  authUser = { id: USER_ID };
+  supabase = makeSupabaseMock((ctx) => {
+    if (ctx.table === 'lists' && ctx.single === 'maybe') {
+      if (ctx.filter.id === LIST_B_ID) {
+        return { data: { id: LIST_B_ID, user_id: OTHER_USER_ID, visibility: 'private' }, error: null };
+      }
+      return {
+        data: {
+          id: LIST_ID,
+          user_id: USER_ID,
+          name: 'Dinner',
+          description: 'd',
+          cover_image_url: null,
+          visibility: 'public',
+          published_at: '2026-01-01',
+          slug: 'dinner',
+        },
+        error: null,
+      };
+    }
+    if (ctx.rpc === 'published_list_owner' || ctx.rpc === 'list_owner_snapshot') {
+      return { data: [{ display_name: 'Ada', username: 'ada' }], error: null };
+    }
+    if (ctx.rpc === 'map_my_owned_lists') {
+      return {
+        data: [{ id: LIST_ID, name: 'Dinner', item_count: 3n, owner_username: 'ada' }],
+        error: null,
+      };
+    }
+    if (ctx.rpc === 'map_my_collaborator_lists') {
+      return {
+        data: [{ id: LIST_B_ID, name: 'Shared', item_count: '2', owner_username: 'ada' }],
+        error: null,
+      };
+    }
+    if (ctx.rpc === 'map_following_lists') {
+      return { data: [], error: null };
+    }
+    if (ctx.rpc === 'resolve_user_id_from_username') {
+      return { data: OTHER_USER_ID, error: null };
+    }
+    if (ctx.rpc === 'public_profile_activity') {
+      return { data: [], error: null };
+    }
+    if (ctx.rpc === 'restaurant_follow_circle_for_viewer') {
+      return { data: { you: true, people: [] }, error: null };
+    }
+    if (ctx.table === 'list_items' && ctx.op === 'insert') {
+      return { data: ctx.payload, error: null };
+    }
+    if (ctx.table === 'list_items') {
+      return {
+        data: [
+          {
+            id: ITEM_ID,
+            list_id: LIST_ID,
+            restaurant_id: RESTAURANT_ID,
+            lists: { visibility: 'public' },
+          },
+        ],
+        error: null,
+      };
+    }
+    if (ctx.table === 'lists' && ctx.op === 'update') {
+      return { data: { id: LIST_ID }, error: null };
+    }
+    if (ctx.table === 'lists') {
+      return { data: [{ id: LIST_ID, name: 'Dinner', user_id: USER_ID }], error: null };
+    }
+    if (ctx.table === 'user_follows') {
+      return { data: [{ following_id: OTHER_USER_ID }], error: null };
+    }
+    if (ctx.table === 'restaurants') {
+      return { data: [{ id: RESTAURANT_ID, name: 'Spot', address: 'Lisboa' }], error: null };
+    }
+    return { data: [], error: null };
+  });
+
+  const billing = await fetchOwnedListsForBilling();
+  assert.equal(billing.error, null);
+  assert.equal(billing.lists[0].id, LIST_ID);
+
+  assert.equal((await updateListMeta(LIST_B_ID, { name: 'Nope' })).error, 'forbidden');
+  assert.deepEqual(await updateListMeta(LIST_ID, { name: 'Dinner' }), { error: null });
+  assert.deepEqual(await addListItem(LIST_ID, RESTAURANT_ID), { error: null });
+
+  const owned = await fetchMyOwnedListsForMapDropdown();
+  assert.equal(owned.lists[0].item_count, 3);
+  assert.deepEqual(await fetchViewerFollowingOwnersMap(), { map: {}, complete: true, error: null });
+  assert.deepEqual(await fetchSavedRestaurantsForMapByListIds([LIST_B_ID]), {
+    restaurants: [],
+    error: null,
+  });
+
+  const meta = await fetchListMetadata(LIST_ID);
+  assert.equal(meta.name, 'Dinner');
+  assert.equal(meta.ownerUsername, 'ada');
+  assert.equal(await fetchListMetadata(LIST_B_ID), null);
+
+  assert.deepEqual(await resolveUsernameToUserId('@ada'), { userId: OTHER_USER_ID, error: null });
+  assert.deepEqual(await fetchPublicProfileActivityPage(OTHER_USER_ID), {
+    activity: [],
+    error: null,
+  });
+  const publicItems = await fetchPublicListItemsForRestaurant(RESTAURANT_ID);
+  assert.equal(publicItems.length, 1);
+  const followingIds = await fetchViewerFollowingIds();
+  assert.equal(followingIds.has(OTHER_USER_ID), true);
+  const circle = await fetchFollowCircleForRestaurant(RESTAURANT_ID);
+  assert.equal(circle.error, null);
+
+  const membership = await fetchListMembershipForViewer(LIST_ID);
+  assert.equal(membership.isOwner, true);
+  const saved = await fetchViewerSavedListMap();
+  assert.equal(saved.complete, true);
+  assert.equal(saved.map[RESTAURANT_ID]?.includes(LIST_ID), true);
+  assert.deepEqual(await removeRestaurantFromList(LIST_ID, RESTAURANT_ID), { error: null });
+  const picker = await searchRestaurantsForPicker('Sp');
+  assert.equal(picker.restaurants[0].id, RESTAURANT_ID);
+
+  const mine = await restaurantInMyLists(RESTAURANT_ID);
+  assert.equal(mine.error, null);
+  assert.equal(mine.listIds.includes(LIST_ID), true);
+  const summaries = await fetchListSummariesForViewer([LIST_ID]);
+  assert.equal(summaries.lists[0].name, 'Dinner');
+  const savedByRestaurant = await listIdsByRestaurantIdsForUser([RESTAURANT_ID]);
+  assert.equal(savedByRestaurant.map[RESTAURANT_ID]?.includes(LIST_ID), true);
+  const collab = await fetchMyCollaboratorListsForMapDropdown();
+  assert.equal(collab.lists[0].id, LIST_B_ID);
+  assert.equal(collab.lists[0].item_count, 2);
+});
+
+test('map by list ids: admin list_items intersect saved/following RPC pins', async () => {
+  resetSideEffects();
+  authUser = { id: USER_ID };
+  adminListItemsResult = {
+    data: [{ restaurant_id: RESTAURANT_ID }, { restaurant_id: 'not-on-map' }],
+    error: null,
+  };
+  supabase = makeSupabaseMock((ctx) => {
+    if (ctx.rpc === 'map_my_owned_lists') {
+      return { data: [{ id: LIST_ID, name: 'Dinner' }], error: null };
+    }
+    if (ctx.rpc === 'map_my_collaborator_lists') {
+      return { data: [], error: null };
+    }
+    if (ctx.rpc === 'map_following_lists') {
+      return { data: [{ id: LIST_B_ID, name: 'Ada dinner' }], error: null };
+    }
+    if (ctx.rpc === 'saved_restaurants_for_map' || ctx.rpc === 'following_restaurants_for_map') {
+      return {
+        data: [
+          mapRestaurantRow(),
+          mapRestaurantRow({ id: 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee', name: 'Other' }),
+        ],
+        error: null,
+      };
+    }
+    return { data: [], error: null };
+  });
+
+  const saved = await fetchSavedRestaurantsForMapByListIds([LIST_ID, 'not-accessible']);
+  assert.equal(saved.error, null);
+  assert.equal(saved.restaurants.length, 1);
+  assert.equal(saved.restaurants[0].id, RESTAURANT_ID);
+  assert.equal(saved.restaurants[0].name, 'Spot');
+
+  const following = await fetchFollowingRestaurantsForMapByListIds([LIST_B_ID]);
+  assert.equal(following.error, null);
+  assert.equal(following.restaurants.length, 1);
+  assert.equal(following.restaurants[0].id, RESTAURANT_ID);
+
+  adminListItemsResult = { data: null, error: { message: 'admin_down' } };
+  assert.deepEqual(await fetchSavedRestaurantsForMapByListIds([LIST_ID]), {
+    restaurants: [],
+    error: 'admin_down',
+  });
+});
+
+test('following list owners: RPC lists + items + profiles map onto restaurant ids', async () => {
+  resetSideEffects();
+  authUser = { id: USER_ID };
+  supabase = makeSupabaseMock((ctx) => {
+    if (ctx.rpc === 'map_following_lists') {
+      return { data: [{ id: LIST_B_ID, name: 'Ada dinner' }], error: null };
+    }
+    if (ctx.rpc === 'map_following_owner_profiles') {
+      return {
+        data: [
+          {
+            id: OTHER_USER_ID,
+            display_name: 'Ada',
+            username: 'ada',
+            avatar_url: 'https://img.example/ada.png',
+          },
+        ],
+        error: null,
+      };
+    }
+    if (ctx.table === 'lists') {
+      return { data: [{ id: LIST_B_ID, user_id: OTHER_USER_ID }], error: null };
+    }
+    if (ctx.table === 'list_items') {
+      return {
+        data: [{ restaurant_id: RESTAURANT_ID, list_id: LIST_B_ID }],
+        error: null,
+      };
+    }
+    return { data: [], error: null };
+  });
+
+  const owners = await fetchFollowingListOwnersForRestaurants([RESTAURANT_ID]);
+  assert.equal(owners.error, null);
+  assert.equal(owners.map[RESTAURANT_ID][0].userId, OTHER_USER_ID);
+  assert.equal(owners.map[RESTAURANT_ID][0].displayName, 'Ada');
+  assert.equal(owners.map[RESTAURANT_ID][0].username, 'ada');
+
+  const complete = await fetchViewerFollowingOwnersMap();
+  assert.equal(complete.error, null);
+  assert.equal(complete.complete, true);
+  assert.equal(complete.map[RESTAURANT_ID][0].username, 'ada');
+});
+
+test('following map dropdown maps RPC rows including string item_count', async () => {
+  authUser = { id: USER_ID };
+  supabase = makeSupabaseMock((ctx) => {
+    if (ctx.rpc === 'map_following_lists') {
+      return {
+        data: [
+          { id: LIST_B_ID, name: 'Ada dinner', item_count: '4', owner_username: 'ada' },
+          { id: '  ', name: 'skip' },
+        ],
+        error: null,
+      };
+    }
+    return { data: [], error: null };
+  });
+  const following = await fetchFollowingListsForMapDropdown();
+  assert.equal(following.error, null);
+  assert.equal(following.lists.length, 1);
+  assert.equal(following.lists[0].id, LIST_B_ID);
+  assert.equal(following.lists[0].item_count, 4);
 });
 });

@@ -8,6 +8,7 @@ import { alpha, styled, useTheme, keyframes } from '@mui/material/styles';
 import { ic } from 'src/assets/icons';
 import { RADIUS } from 'src/theme/spacing';
 import { useTranslate } from 'src/locales';
+import { readableAccent } from 'src/theme/readable-accent';
 
 import Iconify from 'src/components/iconify';
 
@@ -54,7 +55,7 @@ function Spark({ size, sx }) {
       aria-hidden
       sx={{
         position: 'absolute',
-        color: 'primary.main',
+        color: (theme) => readableAccent(theme),
         opacity: 0,
         animation: `${twinkle} 2.8s ease-in-out infinite`,
         display: { xs: 'none', lg: 'block' },
@@ -160,7 +161,7 @@ export default function HomeHeroFloats() {
           ...floatAnimation(6.5, 1.1, 1.1),
         }}
       >
-        <Iconify icon={ic.bookmarkBold} width={20} sx={{ color: 'primary.main' }} />
+        <Iconify icon={ic.bookmarkBold} width={20} sx={{ color: readableAccent(theme) }} />
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: '1px', textAlign: 'left' }}>
           <Box
             component="b"

@@ -73,7 +73,7 @@ test.describe('list monetization — UI gating without Connect', () => {
     }
   });
 
-  test('billing page blocks the bundle price until payout setup is done', async ({ page }) => {
+  test('S3 billing populated: bundle price blocked until payout setup is done', async ({ page }) => {
     test.setTimeout(240_000);
     loadE2EEnv();
     const admin = getServiceRoleClient();

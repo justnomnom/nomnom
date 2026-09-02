@@ -130,7 +130,7 @@ ${ids.map((id) => `| ${readField(id, 'title')} | \`${id}/\` |`).join('\n')}
 
 Each folder has \`reel.mp4\` (9:16), \`slideshow.mp4\` (1:1), \`slide-01.jpg\`–\`slide-05.jpg\`, and \`caption.txt\`.
 
-Copy is from shipped locale strings (landing feed / lists / map, Roleta, Mesa). No ratings, user counts, or restaurant names.
+Copy is from shipped locale strings (landing feed / lists / map, NomNom Roulette, Mesa). No ratings, user counts, or restaurant names.
 `;
 
 writeFileSync(join(OUT_ROOT, 'REVIEW.md'), review);

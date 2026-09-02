@@ -13,6 +13,7 @@ import { RouterLink } from 'src/routes/components';
 import { usePrefersReducedMotion } from 'src/hooks/use-prefers-reduced-motion';
 
 import { ic } from 'src/assets/icons';
+import { readableAccent } from 'src/theme/readable-accent';
 
 import Iconify from 'src/components/iconify';
 import RemoteCoverImage from 'src/components/image/remote-cover-image';
@@ -489,7 +490,7 @@ export function NomNomListPickerTile({ list, selected, onToggle, t, compact }) {
       }}
     >
       {selected ? (
-        <Iconify icon={ic.checkCircleBold} width={22} sx={{ color: 'primary.main' }} />
+        <Iconify icon={ic.checkCircleBold} width={22} sx={{ color: readableAccent(theme) }} />
       ) : null}
     </Box>
   );
@@ -643,7 +644,7 @@ export function NomNomListCreateTile({ compact, onClick, t, thumbPx }) {
           transition: theme.transitions.create(['color'], {
             duration: theme.transitions.duration.shorter,
           }),
-          '&:hover': { color: 'primary.main' },
+          '&:hover': { color: readableAccent(theme) },
           ...(reduceMotion ? {} : { '&:active': { transform: 'scale(0.985)' } }),
         }}
       >
@@ -665,7 +666,7 @@ export function NomNomListCreateTile({ compact, onClick, t, thumbPx }) {
                 border: '2px solid',
                 borderColor: 'background.paper',
                 bgcolor: alpha(primary, 0.08),
-                color: 'primary.main',
+                color: readableAccent(theme),
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -697,7 +698,7 @@ export function NomNomListCreateTile({ compact, onClick, t, thumbPx }) {
           ? 'color 0.2s, border-color 0.2s'
           : 'color 0.2s, border-color 0.2s, transform 0.15s',
         '&:hover': {
-          color: 'primary.main',
+          color: readableAccent(theme),
           borderColor: alpha(primary, 0.45),
         },
         ...(reduceMotion ? {} : { '&:active': { transform: 'scale(0.98)' } }),
@@ -716,7 +717,7 @@ export function NomNomListCreateTile({ compact, onClick, t, thumbPx }) {
           alignSelf: 'flex-start',
         }}
       >
-        <Iconify icon={ic.addRounded} width={24} sx={{ color: 'primary.main' }} />
+        <Iconify icon={ic.addRounded} width={24} sx={{ color: readableAccent(theme) }} />
       </Box>
       <Box sx={{ flex: 1, minWidth: 0, textAlign: 'left' }}>
         <Typography

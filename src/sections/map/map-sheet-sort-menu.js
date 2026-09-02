@@ -13,6 +13,7 @@ import { alpha, useTheme } from '@mui/material/styles';
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import { RADIUS } from 'src/theme/spacing';
+import { readableAccent } from 'src/theme/readable-accent';
 
 import Iconify from 'src/components/iconify';
 
@@ -174,7 +175,7 @@ export default function MapSheetSortMenu({
                 <Iconify
                   icon={ic.checkmarkFill}
                   width={18}
-                  sx={{ ml: 1, color: 'primary.main', flexShrink: 0 }}
+                  sx={{ ml: 1, color: readableAccent(theme), flexShrink: 0 }}
                 />
               ) : null}
             </MenuItem>

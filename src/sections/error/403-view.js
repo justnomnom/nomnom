@@ -8,6 +8,7 @@ import { paths } from 'src/routes/paths';
 
 import { useTranslate } from 'src/locales';
 import CompactLayout from 'src/layouts/compact';
+import { readableAccent } from 'src/theme/readable-accent';
 import { compactPageActionsStackSx } from 'src/theme/responsive-button-sx';
 
 import { varFade, MotionPart, MotionContainer } from 'src/components/animate';
@@ -33,7 +34,7 @@ export default function View403() {
               display: 'block',
               mb: 1.5,
               textAlign: 'center',
-              color: 'primary.main',
+              color: (theme) => readableAccent(theme),
               letterSpacing: 1.2,
             }}
           >
@@ -56,8 +57,8 @@ export default function View403() {
           <Button component="a" href={paths.home} color="primary" size="large" variant="contained">
             {t('pages.error.403.goToHome')}
           </Button>
-          <Button component="a" href={paths.dashboard.map} size="large" variant="text">
-            {t('pages.error.403.exploreMap')}
+          <Button component="a" href={paths.site.featuresRoot} size="large" variant="text">
+            {t('pages.error.403.seeHowItWorks')}
           </Button>
         </Box>
       </MotionContainer>

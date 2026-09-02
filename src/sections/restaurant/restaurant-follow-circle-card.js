@@ -16,6 +16,7 @@ import { usePrefersReducedMotion } from 'src/hooks/use-prefers-reduced-motion';
 
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
+import { readableAccent } from 'src/theme/readable-accent';
 import { followCircleMemberLabel } from 'src/libs/restaurant/follow-circle';
 
 import Iconify from 'src/components/iconify';
@@ -34,7 +35,7 @@ const avatarSx = {
   borderColor: 'background.paper',
   boxShadow: 2,
   bgcolor: (tt) => alpha(tt.palette.primary.main, 0.12),
-  color: 'primary.main',
+  color: (theme) => readableAccent(theme),
 };
 
 const iconSx = { width: { xs: 16, sm: 18 }, height: { xs: 16, sm: 18 } };

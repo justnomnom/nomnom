@@ -8,13 +8,13 @@ import { pageMetadata } from '@/content-platform/page-metadata';
 
 export const revalidate = 60;
 
-const SLUG_ORDER = ['foodies', 'creators', 'restaurants'];
+const SLUG_ORDER = ['foodies', 'creators', 'hosts', 'restaurants'];
 const TITLE_SEP = ' — ';
 
 export const metadata: Metadata = pageMetadata({
-  title: 'Use cases: foodies, creators, and restaurants',
+  title: 'Use cases: foodies, creators, hosts, and restaurants',
   description:
-    'See how foodies, creators, and restaurants use NomNom — restaurant picks from people you trust, with lists, roulette, and map and AI search.',
+    'See how foodies, creators, hosts, and restaurants use NomNom — restaurant picks from people you trust, with lists, Table, and NomNom Roulette.',
   path: '/use-cases',
 });
 
@@ -52,7 +52,7 @@ export default function UseCasesIndexPage() {
   return (
     <ContentPageShell
       title="Use cases"
-      description="Pick a story to see how NomNom fits food lovers, creators, and restaurants."
+      description="Pick a story to see how NomNom fits food lovers, creators, hosts, and restaurants."
       breadcrumbs={[
         { name: 'Home', href: '/' },
         { name: 'Use cases', href: '/use-cases' },
@@ -78,8 +78,11 @@ export default function UseCasesIndexPage() {
           or cheap eats, public or private.
         </li>
         <li>
-          <strong>Map and AI search</strong> — browse, search, or ask in plain language, anchored to
-          your location.
+          <strong>Table</strong> — a shared shortlist. Send the link; friends vote without
+          installing the app.
+        </li>
+        <li>
+          <strong>Map</strong> — browse the pins from people you follow, then save them to a list.
         </li>
       </ul>
 
@@ -106,7 +109,7 @@ export default function UseCasesIndexPage() {
                 <span className="block text-[0.75rem] font-bold uppercase tracking-[0.08em] text-muted-foreground">
                   {label}
                 </span>
-                <span className="mt-2 block text-xl font-bold leading-snug tracking-tight text-foreground transition-colors duration-200 group-hover:text-primary">
+                <span className="mt-2 block text-xl font-bold leading-snug tracking-tight text-foreground transition-colors duration-200 group-hover:text-primary-readable">
                   {headline}
                 </span>
                 {doc.frontmatter.description ? (
@@ -114,7 +117,7 @@ export default function UseCasesIndexPage() {
                     {doc.frontmatter.description}
                   </span>
                 ) : null}
-                <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary underline-offset-4 transition-all duration-200 group-hover:gap-2.5 group-hover:underline">
+                <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary-readable underline-offset-4 transition-all duration-200 group-hover:gap-2.5 group-hover:underline">
                   Read story
                   <span aria-hidden="true">→</span>
                 </span>

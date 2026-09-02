@@ -27,6 +27,7 @@ import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import { RADIUS, tabularNumsSx } from 'src/theme/spacing';
 import { hoverable } from 'src/theme/overrides/hoverable';
+import { readableAccent } from 'src/theme/readable-accent';
 import { useSkeletonThemeColors } from 'src/theme/use-skeleton-theme';
 import {
   RESTAURANT_SURFACE,
@@ -441,7 +442,7 @@ function MapSpotSheetListRowImpl({
                 ...(isSaved
                   ? [
                       {
-                        color: 'primary.main',
+                        color: readableAccent(theme),
                         borderColor: (tt) => alpha(tt.palette.primary.main, 0.45),
                         bgcolor: (tt) => alpha(tt.palette.primary.main, 0.12),
                         ...hoverable({
@@ -559,7 +560,7 @@ function MapSpotSheetListRowImpl({
               borderColor: 'background.paper',
               boxShadow: 1,
               bgcolor: (tt) => alpha(tt.palette.primary.main, 0.15),
-              color: 'primary.main',
+              color: readableAccent(theme),
             });
             const showFollowingSkeleton = Boolean(userId && followingOwnersLoading);
             const showSocialRow =

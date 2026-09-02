@@ -10,12 +10,15 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import matter from 'gray-matter';
 
+import {
+  getRestaurantPageSize,
+  restaurantListPath,
+} from '../src/content-platform/restaurant-list-urls.js';
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, '..');
 const contentDir = path.join(root, 'content');
 const outFile = path.join(root, 'src', 'content-platform', 'generated', 'sitemap-paths.json');
-
-const PAGE_SIZE = 6;
 
 function listSubdirNames(relativeDir) {
   const abs = path.join(contentDir, relativeDir);
@@ -45,16 +48,6 @@ function allRestaurants() {
   const p = path.join(contentDir, 'data', 'restaurants.json');
   if (!fs.existsSync(p)) return [];
   return JSON.parse(fs.readFileSync(p, 'utf8'));
-}
-
-function restaurantListPath(country, city, page, tag) {
-  const base = `/countries/${country}/${city}/restaurants`;
-  if (tag) {
-    if (page <= 1) return `${base}/tag/${encodeURIComponent(tag)}`;
-    return `${base}/tag/${encodeURIComponent(tag)}/page/${page}`;
-  }
-  if (page <= 1) return base;
-  return `${base}/page/${page}`;
 }
 
 /** Collection URLs use `[slug]` only — skip nested paths and reserved segments. */
@@ -140,6 +133,8 @@ function main() {
   addStatic('/privacy');
   addStatic('/terms');
   addStatic('/use-cases');
+  addStatic('/resources');
+  addStatic('/features');
   addStatic('/roleta/lisboa');
 
   for (const slug of readMdxSlugsInDir('collections')) {
@@ -194,7 +189,7 @@ function main() {
       bump(`/countries/${country}/${city}/restaurants`, restaurantsMtime);
 
       const count = allRestaurants().filter((r) => r.country === country && r.city === city).length;
-      const pages = Math.max(1, Math.ceil(count / PAGE_SIZE));
+      const pages = Math.max(1, Math.ceil(count / getRestaurantPageSize()));
       for (let page = 2; page <= pages; page += 1) {
         bump(restaurantListPath(country, city, page), restaurantsMtime);
       }
@@ -203,7 +198,7 @@ function main() {
       const tags = [...new Set(restaurants.flatMap((r) => r.categories || []))];
       for (const tag of tags) {
         const filtered = restaurants.filter((r) => (r.categories || []).includes(tag));
-        const tagPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+        const tagPages = Math.max(1, Math.ceil(filtered.length / getRestaurantPageSize()));
         bump(restaurantListPath(country, city, 1, tag), restaurantsMtime);
         for (let page = 2; page <= tagPages; page += 1) {
           bump(restaurantListPath(country, city, page, tag), restaurantsMtime);

@@ -3,7 +3,7 @@ import { type Page, expect } from '@playwright/test';
 type VisibleOptions = { timeout?: number };
 
 /** SentryErrorBoundary fallback — CompactLayout header has no mobile nav trigger. */
-export const MARKETING_HOME_ERROR_EYEBROW = /kitchen mishap/i;
+export const MARKETING_HOME_ERROR_EYEBROW = /Error 500/i;
 
 /** NavMobile IconButton aria-label (en: "Open main menu"). */
 export const MOBILE_NAV_TRIGGER_NAME = /Open main menu/i;
@@ -11,11 +11,11 @@ export const MOBILE_NAV_TRIGGER_NAME = /Open main menu/i;
 const MARKETING_HOME_GOTO = { waitUntil: 'domcontentloaded' as const, timeout: 180_000 };
 
 /** App `not-found` heading (en copy) plus the legacy heading some specs still mention. */
-export const APP_NOT_FOUND_HEADING = /This dish isn.?t on the menu|Page Not Found/i;
+export const APP_NOT_FOUND_HEADING = /This page isn.?t here|This dish isn.?t on the menu|Page Not Found/i;
 
 /**
  * Marketing `/` can briefly show SplashScreen or SentryErrorBoundary during webpack dev compiles.
- * Retry navigation when the kitchen-mishap fallback or mobile nav trigger is missing.
+ * Retry navigation when the Error 500 fallback or mobile nav trigger is missing.
  */
 export async function gotoMarketingHomeStable(page: Page): Promise<void> {
   const maxAttempts = 3;

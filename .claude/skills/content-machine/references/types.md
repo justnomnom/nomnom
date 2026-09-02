@@ -74,6 +74,22 @@ Pillars, clusters, briefs. Skills: `content-strategy`, `seo-content-strategist`.
 
 A template that does not exist yet. Skill: `create-video-start`, not this machine.
 
+### 12. Daily pipeline (app-adjacent)
+
+Planned in `content/pipeline/`. Distinct **iterations per type**. Never auto-posted.
+
+| Type | Iterations | Producer |
+|---|---|---|
+| Feature reel | demo, problem→feature, before/after, three beats, ritual | `render-feature-showcases.mjs` |
+| Carousel | myth-bust, how-to, before/after, rules, screenshot walk | `social-content` + pack |
+| Stories | poll, countdown, screenshot walk, question | `social-content` + pack |
+| Thread | problem→product, hot take, rules | `social-content` + pack |
+| UGC prompt | save this, spin with us, drop your list, screenshot Maps | pack |
+| SEO MDX | how-to, thought, occasion, feature page | `content/resources`, `content/features` |
+| Ads | pain, real quotes only, feature demo, contrast | `ad-creative` |
+
+Daily mass batch: `npm run content:daily`. Skill: `daily-content-pipeline`.
+
 ## Readiness by type
 
 | Type | Ready when |

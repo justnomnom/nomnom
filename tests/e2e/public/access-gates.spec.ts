@@ -4,7 +4,12 @@ import { expect, test } from '@playwright/test';
  * Anonymous access gates (TEST-PLAN O1 anonymous side, dashboard auth gate).
  * `/onboarding` server-redirects to login with returnTo; `/dashboard/**` renders the
  * Google auth gate shell instead of dashboard content.
+ *
+ * Do not warm routes in `beforeAll`: a hung compile there trips the 200s hook timeout and
+ * fails the first test in 4ms. Retry the page itself instead.
  */
+test.describe.configure({ retries: 1 });
+
 test.describe('access gates — anonymous user', () => {
   test('/onboarding redirects to login with returnTo', async ({ page }) => {
     test.setTimeout(180_000);
@@ -21,7 +26,7 @@ test.describe('access gates — anonymous user', () => {
 
   for (const path of ['/dashboard/discover', '/dashboard/settings/billing', '/dashboard/lists']) {
     test(`${path} shows the auth gate, not dashboard content`, async ({ page }) => {
-      test.setTimeout(120_000);
+      test.setTimeout(180_000);
       await page.goto(path, { waitUntil: 'load', timeout: 120_000 });
       // Either a redirect to /auth/* or the in-place "Continue with Google" gate is acceptable;
       // what must NOT happen is signed-in dashboard content rendering.

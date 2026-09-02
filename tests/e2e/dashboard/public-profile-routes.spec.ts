@@ -21,6 +21,7 @@ test.describe('public profile by handle (optional)', () => {
   test('dashboard public profile route loads', async ({ page }) => {
     test.setTimeout(180_000);
     const handle = process.env.E2E_PUBLIC_PROFILE_USERNAME!.trim().replace(/^@/, '');
+    await page.request.get(`/dashboard/u/${handle}`);
     await page.goto(`/dashboard/u/${handle}`, { waitUntil: 'domcontentloaded', timeout: 120_000 });
     await expect(page).toHaveURL(new RegExp(`/dashboard/u/${handle}`));
     const splash = page.getByText('Pulling up the menu...');

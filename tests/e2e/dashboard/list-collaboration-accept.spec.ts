@@ -13,6 +13,7 @@ import {
   deleteSeededUser,
   buildUserStorageState,
   completeOnboardingWithoutHome,
+  publishList,
 } from '../support/seed';
 import {
   E2E_DASHBOARD_AUTH_SETUP_HINT,
@@ -29,7 +30,6 @@ import {
  *   - Decline → the pending row is deleted (decline_list_invite) and the list drops off "Shared".
  * Teardown removes the list, any list_members rows, and the seeded user.
  */
-test.describe.configure({ mode: 'serial' });
 
 /** Current list_members.status for (list, user), or 'none' when no row exists. */
 async function readMemberStatus(
@@ -71,6 +71,8 @@ test.describe('dashboard lists — collaboration accept/decline', () => {
     // The dashboard layout bounces users without onboarding_completed_at to /onboarding.
     await completeOnboardingWithoutHome(invitee.id);
     const listId = await createOwnedList(ownerId, { name: `${name} ${Date.now()}` });
+    // Hub Shared is backed by `dashboard_following_lists`, which only returns published lists.
+    await publishList(listId);
 
     const { error } = await admin.from('list_members').insert({
       list_id: listId,
@@ -88,7 +90,7 @@ test.describe('dashboard lists — collaboration accept/decline', () => {
     browser,
   }) => {
     test.setTimeout(240_000);
-    const { admin, invitee, listId } = await seedInviteFixture('E2E Collab Accept');
+    const { admin, invitee, listId } = await seedInviteFixture('Invitee shared list');
     const storageState = await buildUserStorageState(invitee.email, invitee.password);
     const context = await browser.newContext({ storageState });
     const page = await context.newPage();
@@ -134,7 +136,7 @@ test.describe('dashboard lists — collaboration accept/decline', () => {
     browser,
   }) => {
     test.setTimeout(240_000);
-    const { admin, invitee, listId } = await seedInviteFixture('E2E Collab Decline');
+    const { admin, invitee, listId } = await seedInviteFixture('Invitee declined list');
     const storageState = await buildUserStorageState(invitee.email, invitee.password);
     const context = await browser.newContext({ storageState });
     const page = await context.newPage();

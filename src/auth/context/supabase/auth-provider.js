@@ -16,6 +16,7 @@ import {
 import { SUPABASE_API } from 'src/config-global';
 import { setUser } from 'src/libs/sentry/sentry-service';
 import { ensureUserRecord } from 'src/auth/actions/auth-actions';
+import { isDuplicateSignupUser } from 'src/auth/duplicate-signup';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
 import { setSleekplanUser, shutdownSleekplan } from 'src/libs/sleekplan/sleekplan-service';
 
@@ -540,6 +541,13 @@ export function AuthProvider({ children }) {
         if (error) {
           handleError(error, 'Registration');
           throw error;
+        }
+
+        if (isDuplicateSignupUser(data.user)) {
+          const taken = new Error('User already registered');
+          taken.code = 'user_already_exists';
+          handleError(taken, 'Registration');
+          throw taken;
         }
 
         // Ensure the new user's `users` row exists.

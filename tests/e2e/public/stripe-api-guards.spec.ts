@@ -93,3 +93,14 @@ test.describe('POST /api/webhooks/stripe — signature enforcement', () => {
     expect((await res.json()).error).toBe('invalid_signature');
   });
 });
+
+test.describe('POST /api/stripe/billing-portal — unauthenticated', () => {
+  test('no session → 401 unauthorized', async ({ request }) => {
+    const res = await request.post('/api/stripe/billing-portal', {
+      data: { listSubscriptionId: '00000000-0000-4000-8000-000000000000' },
+    });
+    skipIfStripeUnconfigured(res);
+    expect(res.status()).toBe(401);
+    expect((await res.json()).error).toBe('unauthorized');
+  });
+});

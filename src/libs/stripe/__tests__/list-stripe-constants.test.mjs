@@ -10,6 +10,7 @@ import {
   LIST_PRICE_MAX_CENTS,
   LIST_PRICE_MIN_CENTS,
   netCentsAfterPlatformFee,
+  sanitizeCheckoutReturnPath,
 } from '../list-stripe-constants.js';
 
 test('isWellFormedUuid: accepts valid v4, rejects garbage', () => {
@@ -93,4 +94,19 @@ test('netCentsAfterPlatformFee: a 0% fee leaves the amount whole', () => {
   process.env.STRIPE_PLATFORM_FEE_PERCENT = '0';
   assert.equal(netCentsAfterPlatformFee(1000), 1000);
   delete process.env.STRIPE_PLATFORM_FEE_PERCENT;
+});
+
+test('sanitizeCheckoutReturnPath: keeps internal paths, rejects open redirects (B7)', () => {
+  const listId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+  assert.equal(sanitizeCheckoutReturnPath('/dashboard/lists/x', listId), '/dashboard/lists/x');
+  assert.equal(sanitizeCheckoutReturnPath(' /lists/x ', listId), '/lists/x');
+  assert.equal(sanitizeCheckoutReturnPath('https://evil.com', listId), `/lists/${listId}`);
+  assert.equal(sanitizeCheckoutReturnPath('//evil.com', listId), `/lists/${listId}`);
+  assert.equal(sanitizeCheckoutReturnPath('foo', listId), `/lists/${listId}`);
+  assert.equal(sanitizeCheckoutReturnPath('', listId), `/lists/${listId}`);
+  assert.equal(sanitizeCheckoutReturnPath(null, listId), `/lists/${listId}`);
+  assert.equal(
+    sanitizeCheckoutReturnPath('/ok?next=https://evil.com', listId),
+    `/lists/${listId}`
+  );
 });

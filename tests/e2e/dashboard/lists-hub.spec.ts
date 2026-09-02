@@ -40,4 +40,31 @@ test.describe('dashboard lists hub', () => {
     });
     await expect(page.getByTestId('e2e-lists-new')).toBeVisible({ timeout: 45_000 });
   });
+
+  test('Import from Google Maps opens the paste-link sheet and rejects a non-Maps URL', async ({
+    page,
+  }) => {
+    test.setTimeout(180_000);
+    await page.goto('/dashboard/lists', { waitUntil: 'load', timeout: 120_000 });
+    try {
+      await expectSignedInDashboardShell(page, { timeout: 45_000 });
+    } catch {
+      await page.reload({ waitUntil: 'load', timeout: 120_000 });
+      await expectSignedInDashboardShell(page, { timeout: 45_000 });
+    }
+
+    await page.getByTestId('e2e-lists-new').click();
+    await expect(page.getByRole('button', { name: 'Import from Google Maps' })).toBeVisible({
+      timeout: 30_000,
+    });
+    await page.getByRole('button', { name: 'Import from Google Maps' }).click();
+    await expect(page.getByRole('heading', { name: 'Import from Google Maps' })).toBeVisible({
+      timeout: 30_000,
+    });
+    await page.getByLabel(/Google Maps list link/i).fill('https://evil.example/maps');
+    await page.getByRole('button', { name: 'Find spots' }).click();
+    await expect(page.getByRole('alert')).toContainText(/doesn.t look like a Google Maps link/i, {
+      timeout: 30_000,
+    });
+  });
 });

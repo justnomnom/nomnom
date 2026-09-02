@@ -18,6 +18,7 @@ import ClickAwayListener from '@mui/material/ClickAwayListener';
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import { Z_INDEX } from 'src/theme/spacing';
+import { readableAccent } from 'src/theme/readable-accent';
 
 import Iconify from 'src/components/iconify';
 
@@ -44,7 +45,7 @@ function highlightMatch(name, query) {
   return (
     <>
       {n.slice(0, idx)}
-      <Box component="span" sx={{ fontWeight: 700, color: 'primary.main' }}>
+      <Box component="span" sx={{ fontWeight: 700, color: (theme) => readableAccent(theme) }}>
         {n.slice(idx, idx + q.length)}
       </Box>
       {n.slice(idx + q.length)}

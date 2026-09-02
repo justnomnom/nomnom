@@ -10,6 +10,7 @@ import CardActionArea from '@mui/material/CardActionArea';
 
 import { ic } from 'src/assets/icons';
 import { TOUCH_TARGET_SIZE } from 'src/theme/spacing';
+import { readableAccent } from 'src/theme/readable-accent';
 
 import Iconify from 'src/components/iconify';
 
@@ -80,7 +81,7 @@ export default function SettingsSelectionRow({
             justifyContent: 'center',
             bgcolor: 'background.paper',
             boxShadow: 1,
-            color: iconColor,
+            color: iconColor === 'primary.main' ? (th) => readableAccent(th) : iconColor,
             flexShrink: 0,
             overflow: 'hidden',
           }}
@@ -98,7 +99,7 @@ export default function SettingsSelectionRow({
         <Iconify
           icon={ic.checkCircleBold}
           width={22}
-          sx={{ color: 'primary.main', flexShrink: 0 }}
+          sx={{ color: readableAccent(theme), flexShrink: 0 }}
         />
       ) : (
         /* Multi-select rows rest on an empty check circle so the row reads as

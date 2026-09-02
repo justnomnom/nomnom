@@ -8,6 +8,7 @@ import { alpha, useTheme } from '@mui/material/styles';
 
 import { useLocales } from 'src/locales';
 import { APP_SUPPORT_EMAIL } from 'src/config-global';
+import { readableAccent } from 'src/theme/readable-accent';
 import { getLocaleBodyMaxWidthCh } from 'src/theme/locale-prose';
 
 import {
@@ -38,7 +39,7 @@ export default function TermsView() {
         <Typography
           variant="overline"
           sx={{
-            color: 'primary.main',
+            color: readableAccent(theme),
             fontWeight: 700,
             letterSpacing: '0.1em',
             display: 'block',
@@ -47,7 +48,7 @@ export default function TermsView() {
           Legal
         </Typography>
         <Typography variant="h2" sx={{ fontWeight: 800, letterSpacing: '-0.02em' }}>
-          Terms of Service
+          Terms of service
         </Typography>
         <Typography variant="body2" color="text.secondary">
           Last updated: {LAST_UPDATED}
@@ -88,7 +89,7 @@ export default function TermsView() {
             lineHeight: 1.7,
           },
           '& a': {
-            color: 'primary.main',
+            color: readableAccent(theme),
             textDecoration: 'none',
             '&:hover': { textDecoration: 'underline' },
           },
@@ -107,7 +108,7 @@ export default function TermsView() {
             variant="body2"
             sx={{ color: 'text.primary', fontWeight: 600, lineHeight: 1.65 }}
           >
-            By creating an account or using NomNom, you agree to these Terms of Service. Please read
+            By creating an account or using NomNom, you agree to these terms of service. Please read
             them — they&apos;re written in plain language on purpose.
           </Typography>
         </Box>

@@ -3,6 +3,7 @@ import { buttonClasses } from '@mui/material/Button';
 
 import { hoverable } from '../hoverable';
 import { PRIMARY_ON_FILL_TEXT } from '../../palette';
+import { readableAccent } from '../../readable-accent';
 
 // ----------------------------------------------------------------------
 
@@ -81,6 +82,15 @@ export function button(theme) {
               color === 'primary' ? theme.customShadows.primaryHover : theme.customShadows.z16,
           }),
         }),
+        ...(outlinedVariant &&
+          color === 'primary' && {
+            color: readableAccent(theme),
+            borderColor: alpha(readableAccent(theme), 0.48),
+          }),
+        ...(textVariant &&
+          color === 'primary' && {
+            color: readableAccent(theme),
+          }),
         ...(softVariant && {
           color: theme.palette[color][lightMode ? 'dark' : 'light'],
           backgroundColor: alpha(theme.palette[color].main, 0.16),

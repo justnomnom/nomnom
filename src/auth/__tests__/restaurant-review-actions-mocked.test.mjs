@@ -20,7 +20,7 @@ mock.module('src/libs/supabase/supabase-server-client.js', {
   },
 });
 
-const { upsertRestaurantReview, fetchRestaurantReviews } = await import(
+const { upsertRestaurantReview, fetchRestaurantReviews, deleteRestaurantReview } = await import(
   '../../auth/actions/restaurant-review-actions.js'
 );
 
@@ -84,6 +84,13 @@ function makeSupabaseMock(handler) {
     removed,
     from(table) {
       return builder(table);
+    },
+    rpc(name, args) {
+      const p = resolve({ kind: 'rpc', rpc: name, args });
+      return {
+        then: p.then.bind(p),
+        catch: p.catch.bind(p),
+      };
     },
     storage: {
       from() {
@@ -182,5 +189,81 @@ describe('restaurant review actions with mocked Supabase', { concurrency: false 
     const out = await fetchRestaurantReviews('');
     assert.deepEqual(out, { reviews: [], error: null });
     assert.equal(supabase.calls.length, 0);
+  });
+
+  test('deleteRestaurantReview: unauthorized / missing restaurant id', async () => {
+    authUser = null;
+    supabase = makeSupabaseMock(() => ({ data: null, error: null }));
+    assert.deepEqual(await deleteRestaurantReview({ restaurantId: RESTAURANT_ID }), {
+      errorKey: 'unauthorized',
+      error: 'unauthorized',
+    });
+    authUser = { id: USER_ID };
+    assert.deepEqual(await deleteRestaurantReview({ restaurantId: '' }), {
+      errorKey: 'invalid_restaurant',
+      error: 'invalid_restaurant',
+    });
+  });
+
+  test('fetchRestaurantReviews: returns rows; query error surfaces', async () => {
+    authUser = { id: USER_ID };
+    supabase = makeSupabaseMock((ctx) => {
+      if (ctx.table === 'restaurant_reviews') {
+        return {
+          data: [
+            {
+              id: 'rev-1',
+              restaurant_id: RESTAURANT_ID,
+              user_id: USER_ID,
+              rating: 5,
+              body: 'Yes',
+            },
+          ],
+          error: null,
+        };
+      }
+      return { data: [], error: null };
+    });
+    const ok = await fetchRestaurantReviews(RESTAURANT_ID);
+    assert.equal(ok.error, null);
+    assert.equal(ok.reviews[0].id, 'rev-1');
+    assert.equal(ok.reviews[0].rating, 5);
+
+    supabase = makeSupabaseMock(() => ({ data: null, error: { message: 'reviews_down' } }));
+    assert.deepEqual(await fetchRestaurantReviews(RESTAURANT_ID), {
+      reviews: [],
+      error: 'reviews_down',
+    });
+  });
+
+  test('deleteRestaurantReview: nothing_to_delete, then rpc success clears storage', async () => {
+    authUser = { id: USER_ID };
+    supabase = makeSupabaseMock((ctx) => {
+      if (ctx.rpc === 'delete_my_restaurant_review') {
+        return { data: { deleted: false }, error: null };
+      }
+      return { data: null, error: null };
+    });
+    assert.deepEqual(await deleteRestaurantReview({ restaurantId: RESTAURANT_ID }), {
+      errorKey: 'nothing_to_delete',
+      error: 'nothing_to_delete',
+    });
+
+    supabase = makeSupabaseMock((ctx) => {
+      if (ctx.rpc === 'delete_my_restaurant_review') {
+        return {
+          data: {
+            deleted: true,
+            media: [{ path: `${USER_ID}/${RESTAURANT_ID}/shot.jpg` }],
+          },
+          error: null,
+        };
+      }
+      return { data: null, error: null };
+    });
+    assert.deepEqual(await deleteRestaurantReview({ restaurantId: RESTAURANT_ID }), {
+      error: null,
+    });
+    assert.deepEqual(supabase.removed, [`${USER_ID}/${RESTAURANT_ID}/shot.jpg`]);
   });
 });

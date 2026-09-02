@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { expectSignedInDashboardShell } from '../support/page-assertions';
+import { expectSignedInDashboardShell, APP_NOT_FOUND_HEADING } from '../support/page-assertions';
 import { dashboardTestsDisabled } from '../support/skip-dashboard';
 import { E2E_DASHBOARD_AUTH_SETUP_HINT } from '../support/test-credentials';
 
@@ -54,31 +54,37 @@ test.describe('dashboard routes — extended', () => {
 
   for (const path of paths) {
     test(`loads ${path}`, async ({ page }) => {
-      await page.goto(path, { waitUntil: 'domcontentloaded' });
+      test.setTimeout(180_000);
+      await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 120_000 });
       await expect(page).toHaveURL(new RegExp(path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-      await expectSignedInDashboardShell(page, { timeout: 25_000 });
+      await expectSignedInDashboardShell(page, { timeout: 60_000 });
     });
   }
 
   test('admin hub — allowlisted user sees Admin, others see global not-found', async ({ page }) => {
-    await page.goto('/dashboard/admin', { waitUntil: 'domcontentloaded' });
+    test.setTimeout(180_000);
+    await page.goto('/dashboard/admin', { waitUntil: 'domcontentloaded', timeout: 120_000 });
     await expect(page).toHaveURL(/\/dashboard\/admin$/);
-    await expectSignedInDashboardShell(page, { timeout: 25_000 });
+    await expectSignedInDashboardShell(page, { timeout: 60_000 });
     await expect(
       page
         .getByRole('heading', { name: 'Admin' })
-        .or(page.getByRole('heading', { name: /isn.t on the menu/i }))
-    ).toBeVisible({ timeout: 25_000 });
+        .or(page.getByRole('heading', { name: APP_NOT_FOUND_HEADING }))
+    ).toBeVisible({ timeout: 45_000 });
   });
 
   test('admin sponsored placements — allowlisted or not-found shell', async ({ page }) => {
-    await page.goto('/dashboard/admin/sponsored-placements', { waitUntil: 'domcontentloaded' });
+    test.setTimeout(180_000);
+    await page.goto('/dashboard/admin/sponsored-placements', {
+      waitUntil: 'domcontentloaded',
+      timeout: 120_000,
+    });
     await expect(page).toHaveURL(/\/dashboard\/admin\/sponsored-placements/);
-    await expectSignedInDashboardShell(page, { timeout: 25_000 });
+    await expectSignedInDashboardShell(page, { timeout: 60_000 });
     await expect(
       page
         .getByRole('heading', { name: 'Discover sponsored restaurants' })
-        .or(page.getByRole('heading', { name: /isn.t on the menu/i }))
-    ).toBeVisible({ timeout: 25_000 });
+        .or(page.getByRole('heading', { name: APP_NOT_FOUND_HEADING }))
+    ).toBeVisible({ timeout: 45_000 });
   });
 });

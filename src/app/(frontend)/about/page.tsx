@@ -9,7 +9,7 @@ export const revalidate = 60;
 export const metadata: Metadata = pageMetadata({
   title: 'About',
   description:
-    'NomNom helps you find restaurants through creators and locals you trust—real opinions and shortlists, not generic rankings.',
+    'NomNom helps you find restaurants through creators and locals you trust — real opinions and shortlists, not generic rankings.',
   path: '/about',
 });
 

@@ -6,9 +6,11 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
+import { paths } from 'src/routes/paths';
+
 import { useTranslate } from 'src/locales';
 import CompactLayout from 'src/layouts/compact';
-import { PATH_AFTER_LOGIN } from 'src/config-global';
+import { readableAccent } from 'src/theme/readable-accent';
 import { compactPageActionsStackSx } from 'src/theme/responsive-button-sx';
 
 import { varFade, MotionPart, MotionContainer } from 'src/components/animate';
@@ -42,7 +44,7 @@ export default function Page500({ reset }) {
               display: 'block',
               mb: 1.5,
               textAlign: 'center',
-              color: 'primary.main',
+              color: (theme) => readableAccent(theme),
               letterSpacing: 1.2,
             }}
           >
@@ -66,7 +68,7 @@ export default function Page500({ reset }) {
             {t('pages.error.500.refresh')}
           </Button>
 
-          <Button component="a" href={PATH_AFTER_LOGIN} size="large" variant="text">
+          <Button component="a" href={paths.home} size="large" variant="text">
             {t('pages.error.500.action')}
           </Button>
         </Box>

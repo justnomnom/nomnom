@@ -3,7 +3,7 @@ import { type Page, expect, test } from '@playwright/test';
 import { loadE2EEnv } from '../load-env';
 import { resolveE2EAdmin } from '../support/admin-e2e';
 import { deleteSponsoredPlacement } from '../support/seed';
-import { expectSignedInDashboardShell } from '../support/page-assertions';
+import { expectSignedInDashboardShell, APP_NOT_FOUND_HEADING } from '../support/page-assertions';
 import { dashboardTestsDisabled } from '../support/skip-dashboard';
 import { E2E_DASHBOARD_AUTH_SETUP_HINT } from '../support/test-credentials';
 import { getServiceRoleClient, findMunicipalityCityWithRestaurant } from '../support/supabase-service';
@@ -21,7 +21,6 @@ import { getServiceRoleClient, findMunicipalityCityWithRestaurant } from '../sup
  * seeding a new admin the server wouldn't recognize).
  */
 const ADMIN_HEADING = 'Discover sponsored restaurants';
-const NOT_FOUND_HEADING = /isn.t on the menu/i;
 
 const ESCAPE_REGEXP = /[.*+?^${}()|[\]\\]/g;
 const escapeRegExp = (s: string) => s.replace(ESCAPE_REGEXP, '\\$&');
@@ -112,7 +111,7 @@ test.describe('admin — sponsored placements CRUD (AD2)', () => {
       await expectSignedInDashboardShell(page, { timeout: 30_000 });
 
       const adminHeading = page.getByRole('heading', { name: ADMIN_HEADING });
-      const notFoundHeading = page.getByRole('heading', { name: NOT_FOUND_HEADING });
+      const notFoundHeading = page.getByRole('heading', { name: APP_NOT_FOUND_HEADING });
       await expect(adminHeading.or(notFoundHeading)).toBeVisible({ timeout: 30_000 });
       // Env-drift guard: our env read said "admin", but the server rendered not-found.
       test.skip(

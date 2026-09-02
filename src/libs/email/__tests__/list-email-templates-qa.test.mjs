@@ -19,6 +19,13 @@ test('liveListUpdateHtml: escapes XSS in list/creator names and URLs', () => {
   assert.ok(html.includes('&quot;'));
   assert.ok(html.includes('&#39;'));
   assert.ok(html.includes('NomNom'));
+  assert.ok(html.includes('color:#B8481F'));
+  assert.ok(html.includes('color:#15130f'));
+  assert.ok(html.includes('color:#6e6657'));
+  assert.ok(!html.includes('font-weight:800;color:#FF6B35'));
+  assert.ok(!html.includes('#475569'));
+  assert.ok(!html.includes('#94A3B8'));
+  assert.ok(!html.includes('#121110'));
 });
 
 test('listUpdateDigestHtml: escapes item fields and manage URL', () => {
@@ -37,4 +44,9 @@ test('listUpdateDigestHtml: escapes item fields and manage URL', () => {
   assert.ok(html.includes('2 new spots'));
   assert.ok(html.includes('&lt;x&gt;'));
   assert.ok(html.includes('&quot;'));
+  assert.ok(html.includes('color:#B8481F'));
+  assert.ok(html.includes('color:#15130f'));
+  assert.ok(html.includes('color:#6e6657'));
+  assert.ok(!html.includes('#475569'));
+  assert.ok(!html.includes('#94A3B8'));
 });

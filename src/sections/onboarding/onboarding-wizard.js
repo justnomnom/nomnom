@@ -27,6 +27,7 @@ import { groupRestaurantTagsByCategory } from 'src/utils/restaurant-tag-groups';
 
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
+import { readableAccent } from 'src/theme/readable-accent';
 import { STEP_RHYTHM, TOUCH_TARGET_SIZE } from 'src/theme/spacing';
 import { locationIconForSlug } from 'src/config/onboarding-content';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
@@ -56,7 +57,7 @@ function RestaurantTagPickerLoadState() {
     >
       <CircularProgress
         size={40}
-        sx={{ color: 'primary.main' }}
+        sx={{ color: (theme) => readableAccent(theme) }}
         aria-label={t('pages.onboarding.a11y.loading_tag_picker')}
       />
     </Box>
@@ -1468,7 +1469,7 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
                     <Box
                       component="span"
                       sx={{
-                        color: 'primary.main',
+                        color: (theme) => readableAccent(theme),
                         fontStyle: 'italic',
                         fontWeight: 800,
                       }}
@@ -1556,7 +1557,7 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
                     <Box
                       component="span"
                       sx={{
-                        color: 'primary.main',
+                        color: (theme) => readableAccent(theme),
                         fontStyle: 'italic',
                         textTransform: 'uppercase',
                         fontWeight: 800,

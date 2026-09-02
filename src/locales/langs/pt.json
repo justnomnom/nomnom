@@ -16,7 +16,14 @@
     "countries": "Países",
     "blog": "Blog",
     "resources": "Recursos",
-    "use_cases": "Casos de uso",
+    "features": "Como funciona",
+    "features_all": "Tudo",
+    "feature_feed": "Feed",
+    "feature_lists": "Listas",
+    "feature_map": "Mapa",
+    "feature_roulette": "NomNom Roulette",
+    "feature_table": "Mesa",
+    "use_cases": "Para quem",
     "about": "Sobre",
     "pricing": "Preços",
     "contact": "Contacto",
@@ -31,8 +38,9 @@
     "planning_trip": "Planear uma viagem gastronómica",
     "use_case_foodies": "Foodies",
     "use_case_creators": "Criadores e locais",
+    "use_case_hosts": "Anfitriões",
     "use_case_restaurants": "Restaurantes",
-    "use_cases_all": "Todos os casos de uso",
+    "use_cases_all": "Ver todos",
     "main_navigation_aria": "Navegação principal"
   },
   "management": "Gestão",
@@ -40,7 +48,7 @@
   "pages": {
     "lists": {
       "default_name": "Lista sem título",
-      "create_title": "Nova lista NomNom",
+      "create_title": "Nova NomNom List",
       "field_name": "Nome da lista",
       "field_description": "Descrição (opcional)",
       "field_visibility": "Quem pode encontrar esta lista",
@@ -54,9 +62,9 @@
       "freemium_pricing_bundle_active": "Os subscritores pagam {{price}}/mês e desbloqueiam todas as tuas listas pagas.",
       "freemium_pricing_no_bundle": "Ainda não definiste um preço de subscrição.",
       "freemium_pricing_set_price_link": "Definir preço em Faturação",
-      "freemium_pricing_description": "Os primeiros {{n}} sítios são sempre gratuitos. Os visitantes podem comprar uma Captura ou subscrever a Subscrição para ver o resto.",
+      "freemium_pricing_description": "Os primeiros {{n}} sítios são sempre gratuitos. Os visitantes podem comprar um Snapshot ou subscrever a Subscrição para ver o resto.",
       "freemium_pricing_field_label": "Preço (EUR)",
-      "freemium_pricing_helper": "Mínimo €{{min}} · aplica-se à Captura e à Subscrição",
+      "freemium_pricing_helper": "Mínimo €{{min}} · aplica-se ao Snapshot e à Subscrição",
       "freemium_pricing_enable": "Activar acesso pago",
       "freemium_pricing_disable": "Desactivar acesso pago",
       "freemium_pricing_save": "Actualizar preço",
@@ -66,7 +74,7 @@
       "cancel": "Cancelar",
       "create_submit": "Criar",
       "save_sheet_title": "Guardar em…",
-      "save_sheet_section_nom_nom_lists": "Listas NomNom",
+      "save_sheet_section_nom_nom_lists": "NomNom Lists",
       "save_sheet_lists_scroll_hint": "Deslize para ver mais listas",
       "save_sheet_section_your_review": "A tua avaliação",
       "save_sheet_section_must_try": "Pratos a não perder",
@@ -103,7 +111,7 @@
       "gmaps_import_error_create": "Não foi possível criar a lista. Tenta novamente.",
       "gmaps_import_error_add": "Lista criada, mas alguns sítios não puderam ser adicionados.",
       "gmaps_import_error_generic": "Algo correu mal. Tenta novamente.",
-      "save_sheet_new_nom_nom_list": "Nova lista NomNom",
+      "save_sheet_new_nom_nom_list": "Nova NomNom List",
       "save_sheet_saved": "Feito! As tuas listas estão atualizadas.",
       "confirm_save": "Confirmar",
       "badge_public": "Pública",
@@ -121,9 +129,9 @@
       "og_lists_other": "{{count}} listas",
       "og_profile_tagline": "Sugestões de restaurantes de quem confias",
       "og_profile_description": "Listas e sugestões de restaurantes de {{name}} no NomNom.",
-      "og_list_kicker": "Lista NomNom",
+      "og_list_kicker": "NomNom List",
       "og_list_by_prefix": "de",
-      "og_list_fallback_name": "Uma lista NomNom",
+      "og_list_fallback_name": "Uma NomNom List",
       "profile_list_nom_count_one": "{{count}} NomNom",
       "profile_list_nom_count_other": "{{count}} NomNoms",
       "open_public_link": "Ver lista",
@@ -212,7 +220,7 @@
       "collab_error_not_member": "Essa pessoa não está nesta lista.",
       "collab_error_no_pending_invite": "Não tens convite pendente para esta lista.",
       "collab_error_invalid_name": "Introduz um nome para a lista.",
-      "collab_error_has_snapshot_purchases": "Esta lista não pode ser eliminada enquanto tiver compras de Captura ativas.",
+      "collab_error_has_snapshot_purchases": "Esta lista não pode ser eliminada enquanto tiver compras de Snapshot ativas.",
       "collab_error_has_active_subscriptions": "Esta lista não pode ser eliminada enquanto tiver subscritores. Cancele primeiro as subscrições.",
       "approve": "Aprovar",
       "reject": "Recusar",
@@ -224,20 +232,20 @@
       "request_join": "Pedir para entrar",
       "request_sent": "Pedido enviado.",
       "request_pending": "O teu pedido está pendente.",
-      "by_handle": "Lista NomNom por {{handle}}",
-      "by_handle_lead": "Lista NomNom por",
+      "by_handle": "NomNom List por {{handle}}",
+      "by_handle_lead": "NomNom List por",
       "pending_invite_hint": "Foste convidado a colaborar.",
       "accept_invite": "Aceitar",
       "decline_invite": "Recusar",
       "view_invite": "Abrir lista",
-      "public_lists_heading": "Listas NomNom públicas",
+      "public_lists_heading": "NomNom Lists públicas",
       "no_public_lists": "Ainda sem listas públicas.",
       "profile_not_found": "Perfil não encontrado.",
       "document_title": "{{name}} · Lista",
-      "paid_list_intro": "Subscrição opcional por {{monthlyPrice}}/mês para apoiares diretamente este criador. Captura ({{snapshotPrice}} uma vez) desbloqueia só esta lista tal como aparece hoje.",
+      "paid_list_intro": "Subscrição opcional por {{monthlyPrice}}/mês para apoiares diretamente este criador. O Snapshot ({{snapshotPrice}} uma vez) desbloqueia só esta lista tal como aparece hoje.",
       "paid_list_paywall_title_subscribers": "Vê todos os sítios desta lista",
       "paid_list_intro_subscribers": "Subscrição por {{price}}/mês: acesso completo a esta lista e a todas as listas só para subscritores deste criador, incluindo quando forem adicionados novos sítios ou alterações.",
-      "paid_list_snapshot_hint_subscribers": "Preferes um pagamento único? A Captura ({{snapshotPrice}} uma vez) desbloqueia esta lista exactamente como está agora. Não inclui actualizações futuras nem acesso às outras listas deste criador.",
+      "paid_list_snapshot_hint_subscribers": "Preferes um pagamento único? O Snapshot ({{snapshotPrice}} uma vez) desbloqueia esta lista exactamente como está agora. Não inclui actualizações futuras nem acesso às outras listas deste criador.",
       "paid_last_updated": "Atualizado {{date}}",
       "paid_subscribe_monthly": "Subscrever",
       "paid_login_to_subscribe": "Inicia sessão para subscrever",
@@ -279,9 +287,9 @@
       "freemium_gate_title": "Mais sítios nesta lista",
       "freemium_gate_body": "Subscreve por {{price}}/mês para ver a lista completa e receber actualizações quando o criador adicionar novos sítios.",
       "freemium_gate_title_small": "Apoia este criador",
-      "freemium_gate_body_small": "Compra uma Captura por {{snapshotPrice}} ou subscreve a Subscrição por {{monthlyPrice}}/mês para apoiar o criador e ser notificado quando adicionar novos sítios.",
+      "freemium_gate_body_small": "Compra um Snapshot por {{snapshotPrice}} ou subscreve a Subscrição por {{monthlyPrice}}/mês para apoiar o criador e ser notificado quando adicionar novos sítios.",
       "freemium_live_list_cta": "Subscrição — {{price}}/mês",
-      "freemium_snapshot_cta": "Captura — {{price}} único",
+      "freemium_snapshot_cta": "Snapshot — {{price}} único",
       "freemium_login_to_subscribe": "Entra para subscrever",
       "creator_deleted_banner": "Esta lista já não é mantida. A conta do criador foi eliminada.",
       "freemium_creator_deleted": "Esta lista já não está disponível para compra.",
@@ -304,7 +312,7 @@
       "user_document_title": "{{name}}",
       "creator_followers": "Seguidores",
       "creator_following": "A seguir",
-      "creator_nom_nom_lists_stat": "Listas NomNom",
+      "creator_nom_nom_lists_stat": "NomNom Lists",
       "creator_follow": "Seguir",
       "creator_following_btn": "A seguir",
       "creator_profile_subscribe": "Subscrever",
@@ -319,13 +327,13 @@
       "subscription_cancel_error": "Algo correu mal — tenta novamente daqui a um momento.",
       "subscription_keep": "Manter",
       "creator_edit_profile": "Editar perfil",
-      "creator_lists_heading_own": "As minhas listas NomNom",
-      "creator_lists_heading_visitor": "Listas NomNom",
-      "creator_new_list": "Nova lista NomNom",
+      "creator_lists_heading_own": "As minhas NomNom Lists",
+      "creator_lists_heading_visitor": "NomNom Lists",
+      "creator_new_list": "Nova NomNom List",
       "creator_list_hot_label": "Em destaque",
       "creator_tab_recent": "Atividade recente",
       "creator_tab_map": "Vista de mapa",
-      "creator_tab_gems": "Pérolas escondidas",
+      "creator_tab_gems": "Joias escondidas",
       "creator_profile_tabs_aria": "Secções de conteúdo do perfil",
       "creator_activity_empty": "Ainda sem atividade recente.",
       "creator_activity_load_more": "Carregar mais",
@@ -345,9 +353,9 @@
       "creator_activity_head_review_new": "Nova avaliação",
       "creator_activity_head_review_edit": "Avaliação atualizada",
       "creator_activity_link_mentions_section": "Menções",
-      "creator_activity_published_lead": "Esta lista NomNom está agora pública — toda a gente pode abri-la.",
+      "creator_activity_published_lead": "Esta NomNom List está agora pública — toda a gente pode abri-la.",
       "creator_map_coming_soon": "Vista de mapa chega com a app iOS.",
-      "creator_gems_coming_soon": "Pérolas escondidas a caminho.",
+      "creator_gems_coming_soon": "Joias escondidas a caminho.",
       "creator_share_copied": "Ligação copiada para a área de transferência.",
       "creator_share_failed": "Não foi possível copiar a ligação.",
       "creator_share_aria": "Partilhar perfil",
@@ -381,6 +389,7 @@
       "when_tomorrow": "Amanhã às {{time}}",
       "when_on": "{{date}} às {{time}}",
       "not_found_title": "Mesa não encontrada",
+      "go_home": "Leva-me para o início",
       "unnamed_place": "Restaurante",
       "whos_at_table": "{{count}} à mesa",
       "whos_at_table_empty": "Ainda ninguém — és o primeiro à mesa.",
@@ -440,27 +449,27 @@
       "error_not_authorized_to_lock": "Só o organizador pode fechar a mesa."
     },
     "home": {
-      "title": "Escolhas de restaurantes de quem sabe",
+      "title": "Escolhas de restaurantes de quem confias",
       "hero": {
         "headline": "Para de adivinhar onde comer.",
-        "headlineSuffix": "Começa a seguir quem sabe.",
-        "description": "Segue os criadores de comida e locais de quem gostas. Vê onde comem mesmo, guarda os sítios que queres visitar e nunca fiques sem saber para onde ir.",
-        "getStarted": "Vamos nom nom!",
+        "headlineSuffix": "Começa a seguir em quem confias.",
+        "description": "Segue os criadores de comida e locais de quem gostas. Vê onde comem mesmo, guarda os sítios que queres visitar e decidam juntos quando o grupo trava.",
+        "getStarted": "Vamos NomNom!",
         "signIn": "Entrar",
         "ctaFootnote": "Grátis para sempre · Sem cartão · Menos de um minuto",
         "trustedBy": "Uma comunidade crescente que liga ao sítio onde come.",
         "appStoreVerify": "Lê avaliações na App Store →",
-        "appStoreComingSoon": "Sempre grátis · Tu escolhes as vozes · Tu ficas no controlo",
+        "appStoreComingSoon": "A app continua grátis · Tu escolhes as vozes · Tu ficas no controlo",
         "floats": {
           "pizzeria": "Pizzarias",
           "sushi": "Noite de sushi",
           "following": "A seguir",
           "listTitle": "Imperdíveis de Lisboa",
-          "listMeta": "12 spots · por @martamasterchef"
+          "listMeta": "12 sítios · por @martamasterchef"
         },
         "showcase": {
           "ariaLabel": "Prévia da app NomNom",
-          "showingIn": "A mostrar spots em Lisboa",
+          "showingIn": "A mostrar sítios em Lisboa",
           "changeArea": "Mudar área",
           "chips": {
             "all": "Tudo",
@@ -469,15 +478,15 @@
             "brunch": "Brunch",
             "wine": "Vinho"
           },
-          "recommendThis": "{{names}} recomendam este sítio",
+          "recommendThis": "{{names}} +{{count}} mais recomendam este sítio",
           "savedTo": "Guardado em"
         }
       },
       "landing": {
         "foodSpreadAlt": "Mesa com vários pratos coloridos — descoberta e variedade para a tua próxima refeição fora.",
         "features": {
-          "sectionTitle": "Alimenta o teu sentimento",
-          "sectionSubtitle": "Segue pessoas com bom gosto. Explora as listas delas. Guarda os sítios a que voltam sempre.",
+          "sectionTitle": "Como funciona o NomNom",
+          "sectionSubtitle": "Segue pessoas em quem confias. Explora as listas delas. Decidam juntos quando o grupo trava.",
           "vibe": {
             "title": "O teu feed, as tuas pessoas",
             "body": "Segue os locais e criadores em quem confias. Vê onde comem mesmo, com as fotos e notas deles."
@@ -487,24 +496,24 @@
             "body": "Locais e criadores criam listas por bairro, ocasião ou cozinha. Explora uma, guarda qualquer sítio, ou segue-a para receberes as novas sugestões."
           },
           "creator": {
-            "title": "No mapa, na lista, partilhado",
-            "body": "Percorre o mapa para encontrar sítios perto de ti, guarda os que queres visitar e envia a tua shortlist a quem vai contigo."
+            "title": "No mapa, depois decide",
+            "body": "Percorre o bairro, guarda os pins numa lista e envia um link de Mesa para votarem — mesmo sem a app. Empatados? A NomNom Roulette escolhe nesse mesmo conjunto."
           },
           "visuals": {
             "vibeDate": "Jantar a dois",
             "vibeFriends": "Amigos",
             "vibeCheap": "Barato e bom",
             "list1Title": "Imperdíveis de Lisboa",
-            "list1Meta": "12 spots · por @martamasterchef",
+            "list1Meta": "12 sítios · por @martamasterchef",
             "list2Title": "Escolhas do Porto",
-            "list2Meta": "8 spots · por @portolocal",
+            "list2Meta": "8 sítios · por @portolocal",
             "following": "A seguir",
             "follow": "Seguir"
           }
         },
         "builtFor": {
           "titleLine1": "Escolhas de restaurantes",
-          "titleHighlight": "de quem sabe mesmo",
+          "titleHighlight": "de quem confias",
           "description": "Parece o teu feed das redes sociais mas funciona como um guia de restaurantes. Abre um sítio, vê quem recomendou, guarda. Cada escolha tem uma pessoa real por trás.",
           "ratingValue": "Breve",
           "ratingLabel": "App Store",
@@ -523,7 +532,7 @@
         }
       },
       "advertisement": {
-        "ctaLabel": "Vamos nom nom!",
+        "ctaLabel": "Vamos NomNom!",
         "ctaLabelShort": "Entrar",
         "ctaFootnote": "Grátis para sempre · Sem cartão · Menos de um minuto",
         "ticker": {
@@ -538,16 +547,16 @@
           "lateNight": "Noite dentro"
         },
         "headlineLines": [
-          "O teu próximo sítio favorito",
-          "está a um toque."
+          "Escolhas de restaurantes de",
+          "quem confias."
         ]
       },
       "trustStrip": {
         "title": "O que nos torna diferentes",
         "items": {
           "free": {
-            "title": "Sempre grátis para começar",
-            "body": "Cria conta, define os teus gostos e começa a descobrir em minutos. Faz upgrade só se o premium te fizer sentido."
+            "title": "A app continua grátis",
+            "body": "Cria conta, define os teus gostos e começa a descobrir em minutos. A app continua grátis — só pagas se comprares a lista de um criador."
           },
           "voices": {
             "title": "Tu escolhes as vozes",
@@ -582,7 +591,7 @@
         "title_prefix": "Estás dentro. ",
         "title_highlight": "Vamos NomNom!",
         "title_suffix": " 🍜",
-        "subtitle": "Sugestões de restaurantes de quem confias.",
+        "subtitle": "Escolhas de restaurantes de quem confias.",
         "social_proof": "Cada vez mais locais já a NomNomming",
         "body": "Ativa a localização para melhores sugestões perto de ti — ou define mais tarde nas definições.",
         "enable_location": "Ativar localização",
@@ -636,20 +645,20 @@
       },
       "creators": {
         "title": "Quem é o teu herói? 🦸",
-        "body": "Segue os criadores e locais que conhecem a tua zona.",
+        "body": "Segue pessoas em cujo gosto já confias.",
         "follow": "Seguir",
         "following": "A seguir",
         "preview": "Pré-visualizar",
         "fetch_error": "Não foi possível carregar criadores sugeridos. Verifica a ligação e tenta outra vez.",
         "retry": "Tentar outra vez",
         "empty_title": "Ainda sem criadores sugeridos",
-        "empty_body": "Encontrarás pessoas a seguir no Descobrir — continua abaixo para começares."
+        "empty_body": "Encontrarás pessoas a seguir no Descobrir — continua abaixo."
       },
       "cta": {
         "lets_nomnom": "Vamos NomNom!",
         "keep": "Segue em frente",
         "almost": "Quase lá",
-        "start": "Começa a explorar!",
+        "start": "Vamos NomNom!",
         "enter": "Entrar no NomNom"
       },
       "done": {
@@ -701,7 +710,7 @@
         "locating_tip_2": "À procura dos sítios onde os locais vão mesmo…",
         "locating_tip_3": "A alinhar escolhas para esta noite…",
         "search_placeholder": "Pesquisar sítios…",
-        "ai_search_placeholder": "Pergunta à IA — ex. ramen aconchegante para um dia de chuva",
+        "ai_search_placeholder": "Qual é o mood? — ex. ramen aconchegante para um dia de chuva",
         "submit_search_aria": "Pesquisar",
         "search_loading_1": "A perceber o que andas a desejar…",
         "search_loading_2": "A vasculhar sítios na tua cidade…",
@@ -727,13 +736,13 @@
         "vibe_section": "Qual é o mood?",
         "vibe_date": "Jantar a dois",
         "vibe_friends": "Amigos",
-        "vibe_cheap": "Económico",
+        "vibe_cheap": "Barato e bom",
         "vibe_corporate": "Trabalho",
-        "roulette_sub": "Com sorte? Mexe para uma sugestão ao acaso",
+        "roulette_sub": "Indeciso? Gira para uma sugestão de quem segues",
         "table_promo_title": "Abrir uma Mesa",
         "table_promo_sub": "Escolhe alguns sítios, partilha o link e votem juntos",
-        "lists_leaderboard_title": "Classificação das listas NomNom",
-        "lists_leaderboard_subtitle": "Em todas as listas NomNom — sítios, avaliações e pratos a não perder.",
+        "lists_leaderboard_title": "Classificação das NomNom Lists",
+        "lists_leaderboard_subtitle": "Em todas as NomNom Lists — sítios, avaliações e pratos a não perder.",
         "lists_leaderboard_mode_interaction": "Impulso",
         "lists_leaderboard_mode_followers": "Em alta",
         "lists_leaderboard_metric_interaction": "{{count}} pts",
@@ -763,7 +772,7 @@
         "feed_empty_clear_vibe": "Limpar filtro",
         "filter_open_now": "Aberto agora",
         "decide_group_kicker": "Não sabes onde comer?",
-        "roulette_promo_title": "Roleta"
+        "roulette_promo_title": "NomNom Roulette"
       },
       "admin": {
         "hub": {
@@ -825,10 +834,10 @@
         "title": "Mapa",
         "subtitle": "Explora sítios à tua volta. Filtros e dados do mapa serão ligados aqui a seguir.",
         "search_placeholder": "Pesquisar sítios ou zonas…",
-        "ai_search_placeholder": "Pergunta à IA — ex. ramen aconchegante para um dia de chuva",
-        "search_ai_label": "IA",
-        "search_ai_enter_aria": "Mudar para pesquisa com IA",
-        "search_ai_exit_aria": "Sair da pesquisa com IA",
+        "ai_search_placeholder": "Qual é o mood? — ex. ramen aconchegante para um dia de chuva",
+        "search_ai_label": "Perguntar",
+        "search_ai_enter_aria": "Mudar para pesquisa por mood",
+        "search_ai_exit_aria": "Voltar à pesquisa de sítios",
         "chip_hot": "Hot NomNoms",
         "chip_rated": "Muito bem classificados",
         "chip_saved": "Guardados",
@@ -876,9 +885,9 @@
         "sheet_empty_following": "Ainda não há sítios de pessoas que segues. Segue pessoas para ver as listas delas aqui.",
         "sheet_login_following": "Inicia sessão para ver sítios de pessoas que segues.",
         "sheet_pick_spot": "Toca num pino no mapa para ver os detalhes.",
-        "sheet_spots_in_view": "Lista NomNom",
-        "sheet_spots_in_view_count": "Lista NomNom ({{count}})",
-        "sheet_list_aria": "Lista NomNom",
+        "sheet_spots_in_view": "Sítios nesta vista",
+        "sheet_spots_in_view_count": "Sítios nesta vista ({{count}})",
+        "sheet_list_aria": "NomNom List",
         "sheet_load_more": "Ver mais sítios",
         "sheet_following_loading_aria": "A carregar amigos neste sítio",
         "sheet_list_nom_nom_sub": "{{listCount}} listas · {{spotCount}} sítios nesta vista",
@@ -911,7 +920,7 @@
         "public_guest_prompt_title": "Queres a experiência completa?",
         "public_guest_prompt_body": "Cria uma conta gratuita ou inicia sessão para guardar este local, escrever críticas e receber sugestões personalizadas.",
         "public_guest_sign_in": "Iniciar sessão",
-        "public_guest_sign_up": "Criar conta",
+        "public_guest_sign_up": "Vamos NomNom!",
         "save_coming_soon": "Guardar numa lista",
         "open_maps": "Abrir no Maps",
         "open_maps_aria": "Abrir este local no Maps num novo separador",
@@ -922,7 +931,7 @@
         "call_restaurant": "Ligar",
         "call_restaurant_aria": "Ligar para {{phone}}",
         "save_to_list": "Guardar na lista",
-        "meter_circle_title": "O teu Círculo NomNom",
+        "meter_circle_title": "O teu NomNom Circle",
         "meter_circle_sub": "Actividade de quem segues aparecerá aqui.",
         "meter_circle_sub_follows_one": "Alguém que segues tem isto numa lista.",
         "meter_circle_sub_follows": "{{count}} pessoas que segues têm isto numa lista.",
@@ -937,7 +946,7 @@
         "consensus_dishes_mentioned": "Pratos mencionados",
         "consensus_basis": "Com base em {{count}} avaliações",
         "address_title": "Morada",
-        "mentions_title": "O teu Círculo NomNom",
+        "mentions_title": "O teu NomNom Circle",
         "mentions_empty": "Ainda sem menções — guarda este sítio numa lista ou volta em breve para ver menções de pessoas que segues.",
         "mentions_saved_list_label": "Nas tuas listas",
         "mentions_list_chip": "Lista · {{name}}",
@@ -1004,7 +1013,7 @@
       },
       "lists": {
         "title": "Listas",
-        "page_heading": "Listas NomNom",
+        "page_heading": "NomNom Lists",
         "lists_filter_aria": "Filtrar listas",
         "lists_filter_section_yours": "As tuas listas",
         "lists_filter_section_yours_aria": "As tuas listas: todas ou só as que possuis",
@@ -1018,18 +1027,18 @@
         "filter_lists_subscriptions": "Subscrições",
         "list_owner_line": "por {{name}}",
         "empty_shared_title": "Ainda não tens listas partilhadas",
-        "empty_shared_body": "Quando alguém te convidar para colaborar numa lista NomNom — ou tiveres um convite por aceitar — ela aparece em Partilhadas. Aceita o convite na página da lista.",
+        "empty_shared_body": "Quando alguém te convidar para colaborar numa NomNom List — ou tiveres um convite por aceitar — ela aparece em Partilhadas. Aceita o convite na página da lista.",
         "empty_subscriptions_title": "Ainda não tens subscrições",
-        "empty_subscriptions_body": "Subscreve a uma lista NomNom paga de um criador a partir do perfil ou da página da lista, ou compra um instantâneo único — essas listas aparecem aqui para as abrires quando quiseres.",
+        "empty_subscriptions_body": "Subscreve a uma NomNom List paga de um criador a partir do perfil ou da página da lista, ou compra um Snapshot — essas listas aparecem aqui para as abrires quando quiseres.",
         "list_shared_pending_invite": "Convite pendente",
         "empty_from_others_title": "Ainda não há listas de quem segues",
-        "empty_from_others_body": "Segue pessoas no Descobrir — as listas NomNom públicas delas aparecem aqui para veres o que guardam.",
+        "empty_from_others_body": "Segue pessoas no Descobrir — as NomNom Lists públicas delas aparecem aqui para veres o que guardam.",
         "subtitle": "Sítios e listas que guardas a partir do Descobrir e do mapa.",
         "subtitle_lists": "Todas as tuas listas num só lugar: as tuas, colaborações, seguidas e subscrições pagas. Toca num chip para filtrar.",
         "tab_restaurants": "Sítios",
         "tab_lists": "As minhas listas",
         "empty_restaurants_title": "Ainda não tens sítios guardados",
-        "empty_restaurants": "Toca no marcador de qualquer sítio para criar o teu arsenal pessoal de preferidos.",
+        "empty_restaurants": "Toca no marcador de qualquer restaurante para começares.",
         "empty_lists_title": "A tua primeira lista está à espera",
         "empty_lists": "Agrupa sítios em listas — um roteiro de brunch ao fim de semana, sítios para ir com amigos, um guia local para quando vierem visitas.",
         "empty_lists_body": "Toca em Guardar num sítio para o adicionar a uma lista. Cria quantas listas quiseres — podem ser privadas ou partilhadas.",
@@ -1039,27 +1048,27 @@
         "table_hint_dismiss": "Entendido"
       },
       "roulette": {
-        "meta_title": "Roleta NomNom",
+        "meta_title": "NomNom Roulette",
         "result_meta_title": "A tua escolha",
-        "title": "Roleta NomNom",
-        "subtitle_before": "Mexe para um sabor ao acaso. Sem pensar, só",
-        "subtitle_highlight": "NomNomming!",
-        "cta_spin": "Gira os Noms!",
+        "title": "NomNom Roulette",
+        "subtitle_before": "Indeciso? Gira para uma sugestão de quem segues. Só",
+        "subtitle_highlight": "NomNomming.",
+        "cta_spin": "Girar a NomNom Roulette",
         "spin_loading": "A girar…",
-        "spin_suspense_1": "A rolar o dado…",
-        "spin_suspense_2": "Os noms estão a decidir…",
-        "spin_suspense_3": "Já quase…",
+        "spin_suspense_1": "A juntar os sítios…",
+        "spin_suspense_2": "A escolher um…",
+        "spin_suspense_3": "Quase lá…",
         "spin_again": "Girar outra vez",
-        "circle_footer": "Do teu Círculo NomNom",
+        "circle_footer": "Do teu NomNom Circle",
         "empty_pool": "Ainda não há sítios na lista. Volta quando houver mais sítios disponíveis.",
         "close_aria": "Fechar",
-        "fab_aria": "Abrir a Roleta NomNom",
+        "fab_aria": "Abrir a NomNom Roulette",
         "nav_promo_kicker": "Sem ideias?",
-        "nav_promo_title": "Experimenta a Roleta NomNom",
-        "nav_promo_cta": "Mexe já",
-        "result_badge": "O NomNom vencedor!",
-        "result_badge_first": "O teu primeiro NomNom!",
-        "circle_title": "O teu Círculo NomNom",
+        "nav_promo_title": "NomNom Roulette",
+        "nav_promo_cta": "Girar a NomNom Roulette",
+        "result_badge": "A tua escolha",
+        "result_badge_first": "A tua primeira escolha",
+        "circle_title": "O teu NomNom Circle",
         "circle_subtitle": "Recomendado por pessoas que segues",
         "view_details": "Ver detalhes do NomNom",
         "open_maps": "Abrir mapas",
@@ -1067,7 +1076,7 @@
         "result_missing_body": "Este sítio já não está no lote de hoje. Gira outra vez para uma nova escolha.",
         "result_hero_alt": "Foto do restaurante",
         "skip_visited": "Saltar sítios onde já fui",
-        "skip_visited_all_seen": "Já foste a tudo no teu circle — vamos girar todos."
+        "skip_visited_all_seen": "Já foste a tudo no teu NomNom Circle — vamos girar todos."
       },
       "settings": {
         "title": "Definições",
@@ -1115,7 +1124,7 @@
           "row_admin_subtitle": "Patrocínios e outras ferramentas internas.",
           "group_danger": "Zona de risco",
           "group_session": "Sessão",
-          "go_home": "Ir ao início"
+          "go_home": "Leva-me para o início"
         },
         "back_to_hub": "Voltar às definições",
         "edit": {
@@ -1138,7 +1147,7 @@
           "view_public_profile": "Ver perfil público",
           "public_profile_hint": "Adiciona um identificador (3–30 caracteres) para abrires a tua página pública.",
           "bio": "Bio",
-          "bio_placeholder": "Conta ao Círculo NomNom sobre ti…",
+          "bio_placeholder": "Conta ao NomNom Circle sobre ti…",
           "social_title": "Redes sociais",
           "instagram_ph": "Utilizador Instagram",
           "tiktok_ph": "Utilizador TikTok",
@@ -1218,7 +1227,7 @@
           "error_stripe_cancel_failed": "Não conseguimos cancelar esta subscrição. Tenta novamente ou contacta-nos se continuar.",
           "error_generic": "Algo correu mal. Tenta outra vez.",
           "stat_active": "Subscritores activos",
-          "stat_snapshots": "Capturas vendidas",
+          "stat_snapshots": "Snapshots vendidos",
           "stat_revenue": "Ganhos totais (líquido)"
         },
         "my_subscriptions": {
@@ -1230,10 +1239,10 @@
           "filter_aria": "Filtrar subscrições e contas que segues",
           "following_empty": "Ainda não segues ninguém.",
           "loading": "A carregar subscrições…",
-          "empty": "Ainda não tens subscrições a listas em directo nem compras de Captura.",
+          "empty": "Ainda não tens subscrições a listas em directo nem compras de Snapshot.",
           "unknown_creator": "Criador",
           "snapshot_status": "Comprado",
-          "snapshot_chip": "Captura",
+          "snapshot_chip": "Snapshot",
           "row_purchased": "Comprado a {{date}}",
           "row_list": "Lista: {{name}}",
           "row_renews": "Renova a {{date}}",
@@ -1330,9 +1339,9 @@
       "google": {
         "brand_line1": "NomNom",
         "brand_line2": "",
-        "tagline_before": "Um feed de confiança para",
-        "tagline_highlight": "comida a sério",
-        "tagline_after": "e descobrir sítios.",
+        "tagline_before": "Escolhas de restaurantes de",
+        "tagline_highlight": "quem confias.",
+        "tagline_after": "",
         "cta_google": "Continuar com o Google",
         "swap_register_prompt": "Novo utilizador?",
         "swap_register_action": "Criar conta",
@@ -1375,7 +1384,7 @@
         "email_label": "Endereço de email",
         "send_request": "Enviar link de redefinição",
         "return_to_sign_in": "Voltar a iniciar sessão",
-        "submit_error": "Ocorreu um erro ao enviar o link de redefinição. Tenta novamente."
+        "submit_error": "Não conseguimos enviar o link. Verifica a ligação e tenta outra vez."
       },
       "new_password": {
         "title": "Nova palavra-passe",
@@ -1419,52 +1428,52 @@
     },
     "error": {
       "403": {
-        "eyebrow": "Erro 403 — mesa reservada",
-        "title": "Esta mesa está reservada.",
-        "description": "Ainda não tens acesso a esta página. Pode estar reservada a uma conta específica, a uma lista paga ou a uma zona só para criadores. Se achas que é engano, contacta-nos através de Feedback.",
-        "goToHome": "Voltar a casa",
-        "exploreMap": "Explorar o mapa"
+        "eyebrow": "Erro 403",
+        "title": "Não tens acesso a esta página.",
+        "description": "Pode estar limitada a uma conta específica, a uma lista paga ou a uma zona só para criadores. Se achas que é engano, contacta-nos através de Feedback.",
+        "goToHome": "Leva-me para o início",
+        "seeHowItWorks": "Ver como funciona"
       },
       "404": {
-        "eyebrow": "Erro 404 — fora do menu",
-        "title": "Este prato não está no menu.",
-        "description": "A página que procuras não está aqui. O link pode estar desatualizado, o URL com um erro, ou o sítio pode ter fechado de vez. Vamos levar-te de volta a algo saboroso.",
-        "goToHome": "Voltar a casa",
-        "exploreMap": "Explorar o mapa"
+        "eyebrow": "Erro 404",
+        "title": "Esta página não está aqui.",
+        "description": "O link pode estar desatualizado, ou o URL pode ter um erro. Volta ao início, ou vê como o NomNom funciona.",
+        "goToHome": "Leva-me para o início",
+        "seeHowItWorks": "Ver como funciona"
       },
       "500": {
-        "eyebrow": "Erro 500 — acidente na cozinha",
-        "title": "Algo queimou na cozinha.",
-        "description": "Foi do nosso lado que o prato caiu. Tenta novamente daqui a um momento — se continuar, contacta-nos através de Feedback e vamos investigar.",
-        "action": "Voltar a casa",
+        "eyebrow": "Erro 500",
+        "title": "Algo falhou do nosso lado.",
+        "description": "Tenta novamente daqui a um momento — se continuar, contacta-nos através de Feedback e vamos investigar.",
+        "action": "Leva-me para o início",
         "refresh": "Atualizar"
       }
     },
     "public": {
       "roulette": {
         "lisboa": {
-          "meta_title": "Roleta de restaurantes em Lisboa",
-          "metaDescription": "Não sabes onde jantar em Lisboa? Gira a roleta grátis da NomNom e descobre um restaurante real — sem conta.",
-          "title": "Roleta de restaurantes em Lisboa",
+          "meta_title": "NomNom Roulette em Lisboa",
+          "metaDescription": "Não sabes onde jantar em Lisboa? Gira a NomNom Roulette grátis e descobre um restaurante real — sem conta.",
+          "title": "NomNom Roulette em Lisboa",
           "subtitle": "Indeciso sobre onde comer? Gira uma vez e escolhemos um restaurante na Grande Lisboa.",
-          "cta_spin": "Girar a roleta",
+          "cta_spin": "Girar a NomNom Roulette",
           "spin_loading": "A carregar sítios…",
-          "spin_suspense_1": "A baralhar as cartas…",
-          "spin_suspense_2": "A consultar os deuses da comida…",
+          "spin_suspense_1": "A juntar os sítios…",
+          "spin_suspense_2": "A escolher um…",
           "spin_suspense_3": "Quase lá…",
           "empty_pool": "Sem sítios disponíveis agora. Tenta outra vez daqui a pouco.",
           "scope_footer": "Sítios na Grande Lisboa",
           "signup_prompt": "Queres as tuas próprias escolhas e listas?",
-          "signup_cta": "Criar conta grátis",
-          "result_badge": "A tua escolha da roleta de Lisboa",
+          "signup_cta": "Vamos NomNom!",
+          "result_badge": "A tua escolha da NomNom Roulette em Lisboa",
           "og_no_account": "Grátis, sem precisar de conta"
         }
       }
     },
     "maintenance": {
-      "title": "A cozinha está fechada para limpeza.",
-      "description": "Estamos a arrumar as coisas nos bastidores. Voltamos já.",
-      "goToHome": "Voltar a casa"
+      "title": "Voltamos daqui a um momento.",
+      "description": "Estamos a tratar de uma coisa nos bastidores. Tenta outra vez daqui a pouco.",
+      "goToHome": "Leva-me para o início"
     },
     "contact_us": {
       "title": "Contacta-nos",
@@ -1501,17 +1510,17 @@
     },
     "pricing": {
       "title": "Preços",
-      "description": "O NomNom é gratuito. Algumas listas de criadores são pagas — pagas ao criador, não uma subscrição da plataforma. Compra uma Captura uma vez ou subscreve um criador para acesso mensal a todas as suas listas pagas.",
+      "description": "O NomNom é gratuito. Algumas listas de criadores são pagas — pagas ao criador, não uma subscrição da plataforma. Compra um Snapshot uma vez ou subscreve um criador para acesso mensal a todas as suas listas pagas.",
       "breadcrumb_home": "Início",
       "breadcrumb_pricing": "Preços",
       "free_title": "Gratuito para todos",
       "free_body": "Cria uma conta, define os teus gostos e começa a descobrir. Sem nível premium, sem paywall na própria plataforma.",
       "free_item_browse": "Explora listas gratuitas, segue criadores e locais, cria as tuas próprias listas",
-      "free_item_features": "Mapas, pesquisa, filtros de ambiente (Date Night, Friends, Cheap Eats, Corporate) e a NomNom Roulette quando não consegues decidir",
+      "free_item_features": "Mapas, pesquisa, filtros de ambiente, a NomNom Roulette quando não consegues decidir, e Mesa para o grupo votar sem instalar a app",
       "paid_title": "Listas pagas",
-      "paid_body": "Alguns criadores colocam parte das suas listas atrás de um paywall. Os primeiros sítios de uma lista paga ficam gratuitos; o resto desbloqueia quando compras uma Captura ou subscreves esse criador. O pagamento vai para o criador (via Stripe); o NomNom cobra uma pequena taxa de plataforma.",
+      "paid_body": "Alguns criadores colocam parte das suas listas atrás de um paywall. Os primeiros sítios de uma lista paga ficam gratuitos; o resto desbloqueia quando compras um Snapshot ou subscreves esse criador. O pagamento vai para o criador (via Stripe); o NomNom cobra uma pequena taxa de plataforma.",
       "snapshot_overline": "Pagamento único",
-      "snapshot_title": "Captura",
+      "snapshot_title": "Snapshot",
       "snapshot_body": "Um pagamento único para acesso permanente a uma lista específica, tal como aparece hoje. Perfeito para uma viagem ou uma lista que queres guardar.",
       "snapshot_item_access": "Uma lista, acesso permanente",
       "snapshot_item_no_updates": "Sem atualizações futuras se o criador alterar a lista",
@@ -1527,12 +1536,12 @@
       "creators_body_billing_path": "Definições → Faturação e pagamentos",
       "creators_body_suffix": ", e escolhe um preço de Subscrição mensal. Uma pré-visualização gratuita dos primeiros sítios fica aberta; podes manter qualquer lista totalmente gratuita a qualquer momento.",
       "creators_caption": "Os preços exatos, os métodos de pagamento aceites e a taxa de plataforma são mostrados no checkout e nas tuas definições de faturação antes de seres cobrado. Os pagamentos são processados pela Stripe; as moedas e métodos disponíveis dependem da tua região.",
-      "questions_lead": "Dúvidas sobre Capturas, Subscrições ou reembolsos? ",
+      "questions_lead": "Dúvidas sobre Snapshots, Subscrições ou reembolsos? ",
       "questions_read_faqs": "Lê as FAQs",
       "questions_or": " ou ",
       "questions_contact": "contacta-nos",
-      "get_started": "Começar",
-      "link_create_account": "Cria uma conta gratuita",
+      "get_started": "Vamos NomNom!",
+      "link_create_account": "Vamos NomNom!",
       "link_use_cases": "Como as pessoas usam o NomNom",
       "link_faqs": "FAQs"
     },
@@ -1542,19 +1551,61 @@
       "breadcrumb_home": "Início",
       "breadcrumb_about": "Sobre",
       "body_1_prefix": "O NomNom foi feito para quem está farto de andar entre mapas, redes sociais e artigos aleatórios de “melhores de” só para escolher um sítio. Destacamos sítios ligados a ",
-      "body_1_emphasis": "vozes que escolhes",
+      "body_1_emphasis": "quem confias",
       "body_1_suffix": " — criadores e locais — com o contexto e as fotos que as classificações anónimas por estrelas raramente dão.",
       "body_2_prefix": "Diz-nos do que gostas e onde estás, escolhe um ambiente quando ajuda e guarda sítios em listas que podes partilhar com quem realmente sais para comer. Quando estás indeciso, a ",
       "body_2_roulette": "NomNom Roulette",
-      "body_2_suffix": " escolhe a partir de sugestões selecionadas — não do que ficou em primeiro numa pesquisa genérica.",
+      "body_2_suffix": " escolhe a partir de um conjunto em que já confias — não do que ficou em primeiro numa pesquisa genérica. Para um grupo, partilha um link de Mesa e votem sem instalar outra app.",
       "explore": "Explorar",
-      "link_create_account": "Cria uma conta gratuita",
+      "link_create_account": "Vamos NomNom!",
       "link_faqs": "FAQs",
       "link_portugal": "Portal de Portugal"
     },
+    "contentHub": {
+      "home": "Início",
+      "countries": "Países",
+      "explore_title": "Explorar por país",
+      "explore_description": "Escolhe um país para ver cidades, diretórios de restaurantes e guias de criadores.",
+      "country_description": "Cidades, criadores locais e coleções — mantém o contexto quando escolhes um sítio.",
+      "cities": "Cidades",
+      "creators": "Criadores",
+      "view_all_creators": "Ver todos os criadores",
+      "collections": "Coleções do país",
+      "global_label": "Global: {{name}}",
+      "city_description": "Onde comer em {{city}}, {{country}} — listas, mapas e guias com a pessoa à vista.",
+      "restaurants": "Restaurantes",
+      "browse_directory": "Ver o diretório completo",
+      "listings_or_vibe": "({{count}} sítios) ou filtra por ambiente:",
+      "city_context": "Cidade e país",
+      "collection_label": "Coleção: {{name}}",
+      "guide_label": "Guia: {{name}}",
+      "creators_in": "Criadores em {{country}}",
+      "back_to": "Voltar a {{country}}",
+      "creators_title": "Criadores em {{country}}",
+      "creators_description": "Pessoas cujas listas e notas podes seguir — restaurantes, coleções e planeamento de viagens no mesmo sítio.",
+      "more_to_explore": "Mais para explorar",
+      "overview": "Visão geral de {{country}}",
+      "profile_label": "Perfil: {{name}}",
+      "keep_exploring": "Continuar a explorar",
+      "collections_creators": "Coleções e criadores",
+      "read_label": "Ler: {{name}}",
+      "restaurants_in": "Restaurantes em {{city}}",
+      "restaurants_in_tagged": "Restaurantes em {{city}} — {{tag}}",
+      "directory_description": "{{count}} sítios. Página {{page}} de {{pages}}.",
+      "directory_description_tagged": "{{count}} sítios com a etiqueta {{tag}}. Página {{page}} de {{pages}}.",
+      "previous_page": "Página anterior",
+      "next_page": "Página seguinte",
+      "clear_tag_filter": "Limpar filtro de etiqueta",
+      "continue_reading": "Continuar a ler",
+      "city_directory": "Diretório de restaurantes da cidade",
+      "country_creators": "Criadores do país",
+      "restaurant_label": "Restaurante: {{name}}",
+      "creator_label": "Criador: {{name}}",
+      "hub_label": "Portal de {{name}}"
+    },
     "faqs": {
       "title": "Perguntas frequentes",
-      "metaDescription": "Respostas a perguntas frequentes sobre o NomNom — como funcionam as listas de criadores, a pré-visualização gratuita, Capturas, Subscrições e como os criadores recebem.",
+      "metaDescription": "Respostas a perguntas frequentes sobre o NomNom — como funcionam as listas de criadores, a pré-visualização gratuita, Snapshots, Subscrições e como os criadores recebem.",
       "form": {
         "title": "Ainda tens dúvidas?",
         "name": "Nome (opcional)",
@@ -1589,11 +1640,11 @@
       "general": {
         "general-1": {
           "question": "O que é o NomNom?",
-          "answer": "O NomNom é onde criadores de conteúdo em Lisboa e Porto publicam as suas recomendações de restaurantes em listas curadas. Em vez de andar a rolar por vídeos guardados no TikTok ou mensagens perdidas no WhatsApp, tens uma ligação com todos os sítios que um criador recomenda — organizado, pesquisável e fácil de partilhar."
+          "answer": "O NomNom são escolhas de restaurantes de quem confias — criadores e locais que escolhes seguir. Guardas sítios em listas, partilhas um link de Mesa para o grupo votar sem instalar a app, e giras a NomNom Roulette quando ninguém decide. Algumas listas de criadores são pagas; a app em si é grátis."
         },
         "general-2": {
           "question": "Como funciona?",
-          "answer": "Os criadores constroem listas de restaurantes que visitaram e em que confiam. Para ver uma lista paga, compras uma Captura (pagamento único) ou subscribes às listas (mensalmente). Partilha qualquer lista pública com um toque — sem instalação."
+          "answer": "Segue pessoas em cujo gosto já confias. Os sítios delas aparecem no feed, no mapa e em listas que podes guardar ou seguir. Quando um grupo tem de escolher, partilha um link de Mesa — os amigos votam sem a app. Se ainda estiverem indecisos, a NomNom Roulette gira um conjunto das pessoas que segues, não um ranking genérico. As listas pagas são opcionais: um Snapshot compra uma lista tal como está hoje; uma Subscrição desbloqueia todas as listas pagas desse criador."
         },
         "general-3": {
           "question": "Em que é que o NomNom é diferente do Google Maps ou TripAdvisor?",
@@ -1611,11 +1662,11 @@
       "payment": {
         "payment-1": {
           "question": "É gratuito navegar nas listas?",
-          "answer": "As listas gratuitas são abertas a toda a gente. Para listas pagas, podes comprar uma Captura (pagamento único, acesso permanente a essa lista específica) ou subscrever as listas do criador (mensalidade, desbloqueia todas as listas pagas desse criador e avisa-te quando adicionam novos sítios)."
+          "answer": "As listas gratuitas são abertas a toda a gente. Para listas pagas, podes comprar um Snapshot (pagamento único, acesso permanente a essa lista específica) ou subscrever as listas do criador (mensalidade, desbloqueia todas as listas pagas desse criador e avisa-te quando adicionam novos sítios)."
         },
         "payment-2": {
-          "question": "Qual é a diferença entre uma Captura e uma Subscrição?",
-          "answer": "Uma Captura é um pagamento único que dá acesso permanente a uma lista específica tal como está hoje — sem actualizações futuras, sem outras listas. Uma Subscrição é uma mensalidade que desbloqueia todas as listas pagas desse criador e envia-te um email quando adicionam, removem ou actualizam um restaurante. Se segues um criador regularmente, a Subscrição tem melhor valor. Se só precisas de uma lista para uma viagem, a Captura é perfeita."
+          "question": "Qual é a diferença entre um Snapshot e uma Subscrição?",
+          "answer": "Um Snapshot é um pagamento único que dá acesso permanente a uma lista específica tal como está hoje — sem actualizações futuras, sem outras listas. Uma Subscrição é uma mensalidade que desbloqueia todas as listas pagas desse criador e envia-te um email quando adicionam, removem ou actualizam um restaurante. Se segues um criador regularmente, a Subscrição tem melhor valor. Se só precisas de uma lista para uma viagem, o Snapshot é perfeito."
         }
       },
       "getting_started": {
@@ -1625,7 +1676,7 @@
         },
         "getting_started-3": {
           "question": "Como cancelo uma subscrição?",
-          "answer": "Vai a Definições → As Minhas Subscrições a qualquer momento. Cancela com um toque — mantens o acesso até ao fim do período de faturação actual, sem mais cobranças. As Capturas são compras únicas permanentes e não são reembolsáveis."
+          "answer": "Vai a Definições → As Minhas Subscrições a qualquer momento. Cancela com um toque — mantens o acesso até ao fim do período de faturação actual, sem mais cobranças. Os Snapshots são compras únicas permanentes e não são reembolsáveis."
         }
       }
     },
@@ -1688,7 +1739,7 @@
       "no_posts": {
         "title": "Nenhuma publicação encontrada",
         "description": "Ainda não há publicações disponíveis. Volta mais tarde ou regressa à página inicial.",
-        "return_home": "Regressar à página inicial"
+        "return_home": "Leva-me para o início"
       },
       "post_not_found": {
         "title": "Publicação não encontrada",
@@ -1755,11 +1806,11 @@
       "delete_all_confirm": "Apagar todas as notificações? Não pode ser anulado.",
       "mark_read": "Marcar como lida",
       "delete": "Apagar",
-      "empty": "Calmo por agora. Volta mais tarde.",
+      "empty": "Ainda nada de novo. Vê o Descobrir para sítios de quem segues.",
       "empty_filtered": "Nada por aqui para esta lista.",
       "empty_title": "Estás em dia",
       "empty_filtered_title": "Nada para esta lista",
-      "empty_cta": "Descobrir spots",
+      "empty_cta": "Descobrir sítios",
       "section_today": "Hoje",
       "section_week": "Esta semana",
       "section_earlier": "Mais antigas",
@@ -1771,7 +1822,7 @@
       "load_more": "Ver mais",
       "list_update_body": "{{creator}} adicionou {{restaurant}} a {{list}}",
       "enable_device": "Ativar notificações neste dispositivo",
-      "enable_device_hint": "Recebe um aviso quando criadores que segues adicionam novos spots.",
+      "enable_device_hint": "Recebe um aviso quando criadores que segues adicionam novos sítios.",
       "enable_device_blocked": "As notificações estão bloqueadas. Ativa-as nas definições do navegador.",
       "enable_device_ios_hint": "Adiciona esta app ao ecrã inicial para ativar as notificações.",
       "enable_device_unsupported": "As notificações push não são suportadas neste navegador.",
@@ -1780,8 +1831,8 @@
       "pref_in_app": "Mostrar na app",
       "pref_push": "Enviar para os meus dispositivos",
       "disable_device": "Desativar",
-      "spots_count": "{{count}} spots",
-      "group_show": "Ver spots",
+      "spots_count": "{{count}} sítios",
+      "group_show": "Ver sítios",
       "group_hide": "Esconder",
       "verb_added": "adicionou",
       "verb_to": "a",
@@ -1858,12 +1909,18 @@
     }
   },
   "footer": {
-    "description": "Descobre restaurantes de pessoas em quem confias — criadores e locais que escolheste seguir.",
+    "description": "Escolhas de restaurantes de quem confias — criadores e locais que escolheste seguir.",
     "copyright": "© 2026 NomNom. Todos os direitos reservados",
     "links": {
+      "explore": "Explorar",
       "company": "NomNom",
+      "about": "Sobre",
+      "features": "Como funciona",
+      "use_cases": "Para quem",
+      "resources": "Recursos",
+      "pricing": "Preços",
       "contact_us": "Contacta-nos",
-      "faqs": "Perguntas Frequentes",
+      "faqs": "Perguntas frequentes",
       "contact": "Contacto",
       "legal": "Legal",
       "privacy": "Política de privacidade",

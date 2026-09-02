@@ -10,6 +10,7 @@ import { paths } from 'src/routes/paths';
 
 import { useTranslate } from 'src/locales';
 import CompactLayout from 'src/layouts/compact';
+import { readableAccent } from 'src/theme/readable-accent';
 import { compactPageActionsStackSx } from 'src/theme/responsive-button-sx';
 
 import { varFade, MotionPart, MotionContainer } from 'src/components/animate';
@@ -35,7 +36,7 @@ export default function NotFoundView({ title, message, action }) {
               display: 'block',
               mb: 1.5,
               textAlign: 'center',
-              color: 'primary.main',
+              color: (theme) => readableAccent(theme),
               letterSpacing: 1.2,
             }}
           >
@@ -67,8 +68,8 @@ export default function NotFoundView({ title, message, action }) {
               >
                 {t('pages.error.404.goToHome')}
               </Button>
-              <Button component="a" href={paths.dashboard.map} size="large" variant="text">
-                {t('pages.error.404.exploreMap')}
+              <Button component="a" href={paths.site.featuresRoot} size="large" variant="text">
+                {t('pages.error.404.seeHowItWorks')}
               </Button>
             </>
           )}

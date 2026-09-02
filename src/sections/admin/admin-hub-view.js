@@ -17,6 +17,7 @@ import { RouterLink } from 'src/routes/components';
 
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
+import { readableAccent } from 'src/theme/readable-accent';
 
 import Iconify from 'src/components/iconify';
 
@@ -134,7 +135,7 @@ function AdminHubCardBody({ icon, title, description }) {
           alignItems: 'center',
           justifyContent: 'center',
           bgcolor: 'action.hover',
-          color: 'primary.main',
+          color: (theme) => readableAccent(theme),
           flexShrink: 0,
         }}
       >

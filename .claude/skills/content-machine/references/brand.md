@@ -12,7 +12,7 @@ not know these rules. Apply this file after they run.
 - Cozy · Fun · a little hungry. Never corporate, never judgmental.
 - Tagline: **Restaurant picks from people you trust**
 - We are human curation — not aggregate star scores, not a cold directory.
-- Words: spots, lists, NomNomming, Shake It Up. Never establishments,
+- Words: spots, lists, NomNomming, Spin NomNom Roulette. Never establishments,
   locations, entities, "elevate", "seamless", "unleash".
 - Buttons and captions: sentence case. Overline ALL CAPS only for short
   section labels (ACCOUNT, source names on punchline stills).

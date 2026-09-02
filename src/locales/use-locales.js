@@ -83,13 +83,13 @@ export function useTranslate() {
 
   const onChangeLang = useCallback(
     (newlang) => {
+      const lang = allLangs.find((l) => l.value === newlang) || defaultLang;
+      safeSetItem(languageStorageKey, newlang);
+      setUiLocaleCookie(newlang);
+      setCurrentLang(lang);
+      settings.onChangeDirectionByLang(newlang);
       ensureI18nLocale(newlang).then(() => {
         i18n.changeLanguage(newlang);
-        safeSetItem(languageStorageKey, newlang);
-        setUiLocaleCookie(newlang);
-        settings.onChangeDirectionByLang(newlang);
-        const lang = allLangs.find((l) => l.value === newlang) || defaultLang;
-        setCurrentLang(lang);
       });
     },
     [i18n, settings, languageStorageKey]

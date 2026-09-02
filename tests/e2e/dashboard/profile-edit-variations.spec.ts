@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 import { loadE2EEnv } from '../load-env';
 import { getDefaultTranslation as tr } from '../../../src/locales/default-translations';
@@ -13,7 +13,7 @@ import {
 } from '../support/test-credentials';
 
 /**
- * Profile edit variations (S5/S6 area, docs/TEST-PLAN.md §10) — complements the existing bio
+ * Profile edit variations (TEST-PLAN S7) — complements the existing bio
  * test (profile-mutations.spec.ts). Runs as the shared dashboard user and restores every
  * mutation. Covers: display name persist, username client sanitization, username uniqueness
  * conflict, and avatar upload → persist → remove.
@@ -22,6 +22,11 @@ test.describe.configure({ mode: 'serial' });
 
 const AVATAR = path.join(__dirname, '..', 'support', 'fixtures', 'cover.png');
 const EDIT_URL = '/dashboard/settings/profile/edit';
+
+async function gotoProfileEdit(page: Page): Promise<void> {
+  await page.request.get(EDIT_URL);
+  await page.goto(EDIT_URL, { waitUntil: 'domcontentloaded', timeout: 120_000 });
+}
 
 const namePlaceholder = tr('pages.dashboard.settings.edit.name_placeholder'); // "Your name"
 const usernamePlaceholder = tr('pages.dashboard.settings.edit.username_placeholder'); // "your_handle"
@@ -49,7 +54,7 @@ test.describe('dashboard profile — edit variations', () => {
     const marker = `E2E Name ${Date.now()}`;
 
     try {
-      await page.goto(EDIT_URL, { waitUntil: 'domcontentloaded', timeout: 120_000 });
+      await gotoProfileEdit(page);
       const nameField = page.getByPlaceholder(namePlaceholder);
       await expect(nameField).toBeVisible({ timeout: 45_000 });
       await nameField.fill(marker);
@@ -78,7 +83,7 @@ test.describe('dashboard profile — edit variations', () => {
 
   test('username field sanitizes to lowercase handle-safe characters', async ({ page }) => {
     test.setTimeout(120_000);
-    await page.goto(EDIT_URL, { waitUntil: 'domcontentloaded', timeout: 120_000 });
+    await gotoProfileEdit(page);
     const usernameField = page.getByPlaceholder(usernamePlaceholder);
     await expect(usernameField).toBeVisible({ timeout: 45_000 });
 
@@ -108,7 +113,7 @@ test.describe('dashboard profile — edit variations', () => {
     const previousUsername = before?.username ?? null;
 
     try {
-      await page.goto(EDIT_URL, { waitUntil: 'domcontentloaded', timeout: 120_000 });
+      await gotoProfileEdit(page);
       const usernameField = page.getByPlaceholder(usernamePlaceholder);
       await expect(usernameField).toBeVisible({ timeout: 45_000 });
 
@@ -148,17 +153,24 @@ test.describe('dashboard profile — edit variations', () => {
     let uploadedPath: string | null = null;
 
     try {
-      await page.goto(EDIT_URL, { waitUntil: 'domcontentloaded', timeout: 120_000 });
+      await gotoProfileEdit(page);
       await expect(page.getByPlaceholder(namePlaceholder)).toBeVisible({ timeout: 45_000 });
 
       // Hidden file input drives the avatar upload (→ Supabase `avatars` bucket → public URL).
-      await page.locator('input[type="file"]').setInputFiles(AVATAR);
+      await page.locator('input[type="file"][accept*="image"]').setInputFiles(AVATAR);
 
       // Wait for the upload to resolve into a fresh avatar URL before saving (the Save button
-      // persists whatever avatar URL is in state). Scope to the form's avatar (sibling after the
-      // hidden file input) so the header account-popover avatar can't shadow it.
-      const avatarImg = page.locator('input[type="file"] ~ div img[src*="/avatars/"]').first();
-      await expect(avatarImg).toBeVisible({ timeout: 45_000 });
+      // persists whatever avatar URL is in state). Prefer MUI's avatar <img>; if storage
+      // rejects the file, fail on the visible alert instead of a 45s sibling-selector miss.
+      const avatarImg = page
+        .locator('input[type="file"][accept*="image"] ~ div .MuiAvatar-img[src*="avatars"]')
+        .first();
+      // Next.js Dev Tools also exposes an empty `alert`; require real copy.
+      const uploadError = page.getByRole('alert').filter({ hasText: /\S/ });
+      await expect(avatarImg.or(uploadError)).toBeVisible({ timeout: 45_000 });
+      if (await uploadError.isVisible().catch(() => false)) {
+        throw new Error(`avatar upload failed: ${(await uploadError.innerText()).trim()}`);
+      }
       await expect
         .poll(async () => (await avatarImg.getAttribute('src')) !== previousAvatar, {
           timeout: 45_000,

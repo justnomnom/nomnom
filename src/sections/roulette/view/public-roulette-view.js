@@ -21,6 +21,7 @@ import { usePrefersReducedMotion } from 'src/hooks/use-prefers-reduced-motion';
 
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
+import { readableAccent } from 'src/theme/readable-accent';
 import { isCapacitorNative } from 'src/libs/capacitor/platform';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
 import { fetchPublicLisboaRouletteRestaurantIds } from 'src/auth/actions/location-actions';
@@ -295,7 +296,7 @@ export default function PublicRouletteView() {
               component={RouterLink}
               href={signupHref}
               onClick={handleSignupClick}
-              sx={{ fontWeight: 800 }}
+              sx={{ fontWeight: 800, color: (theme) => readableAccent(theme) }}
             >
               {t('pages.public.roulette.lisboa.signup_cta')}
             </Link>

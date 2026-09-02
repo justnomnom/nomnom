@@ -11,6 +11,7 @@ import {
 import {
   isWellFormedUuid,
   getPlatformFeePercent,
+  sanitizeCheckoutReturnPath,
   computeListSnapshotAmountCents,
   LIST_SNAPSHOT_CHECKOUT_TAX_CODE,
 } from 'src/libs/stripe/list-stripe-constants';
@@ -46,13 +47,7 @@ export async function POST(request) {
 
   // Allow caller to specify the page to return to after checkout (e.g. /dashboard/lists/[id]).
   // Validated to be an internal path — no external redirects.
-  const rawReturnPath = typeof body?.returnPath === 'string' ? body.returnPath.trim() : '';
-  const returnPath =
-    rawReturnPath.startsWith('/') &&
-    !rawReturnPath.startsWith('//') &&
-    !rawReturnPath.includes('://')
-      ? rawReturnPath
-      : `/lists/${listId}`;
+  const returnPath = sanitizeCheckoutReturnPath(body?.returnPath, listId);
 
   const {
     data: { user },

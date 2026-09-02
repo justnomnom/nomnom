@@ -23,6 +23,7 @@ import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import { useAuthContext } from 'src/auth/hooks';
 import { useMyProfile } from 'src/api/my-profile';
+import { readableAccent } from 'src/theme/readable-accent';
 import { updateMyProfile } from 'src/auth/actions/profile-actions';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
 import { useSkeletonThemeColors } from 'src/theme/use-skeleton-theme';
@@ -184,10 +185,22 @@ export default function SettingsEditForm({
       }
 
       const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
-      const path = `${user.id}/${Date.now()}.${ext}`;
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const uid = session?.user?.id;
+      if (!uid) {
+        setPhotoUploadError(t('pages.dashboard.settings.edit.upload_error'));
+        trackEvent('avatar_upload_failed', { reason: 'no_session' });
+        if (event.target) event.target.value = '';
+        return;
+      }
+      // Unique path (no upsert): `upsert: true` has failed RLS on a first insert
+      // even when the folder matches auth.uid() — same pattern as list covers.
+      const path = `${uid}/${Date.now()}.${ext}`;
 
       const { error: upErr } = await supabase.storage.from('avatars').upload(path, file, {
-        upsert: true,
+        upsert: false,
         contentType: file.type || undefined,
       });
 
@@ -496,7 +509,7 @@ export default function SettingsEditForm({
                   size="small"
                   onClick={() => fileInputRef.current?.click()}
                   sx={{
-                    color: theme.palette.primary.main,
+                    color: readableAccent(theme),
                     fontWeight: 700,
                     textTransform: 'none',
                     minHeight: TOUCH_MIN,

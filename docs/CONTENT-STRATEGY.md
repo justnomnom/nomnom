@@ -120,6 +120,7 @@ Scored per the content-strategy rubric: customer impact 40% · content-market fi
 - **Interlinking rule:** every editorial guide links to (a) its NomNom List, (b) the relevant programmatic city/collection page, (c) one sibling in its cluster. Creators mentioned in guides link to their `/u/[handle]` or `/influencers/[slug]` page — this seeds the creator flywheel.
 - **EN policy:** translate only proven winners (top GSC performers after ~8 weeks) plus the creator-economy pieces, which have a global audience.
 - **Cadence:** 1 P1 guide/week · 1 rotating piece/week (P2→P4→P3) · data study as a monthly-scale project.
+- **Daily social machine:** four calendar slots plus a mass extras dump (default 24 reviewable pieces), each type with its own iteration set. Run `npm run content:daily`. Spec: `content/pipeline/DAILY.md`. Never auto-post. Never invent restaurant facts.
 
 ## 5. Measurement
 

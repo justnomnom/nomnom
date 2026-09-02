@@ -5,6 +5,7 @@ import { ContentPageShell } from '@/components/content-platform/sections/content
 import { contentCountryIndexCardLinkClassName } from 'src/components/content-platform/ui/content-inline-link-classname';
 import { getCountrySlugs } from '@/content-platform/fs-content';
 import { pageMetadata } from '@/content-platform/page-metadata';
+import { contentHubT, displaySlug } from '@/content-platform/content-hub-t';
 
 export const revalidate = 60;
 
@@ -17,22 +18,23 @@ export const metadata: Metadata = pageMetadata({
 /**
  * Index of all country hubs with cross-links to global content.
  */
-export default function CountriesIndexPage() {
+export default async function CountriesIndexPage() {
+  const t = await contentHubT();
   const countries = getCountrySlugs();
   return (
     <ContentPageShell
-      title="Explore by country"
-      description="Pick a country to see cities, restaurant directories, and creator guides."
+      title={t('explore_title')}
+      description={t('explore_description')}
       breadcrumbs={[
-        { name: 'Home', href: '/' },
-        { name: 'Countries', href: '/countries' },
+        { name: t('home'), href: '/' },
+        { name: t('countries'), href: '/countries' },
       ]}
     >
       <ul className="not-prose grid gap-3 sm:grid-cols-2">
         {countries.map((c) => (
           <li key={c}>
             <Link href={`/countries/${c}`} className={contentCountryIndexCardLinkClassName}>
-              {c.replace(/-/g, ' ')}
+              {displaySlug(c)}
             </Link>
           </li>
         ))}

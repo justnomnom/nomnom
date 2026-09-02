@@ -8,6 +8,7 @@ import { alpha, useTheme } from '@mui/material/styles';
 
 import { useLocales } from 'src/locales';
 import { APP, APP_SUPPORT_EMAIL } from 'src/config-global';
+import { readableAccent } from 'src/theme/readable-accent';
 import { getLocaleBodyMaxWidthCh } from 'src/theme/locale-prose';
 
 import {
@@ -38,7 +39,7 @@ export default function PrivacyView() {
         <Typography
           variant="overline"
           sx={{
-            color: 'primary.main',
+            color: readableAccent(theme),
             fontWeight: 700,
             letterSpacing: '0.1em',
             display: 'block',
@@ -47,7 +48,7 @@ export default function PrivacyView() {
           Legal
         </Typography>
         <Typography variant="h2" sx={{ fontWeight: 800, letterSpacing: '-0.02em' }}>
-          Privacy Policy
+          Privacy policy
         </Typography>
         <Typography variant="body2" color="text.secondary">
           Last updated: {LAST_UPDATED}
@@ -88,7 +89,7 @@ export default function PrivacyView() {
             lineHeight: 1.7,
           },
           '& a': {
-            color: 'primary.main',
+            color: readableAccent(theme),
             textDecoration: 'none',
             '&:hover': { textDecoration: 'underline' },
           },

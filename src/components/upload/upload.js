@@ -14,6 +14,7 @@ import Typography from '@mui/material/Typography';
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import { touchTargetSx } from 'src/theme/spacing';
+import { readableAccent } from 'src/theme/readable-accent';
 import { UploadIllustration } from 'src/assets/illustrations';
 
 import Iconify from '../iconify';
@@ -68,7 +69,7 @@ export default function Upload({
                   component="span"
                   sx={{
                     mx: 0.5,
-                    color: 'primary.main',
+                    color: (theme) => readableAccent(theme),
                     textDecoration: 'underline',
                   }}
                 />

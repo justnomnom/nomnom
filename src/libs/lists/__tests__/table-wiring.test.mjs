@@ -155,8 +155,8 @@ describe('Table entry points', () => {
     // "inherit", which renders near-black instead of terracotta).
     assert.match(cta, /color="primary"/);
     // §19 / readable-accent.js: labels on a terracotta FILL stay white
-    // (PRIMARY_ON_FILL_TEXT). readableAccent() is for accent-as-text only.
-    assert.doesNotMatch(view, /readableAccent/);
+    // (PRIMARY_ON_FILL_TEXT). readableAccent() is for accent-as-text only — not this CTA.
+    assert.doesNotMatch(cta, /readableAccent/);
   });
 
   test('the CTA needs places but the sheet mounts for any owner (?table=1 opens it)', () => {
@@ -168,7 +168,7 @@ describe('Table entry points', () => {
   test('Discover promotes matching Table + Roulette cards; Decide/Tonight tiles are gone', () => {
     const view = read('src/sections/discover/view/discover-view.js');
     const promo = read('src/sections/discover/discover-feature-promo.js');
-    const provider = read('src/libs/analytics/analytics-provider.js');
+    const provider = read('src/libs/analytics/event-schemas.js');
     assert.match(view, /DiscoverFeaturePromo/);
     assert.match(view, /href=\{paths\.dashboard\.listsTable\}/);
     assert.match(view, /promo: 'table'/);
@@ -215,7 +215,7 @@ describe('Table entry points', () => {
 
   test('the hub hint is measurable at the destination, not just the click', () => {
     const hub = read('src/sections/lists/view/lists-hub-view.js');
-    const provider = read('src/libs/analytics/analytics-provider.js');
+    const provider = read('src/libs/analytics/event-schemas.js');
     for (const name of ['table_hint_shown', 'table_hint_dismissed']) {
       assert.match(hub, new RegExp(`trackEvent\\('${name}'\\)`));
       assert.match(provider, new RegExp(`${name}: \\{ required: \\[\\] \\}`));
@@ -408,7 +408,7 @@ describe('Table server + storage contract', () => {
 describe('Table analytics', () => {
   test('event names match the analytics provider schema keys', () => {
     const analyticsSrc = read('src/libs/analytics/table-analytics.js');
-    const provider = read('src/libs/analytics/analytics-provider.js');
+    const provider = read('src/libs/analytics/event-schemas.js');
     const names = [...analyticsSrc.matchAll(/:\s*'([a-z_]+)'/g)].map((m) => m[1]);
     assert.ok(names.length >= 9, `expected table event names, got ${names.length}`);
     for (const name of names) {
@@ -420,10 +420,13 @@ describe('Table analytics', () => {
     assert.ok(names.includes('table_result_reply_shared'));
     assert.doesNotMatch(analyticsSrc, /ROULETTE_SPIN|trackRouletteSpin|table_roulette_spin/);
     assert.doesNotMatch(provider, /table_roulette_spin/);
+    const providerRuntime = read('src/libs/analytics/analytics-provider.js');
+    assert.match(providerRuntime, /from 'src\/libs\/analytics\/event-schemas'/);
+    assert.match(providerRuntime, /applySchemaGuardrails\(/);
   });
 
   test('provider required fields cover the funnel payloads the UI sends', () => {
-    const provider = read('src/libs/analytics/analytics-provider.js');
+    const provider = read('src/libs/analytics/event-schemas.js');
     assert.match(provider, /table_started: \{ required: \['table_id', 'list_id'\] \}/);
     assert.match(provider, /table_share_copied: \{ required: \['table_id'\] \}/);
     assert.match(provider, /table_open: \{ required: \['table_id'\] \}/);
@@ -437,7 +440,7 @@ describe('Table analytics', () => {
   });
 
   test('the retired Decide / Night events are gone; list share stays a list event', () => {
-    const provider = read('src/libs/analytics/analytics-provider.js');
+    const provider = read('src/libs/analytics/event-schemas.js');
     assert.doesNotMatch(provider, /night_|list_decide_open|list_vote_cast|list_result_/);
     assert.match(provider, /list_share_copied: \{ required: \['list_id'\] \}/);
     const dashboardView = read('src/sections/lists/view/dashboard-list-public-view.js');

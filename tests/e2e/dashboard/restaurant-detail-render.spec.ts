@@ -47,6 +47,7 @@ async function getRestaurantName(id: string): Promise<string | null> {
 }
 
 async function gotoDashboardRestaurant(page: Page, id: string): Promise<void> {
+  await page.request.get(`/dashboard/restaurants/${id}`);
   await page.goto(`/dashboard/restaurants/${id}`, {
     waitUntil: 'domcontentloaded',
     timeout: 180_000,
@@ -177,7 +178,7 @@ test.describe('dashboard restaurant detail — review appears in feed (R2/R3 ren
     test.skip(!restaurantId, 'No rows in public.restaurants — seed data or skip');
 
     const admin = getServiceRoleClient();
-    const listName = `E2E Render Review ${Date.now()}`;
+    const listName = `Render review ${Date.now()}`;
     const listId = await createOwnedList(userId, { name: listName });
     const body = `E2E render check ${Date.now()}`;
 

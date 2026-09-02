@@ -29,6 +29,7 @@ import { translateCreatorSubscriptionError } from 'src/utils/creator-subscriptio
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import { tabularNumsSx } from 'src/theme/spacing';
+import { readableAccent } from 'src/theme/readable-accent';
 import { setFollowUser } from 'src/auth/actions/profile-actions';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
 import { fetchPublicProfileActivityPage } from 'src/libs/lists/actions';
@@ -499,7 +500,7 @@ export default function UserPublicProfileView({
   const heroShadow = `0 10px 15px -3px ${alpha(primary, 0.2)}`;
 
   const activityLinkSx = {
-    color: 'primary.main',
+    color: readableAccent(theme),
     fontWeight: 800,
     textDecoration: 'none',
     wordBreak: 'break-word',

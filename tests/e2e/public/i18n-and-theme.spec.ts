@@ -14,7 +14,7 @@ test.describe('no untranslated i18n keys leak into public pages', () => {
   for (const path of PAGES) {
     test(`no raw keys on ${path}`, async ({ page }) => {
       test.setTimeout(90_000);
-      await page.goto(path, { waitUntil: 'load', timeout: 90_000 });
+      await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 90_000 });
       await expectAppShellMainVisible(page, { timeout: 45_000 });
       const text = await page.locator('#main-content').or(page.getByRole('main')).first().innerText();
       // Dotted i18n keys we use as namespaces — none should reach the DOM as literal text.

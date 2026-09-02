@@ -1,5 +1,5 @@
 /**
- * Lazy Portuguese locale: the JSON is a real bundle, and i18n.js only loads it on demand.
+ * Locale JSON is bundled; ensureI18nLocale still maps pt* → pt.
  * Does not import `i18n.js` (Next JSON imports need webpack; Node needs `with { type: 'json' }`).
  */
 import fs from 'node:fs';
@@ -29,4 +29,20 @@ test('Portuguese JSON is importable and shares English top-level namespaces', ()
   const enKeys = Object.keys(en).sort();
   const ptKeys = Object.keys(pt).sort();
   assert.deepEqual(ptKeys, enKeys);
+});
+
+test('D6 map token-missing copy exists in both locales', () => {
+  assert.match(en.pages?.dashboard?.map?.map_placeholder ?? '', /unavailable/i);
+  assert.match(pt.pages?.dashboard?.map?.map_placeholder ?? '', /indisponível/i);
+});
+
+test('contentHub chrome keys exist in English and Portuguese', () => {
+  const enHub = en.pages?.contentHub ?? {};
+  const ptHub = pt.pages?.contentHub ?? {};
+  const keys = Object.keys(enHub).sort();
+  assert.ok(keys.includes('explore_title'));
+  assert.ok(keys.includes('continue_reading'));
+  assert.deepEqual(Object.keys(ptHub).sort(), keys);
+  assert.match(enHub.continue_reading, /Continue reading/);
+  assert.match(ptHub.continue_reading, /Continuar a ler/);
 });

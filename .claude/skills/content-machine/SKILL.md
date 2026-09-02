@@ -177,7 +177,9 @@ after the report — do not publish.
 1. **Inventory** — list what each lane can produce right now (reel
    candidates via `pick-subjects.mjs --limit 5`, punchline news that
    clears the virality bar, whether ad/copy context exists in
-   `.agents/product-marketing-context.md`). `pick-subjects` always prints
+   `.agents/product-marketing-context.md`). Also run
+   `npm run content:daily` so app-adjacent slots (feature reels,
+   carousels, Stories, SEO) land in the same review folder. `pick-subjects` always prints
    the table; `--dry-run` exists on `run-batch.mjs` only.
 2. **Reels** — `run-batch.mjs --kind all --limit 3` (or `--no-render` if
    Remotion CLI is missing). Default `--kind both` skips review
@@ -202,6 +204,7 @@ After a batch, tell the user:
 
 ## Related skills — use, don't duplicate
 
+- `daily-content-pipeline` — mass daily batch (calendar + extras), distinct iterations per type
 - `create-video-start` — full pipeline for a **new** composition from a brief
 - `audit-animation` — review motion in product UI or Remotion, do not produce content
 - `motion-designer`, `remotion-best-practices` — craft rules for editing compositions

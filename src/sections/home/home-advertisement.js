@@ -14,6 +14,7 @@ import { paths } from 'src/routes/paths';
 import { ic } from 'src/assets/icons';
 import { RADIUS } from 'src/theme/spacing';
 import { useTranslate } from 'src/locales';
+import { readableAccent } from 'src/theme/readable-accent';
 import { useAuthContext } from 'src/auth/hooks/use-auth-context';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
 
@@ -239,7 +240,7 @@ export default function HomeAdvertisement() {
                 component="span"
                 sx={{
                   display: 'block',
-                  ...(index === headlineLines.length - 1 && { color: 'primary.main' }),
+                  ...(index === headlineLines.length - 1 && { color: readableAccent(theme) }),
                 }}
               >
                 {line}

@@ -21,6 +21,7 @@ import { usePrefersReducedMotion } from 'src/hooks/use-prefers-reduced-motion';
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import { excludeIds } from 'src/libs/lists/system-lists';
+import { readableAccent } from 'src/theme/readable-accent';
 import { isCapacitorNative } from 'src/libs/capacitor/platform';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
 import { fetchCircleRestaurantIds } from 'src/auth/actions/location-actions';
@@ -313,7 +314,10 @@ export default function NomRouletteView() {
                 }}
               >
                 {t('pages.dashboard.roulette.subtitle_before')}{' '}
-                <Box component="span" sx={{ fontWeight: 800, color: 'primary.main' }}>
+                <Box
+                  component="span"
+                  sx={{ fontWeight: 800, color: (theme) => readableAccent(theme) }}
+                >
                   {t('pages.dashboard.roulette.subtitle_highlight')}
                 </Box>
               </Typography>

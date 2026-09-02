@@ -39,6 +39,7 @@ import { useAuthContext } from 'src/auth/hooks';
 import { NAV, MAPBOX_API } from 'src/config-global';
 import { useLocales, useTranslate } from 'src/locales';
 import { hoverable } from 'src/theme/overrides/hoverable';
+import { readableAccent } from 'src/theme/readable-accent';
 import { getLocaleBodyMaxWidthCh } from 'src/theme/locale-prose';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
 import { getPaywallRelativeDate } from 'src/libs/paywall/paywall-recency';
@@ -1128,7 +1129,7 @@ export default function ListPublicView({
                 sx={{
                   display: 'block',
                   mt: 0.5,
-                  color: 'primary.dark',
+                  color: (muiTheme) => readableAccent(muiTheme),
                   fontWeight: 600,
                   textAlign: 'right',
                 }}

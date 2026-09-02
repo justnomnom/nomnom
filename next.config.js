@@ -215,12 +215,19 @@ const nextConfig = {
         splitChunks: false,
       };
 
-      config.cache = {
-        type: 'filesystem',
-        buildDependencies: {
-          config: [__filename],
-        },
-      };
+      // Filesystem webpack cache grew to 12–14GB here and filled C: mid-e2e (ENOSPC).
+      // Playwright sets WEBPACK_CACHE=off. Local `npm run dev:webpack` still uses disk cache.
+      if (process.env.WEBPACK_CACHE === 'off') {
+        // `false` was overridden by Next 16 back to a 12GB filesystem cache.
+        config.cache = { type: 'memory' };
+      } else {
+        config.cache = {
+          type: 'filesystem',
+          buildDependencies: {
+            config: [__filename],
+          },
+        };
+      }
     }
 
     if (!isServer) {

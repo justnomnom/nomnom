@@ -1,0 +1,79 @@
+[
+  {
+    "name": "Time Out Market",
+    "slug": "time-out-market",
+    "city": "lisbon",
+    "country": "portugal",
+    "categories": ["food-hall"],
+    "influencerSlugs": [],
+    "rating": 4.4,
+    "location": { "lat": 38.7071, "lng": -9.1458 },
+    "shortDescription": "Cais do Sodré food hall with a row of Lisbon kitchens under one roof."
+  },
+  {
+    "name": "Cervejaria Ramiro",
+    "slug": "cervejaria-ramiro",
+    "city": "lisbon",
+    "country": "portugal",
+    "categories": ["seafood"],
+    "influencerSlugs": [],
+    "rating": 4.6,
+    "location": { "lat": 38.7223, "lng": -9.1351 },
+    "shortDescription": "Intendente beer hall known for prawns, clams, and a late queue."
+  },
+  {
+    "name": "Pastelaria Aloma",
+    "slug": "pastelaria-aloma",
+    "city": "lisbon",
+    "country": "portugal",
+    "categories": ["pastry"],
+    "influencerSlugs": [],
+    "rating": 4.5,
+    "location": { "lat": 38.7168, "lng": -9.1632 },
+    "shortDescription": "Campolide pastelaria whose custard tarts keep winning city contests."
+  },
+  {
+    "name": "Zé da Mouraria",
+    "slug": "ze-da-mouraria",
+    "city": "lisbon",
+    "country": "portugal",
+    "categories": ["tasca"],
+    "influencerSlugs": [],
+    "rating": 4.6,
+    "location": { "lat": 38.7152, "lng": -9.1328 },
+    "shortDescription": "Lunch-only Mouraria tasca: daily plates, no reservations, empty by 3pm."
+  },
+  {
+    "name": "Taberna da Rua das Flores",
+    "slug": "taberna-da-rua-das-flores",
+    "city": "lisbon",
+    "country": "portugal",
+    "categories": ["tasca"],
+    "influencerSlugs": [],
+    "rating": 4.5,
+    "location": { "lat": 38.7104, "lng": -9.1441 },
+    "shortDescription": "Chiado counter tasca with a chalkboard that changes with the market."
+  },
+  {
+    "name": "Solar dos Presuntos",
+    "slug": "solar-dos-presuntos",
+    "city": "lisbon",
+    "country": "portugal",
+    "categories": ["seafood"],
+    "influencerSlugs": [],
+    "rating": 4.4,
+    "location": { "lat": 38.7196, "lng": -9.1428 },
+    "shortDescription": "Avenida classic for mariscos and a dining room that still feels like 1970s Lisbon."
+  },
+  {
+    "name": "Manteigaria",
+    "slug": "manteigaria",
+    "city": "lisbon",
+    "country": "portugal",
+    "categories": ["pastry"],
+    "influencerSlugs": [],
+    "rating": 4.6,
+    "location": { "lat": 38.7109, "lng": -9.1436 },
+    "shortDescription": "Chiado nata shop where the oven is in the window and the tarts leave hot."
+  }
+]

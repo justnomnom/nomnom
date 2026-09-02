@@ -42,3 +42,55 @@ test.describe('POST /api/restaurants/ingest — internal, secret-gated', () => {
     methodNotAllowed(await request.get('/api/restaurants/ingest'));
   });
 });
+
+test.describe('POST /api/auth/session-setup — unauthenticated', () => {
+  test('no session → 401 unauthorized', async ({ request }) => {
+    const res = await request.post('/api/auth/session-setup', {
+      data: { firstName: 'A', lastName: 'B' },
+    });
+    expect(res.status()).toBe(401);
+    expect((await res.json()).error).toBe('unauthorized');
+  });
+
+  test('GET is not allowed', async ({ request }) => {
+    methodNotAllowed(await request.get('/api/auth/session-setup'));
+  });
+});
+
+test.describe('GET /api/cron/notification-digest — secret-gated', () => {
+  test('missing Authorization is 401', async ({ request }) => {
+    const res = await request.get('/api/cron/notification-digest');
+    expect(res.status()).toBe(401);
+    expect((await res.json()).error).toBe('unauthorized');
+  });
+
+  test('bogus bearer token is 401', async ({ request }) => {
+    const res = await request.get('/api/cron/notification-digest', {
+      headers: { authorization: 'Bearer not-the-cron-secret' },
+    });
+    expect(res.status()).toBe(401);
+    expect((await res.json()).error).toBe('unauthorized');
+  });
+});
+
+test.describe('GET /api/notifications — unauthenticated', () => {
+  test('no session → 401 unauthorized', async ({ request }) => {
+    const res = await request.get('/api/notifications');
+    expect(res.status()).toBe(401);
+    expect((await res.json()).error).toBe('unauthorized');
+  });
+});
+
+test.describe('POST /api/notifications/read and /delete — unauthenticated', () => {
+  test('read without session → 401', async ({ request }) => {
+    const res = await request.post('/api/notifications/read', { data: { all: true } });
+    expect(res.status()).toBe(401);
+    expect((await res.json()).error).toBe('unauthorized');
+  });
+
+  test('delete without session → 401', async ({ request }) => {
+    const res = await request.post('/api/notifications/delete', { data: { all: true } });
+    expect(res.status()).toBe(401);
+    expect((await res.json()).error).toBe('unauthorized');
+  });
+});

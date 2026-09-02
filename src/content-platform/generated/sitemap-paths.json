@@ -1,54 +1,186 @@
 [
   {
     "path": "/",
-    "lastModified": "2026-08-16T10:37:05.101Z"
+    "lastModified": "2026-09-02T13:17:54.177Z"
   },
   {
     "path": "/about",
-    "lastModified": "2026-08-16T10:37:05.101Z"
+    "lastModified": "2026-09-02T13:17:54.177Z"
+  },
+  {
+    "path": "/collections/lisbon-lunch-shortlist",
+    "lastModified": "2026-09-02T13:17:01.412Z"
   },
   {
     "path": "/contact-us",
-    "lastModified": "2026-08-16T10:37:05.101Z"
+    "lastModified": "2026-09-02T13:17:54.177Z"
   },
   {
     "path": "/countries",
-    "lastModified": "2026-08-16T10:37:05.101Z"
+    "lastModified": "2026-09-02T13:17:54.177Z"
+  },
+  {
+    "path": "/countries/portugal",
+    "lastModified": "2026-09-02T13:17:54.177Z"
+  },
+  {
+    "path": "/countries/portugal/collections/late-kitchen-lisbon",
+    "lastModified": "2026-09-02T13:17:11.460Z"
+  },
+  {
+    "path": "/countries/portugal/influencers",
+    "lastModified": "2026-09-02T13:17:54.177Z"
+  },
+  {
+    "path": "/countries/portugal/influencers/ines-lisboa",
+    "lastModified": "2026-09-02T13:17:06.457Z"
+  },
+  {
+    "path": "/countries/portugal/lisbon",
+    "lastModified": "2026-09-02T13:11:28.960Z"
+  },
+  {
+    "path": "/countries/portugal/lisbon/collections/alfama-on-foot",
+    "lastModified": "2026-09-02T13:17:43.041Z"
+  },
+  {
+    "path": "/countries/portugal/lisbon/restaurants",
+    "lastModified": "2026-09-02T13:11:28.960Z"
+  },
+  {
+    "path": "/countries/portugal/lisbon/restaurants/cervejaria-ramiro",
+    "lastModified": "2026-09-02T13:11:28.960Z"
+  },
+  {
+    "path": "/countries/portugal/lisbon/restaurants/manteigaria",
+    "lastModified": "2026-09-02T13:11:28.960Z"
+  },
+  {
+    "path": "/countries/portugal/lisbon/restaurants/page/2",
+    "lastModified": "2026-09-02T13:11:28.960Z"
+  },
+  {
+    "path": "/countries/portugal/lisbon/restaurants/pastelaria-aloma",
+    "lastModified": "2026-09-02T13:11:28.960Z"
+  },
+  {
+    "path": "/countries/portugal/lisbon/restaurants/solar-dos-presuntos",
+    "lastModified": "2026-09-02T13:11:28.960Z"
+  },
+  {
+    "path": "/countries/portugal/lisbon/restaurants/taberna-da-rua-das-flores",
+    "lastModified": "2026-09-02T13:11:28.960Z"
+  },
+  {
+    "path": "/countries/portugal/lisbon/restaurants/tag/food-hall",
+    "lastModified": "2026-09-02T13:11:28.960Z"
+  },
+  {
+    "path": "/countries/portugal/lisbon/restaurants/tag/pastry",
+    "lastModified": "2026-09-02T13:11:28.960Z"
+  },
+  {
+    "path": "/countries/portugal/lisbon/restaurants/tag/seafood",
+    "lastModified": "2026-09-02T13:11:28.960Z"
+  },
+  {
+    "path": "/countries/portugal/lisbon/restaurants/tag/tasca",
+    "lastModified": "2026-09-02T13:11:28.960Z"
+  },
+  {
+    "path": "/countries/portugal/lisbon/restaurants/time-out-market",
+    "lastModified": "2026-09-02T13:11:28.960Z"
+  },
+  {
+    "path": "/countries/portugal/lisbon/restaurants/ze-da-mouraria",
+    "lastModified": "2026-09-02T13:11:28.960Z"
   },
   {
     "path": "/faqs",
-    "lastModified": "2026-08-16T10:37:05.101Z"
+    "lastModified": "2026-09-02T13:17:54.177Z"
+  },
+  {
+    "path": "/features",
+    "lastModified": "2026-09-02T13:17:54.177Z"
+  },
+  {
+    "path": "/features/feed",
+    "lastModified": "2026-09-02T12:58:11.032Z"
+  },
+  {
+    "path": "/features/lists",
+    "lastModified": "2026-09-02T12:46:34.759Z"
+  },
+  {
+    "path": "/features/map",
+    "lastModified": "2026-09-01T22:55:20.246Z"
+  },
+  {
+    "path": "/features/roulette",
+    "lastModified": "2026-09-02T12:46:35.120Z"
+  },
+  {
+    "path": "/features/table",
+    "lastModified": "2026-09-01T22:54:49.081Z"
   },
   {
     "path": "/pricing",
-    "lastModified": "2026-08-16T10:37:05.101Z"
+    "lastModified": "2026-09-02T13:17:54.177Z"
   },
   {
     "path": "/privacy",
-    "lastModified": "2026-08-16T10:37:05.101Z"
+    "lastModified": "2026-09-02T13:17:54.177Z"
+  },
+  {
+    "path": "/resources",
+    "lastModified": "2026-09-02T13:17:54.177Z"
+  },
+  {
+    "path": "/resources/decide-dinner-without-the-group-chat",
+    "lastModified": "2026-09-02T01:33:40.668Z"
+  },
+  {
+    "path": "/resources/export-google-maps-saved-places",
+    "lastModified": "2026-09-01T23:05:40.495Z"
+  },
+  {
+    "path": "/resources/fewer-where-is-it-dms",
+    "lastModified": "2026-08-24T11:40:42.690Z"
+  },
+  {
+    "path": "/resources/planning-a-food-trip",
+    "lastModified": "2026-09-02T01:33:28.761Z"
+  },
+  {
+    "path": "/resources/why-star-ratings-stopped-meaning-anything",
+    "lastModified": "2026-09-02T11:44:26.864Z"
   },
   {
     "path": "/roleta/lisboa",
-    "lastModified": "2026-08-16T10:37:05.101Z"
+    "lastModified": "2026-09-02T13:17:54.177Z"
   },
   {
     "path": "/terms",
-    "lastModified": "2026-08-16T10:37:05.101Z"
+    "lastModified": "2026-09-02T13:17:54.177Z"
   },
   {
     "path": "/use-cases",
-    "lastModified": "2026-08-16T10:37:05.101Z"
+    "lastModified": "2026-09-02T13:17:54.177Z"
   },
   {
     "path": "/use-cases/creators",
-    "lastModified": "2026-06-07T12:47:08.284Z"
+    "lastModified": "2026-09-02T12:58:13.559Z"
   },
   {
     "path": "/use-cases/foodies",
-    "lastModified": "2026-06-07T12:47:08.292Z"
+    "lastModified": "2026-09-02T12:58:13.550Z"
+  },
+  {
+    "path": "/use-cases/hosts",
+    "lastModified": "2026-09-02T12:58:13.559Z"
   },
   {
     "path": "/use-cases/restaurants",
-    "lastModified": "2026-06-17T17:36:14.503Z"
+    "lastModified": "2026-09-02T11:44:26.839Z"
   }
 ]

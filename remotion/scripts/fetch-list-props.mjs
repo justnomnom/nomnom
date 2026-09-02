@@ -204,7 +204,7 @@ const props = {
     // Empty → the CTA scene builds its line from the real place count and handle.
     sub: '',
     button: 'Guardar na lista',
-    footer: listUrl ? listUrl.replace(/^https:\/\//i, '') : 'O teu Círculo NomNom · justnomnom.com',
+    footer: listUrl ? listUrl.replace(/^https:\/\//i, '') : 'O teu NomNom Circle · justnomnom.com',
   },
 };
 

@@ -49,11 +49,10 @@ test('resolveListSlug and fetchPublicProfileByUsername are React.cache-wrapped',
   assert.match(profile, /return fetchPublicProfileByUsernameCached\(/);
 });
 
-test('i18n eagerly loads English only; Portuguese is on-demand', () => {
+test('i18n bundles English and Portuguese; ensureI18nLocale stays the switch gate', () => {
   const i18n = readSrc('src/locales/i18n.js');
   assert.match(i18n, /import translationEn from '\.\/langs\/en\.json'/);
-  assert.doesNotMatch(i18n, /import translationPt from '\.\/langs\/pt\.json'/);
-  assert.match(i18n, /pt:\s*\(\)\s*=>\s*import\('\.\/langs\/pt\.json'\)/);
+  assert.match(i18n, /import translationPt from '\.\/langs\/pt\.json'/);
   assert.match(i18n, /export async function ensureI18nLocale/);
   const provider = readSrc('src/locales/localization-provider.js');
   assert.match(provider, /ensureI18nLocale/);

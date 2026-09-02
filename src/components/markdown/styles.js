@@ -1,5 +1,7 @@
 import { alpha, styled } from '@mui/material/styles';
 
+import { readableAccent } from 'src/theme/readable-accent';
+
 // ----------------------------------------------------------------------
 
 const StyledMarkdown = styled('div')(({ theme }) => {
@@ -65,11 +67,11 @@ const StyledMarkdown = styled('div')(({ theme }) => {
     },
 
     a: {
-      color: theme.palette.primary.main,
+      color: readableAccent(theme),
       textDecoration: 'underline',
-      textDecorationColor: alpha(theme.palette.primary.main, 0.32),
+      textDecorationColor: alpha(readableAccent(theme), 0.32),
       '&:hover': {
-        textDecorationColor: theme.palette.primary.main,
+        textDecorationColor: readableAccent(theme),
       },
     },
 

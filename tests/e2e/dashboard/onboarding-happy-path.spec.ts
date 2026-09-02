@@ -16,7 +16,7 @@ import {
 import { E2E_DASHBOARD_AUTH_SETUP_HINT } from '../support/test-credentials';
 
 /**
- * Onboarding wizard happy path (TEST-PLAN §2, O3 + O6 + O8).
+ * Onboarding wizard happy path (TEST-PLAN §2, O3 + O6 + O7 load + O8).
  *
  * The shared dashboard user has already completed onboarding (and the dashboard project's
  * storage state signs in as them), so each test here seeds its own onboarding-incomplete user
@@ -30,7 +30,7 @@ const baseURL = process.env.E2E_BASE_URL || 'http://localhost:3032';
 const CTA_WELCOME = "Let’s NomNom!";
 const CTA_LOCATION = 'Almost there';
 const CTA_TAGS = 'Keep going';
-const CTA_CREATORS = 'Start exploring!';
+const CTA_CREATORS = "Let’s NomNom!";
 const CTA_ENTER = 'Enter NomNom';
 
 test.describe.configure({ mode: 'serial' });

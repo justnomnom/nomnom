@@ -10,7 +10,8 @@ import {
   contentViewAllCreatorsLinkClassName,
 } from 'src/components/content-platform/ui/content-inline-link-classname';
 import { JsonLd } from '@/components/content-platform/seo/json-ld';
-import { getCountrySlugs, readMdxFilesInDir } from '@/content-platform/fs-content';
+import { contentHubT, displaySlug } from '@/content-platform/content-hub-t';
+import { getCountrySlugs } from '@/content-platform/fs-content';
 import {
   cityNavSlugs,
   collectionSlugsForCountry,
@@ -32,8 +33,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!getCountrySlugs().includes(country)) {
     return { title: 'Country' };
   }
-  const title = `${country.replace(/-/g, ' ')} — cities, dining & creators`;
-  const description = `Discover cities, restaurant guides, collections, and creators across ${country.replace(/-/g, ' ')}.`;
+  const title = `${displaySlug(country)} — cities, dining & creators`;
+  const description = `Discover cities, restaurant guides, collections, and creators across ${displaySlug(country)}.`;
   const canonical = `${getSiteUrl()}/countries/${country}`;
   return { title, description, alternates: { canonical } };
 }
@@ -45,6 +46,8 @@ export default async function CountryPage({ params }: PageProps) {
   const { country } = await params;
   if (!getCountrySlugs().includes(country)) notFound();
 
+  const t = await contentHubT();
+  const countryName = displaySlug(country);
   const cities = cityNavSlugs(country);
   const infl = influencerSlugsForCountry(country);
   const col = collectionSlugsForCountry(country);
@@ -55,12 +58,12 @@ export default async function CountryPage({ params }: PageProps) {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: `${site}/` },
-      { '@type': 'ListItem', position: 2, name: 'Countries', item: `${site}/countries` },
+      { '@type': 'ListItem', position: 1, name: t('home'), item: `${site}/` },
+      { '@type': 'ListItem', position: 2, name: t('countries'), item: `${site}/countries` },
       {
         '@type': 'ListItem',
         position: 3,
-        name: country.replace(/-/g, ' '),
+        name: countryName,
         item: `${site}/countries/${country}`,
       },
     ],
@@ -70,16 +73,16 @@ export default async function CountryPage({ params }: PageProps) {
     <>
       <JsonLd data={breadcrumbLd} />
       <ContentPageShell
-        title={country.replace(/-/g, ' ')}
-        description="Navigate cities, meet local creators, and open editorial collections without losing context."
+        title={countryName}
+        description={t('country_description')}
         breadcrumbs={[
-          { name: 'Home', href: '/' },
-          { name: 'Countries', href: '/countries' },
-          { name: country.replace(/-/g, ' '), href: `/countries/${country}` },
+          { name: t('home'), href: '/' },
+          { name: t('countries'), href: '/countries' },
+          { name: countryName, href: `/countries/${country}` },
         ]}
       >
         <section className="not-prose mb-10">
-          <h2 className="text-xl font-semibold">Cities</h2>
+          <h2 className="text-xl font-semibold">{t('cities')}</h2>
           <ul className="mt-3 flex flex-wrap gap-2">
             {cities.map((city) => (
               <li key={city}>
@@ -87,7 +90,7 @@ export default async function CountryPage({ params }: PageProps) {
                   href={`/countries/${country}/${city}`}
                   className={contentCityHubPillLinkClassName}
                 >
-                  {city.replace(/-/g, ' ')}
+                  {displaySlug(city)}
                 </Link>
               </li>
             ))}
@@ -95,7 +98,7 @@ export default async function CountryPage({ params }: PageProps) {
         </section>
 
         <section className="not-prose mb-10">
-          <h2 className="text-xl font-semibold">Creators</h2>
+          <h2 className="text-xl font-semibold">{t('creators')}</h2>
           <ul className="mt-3 flex flex-wrap gap-2">
             {infl.map((slug) => (
               <li key={slug}>
@@ -103,7 +106,7 @@ export default async function CountryPage({ params }: PageProps) {
                   href={`/countries/${country}/influencers/${slug}`}
                   className={contentInfluencerPillLinkClassName}
                 >
-                  {slug.replace(/-/g, ' ')}
+                  {displaySlug(slug)}
                 </Link>
               </li>
             ))}
@@ -112,22 +115,22 @@ export default async function CountryPage({ params }: PageProps) {
                 href={`/countries/${country}/influencers`}
                 className={contentViewAllCreatorsLinkClassName}
               >
-                View all creators
+                {t('view_all_creators')}
               </Link>
             </li>
           </ul>
         </section>
 
         <RelatedLinksSection
-          title="Country collections"
+          title={t('collections')}
           links={[
             ...col.map((slug) => ({
               href: `/countries/${country}/collections/${slug}`,
-              label: slug.replace(/-/g, ' '),
+              label: displaySlug(slug),
             })),
             ...globalCol.map((slug) => ({
               href: `/collections/${slug}`,
-              label: `Global: ${slug.replace(/-/g, ' ')}`,
+              label: t('global_label', { name: displaySlug(slug) }),
             })),
           ]}
         />

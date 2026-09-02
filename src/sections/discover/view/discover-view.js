@@ -550,6 +550,9 @@ export default function DiscoverView({
     }
     let cancelled = false;
     setNameSuggestionsLoading(true);
+    const loadingTimeoutId = setTimeout(() => {
+      if (!cancelled) setNameSuggestionsLoading(false);
+    }, 8000);
     searchRestaurantsByName(q, { limit: 25 })
       .then(({ restaurants: rows, error }) => {
         if (cancelled) return;
@@ -561,10 +564,12 @@ export default function DiscoverView({
         }
       })
       .finally(() => {
+        clearTimeout(loadingTimeoutId);
         if (!cancelled) setNameSuggestionsLoading(false);
       });
     return () => {
       cancelled = true;
+      clearTimeout(loadingTimeoutId);
     };
   }, [debouncedQuery, isAiSearchMode]);
 
@@ -1288,12 +1293,7 @@ export default function DiscoverView({
           />
           <MapSearchSuggestions
             open={
-              !isAiSearchMode &&
-              suggestionsOpen &&
-              !!debouncedQuery &&
-              (nameSuggestionsLoading ||
-                inMarketSuggestions.length > 0 ||
-                elsewhereSuggestions.length > 0)
+              !isAiSearchMode && suggestionsOpen && Boolean(String(debouncedQuery || '').trim())
             }
             anchorEl={searchAnchorRef.current}
             query={debouncedQuery}

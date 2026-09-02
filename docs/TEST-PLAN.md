@@ -248,8 +248,7 @@ Findings from the first run of these specs:
 - `/onboarding` for anonymous users redirects via a streamed client-side
   redirect (response is already 200), so the login URL only appears after
   hydration — tests must wait for JS, and slow first paints show a blank page.
-- The global not-found heading is "This dish isn't on the menu." (was
-  "Page Not Found" in older assertions).
+- The global not-found heading is "This page isn’t here."
 - **Product bug found & fixed:** email/password login often stayed on
   `/auth/login` and the completed-user `/onboarding` redirect stalled. Cause: the
   auth provider fired `getOrCreateCustomer` (a Server Action) as a post-login
@@ -402,7 +401,7 @@ Notes for these specs (mechanism gotchas the tests encode):
 | # | Case | Layer |
 |---|---|---|
 | D1 | Discover feed loads with location gate; empty state when no locality | E2E dashboard |
-| D2 | Search vs Ask AI toggle (`search-ai-toggle` — currently modified in working tree): mode switch persists, correct endpoint hit per mode | E2E dashboard |
+| D2 | Search vs vibe-search toggle (`search-ai-toggle`): mode switch persists, correct endpoint hit per mode | E2E dashboard |
 | D3 | Typeahead: restaurant vs locality results, keyboard navigation, fly-to on map | E2E dashboard |
 | D4 | Map: pins render for viewport, initial fetch gate (unit exists — add E2E: pan → refetch), restaurant popup → detail page | ✅ E2E dashboard (`map-pan-and-rating-filter.spec.ts` — zoom arms "Search this area" → refetch; popup→detail via discover typeahead spec) |
 | D5 | Filters apply/reset; result counts change | ✅ E2E dashboard (`map-pan-and-rating-filter.spec.ts` — min-rating shrinks rows, clear-all restores; sort/reset in `map-filtering.spec.ts`) |

@@ -20,7 +20,7 @@ import Iconify from 'src/components/iconify';
  * Single-line search-mode switch that renders as the search input's end adornment, so the
  * places/AI toggle lives inside the bar instead of on a separate row.
  *
- * - `'places'` mode: an optional clear button plus a `✨ AI` ghost pill that flips the bar
+ * - `'places'` mode: an optional clear button plus an Ask ghost pill that flips the bar
  *   into the natural-language agent.
  * - `'ai'` mode: an exit button (back to places) plus a filled circular submit button.
  *

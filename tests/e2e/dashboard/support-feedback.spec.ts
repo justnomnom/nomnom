@@ -17,7 +17,6 @@ import { E2E_DASHBOARD_AUTH_SETUP_HINT } from '../support/test-credentials';
  * The Feedback page (`/dashboard/feedback`) is a Sleekplan embed + help links (no native form),
  * so it's covered by rendering + the link-through to the support form.
  */
-test.describe.configure({ mode: 'serial' });
 
 const SUBMIT = tr('pages.contact_us.form.submit');
 const SUCCESS = tr('pages.contact_us.form.success');
@@ -95,22 +94,29 @@ test.describe('dashboard settings — support form & feedback', () => {
   });
 
   test('feedback page renders and links through to the support form', async ({ page }) => {
-    test.setTimeout(120_000);
+    test.setTimeout(180_000);
     await page.goto('/dashboard/feedback', {
       waitUntil: 'domcontentloaded',
       timeout: 120_000,
     });
 
-    // Drill-shell title + the "More help" section with a Support link.
+    // Drill-shell h1 is "Feedback"; the embed section is a separate "Feedback & requests" h2.
     await expect(
-      page.getByRole('heading', { name: tr('pages.dashboard.feedback.title') })
+      page.getByRole('heading', { level: 1, name: tr('pages.dashboard.feedback.title'), exact: true })
     ).toBeVisible({ timeout: 45_000 });
 
     const supportLink = page.locator('a[href$="/settings/support"]').first();
     await expect(supportLink).toBeVisible();
-    await supportLink.click();
+    const href = await supportLink.getAttribute('href');
+    // Warm the destination: App Router click after a cold compile can sit on a blank
+    // document until webpack finishes the support route.
+    if (href) await page.request.get(href);
 
-    await expect(page).toHaveURL(/\/dashboard\/settings\/support/, { timeout: 45_000 });
-    await expect(page.getByRole('button', { name: SUBMIT })).toBeVisible({ timeout: 45_000 });
+    await supportLink.click();
+    await expect(page).toHaveURL(/\/dashboard\/settings\/support/, { timeout: 90_000 });
+    await expect(page.getByRole('heading', { name: /contact us/i }).first()).toBeVisible({
+      timeout: 90_000,
+    });
+    await expect(page.getByRole('button', { name: SUBMIT })).toBeVisible({ timeout: 90_000 });
   });
 });

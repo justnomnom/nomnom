@@ -3,42 +3,43 @@ import path from 'path';
 
 import { expect, test } from '@playwright/test';
 
-import { expectAppShellMainVisible } from '../support/page-assertions';
+import { APP_NOT_FOUND_HEADING, expectAppShellMainVisible } from '../support/page-assertions';
 
 /**
- * TEST-PLAN §12 M1 — one representative REAL slug per MDX-backed editorial route
- * (features / resources / collections). Slugs are discovered from the `content/` tree at
- * runtime so the spec self-skips in environments without that content (this repo currently
- * ships only `content/use-cases`, which marketing-routes.spec.ts covers) and starts running
- * automatically the moment content lands. Bogus-slug behavior for these same routes is
- * covered by dynamic-route-not-found.spec.ts.
+ * Every real MDX slug under content/{features,resources,use-cases,collections}
+ * must render its document, not the global not-found shell.
+ * Bogus-slug behavior is covered by dynamic-route-not-found.spec.ts.
  */
 
 const CONTENT_ROOT = path.resolve(__dirname, '..', '..', '..', 'content');
 
-function firstSlugIn(dir: string): string | null {
+function slugsIn(dir: string): string[] {
   const abs = path.join(CONTENT_ROOT, dir);
-  if (!fs.existsSync(abs)) return null;
-  const mdx = fs
+  if (!fs.existsSync(abs)) return [];
+  return fs
     .readdirSync(abs)
     .filter((f) => f.endsWith('.mdx'))
-    .sort();
-  return mdx.length ? mdx[0].replace(/\.mdx$/, '') : null;
+    .sort()
+    .map((f) => f.replace(/\.mdx$/, ''));
 }
 
-for (const dir of ['features', 'resources', 'collections'] as const) {
-  test.describe(`${dir}/[slug] — representative content renders`, () => {
-    test(`first ${dir} slug renders its document, not the not-found shell`, async ({ page }) => {
-      const slug = firstSlugIn(dir);
-      test.skip(!slug, `No content/${dir}/*.mdx in this environment — add content to activate.`);
+for (const dir of ['features', 'resources', 'use-cases', 'collections'] as const) {
+  const slugs = slugsIn(dir);
+  if (slugs.length === 0) continue;
 
-      await page.goto(`/${dir}/${slug}`, { waitUntil: 'load', timeout: 120_000 });
-      await expect(page).toHaveURL(new RegExp(`/${dir}/${slug}$`));
-      await expectAppShellMainVisible(page, { timeout: 45_000 });
-
-      // A real document renders an h1 and never the global not-found heading.
-      await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 30_000 });
-      await expect(page.getByRole('heading', { name: /isn.t on the menu/i })).toHaveCount(0);
+  test.describe(`${dir}/[slug] — every content document renders`, () => {
+    test(`content/${dir} has at least one MDX slug`, () => {
+      expect(slugs.length, `expected content/${dir}/*.mdx`).toBeGreaterThan(0);
     });
+
+    for (const slug of slugs) {
+      test(`/${dir}/${slug} renders its document, not the not-found shell`, async ({ page }) => {
+        await page.goto(`/${dir}/${slug}`, { waitUntil: 'domcontentloaded', timeout: 120_000 });
+        await expect(page).toHaveURL(new RegExp(`/${dir}/${slug}$`));
+        await expectAppShellMainVisible(page, { timeout: 45_000 });
+        await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 30_000 });
+        await expect(page.getByRole('heading', { name: APP_NOT_FOUND_HEADING })).toHaveCount(0);
+      });
+    }
   });
 }

@@ -4,6 +4,7 @@ import { chipClasses } from '@mui/material/Chip';
 import { RADIUS } from '../../spacing';
 import { hoverable } from '../hoverable';
 import { PRIMARY_ON_FILL_TEXT } from '../../palette';
+import { readableAccent } from '../../readable-accent';
 
 // ----------------------------------------------------------------------
 
@@ -72,6 +73,11 @@ export function chip(theme) {
         ...(filledVariant &&
           color === 'primary' && {
             color: PRIMARY_ON_FILL_TEXT,
+          }),
+        ...(outlinedVariant &&
+          color === 'primary' && {
+            color: readableAccent(theme),
+            borderColor: alpha(readableAccent(theme), 0.48),
           }),
         // SOFT
         ...(softVariant && {

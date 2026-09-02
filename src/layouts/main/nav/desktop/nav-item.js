@@ -10,6 +10,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import { RouterLink } from 'src/routes/components';
 
 import { ic } from 'src/assets/icons';
+import { readableAccent } from 'src/theme/readable-accent';
 import { finePointerHover } from 'src/theme/overrides/hoverable';
 
 import Iconify from 'src/components/iconify';
@@ -87,7 +88,7 @@ const StyledNavItem = styled(ListItemButton, {
     position: 'absolute',
     backgroundColor: 'currentColor',
     ...(active && {
-      color: theme.palette.primary.main,
+      color: readableAccent(theme),
     }),
   };
 
@@ -118,7 +119,7 @@ const StyledNavItem = styled(ListItemButton, {
         },
       }),
       ...(active && {
-        color: theme.palette.primary.main,
+        color: readableAccent(theme),
         fontWeight: theme.typography.fontWeightSemiBold,
         '&:before': {
           ...dotStyles,
@@ -154,7 +155,7 @@ const StyledNavItem = styled(ListItemButton, {
         },
       }),
       ...(active && {
-        color: theme.palette.primary.main,
+        color: readableAccent(theme),
         fontWeight: theme.typography.fontWeightSemiBold,
         '&:before': {
           ...dotStyles,

@@ -14,6 +14,7 @@ import { RouterLink } from 'src/routes/components';
 import { ic } from 'src/assets/icons';
 import { APP } from 'src/config-global';
 import { useTranslate } from 'src/locales';
+import { readableAccent } from 'src/theme/readable-accent';
 
 import Iconify from 'src/components/iconify';
 
@@ -122,11 +123,13 @@ export default function SupabaseGoogleAuthShell({ children, swapSlot }) {
             {t('pages.auth.google.tagline_before')}{' '}
             <Box
               component="span"
-              sx={{ color: 'primary.main', fontWeight: 800, fontStyle: 'italic' }}
+              sx={{ color: readableAccent(theme), fontWeight: 800, fontStyle: 'italic' }}
             >
               {t('pages.auth.google.tagline_highlight')}
-            </Box>{' '}
-            {t('pages.auth.google.tagline_after')}
+            </Box>
+            {t('pages.auth.google.tagline_after')
+              ? ` ${t('pages.auth.google.tagline_after')}`
+              : null}
           </Typography>
         </Stack>
 

@@ -9,17 +9,17 @@ export const FEATURES = [
     kicker: 'Descobrir', // navigation.discover
     title: 'O teu feed, as tuas pessoas', // landing.features.vibe.title
     titleLines: ['O teu feed,', 'as tuas pessoas'],
-    hook: 'Segue pessoas com bom gosto.', // landing.features.sectionSubtitle (1st sentence)
+    hook: 'Segue pessoas em quem confias.', // landing.features.sectionSubtitle (1st sentence)
     body: 'Segue os locais e criadores em quem confias. Vê onde comem mesmo, com as fotos e notas deles.', // vibe.body
     beats: [
       'Segue os locais e criadores em quem confias',
       'Vê onde comem mesmo',
       'Com as fotos e notas deles',
     ],
-    cta: 'Vamos nom nom!', // home.hero.getStarted
+    cta: 'Vamos NomNom!', // home.hero.getStarted
     mockKind: 'feed',
     caption:
-      'O teu feed, as tuas pessoas.\n\nSegue os locais e criadores em quem confias. Vê onde comem mesmo, com as fotos e notas deles.\n\nVamos nom nom! → justnomnom.com\n\n#nomnom #lisboa #ondecomer',
+      'O teu feed, as tuas pessoas.\n\nSegue os locais e criadores em quem confias. Vê onde comem mesmo, com as fotos e notas deles.\n\nVamos NomNom! → justnomnom.com\n\n#nomnom #lisboa #ondecomer',
   },
   {
     id: 'lists',
@@ -36,41 +36,41 @@ export const FEATURES = [
     cta: 'Seguir', // landing.features.visuals.follow
     mockKind: 'lists',
     caption:
-      'Segue as listas deles.\n\nLocais e criadores criam listas por bairro, ocasião ou cozinha. Explora uma, guarda qualquer sítio, ou segue-a para receberes as novas sugestões.\n\nVamos nom nom! → justnomnom.com\n\n#nomnom #listas #lisboa',
+      'Segue as listas deles.\n\nLocais e criadores criam listas por bairro, ocasião ou cozinha. Explora uma, guarda qualquer sítio, ou segue-a para receberes as novas sugestões.\n\nVamos NomNom! → justnomnom.com\n\n#nomnom #listas #lisboa',
   },
   {
     id: 'map',
     kicker: 'Mapa', // navigation.map
-    title: 'No mapa, na lista, partilhado', // landing.features.creator.title
-    titleLines: ['No mapa, na lista,', 'partilhado'],
+    title: 'No mapa, depois decide', // landing.features.creator.title
+    titleLines: ['No mapa,', 'depois decide'],
     hook: 'Percorre o bairro, toca num pin, mete na lista.', // landing.builtFor.checklist.maps.body (1st sentence)
-    body: 'Percorre o mapa para encontrar sítios perto de ti, guarda os que queres visitar e envia a tua shortlist a quem vai contigo.', // creator.body
+    body: 'Percorre o bairro, guarda os pins numa lista e envia um link de Mesa para votarem — mesmo sem a app. Empatados? A NomNom Roulette escolhe nesse mesmo conjunto.', // creator.body
     beats: [
-      'Percorre o mapa para encontrar sítios perto de ti',
-      'Guarda os que queres visitar',
-      'Envia a tua shortlist a quem vai contigo',
+      'Percorre o bairro',
+      'Guarda os pins numa lista',
+      'Envia um link de Mesa para votarem',
     ],
-    cta: 'Vamos nom nom!',
+    cta: 'Vamos NomNom!',
     mockKind: 'map',
     caption:
-      'No mapa, na lista, partilhado.\n\nPercorre o mapa para encontrar sítios perto de ti, guarda os que queres visitar e envia a tua shortlist a quem vai contigo.\n\nVamos nom nom! → justnomnom.com\n\n#nomnom #mapa #ondecomer',
+      'No mapa, depois decide.\n\nPercorre o bairro, guarda os pins numa lista e envia um link de Mesa para votarem — mesmo sem a app.\n\nVamos NomNom! → justnomnom.com\n\n#nomnom #mapa #ondecomer',
   },
   {
     id: 'roulette',
-    kicker: 'Roleta', // home.discover.roulette_promo_title
-    title: 'Roleta NomNom', // pages.roulette.title
-    titleLines: ['Roleta', 'NomNom'],
+    kicker: 'NomNom Roulette', // navigation.feature_roulette / pages.roulette.title
+    title: 'NomNom Roulette', // pages.roulette.title
+    titleLines: ['NomNom', 'Roulette'],
     hook: 'Sem ideias?', // pages.roulette.nav_promo_kicker
-    body: 'Mexe para um sabor ao acaso. Sem pensar, só NomNomming!', // roulette.subtitle_before + subtitle_highlight
+    body: 'Indeciso? Gira para uma sugestão de quem segues. Só NomNomming.', // roulette.subtitle_before + subtitle_highlight
     beats: [
-      'Mexe para um sabor ao acaso',
-      'Gira os Noms!',
+      'Gira para uma sugestão de quem segues',
+      'Girar a NomNom Roulette',
       'Recomendado por pessoas que segues',
     ],
-    cta: 'Gira os Noms!', // pages.roulette.cta_spin
+    cta: 'Girar a NomNom Roulette', // pages.roulette.cta_spin
     mockKind: 'roulette',
     caption:
-      'Sem ideias? Experimenta a Roleta NomNom.\n\nMexe para um sabor ao acaso. Sem pensar, só NomNomming!\n\nGira os Noms! → justnomnom.com\n\n#nomnom #roleta #lisboa',
+      'Sem ideias? NomNom Roulette.\n\nIndeciso? Gira para uma sugestão de quem segues. Só NomNomming.\n\nGirar a NomNom Roulette → justnomnom.com\n\n#nomnom #roleta #lisboa',
   },
   {
     id: 'table',

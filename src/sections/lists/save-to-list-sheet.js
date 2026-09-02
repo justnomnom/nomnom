@@ -31,6 +31,7 @@ import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import { useAuthContext } from 'src/auth/hooks';
 import { normalizeAppLocale } from 'src/libs/locale-utils';
+import { readableAccent } from 'src/theme/readable-accent';
 import { isCapacitorNative } from 'src/libs/capacitor/platform';
 import { touchTargetSx, TOUCH_TARGET_SIZE } from 'src/theme/spacing';
 import { useSkeletonThemeColors } from 'src/theme/use-skeleton-theme';
@@ -1313,7 +1314,7 @@ export default function SaveToListSheet({
                 height: TOUCH_TARGET_SIZE,
                 borderRadius: '14px',
                 bgcolor: alpha(tt.palette.primary.main, 0.14),
-                color: 'primary.main',
+                color: readableAccent(tt),
                 transition: tt.transitions.create(['background-color', 'color', 'transform'], {
                   duration: tt.transitions.duration.shorter,
                 }),

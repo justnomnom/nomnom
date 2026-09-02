@@ -12,6 +12,7 @@ import { RouterLink } from 'src/routes/components';
 
 import { useTranslate } from 'src/locales';
 import { APP_SUPPORT_EMAIL } from 'src/config-global';
+import { readableAccent } from 'src/theme/readable-accent';
 
 import Logo from 'src/components/logo';
 
@@ -19,15 +20,22 @@ import Logo from 'src/components/logo';
 
 const LINKS = [
   {
-    headline: 'company',
+    headline: 'explore',
     children: [
-      { name: 'contact_us', href: paths.contact },
-      { name: 'faqs', href: paths.faqs },
+      { name: 'features', href: paths.site.featuresRoot },
+      { name: 'use_cases', href: paths.site.useCasesRoot },
+      { name: 'resources', href: paths.site.resourcesRoot },
+      { name: 'pricing', href: paths.site.pricing },
     ],
   },
   {
-    headline: 'contact',
-    children: [{ name: 'email', href: `mailto:${APP_SUPPORT_EMAIL}`, label: APP_SUPPORT_EMAIL }],
+    headline: 'company',
+    children: [
+      { name: 'about', href: paths.site.about },
+      { name: 'contact_us', href: paths.contact },
+      { name: 'faqs', href: paths.faqs },
+      { name: 'email', href: `mailto:${APP_SUPPORT_EMAIL}`, label: APP_SUPPORT_EMAIL },
+    ],
   },
   {
     headline: 'legal',
@@ -132,7 +140,7 @@ export default function Footer() {
                             duration: th.transitions.duration.shorter,
                           }),
                         '&:hover': {
-                          color: 'primary.main',
+                          color: readableAccent(theme),
                           textDecoration: 'underline',
                           textUnderlineOffset: 4,
                         },

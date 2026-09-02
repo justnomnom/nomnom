@@ -20,6 +20,8 @@
   --color-popover-foreground: #15130f;
   --color-primary: #ff6b35;
   --color-primary-foreground: #ffffff;
+  /* Terracotta as text on parchment (palette primary.darker) — not fill #ff6b35 */
+  --color-primary-readable: #b8481f;
   --color-secondary: #edeae0;
   --color-secondary-foreground: #15130f;
   --color-muted: #f5f4ed;
@@ -48,6 +50,8 @@ html[data-theme='dark'] {
   --color-popover-foreground: #f8f7f2;
   --color-primary: #ff6b35;
   --color-primary-foreground: #ffffff;
+  /* Dark paper already contrasts with fill terracotta */
+  --color-primary-readable: #ff6b35;
   --color-secondary: #4d473c;
   --color-secondary-foreground: #f8f7f2;
   --color-muted: #25221c;

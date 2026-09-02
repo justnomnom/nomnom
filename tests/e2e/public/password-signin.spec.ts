@@ -5,6 +5,7 @@ import { getE2EGlobalSetupAuth, getE2ETestUserEmailForDb } from '../support/test
 
 /**
  * Exercises the password form on `/auth/login` with a fresh context (no storage state).
+ * TEST-PLAN A4: valid credentials land on the dashboard.
  * Uses the resolved account email so `E2E_TEST_USER_USERNAME`-only env still works.
  */
 test.describe('password sign-in flow', () => {

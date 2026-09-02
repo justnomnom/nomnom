@@ -38,6 +38,7 @@ import {
   tryParseRestaurantParts,
 } from '@/content-platform/restaurants-path';
 import { getSiteUrl } from '@/content-platform/site-url';
+import { contentHubT, displaySlug } from '@/content-platform/content-hub-t';
 
 import { APP_OG_IMAGE_PATH } from 'src/config-global';
 
@@ -144,6 +145,9 @@ export default async function RestaurantsCatchAllPage({ params }: PageProps) {
     notFound();
   }
 
+  const t = await contentHubT();
+  const cityName = displaySlug(city);
+  const countryName = displaySlug(country);
   const mode = parseRestaurantParts(parts);
 
   if (mode.kind === 'detail') {
@@ -185,8 +189,8 @@ export default async function RestaurantsCatchAllPage({ params }: PageProps) {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: `${site}` },
-        { '@type': 'ListItem', position: 2, name: 'Countries', item: `${site}/countries` },
+        { '@type': 'ListItem', position: 1, name: t('home'), item: `${site}` },
+        { '@type': 'ListItem', position: 2, name: t('countries'), item: `${site}/countries` },
         {
           '@type': 'ListItem',
           position: 3,
@@ -202,7 +206,7 @@ export default async function RestaurantsCatchAllPage({ params }: PageProps) {
         {
           '@type': 'ListItem',
           position: 5,
-          name: 'Restaurants',
+          name: t('restaurants'),
           item: `${site}/countries/${country}/${city}/restaurants`,
         },
         {
@@ -215,11 +219,11 @@ export default async function RestaurantsCatchAllPage({ params }: PageProps) {
     };
 
     const crumbLinks = [
-      { name: 'Home', href: '/' },
-      { name: 'Countries', href: '/countries' },
-      { name: country.replace(/-/g, ' '), href: `/countries/${country}` },
-      { name: city.replace(/-/g, ' '), href: `/countries/${country}/${city}` },
-      { name: 'Restaurants', href: `/countries/${country}/${city}/restaurants` },
+      { name: t('home'), href: '/' },
+      { name: t('countries'), href: '/countries' },
+      { name: countryName, href: `/countries/${country}` },
+      { name: cityName, href: `/countries/${country}/${city}` },
+      { name: t('restaurants'), href: `/countries/${country}/${city}/restaurants` },
       {
         name: r.name,
         href: `/countries/${country}/${city}/restaurants/${r.slug}`,
@@ -259,7 +263,7 @@ export default async function RestaurantsCatchAllPage({ params }: PageProps) {
           <Container maxWidth={false} sx={{ pb: 4 }}>
             <Stack spacing={3} sx={{ maxWidth: 720, mx: 'auto', pt: { xs: 2, sm: 3 } }}>
               <RelatedLinksSection
-                title="Collections & creators"
+                title={t('collections_creators')}
                 links={[
                   ...linking.slice(0, 4),
                   ...inflLinks,
@@ -289,24 +293,24 @@ export default async function RestaurantsCatchAllPage({ params }: PageProps) {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: `${site}` },
-      { '@type': 'ListItem', position: 2, name: 'Countries', item: `${site}/countries` },
+      { '@type': 'ListItem', position: 1, name: t('home'), item: `${site}` },
+      { '@type': 'ListItem', position: 2, name: t('countries'), item: `${site}/countries` },
       {
         '@type': 'ListItem',
         position: 3,
-        name: country.replace(/-/g, ' '),
+        name: countryName,
         item: `${site}/countries/${country}`,
       },
       {
         '@type': 'ListItem',
         position: 4,
-        name: city.replace(/-/g, ' '),
+        name: cityName,
         item: `${site}/countries/${country}/${city}`,
       },
       {
         '@type': 'ListItem',
         position: 5,
-        name: 'Restaurants',
+        name: t('restaurants'),
         item: `${site}${restaurantListPath(country, city, 1, mode.tag)}`,
       },
     ],
@@ -330,15 +334,28 @@ export default async function RestaurantsCatchAllPage({ params }: PageProps) {
     <>
       <JsonLd data={[breadcrumbLd, itemListLd]} />
       <ContentPageShell
-        title={`Restaurants in ${city.replace(/-/g, ' ')}${mode.tag ? ` — ${mode.tag.replace(/-/g, ' ')}` : ''}`}
-        description={`${all.length} places${mode.tag ? ` tagged ${mode.tag.replace(/-/g, ' ')}` : ''}. Page ${page} of ${totalPages}.`}
+        title={
+          mode.tag
+            ? t('restaurants_in_tagged', { city: cityName, tag: displaySlug(mode.tag) })
+            : t('restaurants_in', { city: cityName })
+        }
+        description={
+          mode.tag
+            ? t('directory_description_tagged', {
+                count: all.length,
+                tag: displaySlug(mode.tag),
+                page,
+                pages: totalPages,
+              })
+            : t('directory_description', { count: all.length, page, pages: totalPages })
+        }
         breadcrumbs={[
-          { name: 'Home', href: '/' },
-          { name: 'Countries', href: '/countries' },
-          { name: country.replace(/-/g, ' '), href: `/countries/${country}` },
-          { name: city.replace(/-/g, ' '), href: `/countries/${country}/${city}` },
+          { name: t('home'), href: '/' },
+          { name: t('countries'), href: '/countries' },
+          { name: countryName, href: `/countries/${country}` },
+          { name: cityName, href: `/countries/${country}/${city}` },
           {
-            name: 'Restaurants',
+            name: t('restaurants'),
             href: restaurantListPath(country, city, 1, mode.tag),
           },
         ]}
@@ -364,7 +381,7 @@ export default async function RestaurantsCatchAllPage({ params }: PageProps) {
               href={restaurantListPath(country, city, page - 1, mode.tag)}
               className={contentInlineLinkSemiboldUnderlineClassName}
             >
-              Previous page
+              {t('previous_page')}
             </Link>
           ) : null}
           {page < totalPages ? (
@@ -372,7 +389,7 @@ export default async function RestaurantsCatchAllPage({ params }: PageProps) {
               href={restaurantListPath(country, city, page + 1, mode.tag)}
               className={contentInlineLinkSemiboldUnderlineClassName}
             >
-              Next page
+              {t('next_page')}
             </Link>
           ) : null}
           {mode.tag ? (
@@ -380,24 +397,24 @@ export default async function RestaurantsCatchAllPage({ params }: PageProps) {
               href={`/countries/${country}/${city}/restaurants`}
               className={contentInlineLinkMutedUnderlineClassName}
             >
-              Clear tag filter
+              {t('clear_tag_filter')}
             </Link>
           ) : null}
         </nav>
 
         <RelatedLinksSection
-          title="Keep exploring"
+          title={t('keep_exploring')}
           links={[
-            { href: `/countries/${country}/${city}`, label: `${city.replace(/-/g, ' ')} overview` },
+            { href: `/countries/${country}/${city}`, label: t('overview', { country: cityName }) },
             ...influencerSlugsForCountry(country)
               .slice(0, 2)
               .map((slug) => ({
                 href: `/countries/${country}/influencers/${slug}`,
-                label: `Meet ${slug.replace(/-/g, ' ')}`,
+                label: t('profile_label', { name: displaySlug(slug) }),
               })),
             ...sampleGlobalCollectionSlugs(2).map((slug) => ({
               href: `/collections/${slug}`,
-              label: `Collection: ${slug.replace(/-/g, ' ')}`,
+              label: t('collection_label', { name: displaySlug(slug) }),
             })),
           ]}
         />

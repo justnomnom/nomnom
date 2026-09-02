@@ -12,7 +12,7 @@ import {
 } from '../support/test-credentials';
 
 /**
- * List cover image: upload a PNG on the Details tab (→ Supabase storage), Save, verify
+ * List cover image (TEST-PLAN L4): upload a PNG on the Details tab (→ Supabase storage), Save, verify
  * cover_image_url persists, then Remove + Save and verify it clears.
  */
 test.describe.configure({ mode: 'serial' });

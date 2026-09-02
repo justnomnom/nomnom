@@ -13,7 +13,7 @@ import { expect, test } from '@playwright/test';
 test.describe('legal pages', () => {
   test('privacy policy renders', async ({ page }) => {
     await page.goto('/privacy', { waitUntil: 'load', timeout: 120_000 });
-    await expect(page.getByRole('heading', { name: 'Privacy Policy' })).toBeVisible({
+    await expect(page.getByRole('heading', { name: 'Privacy policy' })).toBeVisible({
       timeout: 45_000,
     });
     await expect(page.getByText(/Last updated:/i)).toBeVisible();
@@ -21,7 +21,7 @@ test.describe('legal pages', () => {
 
   test('terms of service renders', async ({ page }) => {
     await page.goto('/terms', { waitUntil: 'load', timeout: 120_000 });
-    await expect(page.getByRole('heading', { name: 'Terms of Service' })).toBeVisible({
+    await expect(page.getByRole('heading', { name: 'Terms of service' })).toBeVisible({
       timeout: 45_000,
     });
   });
@@ -33,11 +33,11 @@ test.describe('public roulette — /roleta/lisboa (RO2)', () => {
   }) => {
     await page.goto('/roleta/lisboa', { waitUntil: 'load', timeout: 120_000 });
 
-    await expect(page.getByText('Lisbon restaurant roulette').first()).toBeVisible({
+    await expect(page.getByText('NomNom Roulette in Lisbon').first()).toBeVisible({
       timeout: 30_000,
     });
     // The spin CTA is disabled only while the restaurant pool loads.
-    await expect(page.getByRole('button', { name: /Spin the roulette/i })).toBeVisible({
+    await expect(page.getByRole('button', { name: /Spin NomNom Roulette/i })).toBeVisible({
       timeout: 30_000,
     });
 

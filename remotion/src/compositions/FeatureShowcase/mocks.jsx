@@ -456,7 +456,7 @@ export const RouletteMock = ({ p }) => {
           {shaking ? 'A girar…' : 'A tua escolha'}
         </div>
         <div style={{ marginTop: 12, fontFamily: SANS, fontWeight: 600, fontSize: 22, color: C.ink2, opacity: shaking ? 0.85 : reveal, maxWidth: 400, lineHeight: 1.35 }}>
-          {shaking ? 'Os noms estão a decidir…' : 'O NomNom vencedor!'}
+          {shaking ? 'A escolher um…' : 'A tua escolha'}
         </div>
       </div>
       <div style={{ fontFamily: SANS, fontWeight: 700, fontSize: 22, color: C.terraDarker, opacity: reveal }}>

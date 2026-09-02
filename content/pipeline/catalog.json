@@ -1,0 +1,430 @@
+{
+  "version": 1,
+  "name": "NomNom daily content pipeline",
+  "neverPublish": true,
+  "neverInventRestaurantFacts": true,
+  "languages": {
+    "social": "pt-PT",
+    "editorial": "en"
+  },
+  "cta": {
+    "default_pt": "Guarda no NomNom → justnomnom.com",
+    "list_pt": "Abre a lista no NomNom",
+    "roulette_pt": "Girar a NomNom Roulette → justnomnom.com/roleta",
+    "table_pt": "Abre uma Mesa e vota sem instalar a app"
+  },
+  "producers": {
+    "restaurant_reel": {
+      "skill": "content-machine",
+      "command": "cd remotion && node scripts/pick-subjects.mjs --kind restaurant --limit 1 && node scripts/run-batch.mjs --kind restaurant --limit 1"
+    },
+    "review_spotlight": {
+      "skill": "content-machine",
+      "command": "cd remotion && node scripts/pick-subjects.mjs --kind review --limit 1 && node scripts/run-batch.mjs --kind review --limit 1"
+    },
+    "list_reel": {
+      "skill": "content-machine",
+      "command": "cd remotion && node scripts/pick-subjects.mjs --kind list --limit 1 && node scripts/run-batch.mjs --kind list --limit 1"
+    },
+    "feature_reel": {
+      "skill": "content-machine",
+      "command": "cd remotion && node scripts/render-feature-showcases.mjs --only {{featureId}}"
+    },
+    "punchline": {
+      "skill": "nomnom-news-punchline",
+      "command": null
+    },
+    "carousel": { "skill": "social-content", "command": null },
+    "story": { "skill": "social-content", "command": null },
+    "thread": { "skill": "social-content", "command": null },
+    "ugc_prompt": { "skill": "social-content", "command": null },
+    "seo_resource": { "skill": "content-strategy", "command": null },
+    "ads": { "skill": "ad-creative", "command": null }
+  },
+  "types": {
+    "restaurant_reel": {
+      "label": "Restaurant reel",
+      "source": "db",
+      "formats": ["reel_9x16", "poster_1x1", "caption"],
+      "producer": "restaurant_reel",
+      "iterations": [
+        {
+          "id": "count_hook",
+          "label": "Open on a real count",
+          "hook_rule": "First frame is mention count, review count, or save count from props. No adjectives.",
+          "caption_shape": "number → who said it → save CTA"
+        },
+        {
+          "id": "rating_hook",
+          "label": "Open on the rating that actually exists",
+          "hook_rule": "Use the on-platform or Google rating already in props. Attribution follows the source.",
+          "caption_shape": "rating + source badge → one quote → CTA"
+        },
+        {
+          "id": "quote_hook",
+          "label": "Lead with a real review line",
+          "hook_rule": "First spoken/on-screen line is a usable quote. Empty if none.",
+          "caption_shape": "quote → attribution → spot name → CTA"
+        },
+        {
+          "id": "neighbourhood_hook",
+          "label": "Lead with the place, not the vibe word",
+          "hook_rule": "City or neighbourhood from the row. Never invent a barrio.",
+          "caption_shape": "area → spot → one fact → CTA"
+        },
+        {
+          "id": "keep_saving",
+          "label": "People keep saving this",
+          "hook_rule": "Only if save or mention count is in props. Otherwise fall back to count_hook.",
+          "caption_shape": "saves → why the quotes agree → CTA"
+        }
+      ]
+    },
+    "review_spotlight": {
+      "label": "Review spotlight",
+      "source": "db",
+      "formats": ["reel_9x16", "caption"],
+      "producer": "review_spotlight",
+      "iterations": [
+        {
+          "id": "full_quote",
+          "label": "The quote carries the scene",
+          "hook_rule": "One usable quote on screen, attributed."
+        },
+        {
+          "id": "punchy_excerpt",
+          "label": "Short excerpt, full quote in caption",
+          "hook_rule": "On-screen line ≤ MAX_LINE_CHARS; caption has the rest, still attributed."
+        },
+        {
+          "id": "they_said_it",
+          "label": "Name the person, then the plate",
+          "hook_rule": "Handle or display name first. No anonymous 'a user'."
+        },
+        {
+          "id": "voice_note",
+          "label": "Read-it-like-a-voice-note",
+          "hook_rule": "Keep the quote intact. Do not punch-up wording."
+        }
+      ]
+    },
+    "list_reel": {
+      "label": "List reel",
+      "source": "db",
+      "formats": ["reel_9x16", "caption"],
+      "producer": "list_reel",
+      "iterations": [
+        {
+          "id": "countdown",
+          "label": "N spots, counted down",
+          "hook_rule": "Open on list length from props."
+        },
+        {
+          "id": "one_night",
+          "label": "One night, this list",
+          "hook_rule": "Use the list title. Do not invent an occasion the title does not state."
+        },
+        {
+          "id": "saturday_three",
+          "label": "Three to screenshot",
+          "hook_rule": "First three usable spots only if MIN_LIST_PLACES is met."
+        },
+        {
+          "id": "neighbourhood_crawl",
+          "label": "Stay in one area",
+          "hook_rule": "Only if places share a city. REVIEW.md already warns when they do not."
+        }
+      ]
+    },
+    "feature_reel": {
+      "label": "Product feature reel",
+      "source": "product",
+      "formats": ["reel_9x16", "slideshow_1x1", "stills", "caption"],
+      "producer": "feature_reel",
+      "featureIds": ["feed", "lists", "map", "roulette", "table"],
+      "iterations": [
+        {
+          "id": "demo",
+          "label": "Show the feature in three beats",
+          "hook_rule": "Copy must match remotion FeatureShowcase strings. Do not paraphrase."
+        },
+        {
+          "id": "problem_then_feature",
+          "label": "Name the mess, then the button",
+          "hook_rule": "Problem from the pack. Feature name and CTA from FEATURES."
+        },
+        {
+          "id": "before_after",
+          "label": "Maps graveyard → a NomNom list",
+          "hook_rule": "Before = status quo. After = named feature. No fake metrics."
+        },
+        {
+          "id": "three_beats",
+          "label": "Beat / beat / CTA",
+          "hook_rule": "Use the three beats already in FEATURES."
+        },
+        {
+          "id": "ritual",
+          "label": "Weekly ritual (Friday spin, Sunday list)",
+          "hook_rule": "Ritual is a habit prompt, not a claim that users already do it."
+        }
+      ]
+    },
+    "punchline": {
+      "label": "News punchline still",
+      "source": "news",
+      "formats": ["still_1x1", "caption"],
+      "producer": "punchline",
+      "iterations": [
+        {
+          "id": "news_trocadilho",
+          "label": "Trending food news + trocadilho",
+          "hook_rule": "Story in ≥2 of 5 sources. Name source and date in the caption."
+        },
+        {
+          "id": "local_food_news",
+          "label": "Portugal-first food news",
+          "hook_rule": "Prefer PT stories. Skip if nothing clears the virality bar."
+        },
+        {
+          "id": "wait_this_is_food",
+          "label": "Non-food headline, food twist",
+          "hook_rule": "Still news-tied. No tragedy, no identity fights."
+        }
+      ]
+    },
+    "carousel": {
+      "label": "Feed carousel",
+      "source": "pack",
+      "formats": ["carousel_1x1", "caption"],
+      "producer": "carousel",
+      "iterations": [
+        {
+          "id": "myth_bust",
+          "label": "Myth / truth / myth / truth / CTA",
+          "fields": ["hook", "myth_1", "truth_1", "myth_2", "truth_2", "cta"]
+        },
+        {
+          "id": "how_to",
+          "label": "How-to in 5 slides",
+          "fields": ["hook", "step_1", "step_2", "step_3", "cta"]
+        },
+        {
+          "id": "before_after",
+          "label": "Before this / after NomNom",
+          "fields": ["hook", "before", "after", "why", "cta"]
+        },
+        {
+          "id": "rules_list",
+          "label": "N rules we actually use",
+          "fields": ["hook", "rule_1", "rule_2", "rule_3", "cta"]
+        },
+        {
+          "id": "screenshot_walk",
+          "label": "Walk the screen",
+          "fields": ["hook", "tap_1", "tap_2", "tap_3", "cta"]
+        }
+      ]
+    },
+    "story": {
+      "label": "Stories sequence",
+      "source": "pack",
+      "formats": ["stories_9x16"],
+      "producer": "story",
+      "iterations": [
+        {
+          "id": "poll",
+          "label": "This or that poll",
+          "fields": ["frame_1", "poll_a", "poll_b"]
+        },
+        {
+          "id": "countdown",
+          "label": "Weekend countdown",
+          "fields": ["frame_1", "frame_2", "cta"]
+        },
+        {
+          "id": "screenshot_walk",
+          "label": "Three screens, one job",
+          "fields": ["frame_1", "frame_2", "frame_3"]
+        },
+        {
+          "id": "question",
+          "label": "Question sticker",
+          "fields": ["frame_1", "question"]
+        }
+      ]
+    },
+    "thread": {
+      "label": "Thread / long caption",
+      "source": "pack",
+      "formats": ["thread", "linkedin"],
+      "producer": "thread",
+      "iterations": [
+        {
+          "id": "problem_product",
+          "label": "Mess → named feature → CTA",
+          "fields": ["hook", "problem", "turn", "cta"]
+        },
+        {
+          "id": "hot_take",
+          "label": "Contrarian, still true",
+          "fields": ["hook", "why", "instead", "cta"]
+        },
+        {
+          "id": "rules",
+          "label": "Rules for picking a spot",
+          "fields": ["hook", "rule_1", "rule_2", "rule_3", "cta"]
+        }
+      ]
+    },
+    "ugc_prompt": {
+      "label": "Engagement prompt",
+      "source": "pack",
+      "formats": ["caption", "stories"],
+      "producer": "ugc_prompt",
+      "iterations": [
+        {
+          "id": "save_this",
+          "label": "Ask them to save a list",
+          "fields": ["hook", "prompt", "cta"]
+        },
+        {
+          "id": "spin_with_us",
+          "label": "Roulette together",
+          "fields": ["hook", "prompt", "cta"]
+        },
+        {
+          "id": "drop_your_list",
+          "label": "Comment a neighbourhood",
+          "fields": ["hook", "prompt", "cta"]
+        },
+        {
+          "id": "screenshot_your_maps",
+          "label": "Show the graveyard",
+          "fields": ["hook", "prompt", "cta"]
+        }
+      ]
+    },
+    "seo_resource": {
+      "label": "Inbound resource / feature page",
+      "source": "editorial",
+      "formats": ["mdx"],
+      "producer": "seo_resource",
+      "iterations": [
+        {
+          "id": "how_to",
+          "label": "Practical how-to",
+          "hook_rule": "Steps match the product. No invented UI."
+        },
+        {
+          "id": "thought",
+          "label": "Named-source trust piece",
+          "hook_rule": "No fake study numbers. Argument, not dataset."
+        },
+        {
+          "id": "occasion",
+          "label": "Occasion guide without fake venues",
+          "hook_rule": "Teach the list pattern. Do not name restaurants that are not in content/."
+        },
+        {
+          "id": "feature_page",
+          "label": "Ship or refresh a /features page",
+          "hook_rule": "Align with FEATURES copy."
+        }
+      ]
+    },
+    "ads": {
+      "label": "Paid variants",
+      "source": "pack_or_db",
+      "formats": ["ad_primary", "ad_headline", "rsa"],
+      "producer": "ads",
+      "iterations": [
+        {
+          "id": "pain",
+          "label": "Status-quo pain",
+          "hook_rule": "No fake social proof."
+        },
+        {
+          "id": "social_proof",
+          "label": "Real review language",
+          "hook_rule": "Only quotes already in the DB or omitted."
+        },
+        {
+          "id": "feature_demo",
+          "label": "Named feature",
+          "hook_rule": "Roulette, Circle, List, Table, Map — branded names."
+        },
+        {
+          "id": "contrast",
+          "label": "Stars vs named people",
+          "hook_rule": "Do not name competitors. Position by what we do."
+        }
+      ]
+    }
+  },
+  "rhythm": [
+    {
+      "weekday": "mon",
+      "slots": [
+        { "id": "hero", "type": "restaurant_reel" },
+        { "id": "social", "type": "carousel" },
+        { "id": "engage", "type": "story" },
+        { "id": "inbound", "type": "seo_resource" }
+      ]
+    },
+    {
+      "weekday": "tue",
+      "slots": [
+        { "id": "hero", "type": "review_spotlight" },
+        { "id": "social", "type": "thread" },
+        { "id": "engage", "type": "ugc_prompt" },
+        { "id": "inbound", "type": "feature_reel" }
+      ]
+    },
+    {
+      "weekday": "wed",
+      "slots": [
+        { "id": "hero", "type": "feature_reel" },
+        { "id": "social", "type": "carousel" },
+        { "id": "engage", "type": "story" },
+        { "id": "inbound", "type": "seo_resource" }
+      ]
+    },
+    {
+      "weekday": "thu",
+      "slots": [
+        { "id": "hero", "type": "list_reel" },
+        { "id": "social", "type": "thread" },
+        { "id": "engage", "type": "ugc_prompt" },
+        { "id": "inbound", "type": "ads" }
+      ]
+    },
+    {
+      "weekday": "fri",
+      "slots": [
+        { "id": "hero", "type": "punchline" },
+        { "id": "social", "type": "carousel" },
+        { "id": "engage", "type": "story" },
+        { "id": "inbound", "type": "feature_reel" }
+      ]
+    },
+    {
+      "weekday": "sat",
+      "slots": [
+        { "id": "hero", "type": "restaurant_reel" },
+        { "id": "social", "type": "ugc_prompt" },
+        { "id": "engage", "type": "story" },
+        { "id": "inbound", "type": "thread" }
+      ]
+    },
+    {
+      "weekday": "sun",
+      "slots": [
+        { "id": "hero", "type": "feature_reel" },
+        { "id": "social", "type": "carousel" },
+        { "id": "engage", "type": "ugc_prompt" },
+        { "id": "inbound", "type": "seo_resource" }
+      ]
+    }
+  ]
+}

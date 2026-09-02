@@ -114,7 +114,7 @@ test.describe('dashboard — save-to-list / review mechanism', () => {
     test.skip(!restaurantId, 'No rows in public.restaurants — seed data or skip');
 
     const admin = getServiceRoleClient();
-    const listName = `E2E Review ${Date.now()}`;
+    const listName = `Review list ${Date.now()}`;
     const listId = await createOwnedList(userId, { name: listName });
 
     try {
@@ -215,7 +215,7 @@ test.describe('dashboard — save-to-list / review mechanism', () => {
     test.skip(!restaurantId, 'No rows in public.restaurants — seed data or skip');
 
     const admin = getServiceRoleClient();
-    const listName = `E2E Review Guard ${Date.now()}`;
+    const listName = `Review guard ${Date.now()}`;
     const listId = await createOwnedList(userId, { name: listName });
 
     try {

@@ -10,6 +10,7 @@ import { alpha, useTheme, keyframes } from '@mui/material/styles';
 import { ic } from 'src/assets/icons';
 import { RADIUS } from 'src/theme/spacing';
 import { useTranslate } from 'src/locales';
+import { readableAccent } from 'src/theme/readable-accent';
 
 import Iconify from 'src/components/iconify';
 
@@ -40,7 +41,8 @@ const MOCK_ROWS = [
     ],
     avatars: ['/assets/home/hero-trusted-1.svg', '/assets/home/hero-trusted-2.svg'],
     moreAvatars: '+2',
-    socialNames: '@martamasterchef, Sofia +2 more',
+    socialNames: '@martamasterchef, Sofia',
+    moreCount: 2,
     tags: ['Seafood', 'Alfama', 'Petiscos'],
     moreTags: '+3',
   },
@@ -56,7 +58,8 @@ const MOCK_ROWS = [
     ],
     avatars: ['/assets/home/hero-trusted-3.svg'],
     moreAvatars: '+1',
-    socialNames: '@portolocal +1 more',
+    socialNames: '@portolocal',
+    moreCount: 1,
     tags: ['Grill', 'Bairro Alto', 'Late night'],
     moreTags: null,
   },
@@ -177,7 +180,7 @@ function ShowcaseFeedRow({ row, cycleOffset }) {
               ...actionSx,
               cursor: 'pointer',
               ...(saved && {
-                color: 'primary.main',
+                color: (th) => readableAccent(th),
                 borderColor: alpha(theme.palette.primary.main, 0.45),
                 bgcolor: alpha(theme.palette.primary.main, 0.12),
               }),
@@ -316,7 +319,10 @@ function ShowcaseFeedRow({ row, cycleOffset }) {
             lineHeight: 1.3,
           }}
         >
-          {t('pages.home.hero.showcase.recommendThis', { names: row.socialNames })}
+          {t('pages.home.hero.showcase.recommendThis', {
+            names: row.socialNames,
+            count: row.moreCount,
+          })}
         </Box>
       </Stack>
 
@@ -351,7 +357,7 @@ function ShowcaseFeedRow({ row, cycleOffset }) {
               px: '7px',
               borderRadius: RADIUS.pill,
               border: `1px solid ${alpha(theme.palette.primary.main, 0.45)}`,
-              color: 'primary.main',
+              color: (th) => readableAccent(th),
               fontSize: '0.6875rem',
               fontWeight: 700,
             }}
@@ -516,7 +522,7 @@ export default function HomeHeroShowcase() {
               gap: 0.5,
               fontSize: 13,
               fontWeight: 700,
-              color: 'primary.main',
+              color: (th) => readableAccent(th),
             }}
           >
             <Iconify icon={ic.mapPointBold} width={18} />
@@ -586,10 +592,10 @@ export default function HomeHeroShowcase() {
           ...REDUCED_MOTION_NONE,
         }}
       >
-        <Iconify icon={ic.bookmarkBold} width={20} sx={{ color: 'primary.main' }} />
+        <Iconify icon={ic.bookmarkBold} width={20} sx={{ color: (th) => readableAccent(th) }} />
         <span>
           {t('pages.home.hero.showcase.savedTo')}{' '}
-          <Box component="b" sx={{ color: 'primary.main' }}>
+          <Box component="b" sx={{ color: (th) => readableAccent(th) }}>
             {t('pages.home.hero.floats.listTitle')}
           </Box>
         </span>

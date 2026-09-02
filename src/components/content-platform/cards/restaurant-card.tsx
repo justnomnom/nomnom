@@ -43,7 +43,7 @@ export function RestaurantCard({
           ) : null}
         </div>
         {typeof rating === 'number' ? (
-          <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
+          <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary-readable">
             {rating.toFixed(1)} ★
           </span>
         ) : null}

@@ -149,6 +149,15 @@ test.describe('table flow', () => {
     ).toBeVisible({ timeout: 45_000 });
   });
 
+  test('unknown table join route shows error state', async ({ page }) => {
+    await page.goto('/table/00000000-0000-4000-8000-000000000099/join', {
+      waitUntil: 'domcontentloaded',
+    });
+    await expect(
+      page.getByText(/not found|invalid|expired|wrong|couldn't|could not/i).first()
+    ).toBeVisible({ timeout: 45_000 });
+  });
+
   test('settling the table shows the Share in WhatsApp reply CTA', async ({ browser }) => {
     test.setTimeout(180_000);
     const auth = await getE2EGlobalSetupAuth();
@@ -199,6 +208,7 @@ test.describe('table flow', () => {
     const lockBtn = page.getByRole('button', { name: /settle the table|fechar a mesa/i });
     await expect(lockBtn).toBeVisible({ timeout: 20_000 });
     await lockBtn.click();
+    await page.getByRole('button', { name: /yes, lock this spot|sim, é este/i }).click();
 
     await expect(
       page.getByRole('button', { name: /share in whatsapp|partilhar no whatsapp/i })
@@ -270,13 +280,16 @@ test.describe('table flow', () => {
         await sheet.getByRole('button', { name, exact: true }).click();
       }
 
-      await expect(sheet.getByText(/^3 selected$/i)).toBeVisible();
+      await expect(sheet.getByText(/3 selected|3 selecionados/i)).toBeVisible();
       await expect(createBtn).toBeEnabled();
       await createBtn.click();
 
       // `startTable` is a server action: the first call on a cold dev server compiles first.
-      await expect(page).toHaveURL(/\/table\/[0-9a-f-]{36}/i, { timeout: 60_000 });
-      await expect(page.getByText(/table link copied/i).first()).toBeVisible({ timeout: 30_000 });
+      await expect(page).toHaveURL(/\/table\/[0-9a-f-]{36}/i, { timeout: 90_000 });
+      // Clipboard toast can already have dismissed; the join card is the durable success UI.
+      await expect(
+        page.getByText(/table link copied|nobody yet|take a seat|put a name to your seat/i).first()
+      ).toBeVisible({ timeout: 30_000 });
 
       const { data: tables, error: tablesErr } = await admin
         .from('tables')

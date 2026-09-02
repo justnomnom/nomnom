@@ -79,11 +79,17 @@ function tryResolveSpecifier(specifier, parentURL) {
  * @param {(s: string, c: object) => Promise<object>} nextResolve
  */
 export async function resolve(specifier, context, nextResolve) {
-  // Next's `next/cache` export is extensionless; Node ESM cannot resolve it.
-  if (specifier === 'next/cache') {
+  // Next's extensionless package exports cannot be resolved by Node ESM.
+  const nextStubs = {
+    'next/cache': 'scripts/node-test-stubs/next-cache.mjs',
+    'next/headers': 'scripts/node-test-stubs/next-headers.mjs',
+    'next/navigation': 'scripts/node-test-stubs/next-navigation.mjs',
+    'next/server': 'scripts/node-test-stubs/next-server.mjs',
+  };
+  if (Object.prototype.hasOwnProperty.call(nextStubs, specifier)) {
     return {
       shortCircuit: true,
-      url: pathToFileURL(path.join(ROOT, 'scripts/node-test-stubs/next-cache.mjs')).href,
+      url: pathToFileURL(path.join(ROOT, nextStubs[specifier])).href,
     };
   }
 

@@ -3,6 +3,8 @@
 import Box from '@mui/material/Box';
 import { alpha } from '@mui/material/styles';
 
+import { readableAccent } from 'src/theme/readable-accent';
+
 // ----------------------------------------------------------------------
 
 export default function ErrorIllustrationMark() {
@@ -46,7 +48,7 @@ export default function ErrorIllustrationMark() {
           position: 'relative',
           width: 96,
           height: 96,
-          color: 'primary.main',
+          color: (theme) => readableAccent(theme),
         }}
       >
         <Box

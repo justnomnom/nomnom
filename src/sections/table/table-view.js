@@ -6,6 +6,7 @@ import { useRef, useMemo, useState, useEffect, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -351,6 +352,14 @@ export default function TableView({ tableId }) {
           <Typography variant="body2" color="text.secondary" sx={{ mt: SPACE.xs }}>
             {tableErrorMessage(err || 'table_not_found', t)}
           </Typography>
+          <Button
+            href={paths.home}
+            color="primary"
+            variant="contained"
+            sx={{ mt: SPACE.md, textTransform: 'none' }}
+          >
+            {t('pages.table.go_home')}
+          </Button>
         </Card>
       </Container>
     );

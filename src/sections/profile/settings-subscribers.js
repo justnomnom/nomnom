@@ -20,6 +20,7 @@ import { fDate } from 'src/utils/format-time';
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import { touchTargetSx } from 'src/theme/spacing';
+import { readableAccent } from 'src/theme/readable-accent';
 import { getMyFollowers } from 'src/auth/actions/profile-actions';
 import { useMyStripeConnectStatus } from 'src/api/stripe-connect-status';
 import {
@@ -469,7 +470,7 @@ export default function SettingsSubscribers({
                 <Iconify
                   icon={ic.usersGroupRoundedBold}
                   width={28}
-                  sx={{ color: 'primary.main' }}
+                  sx={{ color: (theme) => readableAccent(theme) }}
                 />
               </Box>
               <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 0.75 }}>
@@ -512,7 +513,7 @@ export default function SettingsSubscribers({
                 <Iconify
                   icon={ic.usersGroupRoundedBold}
                   width={28}
-                  sx={{ color: 'primary.main' }}
+                  sx={{ color: (theme) => readableAccent(theme) }}
                 />
               </Box>
               <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 0.75 }}>
@@ -571,7 +572,7 @@ export default function SettingsSubscribers({
                 <Iconify
                   icon={ic.usersGroupRoundedBold}
                   width={28}
-                  sx={{ color: 'primary.main' }}
+                  sx={{ color: (theme) => readableAccent(theme) }}
                 />
               </Box>
               <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 0.75 }}>

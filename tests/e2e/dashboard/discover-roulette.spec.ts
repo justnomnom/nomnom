@@ -13,9 +13,11 @@ import {
 } from '../support/seed';
 
 /**
- * Discover search interactions and roulette spin outcome. Covers TEST-PLAN §7:
+ * Discover search interactions and roulette spin outcome. Covers TEST-PLAN §7 + RO1:
+ * - D1: Discover feed + location gate.
  * - D2: Search ↔ Ask-AI mode switch + the AI (natural-language agent) hand-off path.
  * - D3: name typeahead (restaurant suggestions + keyboard dismiss + pick opens on the map).
+ * - RO1: dashboard roulette spin → restaurant or empty-pool.
  * Plus the discover → map `?filters=open` round-trip, and the no-home-location gate (a seeded
  * user with `home_locality_id = null`). Uses the seeded test user's home location unless noted.
  */
@@ -61,10 +63,10 @@ test.describe('dashboard discover + roulette', () => {
     await searchInput.fill('pizza');
     await expect(searchInput).toHaveValue('pizza');
 
-    // Toggle to Ask-AI mode; the button's accessible name is its aria-label
-    // ("Switch to AI search"), not the visible "AI" text.
-    await page.getByRole('button', { name: /Switch to AI search/i }).click();
-    await expect(page.getByPlaceholder(/Ask AI/i)).toBeVisible({ timeout: 15_000 });
+    // Toggle to vibe-search mode; the button's accessible name is its aria-label
+    // ("Switch to vibe search"), not the visible "Ask" text.
+    await page.getByRole('button', { name: /Switch to vibe search/i }).click();
+    await expect(page.getByPlaceholder(/What.?s the vibe/i)).toBeVisible({ timeout: 15_000 });
   });
 
   test('discover: Table + Roulette promos are visible and link out', async ({ page }) => {
@@ -73,9 +75,7 @@ test.describe('dashboard discover + roulette', () => {
     await expect(page.getByTestId('e2e-discover-view')).toBeVisible({ timeout: 45_000 });
 
     const table = page.getByRole('link', { name: /Start a Table|Abrir uma Mesa/i });
-    // Title is the short "Roulette" / "Roleta" on the matching promo card — not the
-    // long-form "Try the NomNom Roulette" used on the roulette page itself.
-    const roulette = page.getByRole('link', { name: /^Roulette|^Roleta/i });
+    const roulette = page.getByRole('link', { name: /NomNom Roulette/i });
 
     await expect(table).toBeVisible({ timeout: 45_000 });
     await expect(roulette).toBeVisible({ timeout: 20_000 });
@@ -190,15 +190,16 @@ test.describe('dashboard discover + roulette', () => {
     await gotoDashboard(page, '/dashboard/discover');
     await expect(page.getByTestId('e2e-discover-view')).toBeVisible({ timeout: 45_000 });
 
-    await page.getByRole('button', { name: /Switch to AI search/i }).click();
-    const aiInput = page.getByPlaceholder(/Ask AI/i);
+    await page.getByRole('button', { name: /Switch to vibe search/i }).click();
+    const aiInput = page.getByPlaceholder(/What.?s the vibe/i);
     await expect(aiInput).toBeVisible({ timeout: 15_000 });
 
     await aiInput.fill('cosy ramen for a rainy night');
-    // Enter in AI mode fires `handleAiSearch`, which stashes the query and soft-navigates to the
-    // map (the map runs the NL agent with viewport scoping). `toHaveURL` polls the URL through the
-    // App Router soft navigation.
-    await aiInput.press('Enter');
+    // The AI adornment's Search control (aria-label) is the dedicated submit; Enter on the
+    // field can miss the TextField keydown when the input isn't focused after fill.
+    const submitAi = page.getByRole('button', { name: /^Search$/i });
+    await expect(submitAi).toBeEnabled({ timeout: 15_000 });
+    await submitAi.click();
     await expect(page).toHaveURL(/\/dashboard\/map/, { timeout: 90_000 });
 
     // The NL agent path renders on the map: the app shell must survive (no crash / auth gate),
@@ -235,7 +236,7 @@ test.describe('dashboard discover + roulette', () => {
     test.setTimeout(180_000);
     await gotoDashboard(page, '/dashboard/roulette');
 
-    const spin = page.getByRole('button', { name: /Spin the Noms/i });
+    const spin = page.getByRole('button', { name: /Spin NomNom Roulette/i });
     await expect(spin).toBeVisible({ timeout: 45_000 });
     // The button is disabled while the pool is still loading — wait until it's actionable.
     await expect(spin).toBeEnabled({ timeout: 45_000 });

@@ -130,3 +130,23 @@ export function assertPriceInBounds(cents) {
     return { ok: false, error: 'price_out_of_bounds' };
   return { ok: true, cents: n };
 }
+
+/**
+ * Checkout success/cancel return path. Only same-origin relative paths are kept
+ * (open-redirect guard). Everything else falls back to the public list URL.
+ *
+ * @param {unknown} raw
+ * @param {string} listId
+ * @returns {string}
+ */
+export function sanitizeCheckoutReturnPath(raw, listId) {
+  const rawReturnPath = typeof raw === 'string' ? raw.trim() : '';
+  if (
+    rawReturnPath.startsWith('/') &&
+    !rawReturnPath.startsWith('//') &&
+    !rawReturnPath.includes('://')
+  ) {
+    return rawReturnPath;
+  }
+  return `/lists/${listId}`;
+}

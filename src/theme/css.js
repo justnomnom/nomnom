@@ -6,6 +6,7 @@ import { autocompleteClasses } from '@mui/material/Autocomplete';
 
 import { RADIUS } from './spacing';
 import { hoverable } from './overrides/hoverable';
+import { readableAccent } from './readable-accent';
 
 // ----------------------------------------------------------------------
 
@@ -39,7 +40,7 @@ export const menuItem = (theme) => ({
   [`&.${menuItemClasses.selected}`]: {
     fontWeight: theme.typography.fontWeightSemiBold,
     backgroundColor: alpha(theme.palette.primary.main, 0.1),
-    color: theme.palette.primary.main,
+    color: readableAccent(theme),
     ...hoverable({
       backgroundColor: alpha(theme.palette.primary.main, 0.16),
     }),
@@ -51,7 +52,7 @@ export const menuItem = (theme) => ({
   },
   [`&.${autocompleteClasses.option}[aria-selected='true']`]: {
     backgroundColor: alpha(theme.palette.primary.main, 0.1),
-    color: theme.palette.primary.main,
+    color: readableAccent(theme),
     ...hoverable({
       backgroundColor: alpha(theme.palette.primary.main, 0.16),
     }),

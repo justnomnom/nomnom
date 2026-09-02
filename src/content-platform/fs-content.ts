@@ -4,7 +4,7 @@ import path from 'path';
 import matter from 'gray-matter';
 
 import { CONTENT_ROOT } from './constants';
-import type { MdxFrontmatter, ParsedMdxDocument, Restaurant } from './types';
+import type { MdxFrontmatter, ParsedMdxDocument } from './types';
 
 /** Join repo-root `content/` + segments. `process.cwd()` is ignored for Turbopack file tracing (see Next.js NFT warning). */
 function contentPath(...segments: string[]): string {
@@ -53,38 +53,17 @@ export function getMdxBySlug(relativeDir: string, slug: string): ParsedMdxDocume
   return docs.find((d) => d.slug === slug) ?? null;
 }
 
-/** All restaurants from structured JSON (not MDX). */
-export function getAllRestaurants(): Restaurant[] {
-  const p = contentPath('data', 'restaurants.json');
-  if (!fs.existsSync(p)) return [];
-  const raw = fs.readFileSync(p, 'utf8');
-  return JSON.parse(raw) as Restaurant[];
-}
+export {
+  getAllRestaurants,
+  getCitySlugsForCountry,
+  getCountrySlugs,
+  getRestaurantBySlug,
+  getRestaurantsByCity,
+  getRestaurantsByCityFiltered,
+  getRestaurantsByCountry,
+} from './restaurant-catalog.js';
 
-export function getRestaurantBySlug(slug: string): Restaurant | null {
-  return getAllRestaurants().find((r) => r.slug === slug) ?? null;
-}
-
-export function getRestaurantsByCity(country: string, city: string): Restaurant[] {
-  return getAllRestaurants().filter((r) => r.country === country && r.city === city);
-}
-
-export function getRestaurantsByCityFiltered(
-  country: string,
-  city: string,
-  tag?: string
-): Restaurant[] {
-  const list = getRestaurantsByCity(country, city);
-  if (!tag) return list;
-  return list.filter((r) => (r.categories ?? []).includes(tag));
-}
-
-export function paginateRestaurants<T>(items: T[], page: number, pageSize: number): T[] {
-  const safePage = Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
-  const safeSize = Number.isFinite(pageSize) && pageSize > 0 ? Math.floor(pageSize) : 1;
-  const start = (safePage - 1) * safeSize;
-  return items.slice(start, start + safeSize);
-}
+export { paginateRestaurants } from './restaurant-list-urls';
 
 /**
  * Reads every `.mdx` under `/content` for related-content suggestions (recursive).
@@ -115,26 +94,4 @@ export function allMdxForRelated(): ParsedMdxDocument[] {
 
   walk(root);
   return out.filter((d) => !d.frontmatter.draft);
-}
-
-export function getRestaurantsByCountry(country: string): Restaurant[] {
-  return getAllRestaurants().filter((r) => r.country === country);
-}
-
-/** City slugs for a country (from filesystem + any city that has restaurants). */
-const RESERVED_COUNTRY_CHILD_DIRS = new Set(['collections', 'data']);
-
-export function getCitySlugsForCountry(country: string): string[] {
-  const fromFs = listSubdirNames(path.join('countries', country)).filter(
-    (n) => !RESERVED_COUNTRY_CHILD_DIRS.has(n)
-  );
-  const fromData = [...new Set(getRestaurantsByCountry(country).map((r) => r.city))];
-  return [...new Set([...fromFs, ...fromData])].sort();
-}
-
-/** Country slugs that have content or restaurant data. */
-export function getCountrySlugs(): string[] {
-  const fromFs = listSubdirNames('countries');
-  const fromData = [...new Set(getAllRestaurants().map((r) => r.country))];
-  return [...new Set([...fromFs, ...fromData])].sort();
 }

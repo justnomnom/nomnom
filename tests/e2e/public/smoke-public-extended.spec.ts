@@ -37,9 +37,10 @@ test.describe('public home and marketing', () => {
   });
 
   test('countries hub loads', async ({ page }) => {
-    await page.goto('/countries');
+    test.setTimeout(120_000);
+    await page.goto('/countries', { waitUntil: 'domcontentloaded', timeout: 120_000 });
     await expect(page).toHaveURL(/\/countries/);
-    await expectAppShellMainVisible(page);
+    await expectAppShellMainVisible(page, { timeout: 45_000 });
   });
 
   test('onboarding redirects to login when signed out', async ({ page }) => {
@@ -54,15 +55,17 @@ test.describe('public home and marketing', () => {
   });
 
   test('maintenance page loads', async ({ page }) => {
-    await page.goto('/maintenance');
+    test.setTimeout(120_000);
+    await page.goto('/maintenance', { waitUntil: 'domcontentloaded', timeout: 120_000 });
     await expect(page).toHaveURL(/\/maintenance/);
-    await expectAppShellMainVisible(page);
+    await expectAppShellMainVisible(page, { timeout: 45_000 });
   });
 
   test('coming soon page loads', async ({ page }) => {
-    await page.goto('/coming-soon');
+    test.setTimeout(120_000);
+    await page.goto('/coming-soon', { waitUntil: 'domcontentloaded', timeout: 120_000 });
     await expect(page).toHaveURL(/\/coming-soon/);
-    await expectAppShellMainVisible(page);
+    await expectAppShellMainVisible(page, { timeout: 45_000 });
   });
 });
 

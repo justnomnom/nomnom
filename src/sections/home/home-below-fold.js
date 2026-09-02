@@ -1,6 +1,7 @@
 'use client';
 
 import HomeFaqs from './home-faqs';
+import HomeTrustStrip from './home-trust-strip';
 import HomeTestimonial from './home-testimonial';
 import HomeAdvertisement from './home-advertisement';
 import HomeLandingFeatures from './home-landing-features';
@@ -13,6 +14,7 @@ export default function HomeBelowFold() {
   return (
     <>
       <HomeLandingFeatures />
+      <HomeTrustStrip />
       <HomeTestimonial />
       <HomeFaqs />
       <HomeAdvertisement />
