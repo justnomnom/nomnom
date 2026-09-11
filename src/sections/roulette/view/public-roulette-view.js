@@ -223,6 +223,7 @@ export default function PublicRouletteView() {
           <Stack spacing={1} sx={{ width: 1, maxWidth: 360 }}>
             <Typography
               variant="h4"
+              component="h1"
               sx={{
                 fontWeight: 800,
                 letterSpacing: '-0.02em',

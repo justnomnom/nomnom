@@ -4,6 +4,7 @@ import { notFound, redirect } from 'next/navigation';
 
 import { getSiteUrl } from 'src/libs/site-url';
 import { getServerViewerLang } from 'src/libs/i18n-server';
+import { listOgDescription } from 'src/libs/lists/list-og-description';
 import { fetchListPage, fetchListMetadata } from 'src/libs/lists/actions';
 
 import { DynamicTitle } from 'src/components/dynamic-title';
@@ -26,11 +27,7 @@ export async function generateMetadata({ params }) {
   const slugUrl =
     meta.ownerUsername && meta.slug ? `${siteUrl}/lists/${meta.ownerUsername}/${meta.slug}` : null;
   const pageUrl = slugUrl ?? uuidUrl;
-  const description =
-    meta.description ||
-    (meta.ownerName
-      ? `A curated restaurant list by ${meta.ownerName}`
-      : 'A curated restaurant list');
+  const description = listOgDescription(meta, await getServerViewerLang());
 
   return {
     title: meta.name,

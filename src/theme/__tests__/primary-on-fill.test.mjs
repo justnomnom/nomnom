@@ -13,7 +13,10 @@ import { palette, PRIMARY_ON_FILL_TEXT } from '../palette.js';
 import { button } from '../overrides/components/button.js';
 import { chip } from '../overrides/components/chip.js';
 import { fab } from '../overrides/components/fab.js';
+import { iconButton } from '../overrides/components/icon-button.js';
 import { link } from '../overrides/components/link.js';
+import { tabs } from '../overrides/components/tabs.js';
+import { typography } from '../overrides/components/typography.js';
 
 const require = createRequire(import.meta.url);
 const { createTheme } = require('@mui/material/styles');
@@ -151,6 +154,31 @@ describe('PRIMARY_ON_FILL_TEXT product lock', () => {
     const styles = flattenStyleResult(root({ ownerState: { color: 'primary' } }));
     assert.equal(styles.color, theme.palette.primary.darker);
     assert.notEqual(styles.color, theme.palette.primary.main);
+  });
+
+  it('primary MuiTypography text uses readableAccent, not fill terracotta', () => {
+    const theme = themeWithShadows();
+    const root = typography(theme).MuiTypography.styleOverrides.root;
+    const styles = flattenStyleResult(root({ ownerState: { color: 'primary' } }));
+    assert.equal(styles.color, theme.palette.primary.darker);
+    assert.notEqual(styles.color, theme.palette.primary.main);
+  });
+
+  it('primary IconButton icons use readableAccent, not fill terracotta', () => {
+    const theme = themeWithShadows();
+    const root = iconButton(theme).MuiIconButton.styleOverrides.root;
+    const styles = flattenStyleResult(root({ ownerState: { color: 'primary' } }));
+    assert.equal(styles.color, theme.palette.primary.darker);
+    assert.notEqual(styles.color, theme.palette.primary.main);
+  });
+
+  it('selected MuiTab labels use readableAccent, not fill terracotta', () => {
+    const theme = themeWithShadows();
+    const styles = tabs(theme).MuiTab.styleOverrides.root;
+    const selected = Object.entries(styles).find(([key]) => key.includes('selected'));
+    assert.ok(selected, 'selected tab style missing');
+    assert.equal(selected[1].color, theme.palette.primary.darker);
+    assert.notEqual(selected[1].color, theme.palette.primary.main);
   });
 
   it('content Tailwind token splits fill terracotta from readable text', () => {

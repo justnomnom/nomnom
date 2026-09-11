@@ -19,6 +19,9 @@ test('liveListUpdateHtml: escapes XSS in list/creator names and URLs', () => {
   assert.ok(html.includes('&quot;'));
   assert.ok(html.includes('&#39;'));
   assert.ok(html.includes('NomNom'));
+  assert.ok(html.includes('See the new spots'));
+  assert.ok(html.includes('color:#ffffff'));
+  assert.ok(html.includes('background-color:#FF6B35'));
   assert.ok(html.includes('color:#B8481F'));
   assert.ok(html.includes('color:#15130f'));
   assert.ok(html.includes('color:#6e6657'));

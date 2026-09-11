@@ -39,8 +39,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { country, city } = await params;
   const cityTitle = displaySlug(city);
   const countryTitle = displaySlug(country);
-  const title = `${cityTitle}, ${countryTitle} — restaurants & guides`;
-  const description = `Restaurants, collections, and maps for ${cityTitle} in ${countryTitle}.`;
+  const title = `${cityTitle}, ${countryTitle} — restaurants and guides`;
+  const description = `Restaurants, lists, and guides for ${cityTitle} in ${countryTitle}.`;
   const canonical = `${getSiteUrl()}/countries/${country}/${city}`;
   return { title, description, alternates: { canonical } };
 }

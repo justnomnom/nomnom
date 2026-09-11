@@ -89,8 +89,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       return { title: 'Restaurant' };
     }
     const canonical = `${getSiteUrl()}/countries/${country}/${city}/restaurants/${r.slug}`;
-    const title = `${r.name} — ${city.replace(/-/g, ' ')}`;
-    const description = r.shortDescription ?? `Restaurant in ${city.replace(/-/g, ' ')}.`;
+    const title = `${r.name} — ${displaySlug(city)}`;
+    const description = r.shortDescription ?? `A spot in ${displaySlug(city)}.`;
     const ogImage = r.heroImage ?? APP_OG_IMAGE_PATH;
     return {
       title,
@@ -113,8 +113,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const tagSuffix = mode.tag ? ` — ${mode.tag.replace(/-/g, ' ')}` : '';
   const pageSuffix = mode.page > 1 ? ` (page ${mode.page})` : '';
-  const title = `Restaurants in ${city.replace(/-/g, ' ')}${tagSuffix}${pageSuffix}`;
-  const description = `Browse restaurants in ${city.replace(/-/g, ' ')}, ${country.replace(/-/g, ' ')}.`;
+  const title = `Restaurants in ${displaySlug(city)}${tagSuffix}${pageSuffix}`;
+  const description = `Restaurant picks in ${displaySlug(city)}, ${displaySlug(country)} — from people you trust.`;
   const canonicalPath = restaurantListPath(country, city, mode.page, mode.tag);
   return {
     title,
@@ -269,7 +269,7 @@ export default async function RestaurantsCatchAllPage({ params }: PageProps) {
                   ...inflLinks,
                   ...sampleGlobalCollectionSlugs(2).map((slug) => ({
                     href: `/collections/${slug}`,
-                    label: `Read: ${slug.replace(/-/g, ' ')}`,
+                    label: t('read_label', { name: displaySlug(slug) }),
                   })),
                 ]}
               />
@@ -320,7 +320,7 @@ export default async function RestaurantsCatchAllPage({ params }: PageProps) {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
     name: `Restaurants in ${city.replace(/-/g, ' ')}${mode.tag ? ` — ${mode.tag.replace(/-/g, ' ')}` : ''}`,
-    description: `${all.length} creator-curated restaurants in ${city.replace(/-/g, ' ')}, ${country.replace(/-/g, ' ')}.`,
+    description: `${all.length} restaurant picks in ${city.replace(/-/g, ' ')}, ${country.replace(/-/g, ' ')} — from people you trust.`,
     numberOfItems: slice.length,
     itemListElement: slice.map((r, i) => ({
       '@type': 'ListItem',

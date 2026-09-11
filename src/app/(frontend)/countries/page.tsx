@@ -10,8 +10,8 @@ import { contentHubT, displaySlug } from '@/content-platform/content-hub-t';
 export const revalidate = 60;
 
 export const metadata: Metadata = pageMetadata({
-  title: 'Countries | Travel & dining guides',
-  description: 'Browse country hubs for cities, restaurants, and local creators.',
+  title: 'Countries',
+  description: 'Cities, restaurants, and local creators — restaurant picks from people you trust.',
   path: '/countries',
 });
 

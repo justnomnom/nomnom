@@ -844,7 +844,7 @@ export default function ListPublicView({
                   lineHeight: 1.2,
                 }}
               >
-                {list.name}
+                {list.name?.trim() || t('pages.lists.og_list_fallback_name')}
               </Typography>
             )}
             {owner &&

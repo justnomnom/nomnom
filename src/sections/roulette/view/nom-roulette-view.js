@@ -294,6 +294,7 @@ export default function NomRouletteView() {
             <Stack spacing={DASHBOARD_SPACE_TIGHT} sx={{ width: 1, maxWidth: 360 }}>
               <Typography
                 variant="h4"
+                component="h1"
                 sx={{
                   fontWeight: 800,
                   letterSpacing: '-0.02em',

@@ -1673,19 +1673,11 @@ export default function RestaurantDetailView({
               flexWrap="wrap"
               useFlexGap
               spacing={mapSheetMode ? 0.5 : 0.75}
-              component="h1"
-              sx={{
-                m: 0,
-                mb: 1,
-                // Neutralize UA `h1` sizing; visible styles live on the inner `Typography`.
-                fontSize: 'unset',
-                fontWeight: 'unset',
-                lineHeight: 'unset',
-              }}
+              sx={{ mb: 1 }}
             >
               <Typography
                 variant="h4"
-                component="span"
+                component="h1"
                 sx={{
                   fontFamily: theme.typography.fontSecondaryFamily,
                   // Libre Baskerville ships 400/700 only — 800 falls back to fake-bold.

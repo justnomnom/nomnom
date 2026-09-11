@@ -1,7 +1,10 @@
 import { tabClasses } from '@mui/material/Tab';
 
+import { readableAccent } from '../../readable-accent';
+
 // ----------------------------------------------------------------------
 
+/** Selected tab labels are terracotta-as-text; the indicator bar stays fill terracotta. */
 export function tabs(theme) {
   return {
     MuiTabs: {
@@ -28,6 +31,9 @@ export function tabs(theme) {
             [theme.breakpoints.up('sm')]: {
               marginRight: theme.spacing(5),
             },
+          },
+          [`&.${tabClasses.selected}`]: {
+            color: readableAccent(theme),
           },
           [`&:not(.${tabClasses.selected})`]: {
             color: theme.palette.text.secondary,

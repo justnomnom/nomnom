@@ -33,8 +33,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!getCountrySlugs().includes(country)) {
     return { title: 'Country' };
   }
-  const title = `${displaySlug(country)} — cities, dining & creators`;
-  const description = `Discover cities, restaurant guides, collections, and creators across ${displaySlug(country)}.`;
+  const title = `${displaySlug(country)} — cities, spots, and creators`;
+  const description = `Cities, restaurants, and local creators in ${displaySlug(country)} — restaurant picks from people you trust.`;
   const canonical = `${getSiteUrl()}/countries/${country}`;
   return { title, description, alternates: { canonical } };
 }

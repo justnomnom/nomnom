@@ -71,7 +71,7 @@ export function liveListUpdateHtml({ listName, creatorName, listUrl, manageUrl }
                               font-size:15px;font-weight:700;line-height:1;
                               color:#ffffff;text-decoration:none;
                               border-radius:40px;white-space:nowrap">
-                      See what&rsquo;s new &rarr;
+                      See the new spots
                     </a>
                   </td>
                 </tr>

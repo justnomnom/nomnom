@@ -43,7 +43,7 @@ export default function View403() {
         </MotionPart>
 
         <MotionPart variants={varFade().inUp}>
-          <Typography variant="h3" sx={{ mb: 2, textAlign: 'center' }}>
+          <Typography variant="h3" component="h1" sx={{ mb: 2, textAlign: 'center' }}>
             {t('pages.error.403.title')}
           </Typography>
         </MotionPart>

@@ -93,6 +93,21 @@ export async function resolve(specifier, context, nextResolve) {
     };
   }
 
+  // JSON relatives need `type: json` in Node 20+ even when the path is already exact.
+  if (
+    specifier.endsWith('.json') &&
+    (specifier.startsWith('./') || specifier.startsWith('../') || specifier.startsWith('src/'))
+  ) {
+    const rewritten = tryResolveSpecifier(specifier, context.parentURL);
+    if (rewritten) {
+      return {
+        shortCircuit: true,
+        url: rewritten,
+        importAttributes: { type: 'json' },
+      };
+    }
+  }
+
   // Only rewrite bare extensionless relatives and src/ aliases.
   const needsRewrite =
     specifier.startsWith('src/') ||
@@ -102,10 +117,14 @@ export async function resolve(specifier, context, nextResolve) {
   if (needsRewrite) {
     const rewritten = tryResolveSpecifier(specifier, context.parentURL);
     if (rewritten) {
-      return {
+      const result = {
         shortCircuit: true,
         url: rewritten,
       };
+      if (rewritten.endsWith('.json')) {
+        result.importAttributes = { type: 'json' };
+      }
+      return result;
     }
   }
 

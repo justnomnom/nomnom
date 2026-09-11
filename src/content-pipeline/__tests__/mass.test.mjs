@@ -101,6 +101,26 @@ describe('mass daily content batch', () => {
     assert.ok(batch.liveSubjectCount >= 1);
   });
 
+  test('mass pack copy does not repeat the hook across taps, frames, or beats', () => {
+    const batch = produceMassDay('2026-08-24', { pipeline, volume: 40 });
+    for (const piece of batch.pieces) {
+      const { copy } = piece;
+      const label = pieceKey(piece);
+      if (copy.tap_1 && copy.hook) {
+        assert.notEqual(copy.tap_1, copy.hook, label);
+      }
+      if (copy.frame_2 && copy.frame_1) {
+        assert.notEqual(copy.frame_2, copy.frame_1, label);
+      }
+      if (copy.problem && copy.hook) {
+        assert.notEqual(copy.problem, copy.hook, label);
+      }
+      if (copy.why && copy.hook) {
+        assert.notEqual(copy.why, copy.hook, label);
+      }
+    }
+  });
+
   test('writeMassDay creates REVIEW.md, manifest, and one file per piece', () => {
     const batch = produceMassDay('2026-08-24', { pipeline, volume: 12 });
     const outRoot = mkdtempSync(join(tmpdir(), 'nomnom-mass-'));

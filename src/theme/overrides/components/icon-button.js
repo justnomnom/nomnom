@@ -1,14 +1,20 @@
+import { readableAccent } from '../../readable-accent';
+
 // ----------------------------------------------------------------------
 
 /**
  * IconButton ships hover background via MUI; some mobile UAs still leave `:hover` latched after tap.
  * Clear hover paint on coarse pointers (touch); fine-pointer hover gets a subtle lift.
+ * Primary icons on parchment use readableAccent — fill terracotta stays on contained buttons.
  */
-export function iconButton() {
+export function iconButton(theme) {
   return {
     MuiIconButton: {
       styleOverrides: {
-        root: {
+        root: ({ ownerState }) => ({
+          ...(ownerState.color === 'primary' && {
+            color: readableAccent(theme),
+          }),
           transition:
             'transform 180ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1), background-color 150ms ease',
           '@media (hover: hover) and (pointer: fine)': {
@@ -27,7 +33,7 @@ export function iconButton() {
               transform: 'none',
             },
           },
-        },
+        }),
       },
     },
   };

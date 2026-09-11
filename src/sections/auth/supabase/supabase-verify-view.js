@@ -132,7 +132,7 @@ export default function SupabaseVerifyView() {
 
   const renderHead = (
     <>
-      <Typography variant="h3" sx={{ mb: 1 }}>
+      <Typography variant="h3" component="h1" sx={{ mb: 1 }}>
         {title}
       </Typography>
 

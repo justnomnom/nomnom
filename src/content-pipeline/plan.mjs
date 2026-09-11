@@ -78,19 +78,52 @@ export function packsForType(packs, type, featureId) {
   });
 }
 
+/**
+ * Pack keys to try for each iteration field. The hook is never a generic
+ * fallback — cloning it into tap_1 / frame_2 / problem made every slide identical.
+ */
+const COPY_FIELD_ALIASES = {
+  hook: ['hook_pt'],
+  cta: ['cta_pt'],
+  tap_1: ['tap_1_pt', 'step_1_pt'],
+  tap_2: ['tap_2_pt', 'step_2_pt'],
+  tap_3: ['tap_3_pt', 'step_3_pt'],
+  frame_1: ['frame_1_pt', 'hook_pt'],
+  frame_2: ['frame_2_pt', 'step_2_pt', 'truth_1_pt', 'before_pt'],
+  frame_3: ['frame_3_pt', 'step_3_pt', 'cta_pt'],
+  why: ['why_pt', 'truth_1_pt'],
+  problem: ['problem_pt', 'before_pt', 'myth_1_pt'],
+  turn: ['turn_pt', 'after_pt', 'truth_1_pt'],
+  instead: ['instead_pt', 'after_pt', 'truth_2_pt'],
+};
+
+/**
+ * Fill an iteration's fields from pack copy. Missing fields stay empty.
+ */
 export function fillCopy(iteration, pack) {
   const copy = pack?.copy || {};
   const fields = iteration.fields || [];
   const filled = {};
   for (const field of fields) {
-    const direct = copy[`${field}_pt`];
-    filled[field] = direct || copy.hook_pt || copy.cta_pt || '';
+    filled[field] = pickCopyField(copy, field);
   }
   if (!fields.length && pack) {
-    filled.hook = copy.hook_pt;
-    filled.cta = copy.cta_pt;
+    filled.hook = copy.hook_pt || '';
+    filled.cta = copy.cta_pt || '';
   }
   return filled;
+}
+
+/**
+ * Resolve one copy field from a pack. Direct `field_pt` wins, then aliases.
+ */
+function pickCopyField(copy, field) {
+  const keys = COPY_FIELD_ALIASES[field] || [`${field}_pt`];
+  for (const key of keys) {
+    const value = copy[key];
+    if (typeof value === 'string' && value.trim()) return value;
+  }
+  return '';
 }
 
 export function featureIdFor(typeDef, pack, seed) {

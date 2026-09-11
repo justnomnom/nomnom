@@ -235,7 +235,7 @@
         {
           "id": "poll",
           "label": "This or that poll",
-          "fields": ["frame_1", "poll_a", "poll_b"]
+          "fields": ["frame_1", "question", "poll_a", "poll_b"]
         },
         {
           "id": "countdown",

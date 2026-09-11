@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 
-import { hash32, iterationCoverage, loadPipeline, planDay, planRange } from '../plan.mjs';
+import { fillCopy, hash32, iterationCoverage, loadPipeline, planDay, planRange } from '../plan.mjs';
 
 describe('daily content pipeline', () => {
   const pipeline = loadPipeline();
@@ -74,5 +74,39 @@ describe('daily content pipeline', () => {
   test('hash32 is stable', () => {
     assert.equal(hash32('nomnom'), hash32('nomnom'));
     assert.notEqual(hash32('nomnom'), hash32('nom nom'));
+  });
+
+  test('fillCopy maps screenshot-walk taps to pack steps, not the hook', () => {
+    const follow = pipeline.packs.find((pack) => pack.id === 'follow-the-list');
+    const walk = pipeline.catalog.types.carousel.iterations.find((row) => row.id === 'screenshot_walk');
+    const copy = fillCopy(walk, follow);
+    assert.equal(copy.hook, follow.copy.hook_pt);
+    assert.equal(copy.tap_1, follow.copy.step_1_pt);
+    assert.equal(copy.tap_2, follow.copy.step_2_pt);
+    assert.equal(copy.tap_3, follow.copy.step_3_pt);
+    assert.equal(copy.cta, follow.copy.cta_pt);
+    assert.equal(new Set([copy.hook, copy.tap_1, copy.tap_2, copy.tap_3, copy.cta]).size, 5);
+  });
+
+  test('fillCopy does not clone the hook into story frames or thread beats', () => {
+    const maps = pipeline.packs.find((pack) => pack.id === 'maps-graveyard');
+    const countdown = pipeline.catalog.types.story.iterations.find((row) => row.id === 'countdown');
+    const thread = pipeline.catalog.types.thread.iterations.find((row) => row.id === 'problem_product');
+    const poll = pipeline.catalog.types.story.iterations.find((row) => row.id === 'poll');
+    const frames = fillCopy(countdown, maps);
+    assert.equal(frames.frame_1, maps.copy.hook_pt);
+    assert.equal(frames.frame_2, maps.copy.step_2_pt);
+    assert.notEqual(frames.frame_2, frames.frame_1);
+    assert.equal(frames.cta, maps.copy.cta_pt);
+
+    const beats = fillCopy(thread, maps);
+    assert.equal(beats.problem, maps.copy.before_pt);
+    assert.equal(beats.turn, maps.copy.after_pt);
+    assert.notEqual(beats.problem, beats.hook);
+
+    const sticker = fillCopy(poll, maps);
+    assert.equal(sticker.question, maps.copy.question_pt);
+    assert.equal(sticker.poll_a, maps.copy.poll_a_pt);
+    assert.notEqual(sticker.question, sticker.frame_1);
   });
 });

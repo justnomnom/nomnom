@@ -60,7 +60,7 @@ export function componentsOverrides(theme) {
     radio(theme),
     select(theme),
     button(theme),
-    iconButton(),
+    iconButton(theme),
     listItemButton(theme),
     rating(theme),
     dialog(theme),

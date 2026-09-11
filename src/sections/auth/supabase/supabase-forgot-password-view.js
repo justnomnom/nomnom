@@ -115,7 +115,9 @@ export default function SupabaseForgotPasswordView() {
 
   const renderHead = (
     <Stack spacing={1} sx={{ mt: 3, mb: 5 }}>
-      <Typography variant="h3">{t('pages.auth.forgot_password.title')}</Typography>
+      <Typography variant="h3" component="h1">
+        {t('pages.auth.forgot_password.title')}
+      </Typography>
 
       <Typography variant="body2" sx={{ color: 'text.secondary' }}>
         {t('pages.auth.forgot_password.description')}

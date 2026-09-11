@@ -42,27 +42,34 @@ function slidesFor(piece) {
 
   if (type === 'story') {
     const frames = [];
-    if (copy.frame_1) frames.push({ kicker: 'Stories', text: copy.frame_1 });
-    if (copy.poll_a || copy.poll_b) {
-      frames.push({
-        kicker: 'Poll',
-        text: [copy.poll_a, copy.poll_b].filter(Boolean).join('\n'),
-        options: [copy.poll_a, copy.poll_b].filter(Boolean),
-      });
+    const pollOptions = [copy.poll_a, copy.poll_b].filter(Boolean);
+    const isPoll = pollOptions.length >= 2;
+    if (copy.frame_1) {
+      frames.push({ slug: 'stories', kicker: '', text: copy.frame_1 });
     }
-    if (copy.question) frames.push({ kicker: 'Pergunta', text: copy.question });
-    if (copy.countdown) frames.push({ kicker: 'Countdown', text: copy.countdown });
+    if (isPoll) {
+      frames.push({
+        slug: 'poll',
+        kicker: '',
+        text: copy.question || copy.frame_1,
+        options: pollOptions,
+      });
+    } else if (copy.question) {
+      frames.push({ slug: 'pergunta', kicker: '', text: copy.question });
+    }
+    if (copy.countdown) frames.push({ slug: 'countdown', kicker: '', text: copy.countdown });
     for (const [key, value] of entries) {
       if (['frame_1', 'poll_a', 'poll_b', 'question', 'countdown'].includes(key)) continue;
-      frames.push({ kicker: key, text: value });
+      frames.push({ slug: key.replaceAll('_', '-'), kicker: '', text: value });
     }
     return frames.map((frame) => ({ ...frame, format: 'story' }));
   }
 
   return entries.map(([key, text], index) => ({
-    kicker: `${String(index + 1).padStart(2, '0')} · ${key.replaceAll('_', ' ')}`,
+    slug: key.replaceAll('_', '-'),
+    kicker: `${index + 1} / ${entries.length}`,
     text,
-    format: type === 'story' ? 'story' : 'square',
+    format: 'square',
   }));
 }
 
@@ -72,7 +79,9 @@ function splitUrl(text) {
   if (!match) return { headline: raw, url: '' };
   const headline = raw.slice(0, match.index).replace(/[→\s]+$/g, '').trim();
   if (!headline) return { headline: raw, url: '' };
-  return { headline, url: match[1] };
+  const url = match[1].replace(/^https?:\/\/(?:www\.)?/i, '');
+  if (/^justnomnom\.com\/?$/i.test(url)) return { headline, url: '' };
+  return { headline, url };
 }
 
 function htmlFor({ kicker, text, format, brand, options }) {
@@ -80,16 +89,17 @@ function htmlFor({ kicker, text, format, brand, options }) {
   const w = 1080;
   const h = story ? 1920 : 1080;
   const poll = Array.isArray(options) && options.length >= 2;
-  const { headline, url } = poll ? { headline: '', url: '' } : splitUrl(text);
+  const { headline, url } = poll ? { headline: text, url: '' } : splitUrl(text);
   const kind = poll ? 'poll' : story ? 'story' : 'square';
+  const quote = `<div class="quote">${esc(headline || text)}</div>`;
   const body = poll
-    ? `<div class="options">${options
+    ? `<div class="headline">${quote}</div><div class="options">${options
         .map(
           (opt, i) =>
             `<div class="option"><span class="opt-letter">${String.fromCharCode(65 + i)}</span><span class="opt-text">${esc(opt)}</span></div>`
         )
         .join('')}</div>`
-    : `<div class="quote">${esc(headline || text)}</div>${url ? `<div class="cta-url">${esc(url)}</div>` : ''}`;
+    : `${quote}${url ? `<div class="cta-url">${esc(url)}</div>` : ''}`;
   return `<!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -137,36 +147,41 @@ body { width: ${w}px; height: ${h}px; background: var(--paper); overflow: hidden
   flex: ${poll || story ? '1 1 auto' : '0 1 auto'};
   min-height: 0;
   display: flex; flex-direction: column; justify-content: ${poll ? 'stretch' : 'center'};
-  gap: 16px;
+  gap: ${poll ? 28 : 16}px;
+}
+.headline {
+  flex: 1 1 auto; min-height: 0;
+  display: flex; align-items: center;
 }
 .quote {
   width: 100%;
   font-family: var(--serif); font-size: ${story ? 96 : 84}px; font-weight: 700;
   color: var(--ink); line-height: 1.05; letter-spacing: -0.03em;
-  overflow-wrap: break-word; word-break: normal; white-space: pre-wrap;
+  overflow-wrap: normal; word-break: normal; hyphens: none; white-space: pre-wrap;
 }
 .cta-url {
   font-family: var(--sans); font-size: ${story ? 36 : 32}px; font-weight: 800;
   color: var(--terra); letter-spacing: -0.02em; overflow-wrap: anywhere;
 }
 .options {
-  display: flex; flex-direction: column; gap: ${story ? 20 : 16}px;
-  flex: 1; min-height: 0;
+  display: flex; flex-direction: column; gap: 16px;
+  flex: 0 0 auto;
 }
 .option {
-  flex: 1 1 0; min-height: 0;
-  display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 20px;
+  flex: 0 0 auto;
+  min-height: ${story ? 200 : 160}px;
+  display: flex; flex-direction: row; justify-content: flex-start; align-items: center; gap: 24px;
   background: var(--parch); border: 2px solid var(--hair); border-radius: 28px;
-  padding: ${story ? '40px 36px' : '28px 28px'};
+  padding: ${story ? '28px 32px' : '24px 28px'};
 }
 .opt-letter {
-  flex: 0 0 auto; width: ${story ? 88 : 64}px; height: ${story ? 88 : 64}px;
+  flex: 0 0 auto; width: ${story ? 72 : 56}px; height: ${story ? 72 : 56}px;
   border-radius: 18px; background: var(--terra); color: #fff;
-  font-family: var(--sans); font-size: ${story ? 36 : 28}px; font-weight: 800;
+  font-family: var(--sans); font-size: ${story ? 32 : 24}px; font-weight: 800;
   display: flex; align-items: center; justify-content: center;
 }
 .opt-text {
-  font-family: var(--sans); font-size: ${story ? 72 : 48}px; font-weight: 800;
+  font-family: var(--sans); font-size: ${story ? 56 : 40}px; font-weight: 800;
   color: var(--ink); line-height: 1.05; width: auto; display: block;
   white-space: nowrap;
 }
@@ -184,7 +199,7 @@ body { width: ${w}px; height: ${h}px; background: var(--paper); overflow: hidden
   <div class="bar"></div>
   ${poll ? '' : `<div class="mark" aria-hidden="true">“</div>`}
   <div class="poster">
-    <div class="kicker">${esc(kicker)}</div>
+    ${kicker ? `<div class="kicker">${esc(kicker)}</div>` : ''}
     <div class="stage">${body}</div>
     <div class="bottom">
       <div class="brand">NomNom</div>
@@ -212,7 +227,7 @@ function slug(value) {
     .slice(0, 40);
 }
 
-/** Grow type until the quote (or each poll card) fills the available box. */
+/** Grow type until the quote (or each poll row) fills the available box. */
 async function fitType(page) {
   await page.evaluate(async () => {
     await Promise.all([
@@ -227,6 +242,7 @@ async function fitType(page) {
     const kicker = document.querySelector('.kicker');
     const bottom = document.querySelector('.bottom');
     const cta = document.querySelector('.cta-url');
+    const options = document.querySelector('.options');
     if (!poster || !stage) return;
 
     const longestToken = (el) =>
@@ -240,7 +256,8 @@ async function fitType(page) {
         (kicker?.offsetHeight || 0) +
         (bottom?.offsetHeight || 0) +
         (cta?.offsetHeight || 0) +
-        48;
+        (options?.offsetHeight || 0) +
+        56;
       const maxH = Math.max(120, poster.clientHeight - reserved);
       const maxW = stage.clientWidth;
       const token = longestToken(quote);
@@ -273,20 +290,21 @@ async function fitType(page) {
         probe.remove();
       }
       quote.style.fontSize = `${best}px`;
-      return;
     }
 
     const cards = [...document.querySelectorAll('.option')];
+    if (!cards.length) return;
+    let shared = 88;
     for (const card of cards) {
       const text = card.querySelector('.opt-text');
       if (!text) continue;
       const letter = card.querySelector('.opt-letter');
       text.style.whiteSpace = 'nowrap';
       text.style.width = 'auto';
-      const maxW = card.clientWidth - 72;
-      const maxH = Math.max(80, card.clientHeight - (letter?.offsetHeight || 0) - 56);
-      let lo = 48;
-      let hi = 280;
+      const maxW = Math.max(80, card.clientWidth - (letter?.offsetWidth || 0) - 72);
+      const maxH = Math.max(48, card.clientHeight - 40);
+      let lo = 32;
+      let hi = shared;
       let best = lo;
       while (lo <= hi) {
         const mid = Math.floor((lo + hi) / 2);
@@ -300,7 +318,11 @@ async function fitType(page) {
           hi = mid - 1;
         }
       }
-      text.style.fontSize = `${best}px`;
+      shared = Math.min(shared, best);
+    }
+    for (const card of cards) {
+      const text = card.querySelector('.opt-text');
+      if (text) text.style.fontSize = `${shared}px`;
     }
   });
 }
@@ -316,7 +338,7 @@ for (const filename of files) {
     jobs.push({
       piece,
       slide,
-      outName: `${stem}-${String(index + 1).padStart(2, '0')}-${slug(slide.kicker)}.png`,
+      outName: `${stem}-${String(index + 1).padStart(2, '0')}-${slug(slide.slug || slide.kicker)}.png`,
     });
   });
 }
@@ -333,7 +355,7 @@ for (const job of jobs) {
   await page.setContent(
     htmlFor({
       ...slide,
-      brand: piece.pack || piece.iteration || 'justnomnom.com',
+      brand: 'justnomnom.com',
     }),
     { waitUntil: 'networkidle' }
   );

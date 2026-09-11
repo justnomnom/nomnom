@@ -15,7 +15,7 @@ function lookup(dict, key) {
   }, dict);
 }
 
-/** Reads English locale for SSR titles and OG text. Cache-bust: contentHub + ui_locale + subscriptionStatus. */
+/** Reads English locale for SSR titles and OG text. Cache-bust: contentHub + ui_locale + listOg + hubCopy + guidesNotCollections + mapEmpty. */
 export const getDefaultTranslation = (key) => lookup(enTranslations, key);
 
 /**

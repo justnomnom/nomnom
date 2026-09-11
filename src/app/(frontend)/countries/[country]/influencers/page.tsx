@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const title = `Creators — ${displaySlug(country)}`;
   return {
     title,
-    description: `Food and travel voices covering ${displaySlug(country)}.`,
+    description: `Creators whose lists you can follow in ${displaySlug(country)}.`,
     alternates: { canonical: `${getSiteUrl()}/countries/${country}/influencers` },
   };
 }

@@ -45,7 +45,7 @@ export default function NotFoundView({ title, message, action }) {
         </MotionPart>
 
         <MotionPart variants={varFade().inUp}>
-          <Typography variant="h3" sx={{ mb: 2, textAlign: 'center' }}>
+          <Typography variant="h3" component="h1" sx={{ mb: 2, textAlign: 'center' }}>
             {title || t('pages.error.404.title')}
           </Typography>
         </MotionPart>
