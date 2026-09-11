@@ -148,7 +148,7 @@ export default function TableJoinView({ tableId }) {
     return (
       <Container maxWidth="sm" sx={{ py: SPACE.xl }}>
         <Card variant="outlined" sx={CARD_SX}>
-          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+          <Typography variant="subtitle1" component="h1" sx={{ fontWeight: 700 }}>
             {t('pages.table.not_found_title')}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: SPACE.xs }}>

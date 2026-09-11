@@ -26,9 +26,9 @@ Source of truth: `src/theme/palette.js`
 |---|---|---|
 | `primary.lighter` | `#FFE8DF` | Backgrounds, tinted surfaces (avatar ring, icon bg) |
 | `primary.light` | `#FFA070` | Hover accents, secondary highlights |
-| `primary.main` | `#FF6B35` | CTAs, active nav, links, focus states, chips |
+| `primary.main` | `#FF6B35` | Filled CTAs, active nav, focus rings, chips — not small text on parchment |
 | `primary.dark` | `#E85A28` | Pressed state |
-| `primary.darker` | `#B8481F` | Rare emphasis |
+| `primary.darker` | `#B8481F` | Terracotta as text on parchment (`readableAccent` in light): links, outlined/text primary labels, small indicators |
 | `primary.contrastText` | `#FFFFFF` | Text/icons on filled primary surfaces (white — product lock, see below) |
 
 **Rule**: Terracotta is disciplined — roughly 10% of any surface. Overuse kills its warmth. Use it for: active states, primary buttons, single accent per card, icon tint, text links.
@@ -37,7 +37,7 @@ Source of truth: `src/theme/palette.js`
 
 - *Text **on** filled terracotta* is **white** (`PRIMARY_ON_FILL_TEXT` / `primary.contrastText` = `#FFFFFF`). Contained primary buttons, selected chips, filled primary chips, primary FABs, and icons on a terracotta fill all use this. Do **not** flip `contrastText` to ink / `grey[900]` / `text.primary` to chase WCAG — that regression painted every primary CTA black. If a small terracotta-fill label ever needs more contrast, darken the *fill* or bump size/weight; never the label to black.
 - *Exception — dark editorial CTAs* (onboarding-style) may use explicit `bgcolor: 'text.primary'` + light label. The tell is the explicit dark `bgcolor`, not a missing `color` prop and not a dark `contrastText`.
-- *Terracotta **as** text or as a small indicator* on a light surface uses `readableAccent(theme)` from `src/theme/readable-accent.js` — it steps light mode down to `primary.darker` (4.83:1 on card) and keeps `primary.main` in dark (5.67:1). `primary.main` as small text on parchment is 2.6:1; see §19.
+- *Terracotta **as** text or as a small indicator* on a light surface uses `readableAccent(theme)` from `src/theme/readable-accent.js` — it steps light mode down to `primary.darker` (4.83:1 on card) and keeps `primary.main` in dark (5.67:1). `primary.main` as small text on parchment is 2.6:1; see §19. Marketing Tailwind mirrors this split: `--color-primary` stays the fill (`#FF6B35`) with white `--color-primary-foreground`; `--color-primary-readable` is `#B8481F` in light and `#FF6B35` in dark (`text-primary-readable`). MUI `Link color="primary"` uses `readableAccent` via the theme override.
 
 ### Secondary — Cool Slate (intentional)
 
@@ -789,5 +789,6 @@ Missing keys silently fall back to the key string — always add both locales wh
 | 2026-08-16 | White labels restored on filled terracotta (`PRIMARY_ON_FILL_TEXT`) | The ink `contrastText` flip made every contained primary button black. Product lock: labels on terracotta fills are white — buttons, chips, FABs, badges. Forced in the palette token *and* the contained-primary / filled-chip / primary-FAB overrides so a future contrast tweak cannot regress CTAs. Small terracotta-*as-text* still uses `readableAccent()`, not a dark `contrastText`. |
 | 2026-08-16 | Selected chips carved back out to white (`SCROLLABLE_CHIP_SELECTED_TEXT`) | The `contrastText` flip below also darkened every selected filter chip, changing a look that was intentional. Chips stay white-on-terracotta (now the same token as buttons). |
 | 2026-08-16 | `primary.contrastText` flipped `#FFFFFF` → `#15130f` (warm ink) — **reverted same day** | White on terracotta measured 2.77:1. Ink cleared AA but broke the brand CTA. Reverted; see the white-label lock above. |
+| 2026-09-10 | Terracotta-as-text lock extended to links and marketing Tailwind | Fill terracotta (`primary.main` / `--color-primary`) stays on contained CTAs. Link text, outlined/text primary buttons, selected menu rows, and content-hub `text-primary-readable` use `primary.darker` in light. Register-bound related links (`/auth/register`) are contained so Let’s NomNom! is the filled CTA, not an equal outlined chip. |
 | 2026-08-16 | Added `readableAccent(theme)` for accent-as-text and small indicators | `primary.main` as 11–12px text or as a state dot on parchment is 2.6:1, which §19 already forbade but nothing enforced. Helper steps light mode to `primary.darker` (4.83:1) and keeps `primary.main` in dark (5.67:1). First consumers: notifications unread counts, unread dots, notification type badges. |
 | 2026-07-03 | `autoFocus` guarded on Capacitor (FINDING-008) | Bare `autoFocus` pops the iOS keyboard and shifts sheets. Standard: `autoFocus={!isCapacitorNative()}` on every autofocused field. |

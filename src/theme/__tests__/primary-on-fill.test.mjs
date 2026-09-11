@@ -136,6 +136,15 @@ describe('PRIMARY_ON_FILL_TEXT product lock', () => {
   });
 
 
+  it('dashboard bottom nav active labels use readableAccent, not fill terracotta', () => {
+    const src = fs.readFileSync(
+      path.join(REPO_THEME, '../../layouts/dashboard/nav-bottom.js'),
+      'utf8'
+    );
+    assert.match(src, /isActive \? readableAccent\(theme\)/);
+    assert.equal(/isActive \? 'primary\.main'/.test(src), false);
+  });
+
   it('primary MuiLink text uses readableAccent, not fill terracotta', () => {
     const theme = themeWithShadows();
     const root = link(theme).MuiLink.styleOverrides.root;
@@ -153,6 +162,15 @@ describe('PRIMARY_ON_FILL_TEXT product lock', () => {
     assert.match(css, /--color-primary-readable:\s*#b8481f/i);
     const darkBlock = css.split("html[data-theme='dark']")[1] || '';
     assert.match(darkBlock, /--color-primary-readable:\s*#ff6b35/i);
+  });
+
+
+  it('register-bound related links are contained primary, not outlined chips', () => {
+    const src = fs.readFileSync(
+      path.join(REPO_THEME, '../../components/content-platform/sections/related-links.tsx'),
+      'utf8'
+    );
+    assert.match(src, /variant=\{l\.href === '\/auth\/register' \? 'contained' : 'outlined'\}/);
   });
 
 });

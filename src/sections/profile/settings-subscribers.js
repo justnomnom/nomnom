@@ -16,6 +16,7 @@ import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 import { fDate } from 'src/utils/format-time';
+import { subscriptionStatusLabel } from 'src/utils/subscription-status-label';
 
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
@@ -121,7 +122,12 @@ function SubscriberRow({ row, onRemove, disabled, t }) {
       subtitle={secondaryParts.length > 0 ? secondaryParts.join(' · ') : null}
       chips={
         <>
-          <Chip size="small" label={row.status} color={statusColor(row.status)} variant="soft" />
+          <Chip
+            size="small"
+            label={subscriptionStatusLabel(row.status, t)}
+            color={statusColor(row.status)}
+            variant="soft"
+          />
           <Chip
             size="small"
             label={t('pages.dashboard.settings.subscribers.filter_subscribers')}

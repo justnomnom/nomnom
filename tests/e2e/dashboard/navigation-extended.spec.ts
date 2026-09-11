@@ -66,9 +66,10 @@ test.describe('dashboard routes — extended', () => {
     await page.goto('/dashboard/admin', { waitUntil: 'domcontentloaded', timeout: 120_000 });
     await expect(page).toHaveURL(/\/dashboard\/admin$/);
     await expectSignedInDashboardShell(page, { timeout: 60_000 });
+    // exact:true — "More admin tools" substring-matches name:'Admin' and breaks .or() under strict mode.
     await expect(
       page
-        .getByRole('heading', { name: 'Admin' })
+        .getByRole('heading', { name: 'Admin', exact: true })
         .or(page.getByRole('heading', { name: APP_NOT_FOUND_HEADING }))
     ).toBeVisible({ timeout: 45_000 });
   });

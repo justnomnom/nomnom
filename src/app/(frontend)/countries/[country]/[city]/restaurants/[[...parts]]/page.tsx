@@ -161,7 +161,7 @@ export default async function RestaurantsCatchAllPage({ params }: PageProps) {
       })
       .filter(Boolean) as { href: string; label: string }[];
 
-    const inflLinks = r.influencerSlugs.map((slug) => ({
+    const inflLinks = (r.influencerSlugs ?? []).map((slug) => ({
       href: `/countries/${country}/influencers/${slug}`,
       label: `Creator: ${slug.replace(/-/g, ' ')}`,
     }));

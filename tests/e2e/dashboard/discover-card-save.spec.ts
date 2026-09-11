@@ -1,10 +1,14 @@
 import { expect, test } from '@playwright/test';
 
 import { loadE2EEnv } from '../load-env';
-import { deleteList, createOwnedList } from '../support/seed';
+import { deleteList, createOwnedList, setUserHomeLocality } from '../support/seed';
 import { dashboardTestsDisabled } from '../support/skip-dashboard';
 import { hasServiceRoleCredentials } from '../support/service-role';
-import { getServiceRoleClient, getUserIdByEmail } from '../support/supabase-service';
+import {
+  findMunicipalityCityWithRestaurant,
+  getServiceRoleClient,
+  getUserIdByEmail,
+} from '../support/supabase-service';
 import {
   E2E_DASHBOARD_AUTH_SETUP_HINT,
   getE2ETestUserEmailForDb,
@@ -17,8 +21,8 @@ import {
  * a rating (the sheet validates it), and fans out to `restaurant_reviews` +
  * `list_items` — we assert the membership row lands in the seeded (initially empty) list.
  *
- * Self-skips when the feed has no cards for the shared user's market (empty-state renders
- * the "Change area" CTA instead).
+ * Pins the shared E2E user's home locality to a municipality that has restaurants so the
+ * feed is non-empty. Still self-skips if the DB has no municipality with restaurants.
  */
 test.describe('discover feed card — save to list (L3)', () => {
   test.beforeEach(({}, testInfo) => {
@@ -38,7 +42,12 @@ test.describe('discover feed card — save to list (L3)', () => {
     test.skip(!userId, 'Could not resolve the shared E2E user id from email');
     if (!userId) return;
 
-    const listName = `E2E Discover Save ${Date.now()}`;
+    const market = await findMunicipalityCityWithRestaurant();
+    test.skip(!market, 'No municipality with restaurants — cannot seed a discover feed market');
+    if (!market) return;
+
+    const previousLocality = await setUserHomeLocality(userId, market.cityId);
+    const listName = `Discover Save ${Date.now()}`;
     const listId = await createOwnedList(userId, { name: listName });
 
     const readSavedItems = async () => {
@@ -53,15 +62,21 @@ test.describe('discover feed card — save to list (L3)', () => {
     try {
       await page.goto('/dashboard/discover', { waitUntil: 'domcontentloaded', timeout: 180_000 });
 
-      // Feed rows stream in; either a save affordance appears or the market empty-state does.
-      const saveButton = page.getByRole('button', { name: 'Save to list' }).first();
-      const emptyState = page.getByRole('button', { name: 'Change area' }).first();
-      await expect(saveButton.or(emptyState)).toBeVisible({ timeout: 120_000 });
+      // Feed rows stream in below the area chip / promos. Use exact:true — spot rows wrap the
+      // icon button in a ListItemButton whose accessible name is "<restaurant> Save to list",
+      // which substring-matches "Save to list" and breaks `.or(Change area)` under strict mode.
+      // Do not treat "Change area" as a ready signal: it is always visible once a market is set.
+      const saveButton = page.getByRole('button', { name: 'Save to list', exact: true }).first();
+      const saveAppeared = await saveButton
+        .waitFor({ state: 'visible', timeout: 120_000 })
+        .then(() => true)
+        .catch(() => false);
       test.skip(
-        !(await saveButton.isVisible().catch(() => false)),
-        'Discover feed has no cards for the seeded market — cannot exercise the card save.'
+        !saveAppeared,
+        'Discover feed still empty after pinning home locality — cannot exercise the card save.'
       );
 
+      await saveButton.scrollIntoViewIfNeeded();
       await saveButton.click();
       await expect(page.getByRole('heading', { name: /Save to/ })).toBeVisible({
         timeout: 30_000,
@@ -101,6 +116,7 @@ test.describe('discover feed card — save to list (L3)', () => {
           .eq('user_id', userId);
       }
       await deleteList(listId);
+      await setUserHomeLocality(userId, previousLocality);
     }
   });
 });

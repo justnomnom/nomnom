@@ -57,10 +57,11 @@ test account (charges enabled) + a real recurring Price. The setup script create
 ## Webhook forwarding
 
 The spec **spawns its own `stripe listen`** (forwarding to `localhost:3032/api/webhooks/stripe`) for
-the duration of the run and tears it down after — no separate terminal required, as long as the
-Stripe CLI is installed and logged in (`stripe login`). It is harmless if you also have
-`npm run stripe:listen` running; Stripe delivers to both and the handler is idempotent
-(`stripe_events`). If the CLI isn't available, the spec skips with a hint.
+the duration of the run and tears it down after — no separate terminal required. It passes
+`--api-key` from `STRIPE_SECRET_KEY` so an expired Stripe CLI device key does not block the suite.
+`STRIPE_WEBHOOK_SECRET` must still match the listen signing secret (`npm run stripe:webhook-secret`).
+It is harmless if you also have `npm run stripe:listen` running; Stripe delivers to both and the
+handler is idempotent (`stripe_events`). If the CLI isn't available, the spec skips with a hint.
 
 ## Run
 

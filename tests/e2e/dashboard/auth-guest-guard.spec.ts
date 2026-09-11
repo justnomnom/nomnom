@@ -22,11 +22,22 @@ test.describe('auth pages — authenticated user is redirected away (A9)', () =>
       // cold route compile (see docs/TEST-PLAN.md “Dev-only navigation caveat”).
       await request.get('/dashboard/discover', { timeout: 180_000 }).catch(() => {});
 
-      await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 180_000 });
-      // GuestGuard replaces after hydration — a soft navigation; poll the URL.
-      await expect(page).toHaveURL(/\/dashboard\/discover/, { timeout: 120_000 });
-      // And the guest form is really gone.
-      await expect(page.getByLabel('Email address')).toHaveCount(0);
+      let lastErr: unknown;
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        try {
+          await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 180_000 });
+          // GuestGuard replaces after hydration — a soft navigation; poll the URL.
+          await expect(page).toHaveURL(/\/dashboard\/discover/, { timeout: 90_000 });
+          // And the guest form is really gone.
+          await expect(page.getByLabel('Email address')).toHaveCount(0);
+          return;
+        } catch (e) {
+          lastErr = e;
+          // Mid-suite webpack restarts leave a blank login shell — reload and retry.
+          await page.waitForTimeout(3_000);
+        }
+      }
+      throw lastErr;
     });
   }
 });

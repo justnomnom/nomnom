@@ -19,10 +19,14 @@ lists mutations, profile mutations. Unit tests already cover snapshot pricing,
 purchase-row mapping, checkout/subscription error mapping, paywall recency,
 tag groups, follow circle, and more.
 
-**Status 2026-07-06 (full-suite review):** 184 e2e tests + 295 unit tests. All
-features have automated coverage. Full-run flakes under the dev server's memory
-restarts remain (about 5 per ~55-min run; all pass in isolation; CI retries
-absorb them).
+**Status 2026-09-11 (money-path + AD2 unblocked):** `npm test` 1677/1677;
+`npm run test:e2e:all` against `next start` → 268 passed, 5 env/data skips, 0
+failed. Money-path B9–B12 run (stripe listen uses `--api-key` from
+`STRIPE_SECRET_KEY`; monetized seeds call `publishList`). AD2 runs when the E2E
+user UUID is in `ADMIN_USER_IDS`. Remaining skips: A1/A6 SMTP-address limits,
+optional public profile username, data-gated must-try chips. Non-automatable
+unchanged: A7/A8/A10, C1 live Connect URL, E2/E3, P3, RO3, O10 keyboard-only,
+mobile Part B, M3 N/A.
 
 **Status 2026-07-10 (coverage-gap pass):** +17 e2e tests (suite now 201) closing
 the remaining plan gaps, all green on first full run of the new specs (13 ran,
@@ -150,13 +154,9 @@ stalls login/onboarding redirects past test budgets. Specs warm the destination
 route with one anonymous `request.get()` first (see `password-signin.spec.ts`).
 
 **Admin CRUD spec (executes for real):** `admin-sponsored-placements.spec.ts`
-skips unless the shared e2e user's auth UUID is in `ADMIN_USER_IDS` in
-`.env.local` (the running server reads it — it cannot be mutated from a test).
-The e2e user is now appended there locally. AntD RangePicker automation: use
-`input.fill()` + Enter per half (`keyboard.type` APPENDS to a prefilled input →
-unparseable → Enter silently refuses to commit), never `focus()` the end input
-externally while the range draft is open (AntD drops the tentative start half),
-and assert `toHaveValue` on both inputs before clicking Save.
+skips unless the shared e2e user's auth UUID is in `ADMIN_USER_IDS` (read by the
+running server). Append the E2E user id locally to exercise AD2; AD1 still uses
+a separately seeded *non*-admin for the deny path.
 
 **Automated since this plan was written** (see specs referenced per case):
 `auth-flows.spec.ts` (A3, A5, register validation), `access-gates.spec.ts`
@@ -379,7 +379,7 @@ Existing: `lists-mutations.spec.ts`, `list-manage-deep-link.spec.ts`,
 |---|---|---|---|
 | L1 | Public list page `/lists/[creatorHandle]/[listSlug]`: renders, share/save CTAs, 404 for bad slug | E2E public | |
 | L2 | Collaboration: owner invites a seeded user by handle → `list_members` row created (status `pending_invite`). Invite flow errors (`list-collaboration-errors` unit-tested — cover accept/decline UI once) | E2E dashboard | invite covered (`list-collaboration-invite.spec.ts`) |
-| L3 | Save-to-list sheet from discover card and restaurant page (rating, note, media) | E2E dashboard | restaurant page: `save-to-list-review.spec.ts`; discover card: `discover-card-save.spec.ts` (self-skips while the seeded market feed is empty) |
+| L3 | Save-to-list sheet from discover card and restaurant page (rating, note, media) | E2E dashboard | restaurant page: `save-to-list-review.spec.ts`; discover card: `discover-card-save.spec.ts` (pins home locality to a municipality with restaurants; self-skips only if none exist) |
 | L4 | Cover upload/remove; delete list with confirmation | E2E dashboard | cover upload/remove covered (`list-cover-upload.spec.ts`) |
 | L5 | Places tab: seeded item renders and the row-scoped remove control deletes the `list_items` row | E2E dashboard | covered (`list-places-manage.spec.ts`) |
 

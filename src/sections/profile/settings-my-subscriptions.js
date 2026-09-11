@@ -14,6 +14,7 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
 import { fDate } from 'src/utils/format-time';
+import { subscriptionStatusLabel } from 'src/utils/subscription-status-label';
 import { translateCreatorSubscriptionError } from 'src/utils/creator-subscription-errors';
 
 import { ic } from 'src/assets/icons';
@@ -115,7 +116,7 @@ function MySubscriptionRow({ row, onCancel, onManageBilling, disabled, t }) {
           <>
             <Chip
               size="small"
-              label={row.status}
+              label={subscriptionStatusLabel(row.status, t)}
               color={row.status === 'active' ? 'success' : 'info'}
               variant="soft"
             />

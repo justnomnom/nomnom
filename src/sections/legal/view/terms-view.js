@@ -47,7 +47,7 @@ export default function TermsView() {
         >
           Legal
         </Typography>
-        <Typography variant="h2" sx={{ fontWeight: 800, letterSpacing: '-0.02em' }}>
+        <Typography variant="h2" component="h1" sx={{ fontWeight: 800, letterSpacing: '-0.02em' }}>
           Terms of service
         </Typography>
         <Typography variant="body2" color="text.secondary">

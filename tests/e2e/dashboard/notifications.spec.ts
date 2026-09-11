@@ -1,8 +1,15 @@
 import { expect, test, type Page } from '@playwright/test';
+import { type SupabaseClient } from '@supabase/supabase-js';
 
+import { loadE2EEnv } from '../load-env';
 import { expectSignedInDashboardShell } from '../support/page-assertions';
 import { dashboardTestsDisabled } from '../support/skip-dashboard';
-import { E2E_DASHBOARD_AUTH_SETUP_HINT } from '../support/test-credentials';
+import { getServiceRoleClient, getUserIdByEmail } from '../support/supabase-service';
+import { createOwnedList, deleteList } from '../support/seed';
+import {
+  E2E_DASHBOARD_AUTH_SETUP_HINT,
+  getE2ETestUserEmailForDb,
+} from '../support/test-credentials';
 
 /** Webpack first compile of a dashboard route shows the splash; wait it out. */
 async function gotoSignedInDashboard(page: Page, path: string) {
@@ -124,4 +131,84 @@ test.describe('dashboard notifications', () => {
         .or(page.getByText('All'))
     ).toBeVisible({ timeout: 15_000 });
   });
+
+  test('bell feed mute persists notification_mutes row', async ({ page }) => {
+    test.setTimeout(240_000);
+    loadE2EEnv();
+    const userId = await getUserIdByEmail(await getE2ETestUserEmailForDb());
+    if (!userId) throw new Error('no e2e user id');
+    const admin = getServiceRoleClient();
+
+    const stamp = Date.now();
+    const listName = `Mute feed list ${stamp}`;
+    const restaurantName = `E2E Mute Spot ${stamp}`;
+    const listId = await createOwnedList(userId, { name: listName });
+
+    const { data: notification, error: insertErr } = await admin
+      .from('notifications')
+      .insert({
+        user_id: userId,
+        type: 'list_update',
+        data: {
+          list_id: listId,
+          list_name: listName,
+          restaurant_name: restaurantName,
+          creator_name: 'E2E Creator',
+          creator_username: 'e2e',
+        },
+      })
+      .select('id')
+      .single();
+    if (insertErr || !notification?.id) {
+      throw new Error(`seed notification failed: ${insertErr?.message ?? 'no id'}`);
+    }
+
+    try {
+      await gotoSignedInDashboard(page, '/dashboard/discover');
+      const bell = page.getByLabel('Open notifications');
+      await expect(bell).toBeVisible({ timeout: 45_000 });
+      await bell.click();
+      await expect(page.getByText(restaurantName)).toBeVisible({ timeout: 45_000 });
+
+      const menuBtn = page
+        .getByText(restaurantName, { exact: true })
+        .locator(
+          'xpath=ancestor::*[contains(@class,"MuiTypography-root")]/../../following-sibling::div//button[@aria-label="Notification options"]'
+        );
+      await menuBtn.click({ force: true });
+      await page.getByRole('menuitem', { name: 'Mute this list' }).click();
+
+      await expect
+        .poll(() => readListMuteRow(admin, userId, listId), {
+          timeout: 30_000,
+          message: 'notification_mutes row missing after mute',
+        })
+        .toBe(true);
+    } finally {
+      await admin
+        .from('notification_mutes')
+        .delete()
+        .eq('user_id', userId)
+        .eq('target_type', 'list')
+        .eq('target_id', listId);
+      await admin.from('notifications').delete().eq('id', notification.id);
+      await deleteList(listId);
+    }
+  });
 });
+
+/** Whether the signed-in user has muted list updates for a list. */
+async function readListMuteRow(
+  admin: SupabaseClient,
+  userId: string,
+  listId: string
+): Promise<boolean> {
+  const { data } = await admin
+    .from('notification_mutes')
+    .select('target_id')
+    .eq('user_id', userId)
+    .eq('target_type', 'list')
+    .eq('target_id', listId)
+    .maybeSingle();
+  return Boolean(data);
+}

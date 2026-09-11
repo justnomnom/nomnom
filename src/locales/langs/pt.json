@@ -1856,7 +1856,17 @@
     "close": "Fechar",
     "clear": "Limpar",
     "today": "Hoje",
-    "overdue": "Em Atraso",
+    "overdue": "Em atraso",
+    "subscription_status": {
+      "active": "Ativa",
+      "trialing": "Período de teste",
+      "past_due": "Em atraso",
+      "unpaid": "Por pagar",
+      "canceled": "Cancelada",
+      "incomplete": "Incompleta",
+      "incomplete_expired": "Expirada",
+      "paused": "Em pausa"
+    },
     "day": "dia",
     "days": "dias",
     "week": "semana",
@@ -1867,18 +1877,18 @@
     "years": "anos",
     "date_ranges": {
       "today": "Hoje",
-      "this_week": "Esta Semana",
-      "this_month": "Este Mês",
-      "next_7_days": "Próximos 7 Dias",
-      "next_30_days": "Próximos 30 Dias",
-      "last_7_days": "Últimos 7 Dias",
-      "last_30_days": "Últimos 30 Dias",
-      "past_week": "Semana Passada",
-      "past_month": "Mês Passado"
+      "this_week": "Esta semana",
+      "this_month": "Este mês",
+      "next_7_days": "Próximos 7 dias",
+      "next_30_days": "Próximos 30 dias",
+      "last_7_days": "Últimos 7 dias",
+      "last_30_days": "Últimos 30 dias",
+      "past_week": "Semana passada",
+      "past_month": "Mês passado"
     },
     "date_picker": {
-      "start_date": "Data de Início",
-      "due_date": "Data de Vencimento"
+      "start_date": "Data de início",
+      "due_date": "Data de vencimento"
     },
     "close_date_picker": "Fechar seletor de data",
     "editor": {

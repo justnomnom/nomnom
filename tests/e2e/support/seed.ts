@@ -82,6 +82,30 @@ export async function completeOnboardingWithoutHome(id: string): Promise<void> {
   if (error) throw new Error(`completeOnboardingWithoutHome failed: ${error.message}`);
 }
 
+/**
+ * Set (or clear) `users.home_locality_id`. Discover feed RPCs resolve this to a municipality market.
+ * Returns the previous value so callers can restore after a scoped test.
+ */
+export async function setUserHomeLocality(
+  userId: string,
+  localityId: string | null
+): Promise<string | null> {
+  const admin = getServiceRoleClient();
+  const { data: before, error: readErr } = await admin
+    .from('users')
+    .select('home_locality_id')
+    .eq('id', userId)
+    .maybeSingle();
+  if (readErr) throw new Error(`setUserHomeLocality read failed: ${readErr.message}`);
+  const previous = (before?.home_locality_id as string | null) ?? null;
+  const { error } = await admin
+    .from('users')
+    .update({ home_locality_id: localityId })
+    .eq('id', userId);
+  if (error) throw new Error(`setUserHomeLocality failed: ${error.message}`);
+  return previous;
+}
+
 /** Insert a list_items row directly (add a restaurant to a list). */
 export async function seedListItem(
   listId: string,
@@ -248,6 +272,8 @@ export async function deleteCustomerRow(userId: string): Promise<void> {
 /**
  * Read the subscription access row a money-path test asserts on. Uses the service role so it is
  * not subject to RLS — reflects exactly what the webhook persisted.
+ *
+ * Transient PostgREST schema-cache blips return null so `pollUntil` can retry instead of aborting.
  */
 export async function getListSubscriptionRow(
   listId: string,
@@ -260,7 +286,10 @@ export async function getListSubscriptionRow(
     .eq('list_id', listId)
     .eq('subscriber_user_id', subscriberUserId)
     .maybeSingle();
-  if (error) throw new Error(`getListSubscriptionRow failed: ${error.message}`);
+  if (error) {
+    if (/schema cache|Retrying/i.test(error.message)) return null;
+    throw new Error(`getListSubscriptionRow failed: ${error.message}`);
+  }
   return data ?? null;
 }
 
@@ -276,7 +305,10 @@ export async function getSnapshotPurchaseRow(
     .eq('list_id', listId)
     .eq('buyer_user_id', buyerUserId)
     .maybeSingle();
-  if (error) throw new Error(`getSnapshotPurchaseRow failed: ${error.message}`);
+  if (error) {
+    if (/schema cache|Retrying/i.test(error.message)) return null;
+    throw new Error(`getSnapshotPurchaseRow failed: ${error.message}`);
+  }
   return data ?? null;
 }
 

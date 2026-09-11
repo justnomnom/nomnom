@@ -1,4 +1,4 @@
-import { type APIResponse, expect, test } from '@playwright/test';
+import { type APIRequestContext, type APIResponse, expect, test } from '@playwright/test';
 
 /**
  * Stripe route-handler guard rails, unauthenticated (TEST-PLAN B1, B2, B14 + connect 401).
@@ -11,10 +11,35 @@ function skipIfStripeUnconfigured(res: APIResponse) {
   test.skip(res.status() === 503, 'Stripe env not configured for this environment');
 }
 
+/**
+ * POST with a few retries when the webpack webServer is mid-restart (ECONNREFUSED /
+ * connection reset). Common in long single-worker suites after memory pressure.
+ */
+async function postWithServerRetry(
+  request: APIRequestContext,
+  url: string,
+  options?: Parameters<APIRequestContext['post']>[1]
+): Promise<APIResponse> {
+  let lastErr: unknown;
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    try {
+      return await request.post(url, options);
+    } catch (e) {
+      lastErr = e;
+      const msg = e instanceof Error ? e.message : String(e);
+      if (!/ECONNREFUSED|ECONNRESET|socket hang up|connect/i.test(msg)) {
+        throw e;
+      }
+      await new Promise((r) => setTimeout(r, 2_000 * (attempt + 1)));
+    }
+  }
+  throw lastErr;
+}
+
 test.describe('POST /api/stripe/checkout/list — unauthenticated guards', () => {
   test('invalid JSON body → 400 invalid_json', async ({ request }) => {
     // Buffer keeps the payload raw — a plain string would be JSON-stringified by Playwright.
-    const res = await request.post('/api/stripe/checkout/list', {
+    const res = await postWithServerRetry(request, '/api/stripe/checkout/list', {
       headers: { 'content-type': 'application/json' },
       data: Buffer.from('not-json{{{'),
     });
@@ -24,14 +49,14 @@ test.describe('POST /api/stripe/checkout/list — unauthenticated guards', () =>
   });
 
   test('missing listId → 400 missing_list_id', async ({ request }) => {
-    const res = await request.post('/api/stripe/checkout/list', { data: {} });
+    const res = await postWithServerRetry(request, '/api/stripe/checkout/list', { data: {} });
     skipIfStripeUnconfigured(res);
     expect(res.status()).toBe(400);
     expect((await res.json()).error).toBe('missing_list_id');
   });
 
   test('malformed listId → 400 invalid_list_id', async ({ request }) => {
-    const res = await request.post('/api/stripe/checkout/list', {
+    const res = await postWithServerRetry(request, '/api/stripe/checkout/list', {
       data: { listId: 'not-a-uuid' },
     });
     skipIfStripeUnconfigured(res);
@@ -40,7 +65,7 @@ test.describe('POST /api/stripe/checkout/list — unauthenticated guards', () =>
   });
 
   test('well-formed listId without a session → 401 unauthorized', async ({ request }) => {
-    const res = await request.post('/api/stripe/checkout/list', {
+    const res = await postWithServerRetry(request, '/api/stripe/checkout/list', {
       data: { listId: '00000000-0000-4000-8000-000000000000' },
     });
     skipIfStripeUnconfigured(res);
@@ -51,7 +76,7 @@ test.describe('POST /api/stripe/checkout/list — unauthenticated guards', () =>
 
 test.describe('POST /api/stripe/connect/onboard — unauthenticated', () => {
   test('no session → 401 unauthorized', async ({ request }) => {
-    const res = await request.post('/api/stripe/connect/onboard');
+    const res = await postWithServerRetry(request, '/api/stripe/connect/onboard');
     skipIfStripeUnconfigured(res);
     expect(res.status()).toBe(401);
     expect((await res.json()).error).toBe('unauthorized');
@@ -60,7 +85,7 @@ test.describe('POST /api/stripe/connect/onboard — unauthenticated', () => {
 
 test.describe('POST /api/stripe/checkout/verify-snapshot — unauthenticated', () => {
   test('no session → 401 unauthorized', async ({ request }) => {
-    const res = await request.post('/api/stripe/checkout/verify-snapshot', {
+    const res = await postWithServerRetry(request, '/api/stripe/checkout/verify-snapshot', {
       data: { sessionId: 'cs_test_x', stripeAccountId: 'acct_x' },
     });
     skipIfStripeUnconfigured(res);
@@ -71,7 +96,7 @@ test.describe('POST /api/stripe/checkout/verify-snapshot — unauthenticated', (
 
 test.describe('POST /api/webhooks/stripe — signature enforcement', () => {
   test('missing stripe-signature header → 400 missing_signature', async ({ request }) => {
-    const res = await request.post('/api/webhooks/stripe', {
+    const res = await postWithServerRetry(request, '/api/webhooks/stripe', {
       headers: { 'content-type': 'application/json' },
       data: JSON.stringify({ id: 'evt_fake', type: 'checkout.session.completed' }),
     });
@@ -81,7 +106,7 @@ test.describe('POST /api/webhooks/stripe — signature enforcement', () => {
   });
 
   test('bogus stripe-signature → 400 invalid_signature, no side effects', async ({ request }) => {
-    const res = await request.post('/api/webhooks/stripe', {
+    const res = await postWithServerRetry(request, '/api/webhooks/stripe', {
       headers: {
         'content-type': 'application/json',
         'stripe-signature': 't=1,v1=deadbeef',
@@ -96,7 +121,7 @@ test.describe('POST /api/webhooks/stripe — signature enforcement', () => {
 
 test.describe('POST /api/stripe/billing-portal — unauthenticated', () => {
   test('no session → 401 unauthorized', async ({ request }) => {
-    const res = await request.post('/api/stripe/billing-portal', {
+    const res = await postWithServerRetry(request, '/api/stripe/billing-portal', {
       data: { listSubscriptionId: '00000000-0000-4000-8000-000000000000' },
     });
     skipIfStripeUnconfigured(res);

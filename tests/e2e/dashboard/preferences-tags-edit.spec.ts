@@ -98,10 +98,19 @@ test.describe('dashboard settings — tag preferences edit (S2)', () => {
       })
       .toBe(1);
 
+    // First save calls router.refresh(); if we toggle again before RSC props land, the
+    // sync-from-server effect resets selectedIds and the second Save re-writes the
+    // post-first-save set. Reload so the restore edit starts from committed prefs.
+    await page.reload({ waitUntil: 'domcontentloaded', timeout: 180_000 });
+    await expect(page.getByRole('heading', { name: 'Food & vibe preferences' })).toBeVisible({
+      timeout: 60_000,
+    });
+
     // Restore: toggle the same option (by its label) and save again.
     const combo = mainRegion.getByRole('combobox').first();
+    await expect(combo).toBeVisible({ timeout: 60_000 });
     await combo.click();
-    const sameOption = page.getByRole('option', { name: toggledLabel }).first();
+    const sameOption = page.getByRole('option', { name: toggledLabel, exact: true }).first();
     await expect(sameOption).toBeVisible({ timeout: 15_000 });
     await sameOption.click();
     await page.keyboard.press('Escape');

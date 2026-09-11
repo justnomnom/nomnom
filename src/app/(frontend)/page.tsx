@@ -4,13 +4,13 @@ import { JsonLd } from '@/components/content-platform/seo/json-ld';
 import { getSiteUrl } from '@/content-platform/site-url';
 import { DynamicTitle } from 'src/components/dynamic-title';
 import { APP } from 'src/config-global';
-import { getDefaultTranslation } from 'src/locales/default-translations';
+import { getTranslation } from 'src/locales/default-translations';
 
 import { HomeView } from 'src/sections/home/view';
 
 // ----------------------------------------------------------------------
 
-const homeTitle = getDefaultTranslation('pages.home.title') as string;
+const homeTitle = getTranslation('en', 'pages.home.title');
 const homeOgImage = '/opengraph-image';
 
 export const metadata: Metadata = {

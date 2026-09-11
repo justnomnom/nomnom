@@ -11,6 +11,7 @@ import { RouterLink } from 'src/routes/components';
 
 import { ic } from 'src/assets/icons';
 import { hoverable } from 'src/theme/overrides/hoverable';
+import { readableAccent } from 'src/theme/readable-accent';
 
 import Iconify from '../../iconify';
 
@@ -147,8 +148,6 @@ const StyledNavItem = styled(ListItemButton, {
 
   const opened = open && !active;
 
-  const lightMode = theme.palette.mode === 'light';
-
   const noWrapStyles = {
     width: '100%',
     maxWidth: '100%',
@@ -211,7 +210,7 @@ const StyledNavItem = styled(ListItemButton, {
       ...(active && {
         fontWeight: theme.typography.fontWeightBold,
         backgroundColor: alpha(theme.palette.primary.main, 0.1),
-        color: lightMode ? theme.palette.primary.main : theme.palette.primary.light,
+        color: readableAccent(theme),
         ...hoverable({
           backgroundColor: alpha(theme.palette.primary.main, 0.16),
         }),

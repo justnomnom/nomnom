@@ -8,6 +8,7 @@ import {
   createOwnedList,
   deleteList,
   seedListItem,
+  publishList,
   createSeededUser,
   deleteSeededUser,
   seedCreatorConnect,
@@ -115,6 +116,8 @@ async function setupMonetizedList(nameSuffix: string): Promise<{
     monthlyAmountCents: c.amountCents,
     currency: c.currency,
   });
+  // `public_subscribers` lists soft-404 without published_at (fetchListPage → not_public).
+  await publishList(listId);
   const restaurantId = await getAnyRestaurantId();
   if (restaurantId) await seedListItem(listId, restaurantId, creator.id);
 

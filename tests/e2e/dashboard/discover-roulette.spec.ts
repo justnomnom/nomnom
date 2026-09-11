@@ -298,13 +298,24 @@ test.describe('dashboard discover — no home location gate', () => {
     test.setTimeout(180_000);
     const { context, page } = await openAsSeededUser(browser);
     try {
-      await page.goto('/dashboard/discover', { waitUntil: 'load', timeout: 120_000 });
-      try {
-        await expectSignedInDashboardShell(page, { timeout: 45_000 });
-      } catch {
-        await page.reload({ waitUntil: 'load', timeout: 120_000 });
-        await expectSignedInDashboardShell(page, { timeout: 45_000 });
+      // Same retry pattern as gotoDashboard — webpack memory restarts mid-suite surface as
+      // ERR_CONNECTION_RESET / hung first paint on a fresh context.
+      let lastErr: unknown;
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        try {
+          await page.goto('/dashboard/discover', {
+            waitUntil: 'domcontentloaded',
+            timeout: 120_000,
+          });
+          await expectSignedInDashboardShell(page, { timeout: 45_000 });
+          lastErr = null;
+          break;
+        } catch (e) {
+          lastErr = e;
+          await page.waitForTimeout(3_000);
+        }
       }
+      if (lastErr) throw lastErr;
 
       // Not bounced to onboarding (completed) and not the auth gate.
       await expect(page).toHaveURL(/\/dashboard\/discover/);

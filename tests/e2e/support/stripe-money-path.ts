@@ -234,19 +234,26 @@ export type StripeListenHandle = { stop: () => Promise<void> };
 
 /**
  * Spawn `stripe listen` forwarding to the local webhook route and resolve once it prints "Ready".
- * The CLI's signing secret is stable per login; when it matches STRIPE_WEBHOOK_SECRET in .env.local
- * (the app default), the dev server verifies the forwarded events. Safe to run even if the
- * developer already has `npm run stripe:listen` up — Stripe delivers to both and the handler is
- * idempotent (stripe_events).
+ * Prefers `STRIPE_SECRET_KEY` from the env (`--api-key`) so an expired Stripe CLI device key does
+ * not fail the suite while the app's sk_test still works. The CLI's signing secret must match
+ * `STRIPE_WEBHOOK_SECRET` in `.env.local` (see `npm run stripe:webhook-secret` / runbook). Safe to
+ * run even if the developer already has `npm run stripe:listen` up — Stripe delivers to both and
+ * the handler is idempotent (`stripe_events`).
  */
 export async function startStripeListen(
   forwardTo = 'http://localhost:3032/api/webhooks/stripe'
 ): Promise<StripeListenHandle> {
-  const proc: ChildProcess = spawn(
-    'stripe',
-    ['listen', '--forward-to', forwardTo, '--skip-update'],
-    { stdio: ['ignore', 'pipe', 'pipe'], shell: process.platform === 'win32' }
-  );
+  // Prefer the app's sk_test from .env.local — the Stripe CLI device key in `~/.config/stripe`
+  // can expire independently (`Authorization failed … api_key_expired`) while the repo key still
+  // works. Fall back to CLI login when STRIPE_SECRET_KEY is unset.
+  const apiKey = process.env.STRIPE_SECRET_KEY?.trim();
+  const args = ['listen', '--forward-to', forwardTo, '--skip-update'];
+  if (apiKey) args.push('--api-key', apiKey);
+
+  const proc: ChildProcess = spawn('stripe', args, {
+    stdio: ['ignore', 'pipe', 'pipe'],
+    shell: process.platform === 'win32',
+  });
 
   await new Promise<void>((resolve, reject) => {
     const timer = setTimeout(

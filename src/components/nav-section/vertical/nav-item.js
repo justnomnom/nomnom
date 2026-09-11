@@ -12,6 +12,7 @@ import { RouterLink } from 'src/routes/components';
 import { ic } from 'src/assets/icons';
 import { TOUCH_TARGET_SIZE } from 'src/theme/spacing';
 import { hoverable } from 'src/theme/overrides/hoverable';
+import { readableAccent } from 'src/theme/readable-accent';
 
 import Iconify from '../../iconify';
 
@@ -251,8 +252,7 @@ const StyledNavItem = styled(ListItemButton, {
         ...baseStyles.arrow,
       },
       ...(active && {
-        color:
-          theme.palette.mode === 'light' ? theme.palette.primary.main : theme.palette.primary.light,
+        color: readableAccent(theme),
         backgroundColor: alpha(theme.palette.primary.main, 0.1),
         ...hoverable({
           backgroundColor: alpha(theme.palette.primary.main, 0.16),
@@ -304,8 +304,7 @@ const StyledNavItem = styled(ListItemButton, {
         ...baseStyles.arrow,
       },
       ...(active && {
-        color:
-          theme.palette.mode === 'light' ? theme.palette.primary.main : theme.palette.primary.light,
+        color: readableAccent(theme),
       }),
     }),
 

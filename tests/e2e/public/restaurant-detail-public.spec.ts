@@ -108,7 +108,7 @@ test.describe('public restaurant detail — render (R1)', () => {
     const dialog = page.getByRole('dialog');
     await expect(dialog).toBeVisible({ timeout: 15_000 });
     await expect(dialog.getByText('Want the full experience?')).toBeVisible();
-    await expect(dialog.getByRole('link', { name: 'Create account' })).toBeVisible();
+    await expect(dialog.getByRole('link', { name: 'Let’s NomNom!' })).toBeVisible();
     await expect(dialog.getByRole('link', { name: 'Sign in' })).toBeVisible();
   });
 });

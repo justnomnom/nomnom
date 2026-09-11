@@ -18,6 +18,7 @@ import { useMyDashboardPublicProfilePath } from 'src/hooks/use-my-dashboard-publ
 import { useTranslate } from 'src/locales';
 import { Z_INDEX } from 'src/theme/spacing';
 import { useAuthContext } from 'src/auth/hooks';
+import { readableAccent } from 'src/theme/readable-accent';
 import { useGetNotifications } from 'src/api/notifications';
 
 import { m } from 'src/components/animate';
@@ -127,7 +128,7 @@ function NavBottom() {
                 justifyContent: 'center',
                 gap: '4px',
                 py: 0.5,
-                color: isActive ? 'primary.main' : 'text.secondary',
+                color: isActive ? readableAccent(theme) : 'text.secondary',
                 fontSize: '10px',
                 lineHeight: 1.2,
                 fontWeight: isActive ? 700 : 500,
@@ -136,7 +137,7 @@ function NavBottom() {
                 touchAction: 'manipulation',
                 transition: 'color 0.2s ease, transform 0.15s ease',
                 '&:hover': {
-                  color: isActive ? 'primary.main' : 'text.primary',
+                  color: isActive ? readableAccent(theme) : 'text.primary',
                 },
                 '&:active': {
                   transform: 'scale(0.98)',

@@ -44,7 +44,9 @@ export default function ContactView({ variant = 'page' }) {
         <MotionContainer>
           <MotionPart variants={varFade().inUp}>
             <Stack {...dashboardSubsectionStackProps} sx={{ textAlign: 'center' }}>
-              <Typography variant="h2">{t('pages.contact_us.title')}</Typography>
+              <Typography variant="h2" component="h1">
+                {t('pages.contact_us.title')}
+              </Typography>
               <Typography sx={{ color: 'text.secondary' }}>
                 {t('pages.contact_us.form.subtitle')}
               </Typography>

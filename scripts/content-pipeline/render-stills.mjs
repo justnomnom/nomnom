@@ -66,11 +66,22 @@ function slidesFor(piece) {
   }));
 }
 
+function splitUrl(text) {
+  const raw = String(text || '').trim();
+  const match = raw.match(/(?:→\s*)?((?:https?:\/\/)?(?:www\.)?[a-z0-9-]+(?:\.[a-z]{2,})+(?:\/\S*)?)\s*$/i);
+  if (!match) return { headline: raw, url: '' };
+  const headline = raw.slice(0, match.index).replace(/[→\s]+$/g, '').trim();
+  if (!headline) return { headline: raw, url: '' };
+  return { headline, url: match[1] };
+}
+
 function htmlFor({ kicker, text, format, brand, options }) {
   const story = format === 'story';
   const w = 1080;
   const h = story ? 1920 : 1080;
   const poll = Array.isArray(options) && options.length >= 2;
+  const { headline, url } = poll ? { headline: '', url: '' } : splitUrl(text);
+  const kind = poll ? 'poll' : story ? 'story' : 'square';
   const body = poll
     ? `<div class="options">${options
         .map(
@@ -78,7 +89,7 @@ function htmlFor({ kicker, text, format, brand, options }) {
             `<div class="option"><span class="opt-letter">${String.fromCharCode(65 + i)}</span><span class="opt-text">${esc(opt)}</span></div>`
         )
         .join('')}</div>`
-    : `<div class="quote">${esc(text).replace(/([./])/g, '$1\u200b')}</div>`;
+    : `<div class="quote">${esc(headline || text)}</div>${url ? `<div class="cta-url">${esc(url)}</div>` : ''}`;
   return `<!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -102,70 +113,83 @@ body { width: ${w}px; height: ${h}px; background: var(--paper); overflow: hidden
 .card {
   width: ${w}px; height: ${h}px; background: var(--paper);
   position: relative; overflow: hidden;
+  display: flex; flex-direction: column;
+  padding: ${story ? '52px 44px 36px' : '40px 40px 28px'};
 }
 .bar { position: absolute; left: 0; top: 0; width: 100%; height: 12px; background: var(--terra); }
 .mark {
-  position: absolute; top: ${story ? 120 : 48}px; left: 8px;
-  font-family: var(--serif); font-size: ${story ? 420 : 300}px; line-height: 0.75;
+  position: absolute; top: ${story ? 80 : 28}px; left: 4px;
+  font-family: var(--serif); font-size: ${story ? 380 : 260}px; line-height: 0.75;
   color: var(--terra); opacity: 0.12; pointer-events: none; user-select: none;
 }
+.poster {
+  flex: 1 1 auto; min-height: 0;
+  display: flex; flex-direction: column; gap: ${story ? 22 : 16}px;
+  justify-content: ${poll || story ? 'stretch' : 'center'};
+  position: relative; z-index: 1;
+}
 .kicker {
-  position: absolute; top: ${story ? 48 : 36}px; left: ${story ? 56 : 48}px; right: 48px;
+  flex: 0 0 auto;
   font-family: var(--sans); font-size: ${story ? 22 : 20}px; font-weight: 700;
   letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent);
 }
 .stage {
-  position: absolute;
-  top: ${story ? 108 : 84}px; left: ${story ? 48 : 40}px; right: ${story ? 48 : 40}px;
-  bottom: ${story ? 116 : 96}px;
-  display: flex; flex-direction: column; justify-content: center;
+  flex: ${poll || story ? '1 1 auto' : '0 1 auto'};
   min-height: 0;
+  display: flex; flex-direction: column; justify-content: ${poll ? 'stretch' : 'center'};
+  gap: 16px;
 }
 .quote {
   width: 100%;
   font-family: var(--serif); font-size: ${story ? 96 : 84}px; font-weight: 700;
-  color: var(--ink); line-height: 1.08; letter-spacing: -0.03em;
+  color: var(--ink); line-height: 1.05; letter-spacing: -0.03em;
   overflow-wrap: break-word; word-break: normal; white-space: pre-wrap;
 }
+.cta-url {
+  font-family: var(--sans); font-size: ${story ? 36 : 32}px; font-weight: 800;
+  color: var(--terra); letter-spacing: -0.02em; overflow-wrap: anywhere;
+}
 .options {
-  display: flex; flex-direction: column; gap: ${story ? 24 : 20}px;
-  height: 100%; justify-content: stretch;
+  display: flex; flex-direction: column; gap: ${story ? 20 : 16}px;
+  flex: 1; min-height: 0;
 }
 .option {
-  flex: 1 1 0; display: flex; align-items: center; gap: 28px;
+  flex: 1 1 0; min-height: 0;
+  display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 20px;
   background: var(--parch); border: 2px solid var(--hair); border-radius: 28px;
-  padding: ${story ? '36px 32px' : '28px 28px'};
-  min-height: 0;
+  padding: ${story ? '40px 36px' : '28px 28px'};
 }
 .opt-letter {
-  flex: 0 0 auto; width: ${story ? 72 : 64}px; height: ${story ? 72 : 64}px;
-  border-radius: 16px; background: var(--terra); color: #fff;
-  font-family: var(--sans); font-size: ${story ? 32 : 28}px; font-weight: 800;
+  flex: 0 0 auto; width: ${story ? 88 : 64}px; height: ${story ? 88 : 64}px;
+  border-radius: 18px; background: var(--terra); color: #fff;
+  font-family: var(--sans); font-size: ${story ? 36 : 28}px; font-weight: 800;
   display: flex; align-items: center; justify-content: center;
 }
 .opt-text {
-  font-family: var(--sans); font-size: ${story ? 56 : 48}px; font-weight: 800;
-  color: var(--ink); line-height: 1.15;
+  font-family: var(--sans); font-size: ${story ? 72 : 48}px; font-weight: 800;
+  color: var(--ink); line-height: 1.05; width: auto; display: block;
+  white-space: nowrap;
 }
 .bottom {
-  position: absolute; left: ${story ? 56 : 48}px; right: ${story ? 56 : 48}px;
-  bottom: ${story ? 44 : 32}px;
+  flex: 0 0 auto;
   display: flex; justify-content: space-between; align-items: baseline;
-  border-top: 1px solid var(--hair); padding-top: 18px;
+  border-top: 1px solid var(--hair); padding-top: 16px;
 }
 .brand { font-family: var(--sans); font-size: 28px; font-weight: 800; color: var(--terra); }
 .meta { font-family: var(--sans); font-size: 16px; font-weight: 500; color: var(--ink2); text-align: right; }
 </style>
 </head>
 <body>
-<div class="card">
+<div class="card ${kind}">
   <div class="bar"></div>
   ${poll ? '' : `<div class="mark" aria-hidden="true">“</div>`}
-  <div class="kicker">${esc(kicker)}</div>
-  <div class="stage">${body}</div>
-  <div class="bottom">
-    <div class="brand">NomNom</div>
-    <div class="meta">${esc(brand)}</div>
+  <div class="poster">
+    <div class="kicker">${esc(kicker)}</div>
+    <div class="stage">${body}</div>
+    <div class="bottom">
+      <div class="brand">NomNom</div>
+      <div class="meta">${esc(brand)}</div>
+    </div>
   </div>
 </div>
 </body>
@@ -188,7 +212,7 @@ function slug(value) {
     .slice(0, 40);
 }
 
-/** Grow type until the quote (or poll cards) fill the stage, then stop. */
+/** Grow type until the quote (or each poll card) fills the available box. */
 async function fitType(page) {
   await page.evaluate(async () => {
     await Promise.all([
@@ -198,72 +222,86 @@ async function fitType(page) {
     ]);
   });
   await page.evaluate(() => {
+    const poster = document.querySelector('.poster');
     const stage = document.querySelector('.stage');
-    if (!stage) return;
-    const maxH = stage.clientHeight;
-    const maxW = stage.clientWidth;
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
+    const kicker = document.querySelector('.kicker');
+    const bottom = document.querySelector('.bottom');
+    const cta = document.querySelector('.cta-url');
+    if (!poster || !stage) return;
 
     const longestToken = (el) =>
       (el.textContent || '')
-        .split(/[\s./→—–-]+/)
+        .split(/[\s/→—–]+/)
         .reduce((best, word) => (word.length > best.length ? word : best), '');
-
-    const wordFits = (font, token) => {
-      ctx.font = font;
-      return ctx.measureText(token).width <= maxW - 8;
-    };
 
     const quote = document.querySelector('.quote');
     if (quote) {
+      const reserved =
+        (kicker?.offsetHeight || 0) +
+        (bottom?.offsetHeight || 0) +
+        (cta?.offsetHeight || 0) +
+        48;
+      const maxH = Math.max(120, poster.clientHeight - reserved);
+      const maxW = stage.clientWidth;
       const token = longestToken(quote);
       quote.style.width = '100%';
       quote.style.lineHeight = '1.05';
       let lo = 56;
-      let hi = stage.clientHeight > 1400 ? 280 : 320;
+      let hi = poster.clientHeight > 1400 ? 280 : 300;
       let best = lo;
       while (lo <= hi) {
         const mid = Math.floor((lo + hi) / 2);
         quote.style.fontSize = `${mid}px`;
         const overflowY = quote.scrollHeight > maxH + 1;
-        const overflowWord = token ? !wordFits(`700 ${mid}px "Libre Baskerville"`, token) : false;
-        if (!overflowY && !overflowWord) {
+        const overflowX = quote.scrollWidth > maxW + 1;
+        if (!overflowY && !overflowX) {
           best = mid;
           lo = mid + 1;
         } else {
           hi = mid - 1;
         }
       }
+      if (token) {
+        const probe = document.createElement('span');
+        probe.style.cssText = `position:absolute;visibility:hidden;white-space:nowrap;font:700 ${best}px "Libre Baskerville"`;
+        probe.textContent = token;
+        document.body.append(probe);
+        while (best > 48 && probe.getBoundingClientRect().width > maxW - 8) {
+          best -= 2;
+          probe.style.fontSize = `${best}px`;
+        }
+        probe.remove();
+      }
       quote.style.fontSize = `${best}px`;
       return;
     }
 
-    const options = document.querySelector('.options');
-    if (!options) return;
-    const texts = [...options.querySelectorAll('.opt-text')];
-    const token = texts.map((el) => longestToken(el)).reduce((best, word) => (word.length > best.length ? word : best), '');
-    const apply = (n) => {
-      texts.forEach((el) => {
-        el.style.fontSize = `${n}px`;
-      });
-    };
-    let lo = 40;
-    let hi = 140;
-    let best = lo;
-    while (lo <= hi) {
-      const mid = Math.floor((lo + hi) / 2);
-      apply(mid);
-      const overflowY = options.scrollHeight > maxH + 1;
-      const overflowWord = !wordFits(`800 ${mid}px "Albert Sans"`, token);
-      if (!overflowY && !overflowWord) {
-        best = mid;
-        lo = mid + 1;
-      } else {
-        hi = mid - 1;
+    const cards = [...document.querySelectorAll('.option')];
+    for (const card of cards) {
+      const text = card.querySelector('.opt-text');
+      if (!text) continue;
+      const letter = card.querySelector('.opt-letter');
+      text.style.whiteSpace = 'nowrap';
+      text.style.width = 'auto';
+      const maxW = card.clientWidth - 72;
+      const maxH = Math.max(80, card.clientHeight - (letter?.offsetHeight || 0) - 56);
+      let lo = 48;
+      let hi = 280;
+      let best = lo;
+      while (lo <= hi) {
+        const mid = Math.floor((lo + hi) / 2);
+        text.style.fontSize = `${mid}px`;
+        const overflowY = text.scrollHeight > maxH + 1;
+        const overflowX = text.scrollWidth > maxW + 1;
+        if (!overflowY && !overflowX) {
+          best = mid;
+          lo = mid + 1;
+        } else {
+          hi = mid - 1;
+        }
       }
+      text.style.fontSize = `${best}px`;
     }
-    apply(best);
   });
 }
 

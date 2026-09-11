@@ -1857,6 +1857,16 @@
     "clear": "Clear",
     "today": "Today",
     "overdue": "Overdue",
+    "subscription_status": {
+      "active": "Active",
+      "trialing": "Trial",
+      "past_due": "Past due",
+      "unpaid": "Unpaid",
+      "canceled": "Cancelled",
+      "incomplete": "Incomplete",
+      "incomplete_expired": "Expired",
+      "paused": "Paused"
+    },
     "day": "day",
     "days": "days",
     "week": "week",

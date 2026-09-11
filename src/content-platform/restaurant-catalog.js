@@ -24,7 +24,7 @@ function listSubdirNames(relativeDir) {
 /**
  * All restaurants from structured JSON (not MDX).
  *
- * @returns {Array<{ slug: string, country: string, city: string, categories?: string[] }>}
+ * @returns {import('./types').Restaurant[]}
  */
 export function getAllRestaurants() {
   const p = contentPath('data', 'restaurants.json');

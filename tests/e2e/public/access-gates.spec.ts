@@ -15,11 +15,11 @@ test.describe('access gates — anonymous user', () => {
     test.setTimeout(180_000);
     // The layout's redirect() streams as a client-side redirect (response is already 200 by
     // then), so the navigation needs hydrated JS — retry once for dev-server cold compiles.
-    await page.goto('/onboarding', { waitUntil: 'load', timeout: 120_000 });
+    await page.goto('/onboarding', { waitUntil: 'domcontentloaded', timeout: 120_000 });
     try {
       await expect(page).toHaveURL(/\/auth\/login\?.*returnTo=%2Fonboarding/, { timeout: 45_000 });
     } catch {
-      await page.goto('/onboarding', { waitUntil: 'load', timeout: 120_000 });
+      await page.goto('/onboarding', { waitUntil: 'domcontentloaded', timeout: 120_000 });
       await expect(page).toHaveURL(/\/auth\/login\?.*returnTo=%2Fonboarding/, { timeout: 45_000 });
     }
   });
@@ -27,13 +27,23 @@ test.describe('access gates — anonymous user', () => {
   for (const path of ['/dashboard/discover', '/dashboard/settings/billing', '/dashboard/lists']) {
     test(`${path} shows the auth gate, not dashboard content`, async ({ page }) => {
       test.setTimeout(180_000);
-      await page.goto(path, { waitUntil: 'load', timeout: 120_000 });
-      // Either a redirect to /auth/* or the in-place "Continue with Google" gate is acceptable;
-      // what must NOT happen is signed-in dashboard content rendering.
-      const gate = page
-        .getByRole('button', { name: /Continue with Google/i })
-        .or(page.locator('input[name="password"]'));
-      await expect(gate.first()).toBeVisible({ timeout: 45_000 });
+      let lastErr: unknown;
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        try {
+          await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 120_000 });
+          // Either a redirect to /auth/* or the in-place "Continue with Google" gate is acceptable;
+          // what must NOT happen is signed-in dashboard content rendering.
+          const gate = page
+            .getByRole('button', { name: /Continue with Google/i })
+            .or(page.locator('input[name="password"]'));
+          await expect(gate.first()).toBeVisible({ timeout: 45_000 });
+          return;
+        } catch (e) {
+          lastErr = e;
+          await page.waitForTimeout(3_000);
+        }
+      }
+      throw lastErr;
     });
   }
 });
