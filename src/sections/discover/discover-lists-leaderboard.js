@@ -30,13 +30,14 @@ import { settingsDrillFullBleedStripSx } from 'src/sections/profile/view/setting
 // ----------------------------------------------------------------------
 
 /** Shared empty leaderboard panel (Discover carousel + manage card). */
-function LeaderboardEmptyPanel({ titleKey, bodyKey }) {
+function LeaderboardEmptyPanel({ titleKey, bodyKey, action }) {
   const { t } = useTranslate();
   return (
     <DashboardDelightEmpty
       icon={ic.usersGroupRoundedBold}
       title={t(titleKey)}
       body={t(bodyKey)}
+      action={action}
       sx={{ py: 3.5 }}
     />
   );
@@ -45,6 +46,7 @@ function LeaderboardEmptyPanel({ titleKey, bodyKey }) {
 LeaderboardEmptyPanel.propTypes = {
   titleKey: PropTypes.string.isRequired,
   bodyKey: PropTypes.string.isRequired,
+  action: PropTypes.node,
 };
 
 const MODE_INTERACTION = 'interaction';
@@ -89,6 +91,19 @@ export default function DiscoverListsLeaderboard({ leaderboard, variant = 'disco
           empty: 'pages.dashboard.discover.lists_leaderboard_empty',
           emptyTitle: 'pages.dashboard.discover.lists_leaderboard_empty_title',
         };
+
+  const emptyAction =
+    variant === 'discover' ? (
+      <Button
+        component={RouterLink}
+        href={paths.dashboard.lists}
+        variant="contained"
+        color="primary"
+        size="small"
+      >
+        {t('pages.dashboard.discover.lists_leaderboard_empty_cta')}
+      </Button>
+    ) : null;
 
   const rows =
     mode === MODE_FOLLOWERS
@@ -158,7 +173,7 @@ export default function DiscoverListsLeaderboard({ leaderboard, variant = 'disco
           </Typography>
         ) : null}
         {rows.length === 0 && !leaderboard?.error ? (
-          <LeaderboardEmptyPanel titleKey={tk.emptyTitle} bodyKey={tk.empty} />
+          <LeaderboardEmptyPanel titleKey={tk.emptyTitle} bodyKey={tk.empty} action={emptyAction} />
         ) : null}
         {rows.length > 0 ? (
           <ScrollableChipRow
@@ -289,7 +304,7 @@ export default function DiscoverListsLeaderboard({ leaderboard, variant = 'disco
           </Typography>
         ) : null}
         {rows.length === 0 && !leaderboard?.error ? (
-          <LeaderboardEmptyPanel titleKey={tk.emptyTitle} bodyKey={tk.empty} />
+          <LeaderboardEmptyPanel titleKey={tk.emptyTitle} bodyKey={tk.empty} action={emptyAction} />
         ) : null}
         {top3.length > 0 && (
           <Stack

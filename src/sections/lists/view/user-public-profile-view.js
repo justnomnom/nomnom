@@ -992,9 +992,25 @@ export default function UserPublicProfileView({
           ) : null}
 
           {(lists ?? []).length === 0 && !isOwnProfile ? (
-            <Typography variant="body2" color="text.secondary" sx={{ py: 2 }}>
-              {t('pages.lists.no_public_lists')}
-            </Typography>
+            <Box sx={{ py: 1.5, minWidth: 240, maxWidth: 320 }}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                {t('pages.lists.no_public_lists')}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, mb: 1.5 }}>
+                {t('pages.lists.no_public_lists_hint')}
+              </Typography>
+              <Button
+                component={RouterLink}
+                href={isDashboard ? paths.dashboard.discover : paths.home}
+                variant="contained"
+                color="primary"
+                size="small"
+              >
+                {isDashboard
+                  ? t('pages.dashboard.discover_spots_cta')
+                  : t('pages.lists.explore_nomnom_cta')}
+              </Button>
+            </Box>
           ) : null}
         </ScrollableChipRow>
       </Box>
@@ -1063,13 +1079,33 @@ export default function UserPublicProfileView({
           {(() => {
             if ((activityRows ?? []).length === 0) {
               return (
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ textAlign: 'center', py: 4 }}
-                >
-                  {t('pages.lists.creator_activity_empty')}
-                </Typography>
+                <Stack spacing={1.5} sx={{ width: 1, alignItems: 'center', py: 2 }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700, textAlign: 'center' }}>
+                    {t('pages.lists.creator_activity_empty_title')}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ textAlign: 'center', maxWidth: 360 }}
+                  >
+                    {t(
+                      isOwnProfile
+                        ? 'pages.lists.creator_activity_empty_own'
+                        : 'pages.lists.creator_activity_empty'
+                    )}
+                  </Typography>
+                  <Button
+                    component={RouterLink}
+                    href={isDashboard ? paths.dashboard.discover : paths.home}
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                  >
+                    {isDashboard
+                      ? t('pages.dashboard.discover_spots_cta')
+                      : t('pages.lists.explore_nomnom_cta')}
+                  </Button>
+                </Stack>
               );
             }
             if (filteredActivity.length === 0) {
@@ -1082,6 +1118,15 @@ export default function UserPublicProfileView({
                   >
                     {t('pages.lists.creator_activity_filter_empty')}
                   </Typography>
+                  <Button
+                    type="button"
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    onClick={() => setActivityFilter(PROFILE_ACTIVITY_FILTER_ALL)}
+                  >
+                    {t('pages.lists.creator_activity_filter_empty_cta')}
+                  </Button>
                   {activityHasMore ? (
                     <Button
                       type="button"

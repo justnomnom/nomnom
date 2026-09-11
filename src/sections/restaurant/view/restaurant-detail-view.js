@@ -2065,9 +2065,21 @@ export default function RestaurantDetailView({
                   ) : null}
                 </Stack>
               ) : (
-                <Typography variant="body2" color="text.secondary">
-                  {t('pages.dashboard.restaurant.community_empty')}
-                </Typography>
+                <Stack spacing={1.5} alignItems="flex-start">
+                  <Typography variant="body2" color="text.secondary">
+                    {t('pages.dashboard.restaurant.community_empty')}
+                  </Typography>
+                  {showSaveButton ? (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      onClick={handleSave}
+                    >
+                      {t('pages.dashboard.restaurant.reviews_add_via_save')}
+                    </Button>
+                  ) : null}
+                </Stack>
               )}
             </Card>
           </Box>
@@ -2391,9 +2403,21 @@ export default function RestaurantDetailView({
               )}
               {!mentionsFeedLoading && mentionCardsTotal <= 0 && !showPendingReviewSkeleton && (
                 <Card variant="outlined" sx={{ borderRadius: '24px', p: 2.5 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    {t('pages.dashboard.restaurant.mentions_empty')}
-                  </Typography>
+                  <Stack spacing={1.5} alignItems="flex-start">
+                    <Typography variant="body2" color="text.secondary">
+                      {t('pages.dashboard.restaurant.mentions_empty')}
+                    </Typography>
+                    {showSaveButton ? (
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        onClick={handleSave}
+                      >
+                        {t('pages.dashboard.restaurant.save_to_list')}
+                      </Button>
+                    ) : null}
+                  </Stack>
                 </Card>
               )}
             </Box>

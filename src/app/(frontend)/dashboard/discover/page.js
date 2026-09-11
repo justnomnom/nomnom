@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 
 import { loadDiscoverPageData } from 'src/auth/actions/discover-actions';
-import { getDefaultTranslation } from 'src/locales/default-translations';
+import { localizedDocumentTitle } from 'src/content-platform/page-metadata';
 
 import { DynamicTitle } from 'src/components/dynamic-title';
 
@@ -10,9 +10,9 @@ import DiscoverPageLoadingSkeleton from 'src/sections/discover/discover-page-loa
 
 // ----------------------------------------------------------------------
 
-export const metadata = {
-  title: getDefaultTranslation('pages.dashboard.discover.document_title'),
-};
+export async function generateMetadata() {
+  return localizedDocumentTitle('pages.dashboard.discover.document_title');
+}
 
 /**
  * Streams Discover data under Suspense so the document title can paint while

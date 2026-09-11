@@ -1,21 +1,26 @@
 import type { Metadata } from 'next';
 
-import { pageMetadata } from '@/content-platform/page-metadata';
+import { localizedPageMetadata } from '@/content-platform/page-metadata';
+import { DynamicTitle } from 'src/components/dynamic-title';
 
 import { AboutView } from 'src/sections/about/view';
 
-export const revalidate = 60;
-
-export const metadata: Metadata = pageMetadata({
-  title: 'About',
-  description:
-    'NomNom helps you find restaurants through creators and locals you trust — real opinions and shortlists, not generic rankings.',
-  path: '/about',
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return localizedPageMetadata({
+    titleKey: 'pages.about.title',
+    descriptionKey: 'pages.about.description',
+    path: '/about',
+  });
+}
 
 /**
  * Company / product story aligned with APP + homepage positioning.
  */
 export default function AboutPage() {
-  return <AboutView />;
+  return (
+    <>
+      <DynamicTitle titleKey="pages.about.title" />
+      <AboutView />
+    </>
+  );
 }

@@ -4,19 +4,20 @@ import Link from 'next/link';
 import { ContentPageShell } from '@/components/content-platform/sections/content-page-shell';
 import { contentUseCaseStoryRowLinkClassName } from 'src/components/content-platform/ui/content-inline-link-classname';
 import { readMdxFilesInDir } from '@/content-platform/fs-content';
-import { pageMetadata } from '@/content-platform/page-metadata';
-
-export const revalidate = 60;
+import { localizedPageMetadata } from '@/content-platform/page-metadata';
+import { getServerViewerLang } from 'src/libs/i18n-server';
+import { getTranslation } from 'src/locales/default-translations';
 
 const SLUG_ORDER = ['foodies', 'creators', 'hosts', 'restaurants'];
 const TITLE_SEP = ' — ';
 
-export const metadata: Metadata = pageMetadata({
-  title: 'Use cases: foodies, creators, hosts, and restaurants',
-  description:
-    'See how foodies, creators, hosts, and restaurants use NomNom — restaurant picks from people you trust, with lists, Table, and NomNom Roulette.',
-  path: '/use-cases',
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return localizedPageMetadata({
+    titleKey: 'pages.useCasesHub.metaTitle',
+    descriptionKey: 'pages.useCasesHub.metaDescription',
+    path: '/use-cases',
+  });
+}
 
 function sortUseCaseDocs<T extends { slug: string }>(docs: T[]): T[] {
   return [...docs].sort((a, b) => {
@@ -46,56 +47,51 @@ function splitUseCaseTitle(title: string): { label: string; headline: string } {
 /**
  * Index of use-case stories (MDX) — resolves `/use-cases` for nav `paths.site.useCasesRoot`.
  */
-export default function UseCasesIndexPage() {
+export default async function UseCasesIndexPage() {
+  const lang = await getServerViewerLang();
+  const t = (key: string) => getTranslation(lang, `pages.useCasesHub.${key}`);
   const docs = sortUseCaseDocs(readMdxFilesInDir('use-cases'));
 
   return (
     <ContentPageShell
-      title="Use cases"
-      description="Pick a story to see how NomNom fits food lovers, creators, hosts, and restaurants."
+      title={t('title')}
+      description={t('description')}
       breadcrumbs={[
-        { name: 'Home', href: '/' },
-        { name: 'Use cases', href: '/use-cases' },
+        { name: t('breadcrumb_home'), href: '/' },
+        { name: t('title'), href: '/use-cases' },
       ]}
     >
-      <p>
-        NomNom turns the people you trust into the way you find where to eat. Every recommendation
-        stays tied to a real person — a creator or a local — so you can see who picked a spot, not
-        just an anonymous star average.
-      </p>
+      <p>{t('intro')}</p>
 
-      <h2>How NomNom works</h2>
+      <h2>{t('how_heading')}</h2>
       <ul>
         <li>
-          <strong>NomNom Circle</strong> — activity from the people you follow on any given spot.
+          <strong>{t('circle_name')}</strong>
+          {t('circle')}
         </li>
         <li>
-          <strong>NomNom Roulette</strong> — a random pick from a pool that fits the vibe when you
-          can&rsquo;t decide.
+          <strong>{t('roulette_name')}</strong>
+          {t('roulette')}
         </li>
         <li>
-          <strong>NomNom lists</strong> — saved, shareable restaurant lists for date night, friends,
-          or cheap eats, public or private.
+          <strong>{t('lists_name')}</strong>
+          {t('lists')}
         </li>
         <li>
-          <strong>Table</strong> — a shared shortlist. Send the link; friends vote without
-          installing the app.
+          <strong>{t('table_name')}</strong>
+          {t('table')}
         </li>
         <li>
-          <strong>Map</strong> — browse the pins from people you follow, then save them to a list.
+          <strong>{t('map_name')}</strong>
+          {t('map')}
         </li>
       </ul>
 
-      <h2>For creators</h2>
-      <p>
-        Publish public lists for free, or get paid for the curation you already do. Readers buy a{' '}
-        <strong>Snapshot</strong> for permanent access to a list as it stands today, or take out a
-        monthly <strong>Subscription</strong> to follow you and unlock all of your paid lists.
-        Payouts run through Stripe.
-      </p>
+      <h2>{t('creators_heading')}</h2>
+      <p>{t('creators_body')}</p>
 
-      <h2>Pick your story</h2>
-      <nav aria-label="Use case stories" className="not-prose">
+      <h2>{t('pick_heading')}</h2>
+      <nav aria-label={t('nav_aria')} className="not-prose">
         <div className="divide-y divide-border border-y border-border">
           {docs.map((doc) => {
             const { label, headline } = splitUseCaseTitle(doc.frontmatter.title);
@@ -118,7 +114,7 @@ export default function UseCasesIndexPage() {
                   </span>
                 ) : null}
                 <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary-readable underline-offset-4 transition-all duration-200 group-hover:gap-2.5 group-hover:underline">
-                  Read story
+                  {t('read_story')}
                   <span aria-hidden="true">→</span>
                 </span>
               </Link>

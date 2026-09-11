@@ -397,8 +397,8 @@ const props = {
     reviewCount: totalReviewCount ? fmtCount(totalReviewCount) : null,
   },
   cta: {
-    headlineLines: ["Don't take", 'our word.'],
-    subLines: ['Take theirs. The spots people you', "trust can't stop recommending."],
+    headlineLines: ['Don’t take', 'our word.'],
+    subLines: ['Take theirs. The spots people you', 'trust can’t stop recommending.'],
     button: 'Save this spot',
     footer: 'Join the NomNom Circle · justnomnom.com',
   },

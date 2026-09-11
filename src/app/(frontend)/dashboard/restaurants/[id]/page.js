@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 
 import { APP } from 'src/config-global';
 import { getServerViewerLang } from 'src/libs/i18n-server';
-import { getDefaultTranslation } from 'src/locales/default-translations';
+import { getTranslation } from 'src/locales/default-translations';
 import { normalizeFollowCircle } from 'src/libs/restaurant/follow-circle';
 import { fetchRestaurantReviews } from 'src/auth/actions/restaurant-review-actions';
 import {
@@ -58,20 +58,21 @@ async function getSessionUserId() {
 
 export async function generateMetadata({ params }) {
   const { id } = await params;
+  const lang = await getServerViewerLang();
   if (!RESTAURANT_ID_UUID_RE.test(id)) {
     return {
-      title: `${getDefaultTranslation('pages.dashboard.restaurant.not_found_title')} — ${APP.name}`,
+      title: `${getTranslation(lang, 'pages.dashboard.restaurant.not_found_title')} — ${APP.name}`,
     };
   }
   const restaurant = await fetchRestaurantByIdForSsr(id);
   if (!restaurant) {
     return {
-      title: `${getDefaultTranslation('pages.dashboard.restaurant.not_found_title')} — ${APP.name}`,
+      title: `${getTranslation(lang, 'pages.dashboard.restaurant.not_found_title')} — ${APP.name}`,
     };
   }
   return {
     title: `${restaurant.name} · ${APP.name}`,
-    description: getDefaultTranslation('pages.dashboard.restaurant.meta_description'),
+    description: getTranslation(lang, 'pages.dashboard.restaurant.meta_description'),
   };
 }
 

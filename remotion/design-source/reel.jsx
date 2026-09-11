@@ -1,4 +1,4 @@
-// NomNom — "Spots people you trust love" reviews reel (9:16, reels-style).
+// NomNom — restaurant picks from people you trust (9:16, reels-style).
 // Self-contained: tiny timeline engine + scene composition. Registers window.ReviewsReel.
 // Styled strictly from the NomNom design tokens (terracotta accent, warm parchment, gold nom-meter).
 
@@ -375,8 +375,8 @@ function Cta({ p, op, slide }) {
     <SceneBox op={op} bg={C.terra}>
       <div style={{ transform: `translateY(${slide}px)`, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '0 80px' }}>
         <img src="assets/logo_circle.png" alt="" style={{ width: 150, height: 150, borderRadius: '50%', boxShadow: '0 18px 40px rgba(21,19,15,0.25)', border: '5px solid rgba(255,255,255,0.85)' }} />
-        <div style={{ fontFamily: SERIF, fontWeight: 700, fontSize: 80, color: C.white, marginTop: 40, lineHeight: 1.06 }}>Don't take<br/>our word.</div>
-        <div style={{ fontFamily: SANS, fontWeight: 600, fontSize: 32, color: 'rgba(253,252,250,0.92)', marginTop: 22, lineHeight: 1.4 }}>Take theirs. The spots people you<br/>trust can't stop recommending.</div>
+        <div style={{ fontFamily: SERIF, fontWeight: 700, fontSize: 80, color: C.white, marginTop: 40, lineHeight: 1.06 }}>Don’t take<br/>our word.</div>
+        <div style={{ fontFamily: SANS, fontWeight: 600, fontSize: 32, color: 'rgba(253,252,250,0.92)', marginTop: 22, lineHeight: 1.4 }}>Take theirs. The spots people you<br/>trust can’t stop recommending.</div>
         <div style={{ marginTop: 56, transform: `scale(${btnS})`, display: 'inline-flex', alignItems: 'center', gap: 16, background: C.white, color: C.terraDark, borderRadius: 999, padding: '26px 52px', fontFamily: SANS, fontWeight: 800, fontSize: 40, boxShadow: '0 16px 30px rgba(21,19,15,0.22)', whiteSpace: 'nowrap' }}>
           <svg width="38" height="38" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h12a1 1 0 011 1v15l-7-4-7 4V5a1 1 0 011-1z"/></svg>
           Save this spot

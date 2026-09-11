@@ -4,16 +4,16 @@ import Link from 'next/link';
 import { ContentPageShell } from '@/components/content-platform/sections/content-page-shell';
 import { contentCountryIndexCardLinkClassName } from 'src/components/content-platform/ui/content-inline-link-classname';
 import { getCountrySlugs } from '@/content-platform/fs-content';
-import { pageMetadata } from '@/content-platform/page-metadata';
+import { localizedPageMetadata } from '@/content-platform/page-metadata';
 import { contentHubT, displaySlug } from '@/content-platform/content-hub-t';
 
-export const revalidate = 60;
-
-export const metadata: Metadata = pageMetadata({
-  title: 'Countries',
-  description: 'Cities, restaurants, and local creators — restaurant picks from people you trust.',
-  path: '/countries',
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return localizedPageMetadata({
+    titleKey: 'pages.contentHub.explore_title',
+    descriptionKey: 'pages.contentHub.explore_description',
+    path: '/countries',
+  });
+}
 
 /**
  * Index of all country hubs with cross-links to global content.

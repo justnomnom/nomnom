@@ -244,9 +244,20 @@ export default function PublicRouletteView() {
           </Stack>
 
           {emptyPoolMessage ? (
-            <Alert severity="warning" variant="outlined" sx={{ width: 1, maxWidth: 360 }}>
-              {emptyPoolMessage}
-            </Alert>
+            <Stack spacing={1.5} sx={{ width: 1, maxWidth: 360 }} alignItems="center">
+              <Alert severity="warning" variant="outlined" sx={{ width: 1 }}>
+                {emptyPoolMessage}
+              </Alert>
+              <Button
+                component={RouterLink}
+                href={paths.home}
+                variant="soft"
+                color="primary"
+                sx={{ width: 1 }}
+              >
+                {t('pages.public.roulette.lisboa.empty_pool_cta')}
+              </Button>
+            </Stack>
           ) : null}
 
           <Button

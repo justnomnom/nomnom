@@ -1,4 +1,4 @@
-import { getDefaultTranslation } from 'src/locales/default-translations';
+import { localizedDocumentTitle } from 'src/content-platform/page-metadata';
 
 import { DynamicTitle } from 'src/components/dynamic-title';
 
@@ -6,9 +6,9 @@ import Error500View from 'src/sections/error/500-view';
 
 // ----------------------------------------------------------------------
 
-export const metadata = {
-  title: getDefaultTranslation('pages.error.500.title'),
-};
+export async function generateMetadata() {
+  return localizedDocumentTitle('pages.error.500.title');
+}
 
 export default function Error500Page() {
   return (

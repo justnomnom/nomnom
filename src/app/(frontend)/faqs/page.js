@@ -1,5 +1,6 @@
-import { pageMetadata } from 'src/content-platform/page-metadata';
-import { getDefaultTranslation } from 'src/locales/default-translations';
+import { localizedPageMetadata } from 'src/content-platform/page-metadata';
+import { getServerViewerLang } from 'src/libs/i18n-server';
+import { getTranslation } from 'src/locales/default-translations';
 
 import { DynamicTitle } from 'src/components/dynamic-title';
 import { JsonLd } from 'src/components/content-platform/seo/json-ld.tsx';
@@ -20,22 +21,25 @@ const FAQ_IDS = [
   { category: 'getting_started', id: 'getting_started-3' },
 ];
 
-export const metadata = pageMetadata({
-  title: getDefaultTranslation('pages.faqs.title'),
-  description: getDefaultTranslation('pages.faqs.metaDescription'),
-  path: '/faqs',
-});
+export async function generateMetadata() {
+  return localizedPageMetadata({
+    titleKey: 'pages.faqs.list.title',
+    descriptionKey: 'pages.faqs.metaDescription',
+    path: '/faqs',
+  });
+}
 
-export default function FaqsPage() {
+export default async function FaqsPage() {
+  const lang = await getServerViewerLang();
   const faqLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
     mainEntity: FAQ_IDS.map(({ category, id }) => ({
       '@type': 'Question',
-      name: getDefaultTranslation(`pages.faqs.${category}.${id}.question`),
+      name: getTranslation(lang, `pages.faqs.${category}.${id}.question`),
       acceptedAnswer: {
         '@type': 'Answer',
-        text: getDefaultTranslation(`pages.faqs.${category}.${id}.answer`),
+        text: getTranslation(lang, `pages.faqs.${category}.${id}.answer`),
       },
     })),
   };
@@ -43,7 +47,7 @@ export default function FaqsPage() {
   return (
     <>
       <JsonLd data={faqLd} />
-      <DynamicTitle titleKey="pages.faqs.title" />
+      <DynamicTitle titleKey="pages.faqs.list.title" />
       <FaqsView />
     </>
   );

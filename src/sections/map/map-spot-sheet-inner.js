@@ -1024,6 +1024,7 @@ function MapSpotSheetInner({
   onSaveApplied,
   refetchSheetReviews,
   sheetEmptyCopy,
+  sheetEmptyAction = null,
   isMobileSheet,
   /** i18n key for list heading above sheet rows; default matches dashboard map. */
   spotsHeadingKey = 'pages.dashboard.map.sheet_spots_in_view',
@@ -1318,6 +1319,7 @@ function MapSpotSheetInner({
               >
                 {sheetEmptyCopy}
               </Typography>
+              {sheetEmptyAction ? <Box sx={{ mt: 2 }}>{sheetEmptyAction}</Box> : null}
             </Box>
           ) : (
             <>
@@ -1506,6 +1508,7 @@ MapSpotSheetInner.propTypes = {
   onGuestSaveClick: PropTypes.func,
   refetchSheetReviews: PropTypes.func,
   sheetEmptyCopy: PropTypes.node,
+  sheetEmptyAction: PropTypes.node,
   isMobileSheet: PropTypes.bool,
   spotsHeadingKey: PropTypes.string,
   spotsHeadingBadgeCount: PropTypes.number,

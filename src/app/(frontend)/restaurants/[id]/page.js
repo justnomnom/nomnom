@@ -7,7 +7,8 @@ import Box from '@mui/material/Box';
 import { paths } from 'src/routes/paths';
 import { restaurantHrefWithFrom } from 'src/routes/restaurant-nav-from';
 
-import { getDefaultTranslation } from 'src/locales/default-translations';
+import { getServerViewerLang } from 'src/libs/i18n-server';
+import { getTranslation } from 'src/locales/default-translations';
 import { getSupabaseAuthUser } from 'src/libs/supabase/supabase-server-client';
 import {
   RESTAURANT_ID_UUID_RE,
@@ -24,22 +25,23 @@ import PublicRestaurantShareClient from './public-restaurant-share-client';
 
 export async function generateMetadata({ params }) {
   const { id } = await params;
+  const lang = await getServerViewerLang();
   const noIndex = { robots: { index: false, follow: false } };
 
   if (!RESTAURANT_ID_UUID_RE.test(id)) {
     return {
-      title: getDefaultTranslation('pages.dashboard.restaurant.not_found_title'),
+      title: getTranslation(lang, 'pages.dashboard.restaurant.not_found_title'),
       ...noIndex,
     };
   }
   const restaurant = await fetchRestaurantByIdForSsr(id);
   if (!restaurant) {
     return {
-      title: getDefaultTranslation('pages.dashboard.restaurant.not_found_title'),
+      title: getTranslation(lang, 'pages.dashboard.restaurant.not_found_title'),
       ...noIndex,
     };
   }
-  const description = getDefaultTranslation('pages.dashboard.restaurant.public_meta_description');
+  const description = getTranslation(lang, 'pages.dashboard.restaurant.public_meta_description');
   return {
     title: restaurant.name,
     description,

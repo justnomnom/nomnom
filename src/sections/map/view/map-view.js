@@ -15,7 +15,9 @@ import Typography from '@mui/material/Typography';
 import { alpha, useTheme } from '@mui/material/styles';
 import CircularProgress from '@mui/material/CircularProgress';
 
+import { paths } from 'src/routes/paths';
 import { useRouter, useSearchParams } from 'src/routes/hooks';
+import { RouterLink } from 'src/routes/components';
 
 import { groupRestaurantTagsByCategory } from 'src/utils/restaurant-tag-groups';
 import {
@@ -2045,6 +2047,36 @@ export default function MapView() {
     t,
   ]);
 
+  const sheetEmptyAction = useMemo(() => {
+    const needsLogin = (savedActive || followingActive) && !userId;
+    if (needsLogin) {
+      const returnTo = encodeURIComponent(paths.dashboard.map);
+      return (
+        <Button
+          component={RouterLink}
+          href={`${paths.auth.supabase.login}?returnTo=${returnTo}`}
+          variant="contained"
+          color="primary"
+          size="small"
+        >
+          {t('pages.dashboard.map.sheet_login_cta')}
+        </Button>
+      );
+    }
+    const findPeople = followingActive && !savedActive;
+    return (
+      <Button
+        component={RouterLink}
+        href={paths.dashboard.discover}
+        variant="contained"
+        color="primary"
+        size="small"
+      >
+        {t(findPeople ? 'pages.dashboard.find_people_cta' : 'pages.dashboard.discover_spots_cta')}
+      </Button>
+    );
+  }, [savedActive, followingActive, userId, t]);
+
   /**
    * Previously: when `sourcePlaces` changed and the selected pin was no longer in the new set
    * (typical after a viewport pan + bbox refetch), this effect auto-cleared `detailId` and
@@ -2203,6 +2235,7 @@ export default function MapView() {
       onSaveApplied={handleSaveApplied}
       refetchSheetReviews={refetchSheetReviews}
       sheetEmptyCopy={sheetEmptyCopy}
+      sheetEmptyAction={sheetEmptyAction}
       isMobileSheet={isMobileSheet}
       spotsHeadingBadgeCount={sheetSpotsHeadingBadgeCount}
       preloadedMyLists={preloadedSaveSheetLists}
@@ -2639,9 +2672,20 @@ export default function MapView() {
                     </Stack>
                   )}
                   {!followingListsLoading && followingLists.length === 0 && (
-                    <Typography variant="body2" color="text.secondary" sx={{ px: 2, py: 2 }}>
-                      {t('pages.dashboard.map.chip_following_empty')}
-                    </Typography>
+                    <Stack spacing={1} sx={{ px: 2, py: 2 }}>
+                      <Typography variant="body2" color="text.secondary">
+                        {t('pages.dashboard.map.chip_following_empty')}
+                      </Typography>
+                      <Button
+                        component={RouterLink}
+                        href={paths.dashboard.discover}
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                      >
+                        {t('pages.dashboard.find_people_cta')}
+                      </Button>
+                    </Stack>
                   )}
                   {!followingListsLoading &&
                     followingLists.length > 0 &&
@@ -2843,9 +2887,20 @@ export default function MapView() {
                     !savedSharedListsLoading &&
                     savedOwnedLists.length === 0 &&
                     savedSharedLists.length === 0 && (
-                      <Typography variant="body2" color="text.secondary" sx={{ px: 2, py: 2 }}>
-                        {t('pages.dashboard.map.chip_saved_empty')}
-                      </Typography>
+                      <Stack spacing={1} sx={{ px: 2, py: 2 }}>
+                        <Typography variant="body2" color="text.secondary">
+                          {t('pages.dashboard.map.chip_saved_empty')}
+                        </Typography>
+                        <Button
+                          component={RouterLink}
+                          href={paths.dashboard.discover}
+                          variant="contained"
+                          color="primary"
+                          size="small"
+                        >
+                          {t('pages.dashboard.discover_spots_cta')}
+                        </Button>
+                      </Stack>
                     )}
                   {!savedOwnedListsLoading &&
                     !savedSharedListsLoading &&

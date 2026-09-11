@@ -1376,9 +1376,19 @@ export default function DiscoverView({
           />
         </Box>
         {filteredMarketOptions.length === 0 ? (
-          <Typography variant="body2" color="text.secondary" sx={{ px: 2, py: 3 }}>
-            {t('pages.dashboard.discover.market_change_search_empty')}
-          </Typography>
+          <Stack spacing={1.5} sx={{ px: 2, py: 3, alignItems: 'flex-start' }}>
+            <Typography variant="body2" color="text.secondary">
+              {t('pages.dashboard.discover.market_change_search_empty')}
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              onClick={() => setMarketSearchQuery('')}
+            >
+              {t('pages.dashboard.discover.market_change_search_clear')}
+            </Button>
+          </Stack>
         ) : (
           <List disablePadding dense>
             {filteredMarketOptions.map((row) => {

@@ -6,7 +6,7 @@ import { test } from 'node:test';
 
 import { APP, APP_OG_IMAGE_PATH } from 'src/config-global.js';
 import { getSiteUrl } from 'src/libs/site-url.js';
-import { pageMetadata } from '../page-metadata.js';
+import { pageMetadata, pageMetadataFromLang } from '../page-metadata.js';
 
 test('pageMetadata fills canonical, Open Graph, and Twitter from title/description/path', () => {
   const meta = pageMetadata({
@@ -26,4 +26,16 @@ test('pageMetadata fills canonical, Open Graph, and Twitter from title/descripti
   ]);
   assert.equal(meta.twitter.card, 'summary_large_image');
   assert.deepEqual(meta.twitter.images, [APP_OG_IMAGE_PATH]);
+});
+
+test('pageMetadataFromLang uses Portuguese about chrome for PT viewers', () => {
+  const meta = pageMetadataFromLang({
+    lang: 'pt',
+    titleKey: 'pages.about.title',
+    descriptionKey: 'pages.about.description',
+    path: '/about',
+  });
+  assert.equal(meta.title, 'Sobre o NomNom');
+  assert.match(meta.description, /quem confias/);
+  assert.equal(meta.openGraph.title, 'Sobre o NomNom');
 });

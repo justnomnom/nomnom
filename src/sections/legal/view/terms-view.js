@@ -6,7 +6,7 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import { alpha, useTheme } from '@mui/material/styles';
 
-import { useLocales } from 'src/locales';
+import { useLocales, useTranslate } from 'src/locales';
 import { APP_SUPPORT_EMAIL } from 'src/config-global';
 import { readableAccent } from 'src/theme/readable-accent';
 import { getLocaleBodyMaxWidthCh } from 'src/theme/locale-prose';
@@ -18,11 +18,11 @@ import {
 
 // ----------------------------------------------------------------------
 
-const LAST_UPDATED = 'April 2026';
 const CONTACT_EMAIL = APP_SUPPORT_EMAIL;
 
 export default function TermsView() {
   const theme = useTheme();
+  const { t } = useTranslate();
   const { currentLang } = useLocales();
   const bodyMaxWidth = getLocaleBodyMaxWidthCh(currentLang?.value);
 
@@ -45,13 +45,13 @@ export default function TermsView() {
             display: 'block',
           }}
         >
-          Legal
+          {t('pages.legal.overline')}
         </Typography>
         <Typography variant="h2" component="h1" sx={{ fontWeight: 800, letterSpacing: '-0.02em' }}>
-          Terms of service
+          {t('pages.legal.terms_title')}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Last updated: {LAST_UPDATED}
+          {t('pages.legal.last_updated')}
         </Typography>
       </Stack>
 

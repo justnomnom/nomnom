@@ -1,15 +1,24 @@
-import { pageMetadata } from 'src/content-platform/page-metadata';
+import { localizedPageMetadata } from 'src/content-platform/page-metadata';
+
+import { DynamicTitle } from 'src/components/dynamic-title';
 
 import { TermsView } from 'src/sections/legal/view';
 
 // ----------------------------------------------------------------------
 
-export const metadata = pageMetadata({
-  title: 'Terms of service',
-  description: 'The terms and conditions that govern your use of NomNom.',
-  path: '/terms',
-});
+export async function generateMetadata() {
+  return localizedPageMetadata({
+    titleKey: 'pages.legal.terms_title',
+    descriptionKey: 'pages.legal.terms_description',
+    path: '/terms',
+  });
+}
 
 export default function TermsPage() {
-  return <TermsView />;
+  return (
+    <>
+      <DynamicTitle titleKey="pages.legal.terms_title" />
+      <TermsView />
+    </>
+  );
 }

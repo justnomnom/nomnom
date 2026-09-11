@@ -1,5 +1,5 @@
 import { getMyProfile } from 'src/auth/actions/profile-actions';
-import { getDefaultTranslation } from 'src/locales/default-translations';
+import { localizedDocumentTitle } from 'src/content-platform/page-metadata';
 
 import { DynamicTitle } from 'src/components/dynamic-title';
 
@@ -9,9 +9,9 @@ import { SettingsEditPage } from 'src/sections/profile/view';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata = {
-  title: getDefaultTranslation('pages.dashboard.settings.edit.heading'),
-};
+export async function generateMetadata() {
+  return localizedDocumentTitle('pages.dashboard.settings.edit.heading');
+}
 
 export default async function DashboardSettingsProfileEditPage() {
   const { profile } = await getMyProfile();

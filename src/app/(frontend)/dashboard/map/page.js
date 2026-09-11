@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 
-import { getDefaultTranslation } from 'src/locales/default-translations';
+import { localizedDocumentTitle } from 'src/content-platform/page-metadata';
 
 import { DynamicTitle } from 'src/components/dynamic-title';
 
@@ -8,9 +8,9 @@ import { MapView } from 'src/sections/map/view';
 
 // ----------------------------------------------------------------------
 
-export const metadata = {
-  title: getDefaultTranslation('pages.dashboard.map.title'),
-};
+export async function generateMetadata() {
+  return localizedDocumentTitle('pages.dashboard.map.title');
+}
 
 export default function DashboardMapPage() {
   return (

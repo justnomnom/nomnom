@@ -21,8 +21,8 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-import { RouterLink } from 'src/routes/components';
 import { restaurantHrefWithFrom } from 'src/routes/restaurant-nav-from';
+import { RouterLink } from 'src/routes/components';
 
 import { useShareLink } from 'src/hooks/use-share-link';
 
@@ -414,6 +414,22 @@ export default function ListPublicView({
 
   const isDashboardEmbed = variant === 'dashboard';
   const ownerProfileHandle = profileHandleFromOwner(owner);
+  const isListOwner = Boolean(initialMembership?.isOwner);
+  let emptyPlacesHref = paths.home;
+  if (isListOwner && listId) {
+    emptyPlacesHref = paths.dashboard.listManage(listId);
+  } else if (isDashboardEmbed) {
+    emptyPlacesHref = paths.dashboard.discover;
+  }
+  let emptyPlacesCta = t('pages.lists.explore_nomnom_cta');
+  if (isListOwner) {
+    emptyPlacesCta = t('pages.lists.no_places_cta_add');
+  } else if (isDashboardEmbed) {
+    emptyPlacesCta = t('pages.dashboard.discover_spots_cta');
+  }
+  const emptyPlacesHintKey = isListOwner
+    ? 'pages.lists.no_places_hint_owner'
+    : 'pages.lists.no_places_hint_readonly';
 
   // Login href with returnTo so unauthenticated users come back to this list after signing in.
   const loginHref = useMemo(() => {
@@ -774,6 +790,17 @@ export default function ListPublicView({
       onGuestSaveClick={isPublicPageVariant && !authenticated ? handleRowSaveRequest : null}
       refetchSheetReviews={refetchSheetReviews}
       sheetEmptyCopy={t('pages.dashboard.map.sheet_empty')}
+      sheetEmptyAction={
+        <Button
+          component={RouterLink}
+          href={emptyPlacesHref}
+          variant="contained"
+          color="primary"
+          size="small"
+        >
+          {emptyPlacesCta}
+        </Button>
+      }
       isMobileSheet={isMobileSheet}
       spotsHeadingBadgeCount={sheetSpotsHeadingBadgeCount}
     />
@@ -1657,8 +1684,18 @@ export default function ListPublicView({
                 color="text.disabled"
                 sx={{ mt: 0.75, maxWidth: 280, mx: 'auto' }}
               >
-                {t('pages.lists.no_places_hint')}
+                {t(emptyPlacesHintKey)}
               </Typography>
+              <Button
+                component={RouterLink}
+                href={emptyPlacesHref}
+                variant="contained"
+                color="primary"
+                size="small"
+                sx={{ mt: 2 }}
+              >
+                {emptyPlacesCta}
+              </Button>
             </Box>
           );
 

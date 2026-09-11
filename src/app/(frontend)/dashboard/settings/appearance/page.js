@@ -1,4 +1,4 @@
-import { getDefaultTranslation } from 'src/locales/default-translations';
+import { localizedDocumentTitle } from 'src/content-platform/page-metadata';
 
 import { DynamicTitle } from 'src/components/dynamic-title';
 
@@ -6,9 +6,9 @@ import { SettingsAppearancePage } from 'src/sections/profile/view';
 
 // ----------------------------------------------------------------------
 
-export const metadata = {
-  title: getDefaultTranslation('pages.dashboard.settings.appearance.page_title'),
-};
+export async function generateMetadata() {
+  return localizedDocumentTitle('pages.dashboard.settings.appearance.page_title');
+}
 
 export default function DashboardSettingsAppearancePage() {
   return (

@@ -14,6 +14,7 @@ import { alpha, useTheme } from '@mui/material/styles';
 
 import { paths } from 'src/routes/paths';
 import { useRouter, useSearchParams } from 'src/routes/hooks';
+import { RouterLink } from 'src/routes/components';
 
 import { usePrefersReducedMotion } from 'src/hooks/use-prefers-reduced-motion';
 
@@ -257,23 +258,31 @@ export default function ListsHubView() {
       return {
         title: t('pages.dashboard.lists.empty_shared_title'),
         body: t('pages.dashboard.lists.empty_shared_body'),
+        cta: t('pages.dashboard.lists.empty_shared_cta'),
+        href: paths.dashboard.discover,
       };
     }
     if (filter === 'from_others') {
       return {
         title: t('pages.dashboard.lists.empty_from_others_title'),
         body: t('pages.dashboard.lists.empty_from_others_body'),
+        cta: t('pages.dashboard.lists.empty_from_others_cta'),
+        href: paths.dashboard.discover,
       };
     }
     if (filter === 'subscriptions') {
       return {
         title: t('pages.dashboard.lists.empty_subscriptions_title'),
         body: t('pages.dashboard.lists.empty_subscriptions_body'),
+        cta: t('pages.dashboard.lists.empty_subscriptions_cta'),
+        href: paths.dashboard.discover,
       };
     }
     return {
       title: t('pages.dashboard.lists.empty_lists_title'),
       body: t('pages.dashboard.lists.empty_lists_body'),
+      cta: t('pages.lists.new_list'),
+      href: null,
     };
   }, [filter, t]);
 
@@ -613,6 +622,20 @@ export default function ListsHubView() {
                         icon={ic.bookmarkLinear}
                         title={filteredEmptyCopy.title}
                         body={filteredEmptyCopy.body}
+                        action={
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            component={filteredEmptyCopy.href ? RouterLink : undefined}
+                            href={filteredEmptyCopy.href || undefined}
+                            onClick={
+                              filteredEmptyCopy.href ? undefined : () => setCreateOpen(true)
+                            }
+                            sx={dashboardMobileStretchButtonSx}
+                          >
+                            {filteredEmptyCopy.cta}
+                          </Button>
+                        }
                       />
                     </motion.div>
                   );

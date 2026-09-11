@@ -13,12 +13,16 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
+import { paths } from 'src/routes/paths';
+import { RouterLink } from 'src/routes/components';
+
 import { fDate } from 'src/utils/format-time';
 import { subscriptionStatusLabel } from 'src/utils/subscription-status-label';
 import { translateCreatorSubscriptionError } from 'src/utils/creator-subscription-errors';
 
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
+import { touchTargetSx } from 'src/theme/spacing';
 import { getMyFollowing } from 'src/auth/actions/profile-actions';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
 import { CANCELLATION_REASONS } from 'src/libs/stripe/cancellation-reasons';
@@ -28,6 +32,7 @@ import {
 } from 'src/auth/actions/creator-subscribers-actions';
 
 import Iconify from 'src/components/iconify';
+import { DashboardDelightEmpty } from 'src/components/dashboard';
 import DeleteDialog from 'src/components/custom-dialog/delete-dialog';
 import { ScrollableChipRow } from 'src/components/horizontal-scroll-row';
 import { scrollableChipPillButtonSx } from 'src/components/scrollable-chip-select';
@@ -38,6 +43,7 @@ import {
   TOUCH_MIN,
   SHELL_HUB_ICON,
   dashboardPageSectionStackProps,
+  dashboardMobileStretchButtonSx,
 } from './view/settings-shell-shared';
 
 // ----------------------------------------------------------------------
@@ -425,19 +431,62 @@ export default function SettingsMySubscriptions({ initialSubscriptions, initialF
 
           {/* Empty state for following filter */}
           {filter === FILTER_FOLLOWING && followingRows.length === 0 && (
-            <Alert severity="info">
-              {t('pages.dashboard.settings.my_subscriptions.following_empty')}
-            </Alert>
+            <DashboardDelightEmpty
+              icon={ic.usersGroupRoundedBold}
+              title={t('pages.dashboard.settings.my_subscriptions.following_empty_heading')}
+              body={t('pages.dashboard.settings.my_subscriptions.following_empty')}
+              action={
+                <Button
+                  variant="contained"
+                  color="primary"
+                  component={RouterLink}
+                  href={paths.dashboard.discover}
+                  sx={[touchTargetSx, dashboardMobileStretchButtonSx]}
+                >
+                  {t('pages.dashboard.settings.my_subscriptions.following_empty_cta')}
+                </Button>
+              }
+            />
           )}
 
           {/* Empty state for subscriptions filter */}
           {filter === FILTER_SUBSCRIPTIONS && subscriptionRows.length === 0 && (
-            <Alert severity="info">{t('pages.dashboard.settings.my_subscriptions.empty')}</Alert>
+            <DashboardDelightEmpty
+              icon={ic.bookmarkLinear}
+              title={t('pages.dashboard.settings.my_subscriptions.empty_heading')}
+              body={t('pages.dashboard.settings.my_subscriptions.empty')}
+              action={
+                <Button
+                  variant="contained"
+                  color="primary"
+                  component={RouterLink}
+                  href={paths.dashboard.discover}
+                  sx={[touchTargetSx, dashboardMobileStretchButtonSx]}
+                >
+                  {t('pages.dashboard.settings.my_subscriptions.empty_cta')}
+                </Button>
+              }
+            />
           )}
 
           {/* All-empty state */}
           {filter === FILTER_ALL && isEmpty && !loadError && (
-            <Alert severity="info">{t('pages.dashboard.settings.my_subscriptions.empty')}</Alert>
+            <DashboardDelightEmpty
+              icon={ic.usersGroupRoundedBold}
+              title={t('pages.dashboard.settings.my_subscriptions.all_empty_heading')}
+              body={t('pages.dashboard.settings.my_subscriptions.all_empty')}
+              action={
+                <Button
+                  variant="contained"
+                  color="primary"
+                  component={RouterLink}
+                  href={paths.dashboard.discover}
+                  sx={[touchTargetSx, dashboardMobileStretchButtonSx]}
+                >
+                  {t('pages.dashboard.settings.my_subscriptions.empty_cta')}
+                </Button>
+              }
+            />
           )}
         </>
       )}

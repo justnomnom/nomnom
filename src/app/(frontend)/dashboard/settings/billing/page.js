@@ -1,5 +1,5 @@
 import { fetchOwnedListsForBilling } from 'src/libs/lists/actions';
-import { getDefaultTranslation } from 'src/locales/default-translations';
+import { localizedDocumentTitle } from 'src/content-platform/page-metadata';
 import { getMyStripeConnectStatus } from 'src/auth/actions/stripe-list-actions';
 
 import { DynamicTitle } from 'src/components/dynamic-title';
@@ -8,9 +8,9 @@ import { SettingsBillingPage } from 'src/sections/profile/view';
 
 // ----------------------------------------------------------------------
 
-export const metadata = {
-  title: getDefaultTranslation('pages.dashboard.settings.billing.title'),
-};
+export async function generateMetadata() {
+  return localizedDocumentTitle('pages.dashboard.settings.billing.title');
+}
 
 export default async function DashboardSettingsBillingPage() {
   const [initialConnectStatus, initialPaidListsData] = await Promise.all([

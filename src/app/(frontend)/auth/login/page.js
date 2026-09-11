@@ -1,4 +1,4 @@
-import { getDefaultTranslation } from 'src/locales/default-translations';
+import { localizedDocumentTitle } from 'src/content-platform/page-metadata';
 
 import { DynamicTitle } from 'src/components/dynamic-title';
 
@@ -6,9 +6,9 @@ import { SupabaseLoginView } from 'src/sections/auth/supabase';
 
 // ----------------------------------------------------------------------
 
-export const metadata = {
-  title: getDefaultTranslation('pages.auth.login.title'),
-};
+export async function generateMetadata() {
+  return localizedDocumentTitle('pages.auth.login.title');
+}
 
 export default function LoginPage() {
   return (

@@ -1,5 +1,5 @@
 import { isAdminUserId } from 'src/libs/auth/admin-allowlist';
-import { getDefaultTranslation } from 'src/locales/default-translations';
+import { localizedDocumentTitle } from 'src/content-platform/page-metadata';
 import { getSupabaseAuthUser } from 'src/libs/supabase/supabase-server-client';
 
 import { DynamicTitle } from 'src/components/dynamic-title';
@@ -8,9 +8,9 @@ import { SettingsHubView } from 'src/sections/profile/view';
 
 // ----------------------------------------------------------------------
 
-export const metadata = {
-  title: getDefaultTranslation('pages.dashboard.settings.title'),
-};
+export async function generateMetadata() {
+  return localizedDocumentTitle('pages.dashboard.settings.title');
+}
 
 export default async function DashboardSettingsPage() {
   const {

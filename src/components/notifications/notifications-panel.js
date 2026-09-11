@@ -184,7 +184,20 @@ export default function NotificationsPanel({
           body={t(
             filtered ? 'components.notifications.empty_filtered' : 'components.notifications.empty'
           )}
-          action={filtered ? null : emptyAction}
+          action={
+            filtered ? (
+              <Button
+                variant="contained"
+                color="primary"
+                size="small"
+                onClick={() => setListFilter(NOTIFICATION_LIST_FILTER_ALL)}
+              >
+                {t('components.notifications.empty_filtered_cta')}
+              </Button>
+            ) : (
+              emptyAction
+            )
+          }
         />
       );
     }

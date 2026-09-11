@@ -1,4 +1,4 @@
-// NomNom — "Spots people you trust love" reviews reel (1080×1920, 9:16).
+// NomNom — restaurant picks from people you trust (1080×1920, 9:16).
 // Ported from remotion/design-source/reel.jsx (Claude Design import).
 // All motion is driven by useCurrentFrame(); scene windows use <Sequence>.
 import React from 'react';

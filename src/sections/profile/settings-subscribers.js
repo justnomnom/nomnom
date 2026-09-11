@@ -484,10 +484,20 @@ export default function SettingsSubscribers({
               </Typography>
               <Typography
                 variant="body2"
-                sx={{ color: 'text.secondary', maxWidth: 300, mx: 'auto', lineHeight: 1.6 }}
+                sx={{ color: 'text.secondary', maxWidth: 300, mx: 'auto', lineHeight: 1.6, mb: 2.5 }}
               >
                 {t('pages.dashboard.settings.subscribers.followers_empty')}
               </Typography>
+              <Button
+                component={RouterLink}
+                href={paths.dashboard.lists}
+                variant="contained"
+                color="primary"
+                size="small"
+                sx={[touchTargetSx, dashboardMobileStretchButtonSx]}
+              >
+                {t('pages.dashboard.settings.subscribers.followers_empty_cta')}
+              </Button>
             </Box>
           )}
 
@@ -582,7 +592,7 @@ export default function SettingsSubscribers({
                 />
               </Box>
               <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 0.75 }}>
-                {t('pages.dashboard.settings.subscribers.empty_heading')}
+                {t('pages.dashboard.settings.subscribers.all_empty_heading')}
               </Typography>
               <Typography
                 variant="body2"
@@ -594,17 +604,17 @@ export default function SettingsSubscribers({
                   mb: 2.5,
                 }}
               >
-                {t('pages.dashboard.settings.subscribers.empty')}
+                {t('pages.dashboard.settings.subscribers.all_empty')}
               </Typography>
               <Button
                 component={RouterLink}
-                href={paths.dashboard.settingsBilling}
-                variant="soft"
+                href={paths.dashboard.lists}
+                variant="contained"
                 color="primary"
                 size="small"
-                sx={[touchTargetSx, { width: { xs: '100%', sm: 'auto' } }]}
+                sx={[touchTargetSx, dashboardMobileStretchButtonSx]}
               >
-                {t('pages.dashboard.settings.subscribers.empty_cta')}
+                {t('pages.dashboard.settings.subscribers.followers_empty_cta')}
               </Button>
             </Box>
           )}

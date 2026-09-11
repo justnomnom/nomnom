@@ -15,7 +15,7 @@ function lookup(dict, key) {
   }, dict);
 }
 
-/** Reads English locale for SSR titles and OG text. Cache-bust: contentHub + ui_locale + listOg + hubCopy + guidesNotCollections + mapEmpty. */
+/** English fallback for keys that have no viewer-lang string yet. Cache-bust: localizedMeta + mesaNames + spotsNotPlaces + mapEmpty. */
 export const getDefaultTranslation = (key) => lookup(enTranslations, key);
 
 /**

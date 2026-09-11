@@ -1,4 +1,4 @@
-import { getDefaultTranslation } from 'src/locales/default-translations';
+import { localizedDocumentTitle } from 'src/content-platform/page-metadata';
 
 import { DynamicTitle } from 'src/components/dynamic-title';
 
@@ -6,9 +6,9 @@ import { FeedbackView } from 'src/sections/feedback';
 
 // ----------------------------------------------------------------------
 
-export const metadata = {
-  title: getDefaultTranslation('pages.dashboard.feedback.title'),
-};
+export async function generateMetadata() {
+  return localizedDocumentTitle('pages.dashboard.feedback.title');
+}
 
 export default function FeedbackPage() {
   return (

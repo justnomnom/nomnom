@@ -1,16 +1,16 @@
 # Graph Report - nomnom  (2026-09-11)
 
 ## Corpus Check
-- 2770 files · ~2,816,966 words
+- 2770 files · ~2,819,135 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 29897 nodes · 32387 edges · 2526 communities (2152 shown, 374 thin omitted)
+- 29899 nodes · 32398 edges · 2553 communities (2208 shown, 345 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 138 edges (avg confidence: 0.67)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `d3e965f2`
+- Built from commit: `27e41ffa`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -724,47 +724,13 @@
 - 8. React Compiler
 - 4. Shape & Border Radius
 - route.js
-- page.js
 - layout.js
-- page.js
-- page.js
-- page.js
-- page.js
-- page.js
-- page.js
-- page.js
-- page.js
-- page.js
-- page.js
-- page.js
-- page.js
-- page.js
-- page.js
-- page.js
-- page.js
-- page.js
 - page.js
 - loading.js
-- page.js
-- page.js
-- page.js
-- page.js
-- page.js
-- page.js
-- page.js
-- page.js
-- page.js
-- page.js
-- page.js
 - layout.js
 - page.js
 - page.js
-- page.js
-- page.js
-- page.js
-- page.js
 - layout.js
-- not-found.js
 - countries.js
 - location-follow-sync.js
 - Stability Anti-Patterns
@@ -2089,6 +2055,7 @@
 - _sections.md
 - ai
 - Comment Smells
+- Note-Taking During Conversations
 - Patterns Across Case Studies
 - Page-Specific Guidance
 - Pipeline Order Rules
@@ -2105,11 +2072,13 @@
 - Ask the Experts
 - How Might We (HMW) Notes
 - Role Assignments
+- Pinterest: The Visual Hunt Hook
 - Domain Distillation
 - Mastery Audit Checklist
 - Real-World Purpose Examples
 - Case Study 1: Auditing a SaaS Annual Plan
 - _sections.md
+- Case Study 7: Apple's "1,000 Songs in Your Pocket"
 - Case Study 2: Velocity Up, Quality Down
 - Case Study 3: The Botched Performance Review
 - Service Workers for Cache Control
@@ -2290,6 +2259,7 @@
 - stylis
 - react-lazy-load-image-component
 - SEO Considerations
+- 5. Scroll-Based Layouts
 - Getting Executive Buy-In
 - Getting Executive Buy-In
 - alt
@@ -2331,8 +2301,10 @@
 - signatureDishLabelsFromConsensus
 - admin-reference-actions-mocked.test.mjs
 - email-actions-mocked.test.mjs
+- Flaw 4: Crowd Out Good Behavior
 - ai
 - Product, growth, and positioning
+- CLS: Cumulative Layout Shift
 - table-join-view.js
 - Design planning, specs, and documentation
 - Before Starting
@@ -2362,10 +2334,31 @@
 - ai
 - map-token-fallback.test.mjs
 - antd
-- ai
+- The Sonner Principles (Building Loved Components)
+- Spring Animations
 - POST
+- Hardware Keyboard Support
 - Component Considerations
 - og-fonts.js
+- Outcomes vs. Outputs
+- Case Study 1: JFK's Moonshot Speech (1961)
+- Refactoring and Performance
+- Scripts for Key Moments
+- change-case.js
+- Funnel Optimization Checklist
+- Personalization
+- Core Philosophy
+- Debugging Animations
+- Creative Best Practices
+- Accessibility in Data Viz
+- Line Charts
+- Lead Lifecycle Framework
+- Optimization Playbook
+- Header Navigation
+- The Spectrum
+- dedupeMustTryDishesByDisplayLabel
+- table-join-view.js
+- Design Sprint Case Studies
 
 ## God Nodes (most connected - your core abstractions)
 1. `scripts` - 75 edges
@@ -2384,17 +2377,17 @@
   remotion/design-source/support.js → scripts/node-test-stubs/next-server.mjs
 - `slidesFor()` --indirect_call--> `key()`  [INFERRED]
   scripts/content-pipeline/render-stills.mjs → src/libs/email/__tests__/rate-limit-memory.test.mjs
-- `walkText()` --indirect_call--> `key()`  [INFERRED]
-  remotion/design-source/support.js → src/libs/email/__tests__/rate-limit-memory.test.mjs
 - `pickLists()` --indirect_call--> `select()`  [INFERRED]
   remotion/scripts/pick-subjects.mjs → src/theme/overrides/components/select.js
 - `writeEnvFile()` --indirect_call--> `key()`  [INFERRED]
+  scripts/vercel-env-sync.mjs → src/libs/email/__tests__/rate-limit-memory.test.mjs
+- `push()` --indirect_call--> `key()`  [INFERRED]
   scripts/vercel-env-sync.mjs → src/libs/email/__tests__/rate-limit-memory.test.mjs
 
 ## Import Cycles
 - None detected.
 
-## Communities (2526 total, 374 thin omitted)
+## Communities (2553 total, 345 thin omitted)
 
 ### Community 0 - "Sections Profile"
 Cohesion: 0.02
@@ -2429,8 +2422,8 @@ Cohesion: 0.04
 Nodes (53): eslint, eslint-config-airbnb, eslint-config-prettier, @eslint/eslintrc, eslint-import-resolver-alias, eslint-plugin-import, eslint-plugin-jsx-a11y, eslint-plugin-perfectionist (+45 more)
 
 ### Community 9 - "Animate Variants"
-Cohesion: 0.03
-Nodes (63): 1. Should this animate at all?, 2. What is the purpose?, 3. What easing should it use?, 3D transforms for depth, 4. How fast should it be?, Accessibility, Animate enter states with @starting-style, Asymmetric enter/exit timing (+55 more)
+Cohesion: 0.22
+Nodes (8): Accessibility, Design Engineering, Initial Response, prefers-reduced-motion, Review Checklist, Review Format (Required), Stagger Animations, Touch device hover states
 
 ### Community 10 - "Content Platform Sections"
 Cohesion: 0.06
@@ -2441,8 +2434,8 @@ Cohesion: 0.04
 Nodes (48): 10 realistic long-tail keyword opportunities, 1.1 Creator-distributed public lists (supply-side seeding), 1.2 Auth-free / shareable public list links (the real viral loop), 1.3 The `/roleta/lisboa` free tool as a link and attention magnet, 1.4 Reddit — r/lisboa and r/portugal, played as a resident not a marketer, 2.1 Short-form video at volume via the Remotion pipeline, 2.2 Portuguese long-tail SEO (neighbourhood × cuisine × occasion), 2.3 Local media and newsletters (+40 more)
 
 ### Community 12 - "Auth Actions"
-Cohesion: 0.23
-Nodes (12): PlacementRow, COVER, seedJoinRequestFixture(), loadE2EEnv(), E2EAdminResolution, readAdminUserIdSet(), resolveE2EAdmin(), hasServiceRoleCredentials() (+4 more)
+Cohesion: 0.21
+Nodes (13): PlacementRow, COVER, seedJoinRequestFixture(), loadE2EEnv(), E2EAdminResolution, readAdminUserIdSet(), resolveE2EAdmin(), deleteSponsoredPlacement() (+5 more)
 
 ### Community 13 - "Config Global"
 Cohesion: 0.04
@@ -2473,8 +2466,8 @@ Cohesion: 0.08
 Nodes (18): HeaderShadow(), HeaderSimple(), isDashboardMapRoute(), isDashboardRestaurantDetailRoute(), isDashboardSettingsRoute(), useNavData(), Footer(), LINKS (+10 more)
 
 ### Community 20 - "Components Hook Form"
-Cohesion: 0.16
-Nodes (27): setupMonetizedList(), asUser(), gotoList(), Seeded, StartedTable, startTableAsOwner(), createOwnedList(), deleteCustomerRow() (+19 more)
+Cohesion: 0.11
+Nodes (37): openAsSeededUser(), seedInviteFixture(), setupMonetizedList(), LISBON, withUser(), newAuthedContext(), asUser(), gotoList() (+29 more)
 
 ### Community 21 - "Restaurant Detail View"
 Cohesion: 0.04
@@ -2486,11 +2479,11 @@ Nodes (25): register(), APP_METADATA, APP_VIEWPORT, APP_WEB_MANIFEST, CALENDAR_C
 
 ### Community 23 - "Components Upload"
 Cohesion: 0.08
-Nodes (30): boot(), compileTemplate(), createComponentFactory(), createExternalModules(), createHelmetManager(), createPseudoSheet(), createRegistry(), createRuntime() (+22 more)
+Nodes (43): boot(), collectProps(), compileAttr(), compileTemplate(), createComponentFactory(), createExternalModules(), createHelmetManager(), createPseudoSheet() (+35 more)
 
 ### Community 24 - "Overview"
-Cohesion: 0.12
-Nodes (37): generateMetadata(), generateStaticParams(), GlobalCollectionPage(), PageProps, generateMetadata(), CountryCollectionPage(), generateMetadata(), generateStaticParams() (+29 more)
+Cohesion: 0.10
+Nodes (42): generateMetadata(), generateStaticParams(), GlobalCollectionPage(), PageProps, CityCollectionPage(), generateMetadata(), PageProps, CountryCollectionPage() (+34 more)
 
 ### Community 25 - "Components Loading Screen"
 Cohesion: 0.09
@@ -2533,8 +2526,8 @@ Cohesion: 0.07
 Nodes (27): How payment is completed (and why not the hosted page), One-time setup, Run, Server stability (important on the webpack dev server), Stripe paid-list money-path E2E runbook, Test data lifecycle, Webhook forwarding, What each test asserts (+19 more)
 
 ### Community 35 - "List Stripe Constants"
-Cohesion: 0.07
-Nodes (24): RFC-4122, mergeSnapshotPurchaseCapturedItemIds(), getPaywallRelativeDate(), fetchListItemIdsForSnapshotCapture(), buildListSnapshotPurchaseRow(), assertPriceInBounds(), computeListSnapshotAmountCents(), getListSnapshotPriceRatio() (+16 more)
+Cohesion: 0.14
+Nodes (17): RFC-4122, mergeSnapshotPurchaseCapturedItemIds(), buildListSnapshotPurchaseRow(), assertPriceInBounds(), computeListSnapshotAmountCents(), getListSnapshotPriceRatio(), getPlatformFeePercent(), isWellFormedUuid() (+9 more)
 
 ### Community 36 - "Posthog Service"
 Cohesion: 0.05
@@ -2558,7 +2551,7 @@ Nodes (34): remotion, @remotion/cli, @remotion/google-fonts, dependencies, react
 
 ### Community 41 - "Components File Thumbnail"
 Cohesion: 0.10
-Nodes (37): generateMetadata(), generateMetadata(), PageProps, RestaurantsCatchAllPage(), CountryInfluencersIndex(), generateMetadata(), generateStaticParams(), PageProps (+29 more)
+Nodes (32): CityPage(), generateMetadata(), PageProps, CountryInfluencersIndex(), generateMetadata(), generateStaticParams(), PageProps, CountryPage() (+24 more)
 
 ### Community 42 - "Sections Home"
 Cohesion: 0.14
@@ -2587,8 +2580,8 @@ Cohesion: 0.22
 Nodes (4): fetchFollowingRestaurantsForMap(), fetchFollowingRestaurantsForMapByListIds(), fetchSavedRestaurantsForMap(), fetchSavedRestaurantsForMapByListIds()
 
 ### Community 46 - "Restaurant Review Actions"
-Cohesion: 0.05
-Nodes (39): Afternoon Slump Protocol, Breaks, Core Responsibilities, Day-by-Day Facilitation Tips, Dealing with Difficult Participants, Decision-Making Protocols, End-of-Day Rituals, Energy Management (+31 more)
+Cohesion: 0.06
+Nodes (33): Afternoon Slump Protocol, Breaks, Core Responsibilities, Dealing with Difficult Participants, Decision-Making Protocols, End-of-Day Rituals, Energy Management, Energy Management Tactics (+25 more)
 
 ### Community 47 - "Sentry Error Boundary"
 Cohesion: 0.17
@@ -2600,11 +2593,11 @@ Nodes (11): adGlow, EMOJI_ROW, HomeAdvertisement(), TICKER_TAGS, tickScroll, chi
 
 ### Community 49 - "Ugc Translate"
 Cohesion: 0.04
-Nodes (49): autosuggest-highlight, @capacitor/core, date-fns, @emotion/cache, @emotion/react, i18next, @iconify-json/eva, @iconify-json/solar (+41 more)
+Nodes (49): ai, autosuggest-highlight, @capacitor/core, date-fns, @emotion/cache, @emotion/react, @iconify-json/eva, @iconify-json/solar (+41 more)
 
 ### Community 50 - "About Tags Ai"
-Cohesion: 0.05
-Nodes (40): All-in-One (Most Common), Art Museum Exercise, Common Storyboard Debates (and How to Resolve Them), Common Wednesday Mistakes, Decider Defers or Compromises, Decision Criteria, Example Storyboard: Online Grocery Delivery, Facilitator Tips (+32 more)
+Cohesion: 0.06
+Nodes (33): All-in-One (Most Common), Art Museum Exercise, Common Wednesday Mistakes, Decider Defers or Compromises, Decision Criteria, Facilitator Tips, Groupthink During the Art Museum, Heat Map Review (+25 more)
 
 ### Community 51 - "Sponsored Placements Admin View"
 Cohesion: 0.05
@@ -2624,7 +2617,7 @@ Nodes (38): 1 Week Before Sprint, 2 Days Before Sprint, 2 Weeks Before Sprint, 3
 
 ### Community 55 - "Scrollable Chip Select"
 Cohesion: 0.05
-Nodes (38): Case Studies: Sticky Ideas Analyzed Through the SUCCESs Framework, Case Study 1: JFK's Moonshot Speech (1961), Case Study 2: Subway's Jared Diet Story, Case Study 3: "Don't Mess with Texas" Anti-Littering Campaign, Case Study 4: The Nordstrom Tire Refund Legend, Case Study 5: The Kidney Heist Urban Legend, Case Study 7: Apple's "1,000 Songs in Your Pocket", Cross-Cutting Patterns (+30 more)
+Nodes (39): Case Studies: Sticky Ideas Analyzed Through the SUCCESs Framework, Case Study 2: Subway's Jared Diet Story, Case Study 3: "Don't Mess with Texas" Anti-Littering Campaign, Case Study 4: The Nordstrom Tire Refund Legend, Case Study 5: The Kidney Heist Urban Legend, Case Study 6: "Names, Names, Names" — Local Newspaper Motto, Cross-Cutting Patterns, How to Reverse-Engineer Stickiness (+31 more)
 
 ### Community 56 - "Analytics Provider"
 Cohesion: 0.05
@@ -2635,16 +2628,16 @@ Cohesion: 0.05
 Nodes (37): Exercise Template: Alternative Industries Analysis, Exercise Template: Appeal Analysis, Exercise Template: Buyer Chain Analysis, Exercise Template: Experience Mapping, Exercise Template: Strategic Group Mapping, Exercise Template: Trend Analysis, Full-Day Workshop (6 hours), Half-Day Express Version (3 hours) (+29 more)
 
 ### Community 58 - "Review Consensus Ai"
-Cohesion: 0.05
-Nodes (37): Case Study 1: Slack - Onboarding New Teams, Case Study 3: Savioke - Robot Hotel Delivery, Case Study 4: Flatiron Health - Cancer Research Data, Case Study 5: Harvest - Time Tracking for Freelancers, Case Study 6: Code for America - Government Benefits Application, Case Study 7: Grind Coffee - Subscription Model, Challenge, Challenge (+29 more)
+Cohesion: 0.33
+Nodes (6): Case Study 1: Slack - Onboarding New Teams, Challenge, Company, Lessons, Results, Sprint Process
 
 ### Community 59 - "Sections Faqs"
-Cohesion: 0.05
-Nodes (37): Common HMW Pitfalls, Common Mapping Mistakes, Common Monday Mistakes, Conversion Examples, Customer Journey Map, Example Long-Term Goals, Example Map: Project Management Tool, Example Sprint Questions (+29 more)
+Cohesion: 0.06
+Nodes (36): Ask the Experts, Common HMW Pitfalls, Common Mapping Mistakes, Conversion Examples, Customer Journey Map, Example Long-Term Goals, Example Map: Project Management Tool, Example Sprint Questions (+28 more)
 
 ### Community 60 - "Date Picker"
-Cohesion: 0.05
-Nodes (38): 3-Day Sprint, 4-Day Sprint, Adapting Each Day for Remote, Async vs Sync Quick Reference, Common Remote Sprint Failures and Fixes, Compressed Schedule Options, Crazy 8s: Remote Version, Daily Structure for Remote Energy (+30 more)
+Cohesion: 0.07
+Nodes (29): 3-Day Sprint, 4-Day Sprint, Adapting Each Day for Remote, Async vs Sync Quick Reference, Compressed Schedule Options, Crazy 8s: Remote Version, Daily Structure for Remote Energy, Dot Voting in Miro (+21 more)
 
 ### Community 62 - "Nav Section Horizontal"
 Cohesion: 0.25
@@ -2716,7 +2709,7 @@ Nodes (40): Algorithmic vs. Heuristic Tasks, Case Studies, Checklist for Necessa
 
 ### Community 79 - "Format Number"
 Cohesion: 0.06
-Nodes (35): Autocapitalization, Autocorrection, Automatic Behavior (SwiftUI), Best Practices, Choosing the Right Keyboard, Common Patterns, Form with All Best Practices, Hardware Keyboard Support (+27 more)
+Nodes (30): Autocapitalization, Autocorrection, Automatic Behavior (SwiftUI), Best Practices, Choosing the Right Keyboard, Common Patterns, Form with All Best Practices, Input Accessory Views (+22 more)
 
 ### Community 80 - "Creator Subscribers Actions"
 Cohesion: 0.06
@@ -2748,7 +2741,7 @@ Nodes (35): Building a Sales Development Team from Scratch, Compensation Anti-Pa
 
 ### Community 87 - "Assets Icons"
 Cohesion: 0.06
-Nodes (36): Accessibility in Data Viz, Annotation Patterns, Bar Chart Rules, Bar Charts, Bar Styling, Categorical Colors, Chart Annotations, Chart Decision Tree (+28 more)
+Nodes (33): Alternative: Simple Numbers, Annotation Patterns, Bar Chart Rules, Bar Charts, Bar Styling, Categorical Colors, Chart Annotations, Chart Decision Tree (+25 more)
 
 ### Community 88 - "Components Dashboard"
 Cohesion: 0.06
@@ -2927,8 +2920,8 @@ Cohesion: 0.06
 Nodes (33): Design Solutions for Stage 1, Design Solutions for Stage 2, Design Solutions for Stage 3, Design Solutions for Stage 4, Design Solutions for Stage 5, Design Solutions for Stage 6, Design Solutions for Stage 7, Example 1: Booking a Flight (+25 more)
 
 ### Community 132 - "Settings Faqs Skeleton"
-Cohesion: 0.06
-Nodes (32): 3-Panel Storyboard Structure, Capture Format, Collecting Sketches, Common Tuesday Mistakes, Crazy 8s Feels Pointless, Divide or Swarm, Example Lightning Demos, Example Solution Sketch: Onboarding for a Project Management Tool (+24 more)
+Cohesion: 0.07
+Nodes (25): 3-Panel Storyboard Structure, Collecting Sketches, Common Tuesday Mistakes, Crazy 8s Feels Pointless, Divide or Swarm, Example Solution Sketch: Onboarding for a Project Management Tool, Focus on These Elements, Group Discussion During Sketch Time (+17 more)
 
 ### Community 133 - "Legal View"
 Cohesion: 0.06
@@ -2943,8 +2936,8 @@ Cohesion: 0.06
 Nodes (32): 90-Day Action Plan, Allocation by Deal Size, Benchmarks, Common Mistake: Over-Reliance on One Type, Common Seed Mistakes, Common Spear Mistakes, Comparison Dashboard, Current State Assessment (+24 more)
 
 ### Community 136 - "Stripe Checkout Errors"
-Cohesion: 0.06
-Nodes (33): After Completing, Before Starting, Branch by Abstraction, Characterization Tests, Code You Should Leave Alone, During Refactoring, Example, Feature Toggles During Refactoring (+25 more)
+Cohesion: 0.07
+Nodes (28): After Completing, Before Starting, Branch by Abstraction, Characterization Tests, Code You Should Leave Alone, During Refactoring, Example, Feature Toggles During Refactoring (+20 more)
 
 ### Community 137 - "Route"
 Cohesion: 0.06
@@ -2955,8 +2948,8 @@ Cohesion: 0.06
 Nodes (32): 1. Sales/Marketing, 2. Operations, 3. Finance, 4-5. Custom Seats, Building the Accountability Chart, Capacity to Do It, Difficult Conversations Framework, Documentation Template (+24 more)
 
 ### Community 139 - "Page"
-Cohesion: 0.16
-Nodes (19): allRestaurants(), citySlugsForCountry(), contentDir, countrySlugs(), __dirname, isFlatCollectionSlug(), listSubdirNames(), main() (+11 more)
+Cohesion: 0.25
+Nodes (14): allRestaurants(), citySlugsForCountry(), contentDir, countrySlugs(), __dirname, isFlatCollectionSlug(), listSubdirNames(), main() (+6 more)
 
 ### Community 140 - "Logo"
 Cohesion: 0.06
@@ -2971,16 +2964,16 @@ Cohesion: 0.06
 Nodes (31): Audit Checklist, Behavioral Residue Design Checklist, Behavioral Residue: Traces That Outlast the Act, "Built to Show" Design Principles, Classic Self-Advertising Products, Designing for Behavioral Residue, Designing Self-Advertising Features, Exercise 1: The Bystander Test (+23 more)
 
 ### Community 143 - "Must Try Dedupe"
-Cohesion: 0.16
-Nodes (13): openAsSeededUser(), seedInviteFixture(), LISBON, withUser(), newAuthedContext(), buildUserStorageState(), completeOnboardingWithoutHome(), createOnboardingIncompleteUser() (+5 more)
+Cohesion: 0.26
+Nodes (4): CREATOR_SUBSCRIPTION_ERROR_I18N, translateCreatorSubscriptionError(), STRIPE_CHECKOUT_ERROR_I18N, translateStripeCheckoutError()
 
 ### Community 144 - "Restaurant Analytics"
 Cohesion: 0.15
 Nodes (16): getLocaleBodyMaxWidthCh(), LOCALE_BODY_MAX_WIDTH_CH, localeBodyProseSx(), avatar(), colorByName(), COLORS, compactPageActionsStackSx, dialogActionsMobileSx (+8 more)
 
 ### Community 145 - "Admin Allowlist"
-Cohesion: 0.24
-Nodes (12): assertPaywall(), gotoWithRetry(), cancelSubscription(), createSnapshotPurchaseViaWebhook(), createSubscriptionViaApi(), deleteConnectCustomer(), getLiveStripe(), moneyPathConfig (+4 more)
+Cohesion: 0.20
+Nodes (14): assertPaywall(), gotoWithRetry(), getListSubscriptionRow(), getSnapshotPurchaseRow(), cancelSubscription(), createSnapshotPurchaseViaWebhook(), createSubscriptionViaApi(), deleteConnectCustomer() (+6 more)
 
 ### Community 146 - "Platform"
 Cohesion: 0.06
@@ -2995,7 +2988,7 @@ Cohesion: 0.06
 Nodes (31): Adding a Graph Layer, Adding Fields, Breaking Changes, Changing Relationships, Cypher (Graph), Data Model Evolution, Data Model Migration Patterns, Data Models and Query Languages (+23 more)
 
 ### Community 149 - "Feedback View"
-Cohesion: 0.06
+Cohesion: 0.07
 Nodes (29): About the Author, Afternoon: Map the Challenge, Afternoon: Rumble or All-in-One, Afternoon: The Four-Step Sketch, Assign Roles, Build the Prototype, Common Mistakes, Core Principle (+21 more)
 
 ### Community 150 - "Map Sheet Sort Menu"
@@ -3167,8 +3160,8 @@ Cohesion: 0.06
 Nodes (35): Change Value to Reference, Common Magic Number Categories, Common Primitive-to-Object Upgrades, Decision Guide: Which Data Refactoring to Use, Encapsulate Collection, Encapsulate Field, Example, Example (+27 more)
 
 ### Community 192 - "Page"
-Cohesion: 0.32
-Nodes (5): signatureDishLabelsFromConsensus(), syncSignatureDishTags(), getRestaurantSearchLanguageModel(), resolveRestaurantSearchProvider(), RESTAURANT_SEARCH_AI_PROVIDERS
+Cohesion: 0.16
+Nodes (12): buildSlugToIdMap(), hashTagInputs(), isValidTagSlug(), mapAboutToTagsWithAi(), normalizeCategory(), PRICE_SLUG_SET, resolveTagIds(), signatureDishLabelsFromConsensus() (+4 more)
 
 ### Community 193 - "Page"
 Cohesion: 0.06
@@ -3263,8 +3256,8 @@ Cohesion: 0.17
 Nodes (9): LoadingScreen(), MESSAGE_KEYS, breathe, fadeThrough, MESSAGE_KEYS, pulse, PULSE_DELAYS, shuttle (+1 more)
 
 ### Community 216 - "Locale Utils"
-Cohesion: 0.12
-Nodes (19): contentRestaurantToDetailViewModel(), prettifySlug(), BuildLinksArgs, DocPageProps, suggestByTags(), fetchTinaInfluencer(), fetchTinaSeoCollection(), tinaIsrFetch (+11 more)
+Cohesion: 0.18
+Nodes (14): BuildLinksArgs, DocPageProps, suggestByTags(), fetchTinaInfluencer(), fetchTinaSeoCollection(), tinaIsrFetch, getContentTinaClient(), getTinaApiUrl() (+6 more)
 
 ### Community 217 - "Fetch Restaurant By Id For"
 Cohesion: 0.24
@@ -3452,7 +3445,7 @@ Nodes (27): 1. The Problem (Initial Conditions), 2. The Solution (The Experiment
 
 ### Community 265 - "Loading"
 Cohesion: 0.07
-Nodes (28): Analytics Tracking, Best Practices, Best Practices, Considerations, Container Structure, Custom Event Example, Data Layer Pattern, Essential Events (+20 more)
+Nodes (28): Analytics Tracking, Best Practices, Best Practices, Considerations, Container Structure, Custom Event Example, Data Layer Pattern, Event Naming Conventions (+20 more)
 
 ### Community 266 - "Loading"
 Cohesion: 0.07
@@ -3527,8 +3520,8 @@ Cohesion: 0.36
 Nodes (9): gtmUtils, pushToDataLayer(), trackClick(), trackConversion(), trackFeatureUsage(), trackFormSubmission(), trackGTMEvent(), trackGTMPageView() (+1 more)
 
 ### Community 284 - "Loading"
-Cohesion: 0.07
-Nodes (28): 1. Domain-Specific Modules, 2. Performance-Critical Paths, 3. User-Facing Interfaces, 4. Adapters and Bridges, Applying the Question, Better Approaches, Configuration Parameters: Complexity Amplifiers, Example: Connection Pooling (+20 more)
+Cohesion: 0.08
+Nodes (24): 1. Domain-Specific Modules, 2. Performance-Critical Paths, 3. User-Facing Interfaces, 4. Adapters and Bridges, Applying the Question, Better Approaches, Configuration Parameters: Complexity Amplifiers, Example: Connection Pooling (+16 more)
 
 ### Community 285 - "Loading"
 Cohesion: 0.24
@@ -3543,8 +3536,8 @@ Cohesion: 0.38
 Nodes (8): calculateDuration(), fDate(), fDateTime(), fTime(), fTimestamp(), fToNow(), isAfter(), isBetween()
 
 ### Community 288 - "Loading"
-Cohesion: 0.09
-Nodes (19): metadata, FeaturesIndexPage(), metadata, SLUG_ORDER, sortFeatureDocs(), metadata, metadata, ResourcesIndexPage() (+11 more)
+Cohesion: 0.12
+Nodes (17): generateMetadata(), generateMetadata(), FeaturesIndexPage(), generateMetadata(), SLUG_ORDER, sortFeatureDocs(), generateMetadata(), generateMetadata() (+9 more)
 
 ### Community 289 - "Page"
 Cohesion: 0.07
@@ -3660,7 +3653,7 @@ Nodes (8): deleteAllNotificationsRequest(), deleteNotificationRequest(), fetchNo
 
 ### Community 318 - "List Email Templates"
 Cohesion: 0.47
-Nodes (8): AdminSponsoredPlacementsPage(), attachCountriesToStates(), buildCityOption(), buildStateOption(), loadPlacementsWithRelatedRows(), loadStatesForSelect(), logSupabaseError(), metadata
+Nodes (7): AdminSponsoredPlacementsPage(), attachCountriesToStates(), buildCityOption(), buildStateOption(), loadPlacementsWithRelatedRows(), loadStatesForSelect(), logSupabaseError()
 
 ### Community 319 - "Resend Server Send"
 Cohesion: 0.28
@@ -3675,11 +3668,11 @@ Cohesion: 0.31
 Nodes (3): CustomPopover(), StyledArrow, getPosition()
 
 ### Community 322 - "Novu Api Key"
-Cohesion: 0.24
+Cohesion: 0.18
 Nodes (3): NavItem, StyledNavItem, NavList()
 
 ### Community 323 - "Supabase Admin"
-Cohesion: 0.20
+Cohesion: 0.28
 Nodes (3): NavItem, StyledNavItem, NavList()
 
 ### Community 324 - "Supabase Client"
@@ -3704,7 +3697,7 @@ Nodes (5): DiscoverListsLeaderboardSkeleton(), CHIP_WIDTHS, DiscoverLocatingSkel
 
 ### Community 330 - "Settings Support Skeleton"
 Cohesion: 0.20
-Nodes (12): buildSlugToIdMap(), hashTagInputs(), isValidTagSlug(), mapAboutToTagsWithAi(), normalizeCategory(), PRICE_SLUG_SET, resolveTagIds(), applySuccessAttributes() (+4 more)
+Nodes (9): Backend dependencies, Capacitor / Google Play (Android), Cursor Cloud specific instructions, Dev server, Environment variables, Quick reference, Route conflict: `lists/[id]` vs `lists/[creatorHandle]`, Testing (+1 more)
 
 ### Community 331 - "Discover Market List Skeleton"
 Cohesion: 0.07
@@ -3740,7 +3733,7 @@ Nodes (26): Argument Count Guide, Command-Query Separation, Common Function Anti
 
 ### Community 339 - "Map Sheet List Place Rows"
 Cohesion: 0.08
-Nodes (26): After Optimization, Basic Funnel Chart, Before Optimizing, Blocked Arteries, Calculate Opportunity Value, Common Blocked Arteries, During Optimization, E-commerce Funnels (+18 more)
+Nodes (26): Basic Funnel Chart, Blocked Arteries, Calculate Opportunity Value, Common Blocked Arteries, Common Missing Links, Cross-Sell Mapping, E-commerce Funnels, Funnel Analysis Framework (+18 more)
 
 ### Community 340 - "Map Tag Filter Sheet"
 Cohesion: 0.08
@@ -3855,7 +3848,7 @@ Cohesion: 0.29
 Nodes (6): monoFont, primaryFont, pxToRem(), responsiveFontSizes(), secondaryFont, typography
 
 ### Community 368 - "Growth Experimentation Program"
-Cohesion: 0.08
+Cohesion: 0.07
 Nodes (26): Address Fields, Content, CSS for RTL, Cultural UX Considerations, Currency, Dates, Design, Form Conventions (+18 more)
 
 ### Community 369 - "Answer Engine Optimization (AEO) Patterns"
@@ -4019,7 +4012,7 @@ Cohesion: 0.08
 Nodes (23): Core Game Mechanics for Social Currency, Designing Effective Game Mechanics, Designing for Identity Signaling, Exclusivity and Scarcity: The Insider Effect, Exclusivity Design Checklist, Exercise 1: Find Your Inner Remarkability, Exercise 2: Design Your Wrapped Moment, Exercise 3: Create an Insider Program (+15 more)
 
 ### Community 409 - "Data Layer Patterns"
-Cohesion: 0.09
+Cohesion: 0.08
 Nodes (23): Dead Letter Handling, Delivery Guarantees, Domain Events, Domain Events vs. Technical Events, Event Naming Conventions, Event Sourcing, Event Sourcing Challenges, Event Sourcing Mechanics (+15 more)
 
 ### Community 410 - "Cancel Flow Design"
@@ -4043,8 +4036,8 @@ Cohesion: 0.08
 Nodes (22): docs/DESIGN.md, docs/EXPERIMENTS.md, docs/WEBSITE.md, improve-website artifact templates, Tracker: docs/IMPROVE-WEBSITE-PLAN.md, Common Mistakes, Completing the Journey, Core Principle (+14 more)
 
 ### Community 415 - "Copywriting Principles"
-Cohesion: 0.12
-Nodes (17): 1. McDonald's Milkshake, 4. Intuit QuickBooks, 5. Airbnb vs Hotels, Breakthrough: Mint.com → QuickBooks Self-Employed, Business traveler job, Competition Through Job Lens, "Experience" job, Family traveler job (+9 more)
+Cohesion: 0.08
+Nodes (24): 1. McDonald's Milkshake, 3. American Girl, 4. Intuit QuickBooks, 5. Airbnb vs Hotels, Breakthrough: Mint.com → QuickBooks Self-Employed, Business traveler job, Competition, Competition Through Job Lens (+16 more)
 
 ### Community 416 - "deploy.sh"
 Cohesion: 0.08
@@ -4055,15 +4048,15 @@ Cohesion: 0.08
 Nodes (24): 1. Establish the Baseline, 1. Sticky Engine of Growth, 2. Tune the Engine, 2. Viral Engine of Growth, 3. Paid Engine of Growth, 3. Pivot or Persevere, About the Author, Actionable vs. Vanity Metrics (+16 more)
 
 ### Community 418 - "Campaign Emails"
-Cohesion: 0.08
-Nodes (23): Applying HEART to a Hypothesis, Behavior Change Levels, Choosing Metrics That Matter, Cohort Analysis for Behavior Change, Common Vanity Metrics and Their Alternatives, Definitions, Measuring Behavior Change, Metric Anti-Patterns (+15 more)
+Cohesion: 0.09
+Nodes (22): Applying HEART to a Hypothesis, Behavior Change Levels, Choosing Leading Indicators for Experiments, Choosing Metrics That Matter, Cohort Analysis for Behavior Change, Common Vanity Metrics and Their Alternatives, Definitions, Leading-Lagging Pairs (+14 more)
 
 ### Community 419 - "Email Copy Guidelines"
 Cohesion: 0.08
 Nodes (23): Anti-Authorities, Authorities, Before/After Credibility Improvements, Building Credibility for New Products and Startups, Credentials, Credibility Checklist, Credibility Pitfalls to Avoid, Credible: Making People Believe Your Idea (+15 more)
 
 ### Community 420 - "The Animation Decision Framework"
-Cohesion: 0.08
+Cohesion: 0.09
 Nodes (23): 1. Direct Competitors, 2. Adjacent Competitors, 3. Manual Processes, 4. Outsourced or Hired Help, 5. Do Nothing (Status Quo), Clustering Alternatives, Clustering Process, Common Pitfalls (+15 more)
 
 ### Community 421 - "clip-path for Animation"
@@ -4075,7 +4068,7 @@ Cohesion: 0.08
 Nodes (23): 1. Executive Summary, 1. Executive Summary, 2. User Experience & Functionality, 2. User Stories, 3. AI System Architecture, 3. AI System Requirements (If Applicable), 4. Evaluation, 4. Technical Specifications (+15 more)
 
 ### Community 423 - "Gesture and Drag Interactions"
-Cohesion: 0.09
+Cohesion: 0.08
 Nodes (23): A/B Testing Email Variables, Cold Calling 2.0: The Complete Methodology, Common Email Mistakes and Fixes, Deliverability Checklist, Email Performance Benchmarks, Email Subject Line Best Practices, Metrics: What Good Looks Like, Personalization at Scale (+15 more)
 
 ### Community 424 - "Form Types: Specific Guidance"
@@ -4163,8 +4156,8 @@ Cohesion: 0.33
 Nodes (6): 5. Spacing, `HEADER_GAP_SX` — toolbar gap, Row rhythm sub-scale (list/settings rows), `SPACE` tokens (preferred), `STEP_RHYTHM` — vertical rhythm for long-form content, Touch targets
 
 ### Community 445 - "generate_posts_clean.js"
-Cohesion: 0.16
-Nodes (27): CityCollectionPage(), generateStaticParams(), PageProps, CityPage(), generateStaticParams(), PageProps, generateStaticParams(), cityCollectionDocBreadcrumbs() (+19 more)
+Cohesion: 0.10
+Nodes (39): generateStaticParams(), generateStaticParams(), generateMetadata(), generateStaticParams(), PageProps, RestaurantsCatchAllPage(), contentRestaurantToDetailViewModel(), prettifySlug() (+31 more)
 
 ### Community 446 - "Pricing — NomNom"
 Cohesion: 0.09
@@ -4262,7 +4255,7 @@ Nodes (22): Build-time vs Runtime, Docker Compose, Docker Deployment, Dockerfile
 
 ### Community 469 - "Metrics Selection"
 Cohesion: 0.09
-Nodes (23): Account Organization, Ad Copy Frameworks, Attribution Considerations, Audience Targeting Overview, Budget Allocation, Campaign Structure Best Practices, Creative Best Practices, Creative Testing Hierarchy (+15 more)
+Nodes (23): Account Organization, Ad Copy Frameworks, Attribution Considerations, Audience Targeting Overview, Budget Allocation, Campaign Structure Best Practices, Exclusions to Set Up, Funnel-Based Approach (+15 more)
 
 ### Community 470 - "Code-Based Video: Remotion"
 Cohesion: 0.09
@@ -4309,8 +4302,8 @@ Cohesion: 0.09
 Nodes (22): Audience Examples, Audience Export, Audiences, Common Issues, Contents, Conversion Values, Conversions Setup, Creating Audiences (+14 more)
 
 ### Community 481 - "Pre-Dunning: Prevent Failures Before They Happen"
-Cohesion: 0.09
-Nodes (22): Common Tag Configurations, Consent Management, Consent Mode Integration, Container Structure, Contents, Debug Tips, Facebook Pixel - Base, Facebook Pixel - Event (+14 more)
+Cohesion: 0.10
+Nodes (21): Advanced Patterns, Consent Management, Consent Mode Integration, Container Structure, Contents, Custom JavaScript Variables, Debug Tips, Exception Handling (+13 more)
 
 ### Community 482 - "Provider-Specific Setup"
 Cohesion: 0.09
@@ -4489,8 +4482,8 @@ Cohesion: 0.10
 Nodes (15): Icon Guidelines, Icon Shape, iOS App Icons, Required Sizes, Color Contrast (full WCAG table), Extra Semantic Tokens (beyond the core set), iOS Colors & Theming Reference, Animation Guidelines (+7 more)
 
 ### Community 526 - "Territory Routing"
-Cohesion: 0.09
-Nodes (22): Active Seeking, Building Your Atlas, Common Innovation Traps, Elements of the Atlas, From Job to Innovation, JTBD Innovation Process, Passive Seeking, Passive vs. Active Job Seeking (+14 more)
+Cohesion: 0.10
+Nodes (21): Active Seeking, Building Your Atlas, Common Innovation Traps, Elements of the Atlas, Job Statements: The Right Level of Abstraction, JTBD Innovation Process, Just Right, Passive Seeking (+13 more)
 
 ### Community 527 - "Threshold Calibration"
 Cohesion: 0.10
@@ -4629,8 +4622,8 @@ Cohesion: 0.10
 Nodes (19): Above the fold, Asset Acquisition Wishlist, Asset Display Best Practices, Bottom of page, Credentials & Authority, Data & Specificity, Decision points, Guarantees (+11 more)
 
 ### Community 564 - "paywall-recency.test.mjs"
-Cohesion: 0.31
-Nodes (8): extractReviewConsensus(), formatReviewsForPrompt(), hashReviews(), normalizeBulletArray(), normalizeSignatureDishes(), trimToNull(), countNewReviewsSincePrior(), reviewFingerprint()
+Cohesion: 0.22
+Nodes (13): applySuccessAttributes(), attemptQwenCall(), qwenJsonChat(), sleep(), truncateForSpan(), extractReviewConsensus(), formatReviewsForPrompt(), hashReviews() (+5 more)
 
 ### Community 565 - "mapListItemRowsToIds"
 Cohesion: 0.05
@@ -4678,7 +4671,7 @@ Nodes (20): 1. Customer Knowledge, 2. Data Fluency, 3. Business Acumen, 4. Indus
 
 ### Community 580 - "Batch Generation Workflow"
 Cohesion: 0.10
-Nodes (20): Anti-Patterns in Processing, Knowing When to Stop Talking, Note-Taking During Conversations, Note-Taking Systems, Organizing Customer Data, Processing and Learning, Processing with Your Team, Quantifying Qualitative Data (+12 more)
+Nodes (19): Anti-Patterns in Processing, Belief 1: The Problem, Belief 2: The Customer Segment, Belief 3: The Solution Direction, Knowing When to Stop Talking, Organizing Customer Data, Processing and Learning, Processing with Your Team (+11 more)
 
 ### Community 581 - "safe-storage.js"
 Cohesion: 0.36
@@ -4805,7 +4798,7 @@ Cohesion: 0.11
 Nodes (18): Appropriate to Context, Assess Delight Opportunities, Celebration Moments, Compound Over Time, Delight Amplifies, Never Blocks, Delight Principles, Delight Techniques, Easter Eggs & Hidden Delights (+10 more)
 
 ### Community 612 - "graphify reference: incremental update and cluster-only"
-Cohesion: 0.10
+Cohesion: 0.11
 Nodes (19): Applying Strategic Design to Team Structure, Build vs. Buy vs. Outsource, Common Misclassification Errors, Conway's Law Application, Core Domain, Decision Framework, Generic Subdomain, Identifying Your Core Domain (+11 more)
 
 ### Community 613 - "Lead Quality Indicators"
@@ -4886,7 +4879,7 @@ Nodes (18): A/B Testing Pricing, Anti-Patterns, Bad Interview Approach, Common W
 
 ### Community 632 - "Compliance and Accessibility"
 Cohesion: 0.11
-Nodes (19): A/B Testing Elements, Behavioral Segments, Category-Level Segmentation, Conversion Metrics, High-Impact Elements to Test, Key Metrics to Track, Landing Page Metrics, Monthly Optimization Actions (+11 more)
+Nodes (19): A/B Testing Elements, Actionable Alerts, Behavioral Segments, Category-Level Segmentation, Conversion Metrics, Executive Summary Metrics, High-Impact Elements to Test, Key Metrics to Track (+11 more)
 
 ### Community 633 - "Frequency and Rules"
 Cohesion: 0.11
@@ -4961,7 +4954,7 @@ Cohesion: 0.36
 Nodes (7): collaboratorListsFetcher(), followingListsFetcher(), ownedListsFetcher(), SWR_OPTS, useMapCollaboratorLists(), useMapFollowingLists(), useMapOwnedLists()
 
 ### Community 651 - "Em Dashes: The Primary AI Tell"
-Cohesion: 0.11
+Cohesion: 0.12
 Nodes (17): Counter-Objection Techniques, Explicit objections, For Effort objections, For Fit objections, For Price objections, For Timing objections, For Trust objections, How to Discover Objections (+9 more)
 
 ### Community 652 - "Content Quality Assessment"
@@ -5110,7 +5103,7 @@ Nodes (17): Anti-Patterns, Attribution for SEO, Bad Content Performance Analysis
 
 ### Community 698 - "Handling Stalled Users"
 Cohesion: 0.11
-Nodes (18): Anti-Patterns, Blog Category Sidebar, Bottom Tab Bar, Breadcrumbs, Common Fixes, Documentation Sidebar, Hamburger Menu, Header Navigation (+10 more)
+Nodes (18): Anti-Patterns, Blog Category Sidebar, Bottom Tab Bar, Breadcrumbs, Column-Based Footer (Standard), Common Fixes, Documentation Sidebar, Expanded Footer (+10 more)
 
 ### Community 699 - "Output Format"
 Cohesion: 0.11
@@ -5326,7 +5319,7 @@ Nodes (16): Anti-Patterns, Bad Risk Mitigation Practices, Good Risk Mitigation P
 
 ### Community 824 - "data-batch-inserts.md"
 Cohesion: 0.12
-Nodes (17): Before Starting, Dashboard Structure, Key Metrics, Lead Lifecycle Framework, Lead Routing, MQL Definition, MQL-to-SQL Handoff SLA, Output Format (+9 more)
+Nodes (17): Before Starting, Calendar Scheduling Integration, CRM Automation Workflows, Dashboard Structure, Essential Automations, Key Metrics, Lead Routing, Marketing-to-Sales Automations (+9 more)
 
 ### Community 825 - "data-n-plus-one.md"
 Cohesion: 0.12
@@ -5617,7 +5610,7 @@ Cohesion: 0.12
 Nodes (16): Documentation Site, E-Commerce, Hybrid SaaS + Content, Navigation, Navigation, Navigation, Navigation, Page Hierarchy (+8 more)
 
 ### Community 897 - "rendering-resource-hints.md"
-Cohesion: 0.12
+Cohesion: 0.13
 Nodes (15): Case Study: HTTP Request Handling, Information-Based Decomposition (Better), Information Hiding and Information Leakage, Information Hiding Checklist, Reducing Information Leakage, Relationship to Other Principles, Strategy 1: Merge Modules That Share Knowledge, Strategy 2: Create a New Module for Shared Knowledge (+7 more)
 
 ### Community 898 - "rendering-script-defer-async.md"
@@ -5734,7 +5727,7 @@ Nodes (11): Case Studies: Motivation Science in Practice, Case Study 1: Atlassia
 
 ### Community 926 - "13. JavaScript"
 Cohesion: 0.13
-Nodes (15): By Behavior, By Profile, By Stage, Contents, CTA Buttons vs. Links, Dynamic Content, Email Copy Guidelines, Formatting (+7 more)
+Nodes (15): By Behavior, By Profile, By Stage, Contents, CTA Buttons vs. Links, Email Copy Guidelines, Formatting, How to Test (+7 more)
 
 ### Community 927 - "5. Navigation"
 Cohesion: 0.13
@@ -6009,8 +6002,8 @@ Cohesion: 0.14
 Nodes (13): Anti-Patterns, Competition Response Matrix, Competitive Battlecard Template, Competitive Differentiation Conversation, Competitive Discovery, Competitive Intelligence Tracking, Competitive Landscape Framework, DIY Competition (Build vs. Buy) (+5 more)
 
 ### Community 1003 - "stripe"
-Cohesion: 0.33
-Nodes (6): Common Value Objects, The Attribute Test, Value Object Design Rules, Value Objects, When to Use Value Objects vs. Entities, Why Value Objects Matter
+Cohesion: 0.14
+Nodes (13): Building Blocks: Entities, Value Objects, and Aggregates, Common Entity Pitfalls, Common Value Objects, Entities, Entity Design Rules, Identity Strategies, Putting It All Together, The Attribute Test (+5 more)
 
 ### Community 1004 - "Design Sprint Framework"
 Cohesion: 0.14
@@ -6101,7 +6094,7 @@ Cohesion: 0.67
 Nodes (3): CARD_METADATA_KEYS, slimRestaurantCardMetadata(), slimRestaurantRowsMetadata()
 
 ### Community 1047 - "loading.js"
-Cohesion: 0.14
+Cohesion: 0.12
 Nodes (14): 1. Declaring Assumptions, 2. Hypothesis Statements, 3. MVPs and Experiments, 4. Collaborative Design, 5. Feedback and Research, 6. Integration with Agile, About the Authors, Common Mistakes (+6 more)
 
 ### Community 1078 - "layout.js"
@@ -6377,7 +6370,7 @@ Cohesion: 0.15
 Nodes (12): Available Tools, Debug Tricks, Example: Get Errors, `get_errors`, `get_logs`, `get_page_metadata`, `get_project_metadata`, `get_routes` (+4 more)
 
 ### Community 1226 - "Sales Conversion"
-Cohesion: 0.15
+Cohesion: 0.14
 Nodes (11): Blank Positioning Canvas Template, External Validity, Internal Consistency, Positioning Canvas Review Checklist, Positioning Canvas with Worked Examples, Practical Utility, Red Flags to Watch For, Stress Tests (+3 more)
 
 ### Community 1227 - "Issues Component: IDS Process Deep Dive"
@@ -6545,7 +6538,7 @@ Cohesion: 0.15
 Nodes (12): Anti-Patterns, Bad Comp Plan Design, Base vs. Variable Split, Clawback Policy, Commission Structures, Comp Plan Components, Compensation Design Principles, Good Comp Plan Design (+4 more)
 
 ### Community 1268 - "Value-Based Pricing: Charging What You're Worth"
-Cohesion: 0.17
+Cohesion: 0.15
 Nodes (9): About the Author, Common Mistakes, Core Principle, Further Reading, Quick Diagnostic, Scoring, StoryBrand Messaging Framework, The One-Liner (+1 more)
 
 ### Community 1269 - "Influence-Based Copywriting: Frameworks, Templates, and Techniques"
@@ -6693,8 +6686,8 @@ Cohesion: 0.17
 Nodes (11): Active Listening Behaviors, Active Listening Techniques, Anti-Patterns, Clarification Techniques, Digging Deeper: The 5 Whys, Note-Taking Best Practices, Reading Between the Lines, Red Flags in Listening (+3 more)
 
 ### Community 1305 - "Log-Structured Engines: LSM Trees and SSTables"
-Cohesion: 0.10
-Nodes (19): Aggregate Design Rules, Aggregate Root Pattern, Aggregates, Building Blocks: Entities, Value Objects, and Aggregates, Choosing Aggregate Boundaries, Common Aggregate Mistakes, Common Entity Pitfalls, Entities (+11 more)
+Cohesion: 0.17
+Nodes (12): Aggregate Design Rules, Aggregate Root Pattern, Aggregates, Choosing Aggregate Boundaries, Common Aggregate Mistakes, Rule 1: Protect Business Invariants Inside the Aggregate, Rule 2: Small Aggregates, Rule 3: Reference Other Aggregates by ID Only (+4 more)
 
 ### Community 1306 - "Resource Loading and Critical Rendering Path"
 Cohesion: 0.17
@@ -6737,8 +6730,8 @@ Cohesion: 0.17
 Nodes (11): By Format Type, By Industry (Landing Page), By Traffic Source, Conversion Rate Benchmarks, Cost Benchmarks, Cost Per Lead by Channel, Creation Cost by Format, Lead Magnet Benchmarks (+3 more)
 
 ### Community 1316 - "Chaos Engineering"
-Cohesion: 0.17
-Nodes (8): Case Studies: Lean UX in Practice, Case Study 2: Startup, Context, Cross-Cutting Themes, Key Lesson, Lean UX Intervention, Outcomes After 2 Months, The Problem
+Cohesion: 0.13
+Nodes (14): Case Studies: Lean UX in Practice, Case Study 1: Enterprise Product Team, Case Study 2: Startup, Context, Context, Cross-Cutting Themes, Key Lesson, Key Lesson (+6 more)
 
 ### Community 1317 - "Deep vs Shallow Modules"
 Cohesion: 0.17
@@ -7057,8 +7050,8 @@ Cohesion: 0.18
 Nodes (10): Anti-Patterns, Core Frameworks, Discovery Caller, Discovery Output Metrics, How This Skill Works, Philosophy, Qualification Frameworks, SPIN Question Framework (+2 more)
 
 ### Community 1396 - "Success Metrics & KPIs"
-Cohesion: 0.10
-Nodes (20): 1. Shared Kernel, 2. Customer-Supplier, 3. Conformist, 4. Anti-Corruption Layer (ACL), 5. Open Host Service (OHS), 6. Published Language, 7. Separate Ways, 8. Big Ball of Mud (+12 more)
+Cohesion: 0.18
+Nodes (10): Bounded Contexts and Context Mapping, Choosing the Right Pattern, Context Size, Conway's Law in Practice, Drawing a Context Map, Identifying Bounded Context Boundaries, Team Relationships and Context Boundaries, The Problem It Solves (+2 more)
 
 ### Community 1397 - "SKILL.md"
 Cohesion: 0.18
@@ -7425,8 +7418,8 @@ Cohesion: 0.20
 Nodes (9): Anti-Patterns, Implication Questions, Need-Payoff Questions, Problem Questions, Question Density Guidelines, Situation Questions, SPIN Question Framework, SPIN Sequencing Example (+1 more)
 
 ### Community 1488 - "Negotiation Techniques Reference"
-Cohesion: 0.29
-Nodes (7): Cross-Cutting Patterns, Pattern 1: Validate Demand Before Building Technology, Pattern 2: Manual Before Automated, Pattern 3: One Customer Before One Thousand, Pattern 4: The MVP Was Embarrassingly Simple, Pattern 5: Pivots Were Data-Driven, Not Panic-Driven, Pattern 6: Failure Cases Had the Right Vision, Wrong Approach
+Cohesion: 0.20
+Nodes (9): 1. Protocol Overview, 2. Absolute Negative Constraints (Banned Elements), 3. Typographic Architecture, 4. Color Palette (Warm Monochrome + Spot Pastels), 5. Component Specifications, 6. Iconography & Imagery Directives, 7. Subtle Motion & Micro-Animations, 8. Execution Protocol (+1 more)
 
 ### Community 1489 - "Unique Attributes Discovery"
 Cohesion: 0.20
@@ -7473,8 +7466,8 @@ Cohesion: 0.20
 Nodes (9): Anti-Patterns, Choosing Your Pillars, Content Pillar Matrix, Content Pillars, Evolving Pillars, Example: SecretStash Pillars, Pillar Content Ratio, Validating Pillars (+1 more)
 
 ### Community 1500 - "Typeface Anatomy & Classification"
-Cohesion: 0.20
-Nodes (9): Case Studies: High Output Management in Practice, Case Study 1: The Manager Drowning in Meetings, Context, Key Takeaways, Lessons Learned, Results After 8 Weeks, Table of Contents, The Intervention (+1 more)
+Cohesion: 0.33
+Nodes (6): Case Study 1: The Manager Drowning in Meetings, Context, Lessons Learned, Results After 8 Weeks, The Intervention, The Problems
 
 ### Community 1501 - "Customer Voice Research: restaurant discovery pain (NomNom)"
 Cohesion: 0.20
@@ -7505,8 +7498,8 @@ Cohesion: 0.20
 Nodes (9): Anti-Pattern: String Search Logging, Checklist, Common String-Based Anti-Patterns, Correct Patterns, Logger Configuration, Query Power, The Problem, The Solution: Structured Fields (+1 more)
 
 ### Community 1508 - "Ambassador and Champion Programs"
-Cohesion: 0.29
-Nodes (7): Case Study 4: Palm -- The PDA That Couldn't Cross, Company and Product, Early Adopter Success, Key Lessons, Outcome, The Chasm Challenge, What Went Wrong
+Cohesion: 0.20
+Nodes (10): 1. Shared Kernel, 2. Customer-Supplier, 3. Conformist, 4. Anti-Corruption Layer (ACL), 5. Open Host Service (OHS), 6. Published Language, 7. Separate Ways, 8. Big Ball of Mud (+2 more)
 
 ### Community 1509 - "Sales Enablement for Competitive Situations"
 Cohesion: 0.20
@@ -8065,8 +8058,8 @@ Cohesion: 0.18
 Nodes (10): Anti-Goals, Brief Structure, Constraints, Content & Data, Design Goals, MANDATORY PREPARATION, Phase 1: Discovery Interview, Phase 2: Design Brief (+2 more)
 
 ### Community 1648 - "Engagement Tactics & Habit Formation"
-Cohesion: 0.05
-Nodes (31): Backend dependencies, Capacitor / Google Play (Android), Cursor Cloud specific instructions, Dev server, Environment variables, Quick reference, Route conflict: `lists/[id]` vs `lists/[creatorHandle]`, Testing (+23 more)
+Cohesion: 0.12
+Nodes (13): Design Thinking, Frontend Aesthetics Guidelines, Banned Output Patterns, Baseline, Execution Process, Full-Output Enforcement, Handling Long Outputs, Quick Check (+5 more)
 
 ### Community 1649 - "North Star Metrics & Growth Measurement"
 Cohesion: 0.25
@@ -8390,7 +8383,7 @@ Nodes (7): Case Study 1: Salesforce -- CRM Becomes Cloud Computing Standard, Com
 
 ### Community 1730 - "Multi-Stakeholder Negotiations"
 Cohesion: 0.05
-Nodes (36): Case Study 1: Dropbox - The Smoke Test MVP, Case Study 2: IMVU - Continuous Deployment and Learning, Case Study 3: Zappos - The Wizard of Oz MVP, Case Study 4: Groupon - The Piecemeal MVP, Experiments Run, Experiments Run, Experiments Run, Experiments Run (+28 more)
+Nodes (37): Case Study 1: Dropbox - The Smoke Test MVP, Case Study 3: Zappos - The Wizard of Oz MVP, Case Study 4: Groupon - The Piecemeal MVP, Cross-Cutting Patterns, Experiments Run, Experiments Run, Experiments Run, Failure Case 1: Webvan - Scaling Without Validation (+29 more)
 
 ### Community 1731 - "Sales Negotiator"
 Cohesion: 0.29
@@ -8557,8 +8550,8 @@ Cohesion: 0.29
 Nodes (6): 1. Product Vision (vision), 2. Market Assessment (market), 3. Competitive Strategy (competitive), 4. Strategic Frameworks (strategy), 5. Business Model (business), 6. Build Decisions (build)
 
 ### Community 1775 - "Jobs-to-be-Done Framework"
-Cohesion: 0.29
-Nodes (7): 3. American Girl, Competition, Dimensions, Experience Integration, Job, Lesson, Situation
+Cohesion: 0.22
+Nodes (9): Common Remote Sprint Failures and Fixes, Friday Testing Feels Disconnected, Lost Momentum Between Days, Miro Board Chaos, Multitasking During Sync Sessions, Poor Audio/Video Quality, Sketches Are Hard to Read When Photographed, The Decider Is Not Fully Engaged (+1 more)
 
 ### Community 1776 - "Survey Design"
 Cohesion: 0.29
@@ -8813,8 +8806,8 @@ Cohesion: 0.50
 Nodes (3): contentType, ListOpenGraphImage(), size
 
 ### Community 1848 - "Feature Adoption Tracking"
-Cohesion: 0.40
-Nodes (5): Implementation Checklist for AMP in Any Product, Phase 1: Audit Current State, Phase 2: Remove or Transform Extrinsic Mechanics, Phase 3: Build Intrinsic Motivation, Phase 4: Measure and Iterate
+Cohesion: 0.25
+Nodes (8): Animate enter states with @starting-style, Buttons must feel responsive, Component Building Principles, Make popovers origin-aware, Never animate from scale(0), Tooltips: skip delay on subsequent hovers, Use blur to mask imperfect transitions, Use CSS transitions over keyframes for interruptible UI
 
 ### Community 1851 - "Core Frameworks"
 Cohesion: 0.33
@@ -8849,8 +8842,8 @@ Cohesion: 0.33
 Nodes (5): 1. GTM Strategy (strategy), 2. Content Strategy (content), 3. Brand Strategy (brand), 4. Platform Tactics (platform), 5. Growth & Distribution (growth)
 
 ### Community 1859 - "Cross-Functional Collaboration"
-Cohesion: 0.33
-Nodes (6): Case Study 2: Velocity Up, Quality Down, Context, Lessons Learned, Results After Two Quarters, The Intervention, The Problems
+Cohesion: 0.20
+Nodes (9): Case Studies: High Output Management in Practice, Case Study 2: Velocity Up, Quality Down, Context, Key Takeaways, Lessons Learned, Results After Two Quarters, Table of Contents, The Intervention (+1 more)
 
 ### Community 1860 - "Go-to-Market Coordination"
 Cohesion: 0.33
@@ -8893,8 +8886,8 @@ Cohesion: 0.33
 Nodes (6): 1. Same product, different jobs, 2. Competition from unexpected places, 3. Integration for poorly understood jobs, 4. Emotions and social aspects often more important than functionality, 5. Anti-change forces are powerful, Patterns from Case Studies
 
 ### Community 1870 - "Pricing Presentation & Investment Positioning"
-Cohesion: 0.40
-Nodes (5): Job Statements: The Right Level of Abstraction, Just Right, The Litmus Test, Too Broad, Too Narrow
+Cohesion: 0.29
+Nodes (7): Authority, Commitment/Consistency, Loss Aversion, Psychological Triggers, Reciprocity, Scarcity (Use Ethically), Social Proof
 
 ### Community 1871 - "Competitive Differentiation in Proposals"
 Cohesion: 0.33
@@ -8909,8 +8902,8 @@ Cohesion: 0.33
 Nodes (6): Blog CTAs & Content Upgrades, Exit-Intent & Popups, Paid Promotion, Partner Co-Promotion, Promotion & Distribution, Social Media
 
 ### Community 1874 - "Frame Timing and Duration Calculations"
-Cohesion: 0.40
-Nodes (5): Case Study 6: "Names, Names, Names" — Local Newspaper Motto, Lessons, SUCCESs Analysis, The Idea, Why It Stuck
+Cohesion: 0.29
+Nodes (7): Case Study 4: Palm -- The PDA That Couldn't Cross, Company and Product, Early Adopter Success, Key Lessons, Outcome, The Chasm Challenge, What Went Wrong
 
 ### Community 1875 - "Procurement & Legal Negotiations"
 Cohesion: 0.33
@@ -8933,12 +8926,12 @@ Cohesion: 0.33
 Nodes (6): Case Study 4: Internal Tools Team, Context, Key Lesson, Lean UX Intervention, Outcomes After 2 Months, The Problem
 
 ### Community 1880 - "CRM Architecture & Data Model"
-Cohesion: 0.33
-Nodes (6): How to Reverse-Engineer Stickiness, Step 1: Identify the Core Message, Step 2: Run the SUCCESs Audit, Step 3: Find the Dominant Principle, Step 4: Identify Transferable Techniques, Step 5: Apply to Your Context
+Cohesion: 0.29
+Nodes (7): Common Monday Mistakes, Expert Interviews That Turn Into Debates, Mapping Internal Processes Instead of the Customer Journey, No Decider in the Room, Picking a Target That Is Too Broad, Skipping HMW Notes, Spending Too Long on the Goal
 
 ### Community 1882 - "Sales Forecasting Models"
 Cohesion: 0.29
-Nodes (7): Authority, Commitment/Consistency, Loss Aversion, Psychological Triggers, Reciprocity, Scarcity (Use Ethically), Social Proof
+Nodes (7): Capture Format, Example Lightning Demos, How to Run Lightning Demos, Lightning Demos, Preparation (Before Tuesday), Purpose, What to Look For
 
 ### Community 1883 - "Pipeline Stages & Velocity"
 Cohesion: 0.33
@@ -8961,12 +8954,12 @@ Cohesion: 0.33
 Nodes (6): 1. The Stated Problem Is Rarely the Real Problem, 2. Past Behavior Reveals More Than Opinions, 3. Existing Spending Validates Willingness to Pay, 4. Commitment Separates Real Interest from Politeness, 5. The Biggest Risk Is Building the Wrong Thing, Patterns Across All Four Cases
 
 ### Community 1888 - "Territory and Account Planning"
-Cohesion: 0.33
-Nodes (6): Case Study 4: StudyBuddy (Marketplace -- Peer Tutoring), The Bad Conversations, The Commitment Test, The Idea, The Mom Test Conversations, What Kenji Actually Learned
+Cohesion: 0.29
+Nodes (7): Common Storyboard Debates (and How to Resolve Them), Example Storyboard: Online Grocery Delivery, Purpose, Setup, Step-by-Step Process, Storyboard Best Practices, Storyboard Creation
 
 ### Community 1889 - "Core Frameworks"
 Cohesion: 0.33
-Nodes (6): Ask the Experts, Good Questions to Ask Experts, Interview Format, Purpose, Tips for the Sprint Master, Who to Interview
+Nodes (6): Case Study 3: Savioke - Robot Hotel Delivery, Challenge, Company, Lessons, Results, Sprint Process
 
 ### Community 1890 - "SEO Content Strategist"
 Cohesion: 0.33
@@ -9029,8 +9022,8 @@ Cohesion: 0.33
 Nodes (6): Button States, Common Animation Patterns, Dropdown/Menu, Modal Entrance/Exit, Skeleton Loading, Toast/Notification
 
 ### Community 1906 - "Objection Handling During Demos"
-Cohesion: 0.40
-Nodes (5): Belief 1: The Problem, Belief 2: The Customer Segment, Belief 3: The Solution Direction, The Three Core Beliefs, Updating Beliefs
+Cohesion: 0.33
+Nodes (6): From Job to Innovation, Step 1: Define the Job Clearly, Step 2: Map Current "Employees", Step 3: Identify Performance Gaps, Step 4: Design for the Gap, Step 5: Test Against the Job
 
 ### Community 1907 - "Pre-Call Research & Preparation"
 Cohesion: 0.33
@@ -9174,7 +9167,7 @@ Nodes (6): Animation Principles for Microinteractions, Animations, Color Changes
 
 ### Community 1944 - "Onboarding and Ramp Programs"
 Cohesion: 0.33
-Nodes (6): Case Study 1: Enterprise Product Team, Context, Key Lesson, Lean UX Intervention, Outcomes After 3 Months, The Problem
+Nodes (6): Case Study 4: Flatiron Health - Cancer Research Data, Challenge, Company, Lessons, Results, Sprint Process
 
 ### Community 1945 - "Training Program Design"
 Cohesion: 0.40
@@ -9497,8 +9490,8 @@ Cohesion: 0.40
 Nodes (5): Example, Hide Delegate, Mechanics, Motivation, The Trade-Off
 
 ### Community 2038 - "Email Subject Lines"
-Cohesion: 0.50
-Nodes (4): Common Missing Links, Cross-Sell Mapping, Missing Link Audit, Missing Links
+Cohesion: 0.33
+Nodes (6): Case Study 5: Harvest - Time Tracking for Freelancers, Challenge, Company, Lessons, Results, Sprint Process
 
 ### Community 2039 - "LinkedIn Post Copy"
 Cohesion: 0.40
@@ -9585,8 +9578,8 @@ Cohesion: 0.40
 Nodes (5): Multiple Choice (Radio Button) Questions, Qualifying Questions (Add to Uncategorised), Question Writing Templates, Sliding Scale Questions (1-10), Yes/No Best Practice Questions
 
 ### Community 2060 - "Projections — NomNom"
-Cohesion: 0.50
-Nodes (4): Actionable Alerts, Executive Summary Metrics, Reporting Dashboard, Trend Charts
+Cohesion: 0.33
+Nodes (6): Case Study 6: Code for America - Government Benefits Application, Challenge, Company, Lessons, Results, Sprint Process
 
 ### Community 2061 - "Revenue Model — NomNom"
 Cohesion: 0.40
@@ -9645,8 +9638,8 @@ Cohesion: 0.22
 Nodes (11): getFeatureSlideshowDuration(), defaultFeatureReelProps, getFeatureReelDuration(), getListShowcaseDuration(), defaultRestaurantSpotlightProps, RestaurantSpotlight(), RestaurantReviewsReel(), defaultProps (+3 more)
 
 ### Community 2076 - "The Opportunity Assessment Questions"
-Cohesion: 0.50
-Nodes (4): Column-Based Footer (Standard), Expanded Footer, Footer Navigation, Minimal Footer
+Cohesion: 0.33
+Nodes (6): Case Study 7: Grind Coffee - Subscription Model, Challenge, Company, Lessons, Results, Sprint Process
 
 ### Community 2077 - "Strategies for Managing HiPPOs"
 Cohesion: 0.40
@@ -9865,8 +9858,8 @@ Cohesion: 0.50
 Nodes (4): Expert quotes, Neutral attribution, Providing Evidence, Supporting claims
 
 ### Community 2143 - "Case Study 4: Growth Team -- E-Commerce Marketplace"
-Cohesion: 0.40
-Nodes (5): Alternative: Simple Numbers, Pie Chart Rules, Pie Charts, When NOT to Use, When to Use (Rarely)
+Cohesion: 0.33
+Nodes (6): Day-by-Day Facilitation Tips, Friday, Monday, Thursday, Tuesday, Wednesday
 
 ### Community 2144 - "Case Study 2: Consumer Mobile -- Fitness App"
 Cohesion: 0.50
@@ -9885,8 +9878,8 @@ Cohesion: 0.62
 Nodes (4): fillPlaceholders(), pluralKey(), ogPlural(), ogText()
 
 ### Community 2149 - "_sections.md"
-Cohesion: 0.40
-Nodes (5): Asking for the Meeting, Closing the Deal, Handling "Send Me Information", Opening a Cold Call, Scripts for Key Moments
+Cohesion: 0.33
+Nodes (6): Case Study 2: IMVU - Continuous Deployment and Learning, Experiments Run, Lean Method Applied, Lessons, Results, Situation
 
 ### Community 2150 - "Hash Partitioning"
 Cohesion: 0.50
@@ -10032,6 +10025,10 @@ Nodes (4): captureServerEvent(), getPostHogNodeClient(), POOLED_DISTINCT_IDS, re
 Cohesion: 0.50
 Nodes (4): Benchmarks, Key Metrics, Measurement, What to Track
 
+### Community 2195 - "Segmentation Strategies"
+Cohesion: 0.33
+Nodes (6): 1. Should this animate at all?, 2. What is the purpose?, 3. What easing should it use?, 4. How fast should it be?, Perceived performance, The Animation Decision Framework
+
 ### Community 2197 - "Framework"
 Cohesion: 0.50
 Nodes (4): Multiple Popup Strategy, Output Format, Popup Design, Test Hypotheses
@@ -10101,12 +10098,16 @@ Cohesion: 0.50
 Nodes (4): Building a Scoring Model, Common Scoring Mistakes, Lead Scoring, Scoring Dimensions
 
 ### Community 2215 - "_sections.md"
-Cohesion: 0.50
-Nodes (4): Advanced Patterns, Custom JavaScript Variables, Exception Handling, Tag Sequencing
+Cohesion: 0.33
+Nodes (6): clip-path for Animation, Comparison sliders, Hold-to-delete pattern, Image reveals on scroll, Tabs with perfect color transitions, The inset shape
 
 ### Community 2217 - "Comment Smells"
 Cohesion: 0.50
 Nodes (4): Pipeline Metrics, Pipeline Stage Management, Pipeline Stages, Stage Hygiene
+
+### Community 2219 - "Note-Taking During Conversations"
+Cohesion: 0.33
+Nodes (6): Note-Taking During Conversations, Note-Taking Systems, The Shorthand System, The Two-Column Method, What to Capture, When to Take Notes
 
 ### Community 2220 - "Patterns Across Case Studies"
 Cohesion: 0.50
@@ -10125,8 +10126,8 @@ Cohesion: 0.50
 Nodes (4): Content Depth, Content Quality Assessment, E-E-A-T Signals, User Engagement Signals
 
 ### Community 2224 - "ICE Prioritization Framework"
-Cohesion: 0.50
-Nodes (4): How to Test, Metrics to Track, Testing and Optimization, What to Test
+Cohesion: 0.33
+Nodes (6): CSS animations beat JS under load, CSS variables are inheritable, Framer Motion hardware acceleration caveat, Only animate transform and opacity, Performance Rules, Use WAAPI for programmatic CSS animations
 
 ### Community 2225 - "The Modern SaaS Chasm-Crossing Playbook"
 Cohesion: 0.50
@@ -10168,17 +10169,17 @@ Nodes (4): Font Loading Optimization, Load Weights Strategically, Preload Critic
 Cohesion: 0.50
 Nodes (4): Assessment, Evidence AGAINST — nobody has shown it works at scale, Evidence FOR — it is being sold, and platforms are building rails for it, Precedent for paid curated lists
 
+### Community 2236 - "Pinterest: The Visual Hunt Hook"
+Cohesion: 0.33
+Nodes (6): Damping at boundaries, Friction instead of hard stops, Gesture and Drag Interactions, Momentum-based dismissal, Multi-touch protection, Pointer capture for drag
+
 ### Community 2237 - "Domain Distillation"
-Cohesion: 0.50
-Nodes (4): Choosing Leading Indicators for Experiments, Definitions, Leading-Lagging Pairs, Leading vs. Lagging Indicators
+Cohesion: 0.33
+Nodes (6): Case Study 4: StudyBuddy (Marketplace -- Peer Tutoring), The Bad Conversations, The Commitment Test, The Idea, The Mom Test Conversations, What Kenji Actually Learned
 
-### Community 2238 - "Mastery Audit Checklist"
-Cohesion: 0.50
-Nodes (4): Calendar Scheduling Integration, CRM Automation Workflows, Essential Automations, Marketing-to-Sales Automations
-
-### Community 2241 - "_sections.md"
-Cohesion: 0.50
-Nodes (4): Exclusions to Set Up, Funnel-Based Approach, Retargeting Strategies, Retargeting Windows
+### Community 2242 - "Case Study 7: Apple's "1,000 Songs in Your Pocket""
+Cohesion: 0.40
+Nodes (5): Case Study 7: Apple's "1,000 Songs in Your Pocket", Lessons, SUCCESs Analysis, The Idea, Why It Stuck
 
 ### Community 2245 - "Service Workers for Cache Control"
 Cohesion: 0.67
@@ -10260,6 +10261,10 @@ Nodes (3): fetchMySystemListIds(), fetchMyVisitedRestaurantIds(), fetchMyVisitSu
 Cohesion: 0.70
 Nodes (3): listNameFromSubscriptionRow(), sendSubscriptionCancelledEmail(), subscriptionCancelledHtml()
 
+### Community 2431 - "5. Scroll-Based Layouts"
+Cohesion: 0.40
+Nodes (5): Common Tag Configurations, Facebook Pixel - Base, Facebook Pixel - Event, GA4 Configuration Tag, GA4 Event Tag
+
 ### Community 2434 - "Getting Executive Buy-In"
 Cohesion: 0.33
 Nodes (5): Daily mass-content process, Every morning (10–20 min), If a live slot has no subject, Rules that do not move, Volume
@@ -10292,9 +10297,13 @@ Nodes (5): Design & shared components, graphify, Health Stack, Skill routing, Tw
 Cohesion: 0.40
 Nodes (3): adminCalls, cityRows, restaurantRows
 
-### Community 2476 - "Product, growth, and positioning"
-Cohesion: 0.21
-Nodes (16): collectProps(), compileAttr(), cssToObj(), hostPositionStyle(), kebabToCamel(), walk(), walkChildren(), walkComponent() (+8 more)
+### Community 2474 - "Flaw 4: Crowd Out Good Behavior"
+Cohesion: 0.40
+Nodes (5): Implementation Checklist for AMP in Any Product, Phase 1: Audit Current State, Phase 2: Remove or Transform Extrinsic Mechanics, Phase 3: Build Intrinsic Motivation, Phase 4: Measure and Iterate
+
+### Community 2477 - "CLS: Cumulative Layout Shift"
+Cohesion: 0.40
+Nodes (5): 3D transforms for depth, CSS Transform Mastery, scale() scales children too, transform-origin, translateY with percentages
 
 ### Community 2496 - "Content / Blog Site"
 Cohesion: 0.50
@@ -10304,13 +10313,25 @@ Nodes (4): Content / Blog Site, Navigation, Page Hierarchy, URL Map
 Cohesion: 0.50
 Nodes (3): HERE, LOCALE, SRC
 
-### Community 2517 - "Essential Events"
+### Community 2516 - "dedupeMustTryDishesByDisplayLabel"
 Cohesion: 0.67
-Nodes (3): Naming Conventions, Standard Parameters, UTM Parameter Strategy
+Nodes (3): Essential Events, Marketing Site, Product/App
 
 ### Community 2519 - "CapacitorInit"
 Cohesion: 0.67
 Nodes (3): CapacitorInit(), isUserCancelledPluginError(), APP
+
+### Community 2527 - "The Sonner Principles (Building Loved Components)"
+Cohesion: 0.40
+Nodes (5): Asymmetric enter/exit timing, Cohesion matters, Review your work the next day, The opacity + height combination, The Sonner Principles (Building Loved Components)
+
+### Community 2528 - "Spring Animations"
+Cohesion: 0.40
+Nodes (5): Interruptibility advantage, Spring Animations, Spring-based mouse interactions, Spring configuration, When to use springs
+
+### Community 2530 - "Hardware Keyboard Support"
+Cohesion: 0.40
+Nodes (5): Hardware Keyboard Support, Keyboard Shortcut Discoverability, Standard Shortcuts to Support, SwiftUI Keyboard Shortcuts, Why It Matters
 
 ### Community 2531 - "Component Considerations"
 Cohesion: 0.33
@@ -10320,22 +10341,82 @@ Nodes (6): Buttons, Cards and Surfaces, Component Considerations, Form Inputs, I
 Cohesion: 0.40
 Nodes (5): FONT_DIR, FONT_FILES, loadFonts(), ogImageOptions(), NOTE: `next.config.js` must keep `./src/libs/og/fonts/**` in `outputFileTracingI
 
+### Community 2533 - "Outcomes vs. Outputs"
+Cohesion: 0.40
+Nodes (5): Definitions, Outcomes vs. Outputs, Shifting the Conversation, The Output Trap, Why the Distinction Matters
+
+### Community 2534 - "Case Study 1: JFK's Moonshot Speech (1961)"
+Cohesion: 0.40
+Nodes (5): Case Study 1: JFK's Moonshot Speech (1961), Lessons, SUCCESs Analysis, The Idea, Why It Stuck
+
+### Community 2535 - "Refactoring and Performance"
+Cohesion: 0.40
+Nodes (5): Refactoring and Performance, The Common Fear, The Reality, The Three-Step Performance Strategy, When Refactoring Genuinely Hurts Performance
+
+### Community 2536 - "Scripts for Key Moments"
+Cohesion: 0.40
+Nodes (5): Asking for the Meeting, Closing the Deal, Handling "Send Me Information", Opening a Cold Call, Scripts for Key Moments
+
+### Community 2538 - "Funnel Optimization Checklist"
+Cohesion: 0.50
+Nodes (4): After Optimization, Before Optimizing, During Optimization, Funnel Optimization Checklist
+
+### Community 2539 - "Personalization"
+Cohesion: 0.50
+Nodes (4): Dynamic Content, Merge Fields, Personalization, Triggered Emails
+
+### Community 2540 - "Core Philosophy"
+Cohesion: 0.50
+Nodes (4): Beauty is leverage, Core Philosophy, Taste is trained, not innate, Unseen details compound
+
+### Community 2541 - "Debugging Animations"
+Cohesion: 0.50
+Nodes (4): Debugging Animations, Frame-by-frame inspection, Slow motion testing, Test on real devices
+
+### Community 2542 - "Creative Best Practices"
+Cohesion: 0.50
+Nodes (4): Creative Best Practices, Creative Testing Hierarchy, Image Ads, Video Ads Structure (15-30 sec)
+
+### Community 2543 - "Accessibility in Data Viz"
+Cohesion: 0.50
+Nodes (4): Accessibility in Data Viz, Color Considerations, Data Tables as Alternative, Screen Reader Support
+
+### Community 2544 - "Line Charts"
+Cohesion: 0.50
+Nodes (4): Line Chart Rules, Line Charts, Line Styling, When to Use
+
+### Community 2545 - "Lead Lifecycle Framework"
+Cohesion: 0.50
+Nodes (4): Lead Lifecycle Framework, MQL Definition, MQL-to-SQL Handoff SLA, Stage Definitions
+
+### Community 2546 - "Optimization Playbook"
+Cohesion: 0.50
+Nodes (4): Monthly Optimization Actions, Optimization Playbook, Quarterly Review, Weekly Review Checklist
+
+### Community 2547 - "Header Navigation"
+Cohesion: 0.50
+Nodes (4): Header Navigation, Mega Menu Header, Simple Header (4-6 items), Split Navigation
+
+### Community 2548 - "The Spectrum"
+Cohesion: 0.50
+Nodes (4): Somewhat General-Purpose (The Sweet Spot), The Spectrum, Too General-Purpose, Too Special-Purpose
+
 ## Knowledge Gaps
-- **20128 isolated node(s):** `deploy-codex.sh script`, `deploy.sh script`, `DEPRECATED_NAMES`, `HARNESS_DIRS`, `{ chromium }` (+20123 more)
+- **20084 isolated node(s):** `deploy-codex.sh script`, `deploy.sh script`, `DEPRECATED_NAMES`, `HARNESS_DIRS`, `{ chromium }` (+20079 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **374 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **345 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `key()` connect `Product, growth, and positioning` to `Theme`, `Context Supabase`, `Sections Home`, `App (frontend)`, `Components Upload`, `Page`, `autoprefixer`, `Page`, `paywall-recency.test.mjs`, `I18n Server`, `Page`, `Supabase Client`, `safe-storage.js`, `dedupeMustTryDishesByDisplayLabel`, `Merge Snapshot Purchase Captured Item`, `Saved View`, `Discover Actions`, `react-hook-form`, `react-i18next`, `resend`, `notification-settings-view.js`, `page.js`, `Affiliate Program Design`?**
+- **Why does `key()` connect `Components Upload` to `Theme`, `Context Supabase`, `Sections Home`, `App (frontend)`, `Page`, `autoprefixer`, `Product, growth, and positioning`, `Page`, `paywall-recency.test.mjs`, `I18n Server`, `Page`, `Supabase Client`, `safe-storage.js`, `Merge Snapshot Purchase Captured Item`, `Saved View`, `Discover Actions`, `react-hook-form`, `react-i18next`, `resend`, `notification-settings-view.js`, `page.js`, `Affiliate Program Design`, `dedupeMustTryDishesByDisplayLabel`, `table-join-view.js`?**
   _High betweenness centrality (0.005) - this node is a cross-community bridge._
 - **Why does `stripe` connect `Page` to `Admin Allowlist`, `Escape Html`?**
   _High betweenness centrality (0.003) - this node is a cross-community bridge._
-- **Why does `dependencies` connect `Ugc Translate` to `Spring Animations`, `Sections Lists`, `sharp`, `public-profile-activity-constants.js`, `stylis-plugin-rtl`, `_sections.md`, `@ai-sdk/openai`, `@types/mdx`, `@upstash/redis`, `Tailoring Demos to Audience and Use Case`, `autoprefixer`, `GTM Copywriter`, `Indicators and Production Principles for Software Teams`, `@capacitor/haptics`, `Page`, `@capacitor/keyboard`, `swr`, `Impact Measurement`, `Page`, `@ai-sdk/anthropic`, `Proposal Follow-Up Strategy`, `@next/third-parties`, `@emotion/styled`, `framer-motion`, `@capacitor/splash-screen`, `Canvas`, `@mdx-js/react`, `trimming.md`, `SEO Considerations`, `antd`, `Rule Sections`, `posthog-js`, `ai`, `react`, `view.js`, `SKILL.md`, `Restaurant Search Llm`, `react-loading-skeleton`, `simplebar-react`, `Research Principles`, `ADR Lifecycle Management`, `@supabase/ssr`, `@supabase/supabase-js`, `Header Navigation`, `yet-another-react-lightbox`, `next`, `@vercel/analytics`, `postcss`, `@capacitor/app`, `react-dropzone`, `stylis`, `react-lazy-load-image-component`?**
+- **Why does `dependencies` connect `Ugc Translate` to `Spring Animations`, `Sections Lists`, `sharp`, `public-profile-activity-constants.js`, `stylis-plugin-rtl`, `_sections.md`, `@ai-sdk/openai`, `@types/mdx`, `@upstash/redis`, `Tailoring Demos to Audience and Use Case`, `autoprefixer`, `GTM Copywriter`, `Indicators and Production Principles for Software Teams`, `@capacitor/haptics`, `Page`, `@capacitor/keyboard`, `swr`, `Impact Measurement`, `Page`, `@ai-sdk/anthropic`, `Proposal Follow-Up Strategy`, `@next/third-parties`, `@emotion/styled`, `framer-motion`, `@capacitor/splash-screen`, `Canvas`, `Essential Events`, `@mdx-js/react`, `trimming.md`, `SEO Considerations`, `antd`, `Rule Sections`, `posthog-js`, `react`, `view.js`, `SKILL.md`, `Restaurant Search Llm`, `react-loading-skeleton`, `simplebar-react`, `Research Principles`, `ADR Lifecycle Management`, `@supabase/ssr`, `@supabase/supabase-js`, `Header Navigation`, `yet-another-react-lightbox`, `next`, `@vercel/analytics`, `postcss`, `@capacitor/app`, `react-dropzone`, `stylis`, `react-lazy-load-image-component`?**
   _High betweenness centrality (0.002) - this node is a cross-community bridge._
 - **What connects `deploy-codex.sh script`, `deploy.sh script`, `DEPRECATED_NAMES` to the rest of the system?**
-  _20128 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _20084 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Sections Profile` be split into smaller, more focused modules?**
   _Cohesion score 0.01818181818181818 - nodes in this community are weakly interconnected._
 - **Should `List Actions` be split into smaller, more focused modules?**

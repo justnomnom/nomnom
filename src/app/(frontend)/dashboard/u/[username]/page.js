@@ -5,7 +5,8 @@ import { notFound } from 'next/navigation';
 import { APP } from 'src/config-global';
 import { fetchOgProfile } from 'src/libs/og/fetch-og-profile';
 import { fetchPublicProfileByUsername } from 'src/libs/lists/actions';
-import { getDefaultTranslation } from 'src/locales/default-translations';
+import { getServerViewerLang } from 'src/libs/i18n-server';
+import { getTranslation } from 'src/locales/default-translations';
 import { getSupabaseAuthUser } from 'src/libs/supabase/supabase-server-client';
 
 import { DynamicTitle } from 'src/components/dynamic-title';
@@ -17,18 +18,18 @@ import UserPublicProfileRouteLoadingSkeleton from 'src/sections/lists/view/user-
 
 export async function generateMetadata({ params }) {
   const { username } = await params;
+  const lang = await getServerViewerLang();
+  const fallbackTitle = `${getTranslation(lang, 'pages.dashboard.settings.title')} — ${APP.name}`;
   const raw = (username ?? '').trim();
   if (!raw) {
-    return { title: `${getDefaultTranslation('pages.dashboard.settings.title')} — ${APP.name}` };
+    return { title: fallbackTitle };
   }
   const profile = await fetchOgProfile(raw).catch(() => null);
   if (!profile) {
-    return { title: `${getDefaultTranslation('pages.dashboard.settings.title')} — ${APP.name}` };
+    return { title: fallbackTitle };
   }
   const titleName = profile.displayName || (profile.handle ? `@${profile.handle}` : raw);
-  const template = getDefaultTranslation('pages.lists.user_document_title');
-  const base =
-    typeof template === 'string' ? template.replace(/\{\{\s*name\s*\}\}/g, titleName) : titleName;
+  const base = getTranslation(lang, 'pages.lists.user_document_title', { name: titleName });
   return { title: `${base} — ${APP.name}` };
 }
 

@@ -1,4 +1,4 @@
-import { getDefaultTranslation } from 'src/locales/default-translations';
+import { localizedDocumentTitle } from 'src/content-platform/page-metadata';
 
 import { DynamicTitle } from 'src/components/dynamic-title';
 
@@ -6,9 +6,9 @@ import MaintenanceView from 'src/sections/maintenance/view';
 
 // ----------------------------------------------------------------------
 
-export const metadata = {
-  title: getDefaultTranslation('pages.maintenance.title'),
-};
+export async function generateMetadata() {
+  return localizedDocumentTitle('pages.maintenance.title');
+}
 
 export default function MaintenancePage() {
   return (

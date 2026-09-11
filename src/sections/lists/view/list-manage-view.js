@@ -1245,8 +1245,22 @@ export default function ListManageView({ listId, isOwner, canEditItems, initial 
                       color="text.disabled"
                       sx={{ mt: 0.75, maxWidth: 280, mx: 'auto' }}
                     >
-                      {t('pages.lists.no_places_hint')}
+                      {t(
+                        canEditItems
+                          ? 'pages.lists.no_places_hint'
+                          : 'pages.lists.no_places_hint_readonly'
+                      )}
                     </Typography>
+                    <Button
+                      component={RouterLink}
+                      href={paths.dashboard.discover}
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      sx={[touchTargetSx, dashboardMobileStretchButtonSx, { mt: 2 }]}
+                    >
+                      {t('pages.dashboard.discover_spots_cta')}
+                    </Button>
                   </Box>
                 ) : (
                   <Stack spacing={1}>

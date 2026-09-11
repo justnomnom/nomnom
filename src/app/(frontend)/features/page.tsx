@@ -4,18 +4,19 @@ import Link from 'next/link';
 import { ContentPageShell } from '@/components/content-platform/sections/content-page-shell';
 import { contentUseCaseStoryRowLinkClassName } from 'src/components/content-platform/ui/content-inline-link-classname';
 import { readMdxFilesInDir } from '@/content-platform/fs-content';
-import { pageMetadata } from '@/content-platform/page-metadata';
-
-export const revalidate = 60;
+import { localizedPageMetadata } from '@/content-platform/page-metadata';
+import { getServerViewerLang } from 'src/libs/i18n-server';
+import { getTranslation } from 'src/locales/default-translations';
 
 const SLUG_ORDER = ['feed', 'lists', 'map', 'roulette', 'table'];
 
-export const metadata: Metadata = pageMetadata({
-  title: 'Features — feed, lists, map, NomNom Roulette, and Table',
-  description:
-    'How NomNom works: a feed from people you follow, lists you can import and share, a map of those pins, NomNom Roulette when you cannot choose, and Table so a group can vote without the app.',
-  path: '/features',
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return localizedPageMetadata({
+    titleKey: 'pages.featuresHub.metaTitle',
+    descriptionKey: 'pages.featuresHub.metaDescription',
+    path: '/features',
+  });
+}
 
 function sortFeatureDocs<T extends { slug: string }>(docs: T[]): T[] {
   return [...docs].sort((a, b) => {
@@ -31,24 +32,23 @@ function sortFeatureDocs<T extends { slug: string }>(docs: T[]): T[] {
 /**
  * Index of product feature narratives (MDX).
  */
-export default function FeaturesIndexPage() {
+export default async function FeaturesIndexPage() {
+  const lang = await getServerViewerLang();
+  const t = (key: string) => getTranslation(lang, `pages.featuresHub.${key}`);
   const docs = sortFeatureDocs(readMdxFilesInDir('features'));
 
   return (
     <ContentPageShell
-      title="Features"
-      description="Follow people you trust, save lists, map the pins, spin NomNom Roulette, and vote on a Table — even without the app."
+      title={t('title')}
+      description={t('description')}
       breadcrumbs={[
-        { name: 'Home', href: '/' },
-        { name: 'Features', href: '/features' },
+        { name: t('breadcrumb_home'), href: '/' },
+        { name: t('title'), href: '/features' },
       ]}
     >
-      <p>
-        Restaurant picks from people you trust. Named sources, lists you can follow, a map of those
-        pins, NomNom Roulette on your pool, and Table votes that do not require the app.
-      </p>
+      <p>{t('intro')}</p>
 
-      <nav aria-label="Feature guides" className="not-prose">
+      <nav aria-label={t('nav_aria')} className="not-prose">
         <div className="divide-y divide-border border-y border-border">
           {docs.map((doc) => (
             <Link
@@ -65,7 +65,7 @@ export default function FeaturesIndexPage() {
                 </span>
               ) : null}
               <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary-readable underline-offset-4 transition-all duration-200 group-hover:gap-2.5 group-hover:underline">
-                Read
+                {t('read')}
                 <span aria-hidden="true">→</span>
               </span>
             </Link>

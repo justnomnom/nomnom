@@ -56,7 +56,7 @@ export function liveListUpdateHtml({ listName, creatorName, listUrl, manageUrl }
               </p>
               <p style="margin:0 0 24px;font-family:'Albert Sans',Georgia,serif;
                         font-size:16px;font-weight:400;line-height:1.6;color:#6e6657">
-                They added new places to <strong style="color:#15130f;font-weight:600">${safeList}</strong>.
+                They added new spots to <strong style="color:#15130f;font-weight:600">${safeList}</strong>.
                 Go see what&rsquo;s been added — you might find your next favourite spot.
               </p>
 

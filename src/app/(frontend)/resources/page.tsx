@@ -4,40 +4,40 @@ import Link from 'next/link';
 import { ContentPageShell } from '@/components/content-platform/sections/content-page-shell';
 import { contentUseCaseStoryRowLinkClassName } from 'src/components/content-platform/ui/content-inline-link-classname';
 import { readMdxFilesInDir } from '@/content-platform/fs-content';
-import { pageMetadata } from '@/content-platform/page-metadata';
+import { localizedPageMetadata } from '@/content-platform/page-metadata';
+import { getServerViewerLang } from 'src/libs/i18n-server';
+import { getTranslation } from 'src/locales/default-translations';
 
-export const revalidate = 60;
-
-export const metadata: Metadata = pageMetadata({
-  title: 'Resources — Maps import, group dinners, and trust',
-  description:
-    'Practical NomNom guides: export Google Maps saved places, decide dinner without the group chat, and why star averages stopped meaning much.',
-  path: '/resources',
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return localizedPageMetadata({
+    titleKey: 'pages.resourcesHub.metaTitle',
+    descriptionKey: 'pages.resourcesHub.metaDescription',
+    path: '/resources',
+  });
+}
 
 /**
  * Index of long-form resource articles (MDX).
  */
-export default function ResourcesIndexPage() {
+export default async function ResourcesIndexPage() {
+  const lang = await getServerViewerLang();
+  const t = (key: string) => getTranslation(lang, `pages.resourcesHub.${key}`);
   const docs = [...readMdxFilesInDir('resources')].sort((a, b) =>
     a.frontmatter.title.localeCompare(b.frontmatter.title)
   );
 
   return (
     <ContentPageShell
-      title="Resources"
-      description="Practical guides: import Google Maps saved places, decide dinner without the group chat, and why star averages stopped meaning much."
+      title={t('title')}
+      description={t('description')}
       breadcrumbs={[
-        { name: 'Home', href: '/' },
-        { name: 'Resources', href: '/resources' },
+        { name: t('breadcrumb_home'), href: '/' },
+        { name: t('title'), href: '/resources' },
       ]}
     >
-      <p>
-        How-tos and arguments you can actually use — import a Maps list, land a group dinner, or put
-        creator recs on a profile instead of in DMs. No invented restaurants, no fake scores.
-      </p>
+      <p>{t('intro')}</p>
 
-      <nav aria-label="Resource articles" className="not-prose">
+      <nav aria-label={t('nav_aria')} className="not-prose">
         <div className="divide-y divide-border border-y border-border">
           {docs.map((doc) => (
             <Link
@@ -54,7 +54,7 @@ export default function ResourcesIndexPage() {
                 </span>
               ) : null}
               <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary-readable underline-offset-4 transition-all duration-200 group-hover:gap-2.5 group-hover:underline">
-                Read
+                {t('read')}
                 <span aria-hidden="true">→</span>
               </span>
             </Link>

@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 
 import { isAdminUserId } from 'src/libs/auth/admin-allowlist';
 import { supabaseAdminClient } from 'src/libs/supabase/supabase-admin';
-import { getDefaultTranslation } from 'src/locales/default-translations';
+import { localizedDocumentTitle } from 'src/content-platform/page-metadata';
 import { getSupabaseAuthUser } from 'src/libs/supabase/supabase-server-client';
 
 import { DynamicTitle } from 'src/components/dynamic-title';
@@ -11,9 +11,9 @@ import SponsoredPlacementsAdminView from 'src/sections/admin/sponsored-placement
 
 // ----------------------------------------------------------------------
 
-export const metadata = {
-  title: getDefaultTranslation('pages.dashboard.admin.sponsored_placements.document_title'),
-};
+export async function generateMetadata() {
+  return localizedDocumentTitle('pages.dashboard.admin.sponsored_placements.document_title');
+}
 
 function buildCityOption(row) {
   const st = Array.isArray(row?.states) ? row.states[0] : row?.states;

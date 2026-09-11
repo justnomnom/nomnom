@@ -18,7 +18,7 @@ of truth).
 | 3+ | Review (×N) | 4.6s each | Dish tile + review card with word-by-word quote reveal |
 | … | Consensus | 4.8s | Detail-page style aggregate: rating count-up, loves / things to know / dishes |
 | … | Map | 3.7s | Stylized map, pin drop with social proof, address card |
-| … | CTA | 3.6s | Terracotta closing card: "Don't take our word." + Save this spot |
+| … | CTA | 3.6s | Terracotta closing card: "Don’t take our word." + Save this spot |
 
 Total duration is computed from the number of reviews in props
 (`calculateMetadata`), so passing 1 review reproduces the original 22.5s
