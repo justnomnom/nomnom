@@ -1,7 +1,6 @@
 'use client';
 
 import PropTypes from 'prop-types';
-import dynamic from 'next/dynamic';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import { useRef, useMemo, useState, useEffect, useCallback, useLayoutEffect } from 'react';
 
@@ -9,7 +8,6 @@ import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
@@ -23,8 +21,6 @@ import { useRouter } from 'src/routes/hooks';
 
 import { usePrefersReducedMotion } from 'src/hooks/use-prefers-reduced-motion';
 
-import { groupRestaurantTagsByCategory } from 'src/utils/restaurant-tag-groups';
-
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import { readableAccent } from 'src/theme/readable-accent';
@@ -32,46 +28,15 @@ import { STEP_RHYTHM, TOUCH_TARGET_SIZE } from 'src/theme/spacing';
 import { locationIconForSlug } from 'src/config/onboarding-content';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
 import { useSkeletonThemeColors } from 'src/theme/use-skeleton-theme';
-import { fetchSuggestedCreatorsForMunicipality } from 'src/auth/actions/suggested-creators-actions';
+import { completeOnboarding, saveOnboardingLocation } from 'src/auth/actions/onboarding-actions';
 import {
   fetchLocationLocalities,
   resolveLocalityFromCoordinates,
 } from 'src/auth/actions/location-actions';
-import {
-  completeOnboarding,
-  saveOnboardingFollows,
-  saveOnboardingLocation,
-  saveUserRestaurantTagPreferences,
-} from 'src/auth/actions/onboarding-actions';
 
 import Logo from 'src/components/logo';
 import Iconify from 'src/components/iconify';
 import { m, AnimatePresence } from 'src/components/animate';
-
-function RestaurantTagPickerLoadState() {
-  const { t } = useTranslate();
-  return (
-    <Box
-      role="status"
-      sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 6 }}
-    >
-      <CircularProgress
-        size={40}
-        sx={{ color: (theme) => readableAccent(theme) }}
-        aria-label={t('pages.onboarding.a11y.loading_tag_picker')}
-      />
-    </Box>
-  );
-}
-
-/** Shared chunk loader — used by `dynamic()` and location-step prefetch. */
-const loadRestaurantTagPreferencePicker = () =>
-  import('src/components/restaurant-tag-preference-picker');
-
-const RestaurantTagPreferencePicker = dynamic(loadRestaurantTagPreferencePicker, {
-  ssr: false,
-  loading: RestaurantTagPickerLoadState,
-});
 
 /** Non-production diagnostics only — avoids console noise and tiny main-thread cost in prod. */
 function devWarn(...args) {
@@ -80,7 +45,7 @@ function devWarn(...args) {
   }
 }
 
-const STEPS = 4;
+const STEPS = 2;
 
 /** Cozy ease-out curves — confident deceleration, never bounce. */
 const EASE_OUT_QUINT = [0.22, 1, 0.36, 1];
@@ -116,12 +81,7 @@ const stepChildVariants = {
 const ONBOARDING_STEP_A11Y_LABEL_KEYS = [
   'pages.onboarding.a11y.step_welcome',
   'pages.onboarding.a11y.step_location',
-  'pages.onboarding.a11y.step_tags',
-  'pages.onboarding.a11y.step_creators',
 ];
-
-const DRAFT_TAG_ID_RE =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 /** Matches `CITY_ID_RE` in onboarding-actions (city ids may not be RFC v1–v5). */
 const ONBOARDING_CITY_ID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -248,7 +208,7 @@ const bodyCopySx = {
 };
 
 /** Universal web storage (localStorage): browsers, macOS Safari, typical app WebViews. */
-const ONBOARDING_DRAFT_VERSION = 4;
+const ONBOARDING_DRAFT_VERSION = 5;
 const ONBOARDING_DRAFT_PREFIX = 'nomnom.onboarding';
 
 function onboardingDraftStorageKey(userId) {
@@ -275,9 +235,6 @@ function onboardingErrorMessage(err, t) {
   }
   if (s === 'invalid_location') {
     return t('pages.onboarding.errors.invalid_location');
-  }
-  if (s === 'tag_prefs_save_failed') {
-    return t('pages.onboarding.errors.tag_prefs_save_failed');
   }
   if (s === 'gps_outside_supported') {
     return t('pages.onboarding.location.gps_outside_supported');
@@ -405,20 +362,6 @@ const STEP_DECOR = {
       key: 'm',
       emoji: '🗺️',
       sx: { bottom: -28, left: -28, fontSize: 150, opacity: 0.08, transform: 'rotate(-12deg)' },
-    },
-  ],
-  2: [
-    {
-      key: 'b',
-      emoji: '🍔',
-      sx: { top: -28, right: -28, fontSize: 150, opacity: 0.08, transform: 'rotate(12deg)' },
-    },
-  ],
-  3: [
-    {
-      key: 'w',
-      emoji: '🪄',
-      sx: { top: '12%', right: -36, fontSize: 180, opacity: 0.08, transform: 'rotate(45deg)' },
     },
   ],
 };
@@ -602,7 +545,7 @@ OrDivider.propTypes = {
   label: PropTypes.string.isRequired,
 };
 
-export default function OnboardingWizard({ draftUserId = '', initialTags = [] }) {
+export default function OnboardingWizard({ draftUserId = '' }) {
   const { t } = useTranslate();
   const router = useRouter();
   const { trackEvent } = useAnalytics();
@@ -610,16 +553,10 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
   const prefersReducedMotion = usePrefersReducedMotion();
   /** GPS-resolved locality id waiting for the catalog to load before picker mapping. */
   const pendingGeoLocalityRef = useRef('');
-  /** One-shot auto geolocation when the Location step first opens this session. */
-  const autoGeoAttemptedRef = useRef(false);
   /** Ignores stale `fetchLocationLocalities` results when Retry / Strict Mode overlaps. */
   const locationsFetchGenRef = useRef(0);
   /** Ignores stale `getCurrentPosition` / resolve callbacks after Clear or a newer request. */
   const geoRequestGenRef = useRef(0);
-  /** True when the in-flight GPS request was started by auto-geo (not an explicit tap). */
-  const geoFromAutoRef = useRef(false);
-  /** Ignores stale suggested-creators responses when slug changes / Retry overlaps. */
-  const creatorsFetchGenRef = useRef(0);
 
   const onboardingSkeletonTheme = useSkeletonThemeColors();
   const [step, setStep] = useState(0);
@@ -650,16 +587,9 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState(null);
 
-  const [creators, setCreators] = useState([]);
-  const [creatorsLoading, setCreatorsLoading] = useState(false);
-  const [creatorsError, setCreatorsError] = useState(null);
-  /** After at least one fetch for step 3 finished (avoids empty-state flash before load starts). */
-  const [creatorsFetchSettled, setCreatorsFetchSettled] = useState(false);
-  const [selectedTagIds, setSelectedTagIds] = useState(() => new Set());
   const [selectedLocalityIds, setSelectedLocalityIds] = useState(() => []);
   const [locationGranted, setLocationGranted] = useState(false);
   const [geoLoading, setGeoLoading] = useState(false);
-  const [followIds, setFollowIds] = useState(() => new Set());
   const [locationsLoading, setLocationsLoading] = useState(false);
   const [locationsError, setLocationsError] = useState(null);
   const [dbLocations, setDbLocations] = useState([]);
@@ -667,8 +597,6 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
   dbLocationsRef.current = dbLocations;
   const locationsErrorRef = useRef(locationsError);
   locationsErrorRef.current = locationsError;
-  const selectedLocalityIdsRef = useRef(selectedLocalityIds);
-  selectedLocalityIdsRef.current = selectedLocalityIds;
 
   const loadLocations = useCallback(() => {
     const gen = ++locationsFetchGenRef.current;
@@ -697,9 +625,8 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
       });
   }, []);
 
-  // Load cities once the user reaches Location (or later, e.g. draft resume on
-  // tags/creators). Avoid fetching on Welcome so a background failure does not
-  // greet them with an instant "Could not load locations" on the next step.
+  // Load cities once the user reaches Location. Avoid fetching on Welcome so a
+  // background failure does not greet them with an instant error on the next step.
   useEffect(() => {
     if (step < 1) return;
     if (dbLocationsRef.current.length > 0 && !locationsErrorRef.current) return;
@@ -719,32 +646,15 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
         return;
       }
       const d = JSON.parse(raw);
-      if (![1, 2, 3, 4].includes(d.v)) {
+      if (![1, 2, 3, 4, 5].includes(d.v)) {
         queueMicrotask(() => {
           persistReadyRef.current = true;
         });
         return;
       }
       if (typeof d.step === 'number' && !Number.isNaN(d.step)) {
-        let s = Math.min(STEPS - 1, Math.max(0, Math.floor(d.step)));
-        if (d.v === 1 || d.v === 2) {
-          if (s === 1) s = 2;
-          else if (s === 2) s = 1;
-        }
+        const s = Math.min(STEPS - 1, Math.max(0, Math.floor(d.step)));
         setStep(s);
-      }
-      if ((d.v === 2 || d.v === 3 || d.v === 4) && Array.isArray(d.selectedTagIds)) {
-        const ids = d.selectedTagIds
-          .map((x) => (typeof x === 'string' ? x.trim().toLowerCase() : ''))
-          .filter((id) => DRAFT_TAG_ID_RE.test(id));
-        setSelectedTagIds(new Set(ids));
-      } else if (d.v === 1 && Array.isArray(d.selectedCuisines) && initialTags.length > 0) {
-        const bySlug = new Map(initialTags.map((row) => [row.slug, row.id]));
-        const ids = d.selectedCuisines
-          .map((k) => bySlug.get(String(k)))
-          .filter((id) => id != null && DRAFT_TAG_ID_RE.test(String(id)))
-          .map((id) => String(id).trim().toLowerCase());
-        setSelectedTagIds(new Set(ids));
       }
       const draftLocalityIds = Array.isArray(d.selectedLocalityIds) ? d.selectedLocalityIds : null;
       if (draftLocalityIds) {
@@ -755,27 +665,17 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
         setSelectedLocalityIds([]);
       }
       setLocationGranted(Boolean(d.locationGranted));
-      if (Array.isArray(d.followIds)) {
-        setFollowIds(
-          new Set(
-            d.followIds
-              .map((x) => (typeof x === 'string' ? x.trim().toLowerCase() : ''))
-              .filter((id) => DRAFT_TAG_ID_RE.test(id))
-          )
-        );
-      }
     } catch (e) {
       devWarn('[OnboardingWizard] restore draft failed', e);
     }
     queueMicrotask(() => {
       persistReadyRef.current = true;
     });
-    // initialTags from server on first paint — used only for v1 draft migration (slug → tag id).
-  }, [draftUserId, initialTags]);
+  }, [draftUserId]);
 
   useEffect(() => {
-    // Stop persisting once onboarding is complete (Done step) — the draft is
-    // already cleared and we never want to restore users back into the wizard.
+    // Stop persisting once onboarding is complete — the draft is already cleared
+    // and we never want to restore users back into the wizard.
     if (typeof window === 'undefined' || !persistReadyRef.current || step >= STEPS) return;
     const key = onboardingDraftStorageKey(draftUserId);
     try {
@@ -784,29 +684,22 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
         JSON.stringify({
           v: ONBOARDING_DRAFT_VERSION,
           step,
-          selectedTagIds: [...selectedTagIds],
           selectedLocalityIds,
           locationGranted,
-          followIds: [...followIds],
         })
       );
     } catch (e) {
       devWarn('[OnboardingWizard] persist draft failed', e);
     }
-  }, [draftUserId, step, selectedTagIds, selectedLocalityIds, locationGranted, followIds]);
+  }, [draftUserId, step, selectedLocalityIds, locationGranted]);
 
   useEffect(() => {
-    const stepKeys = ['welcome', 'location', 'tags', 'creators'];
+    const stepKeys = ['welcome', 'location'];
     trackEvent('onboarding_step_viewed', {
       step,
       step_key: stepKeys[step] ?? String(step),
     });
   }, [step, trackEvent]);
-
-  const preferenceTagSections = useMemo(
-    () => groupRestaurantTagsByCategory(initialTags),
-    [initialTags]
-  );
 
   const locationChoices = useMemo(() => {
     const noCountry = t('pages.onboarding.location.locations_group_no_country');
@@ -922,124 +815,10 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
     setSelectedLocalityIds((prev) => [pickerId, ...prev.filter((x) => x !== pickerId)]);
   }, [dbLocations, locationChoices, locationGroupFallbacks]);
 
-  const creatorMunicipalitySlug = useMemo(() => {
-    const primaryId = selectedLocalityIds[0];
-    const c = primaryId ? locationChoices.find((x) => x.id === primaryId) : null;
-    return c?.municipality_slug ?? '';
-  }, [locationChoices, selectedLocalityIds]);
-
   const selectedLocationsOrdered = useMemo(
     () => selectedLocalityIds.map((id) => locationChoices.find((c) => c.id === id)).filter(Boolean),
     [selectedLocalityIds, locationChoices]
   );
-
-  const loadSuggestedCreators = useCallback(
-    (abortSignal) => {
-      const gen = ++creatorsFetchGenRef.current;
-      setCreators([]);
-      setCreatorsLoading(true);
-      setCreatorsError(null);
-      setCreatorsFetchSettled(false);
-      const slug = creatorMunicipalitySlug;
-      fetchSuggestedCreatorsForMunicipality(slug)
-        .then(({ creators: rows, error }) => {
-          if (abortSignal?.aborted || gen !== creatorsFetchGenRef.current) return;
-          if (error) {
-            devWarn('[OnboardingWizard] suggested creators:', error);
-            setCreatorsError(error);
-            setCreators([]);
-            return;
-          }
-          setCreators(Array.isArray(rows) ? rows : []);
-        })
-        .catch((e) => {
-          if (abortSignal?.aborted || gen !== creatorsFetchGenRef.current) return;
-          devWarn('[OnboardingWizard] suggested creators:', e);
-          setCreatorsError(e?.message ?? 'fetch_failed');
-          setCreators([]);
-        })
-        .finally(() => {
-          if (abortSignal?.aborted || gen !== creatorsFetchGenRef.current) return;
-          setCreatorsLoading(false);
-          setCreatorsFetchSettled(true);
-        });
-    },
-    [creatorMunicipalitySlug]
-  );
-
-  const shouldLoadCreators = step >= 2 && step <= 3;
-  /** Wait for city catalog/remap so we never prefetch creators with an empty slug by accident. */
-  const creatorsSlugReady =
-    !locationsLoading &&
-    !(selectedLocalityIds.length > 0 && locationChoices.length === 0 && !locationsError);
-
-  useEffect(() => {
-    // Prefetch on tags (2) so creators are warm when advancing — avoid double wait
-    // (save network + skeleton) on the creators step. Depend on the boolean so
-    // step 2 → 3 does not abort/refetch.
-    if (!shouldLoadCreators || !creatorsSlugReady) {
-      if (!shouldLoadCreators) {
-        setCreators([]);
-        setCreatorsLoading(false);
-        setCreatorsError(null);
-        setCreatorsFetchSettled(false);
-      }
-      return undefined;
-    }
-    const ac = new AbortController();
-    loadSuggestedCreators(ac.signal);
-    return () => {
-      ac.abort();
-    };
-  }, [shouldLoadCreators, creatorsSlugReady, creatorMunicipalitySlug, loadSuggestedCreators]);
-
-  useEffect(() => {
-    if (!creatorsFetchSettled || creatorsLoading || creatorsError) return;
-    const allowed = new Set(
-      creators
-        .map((c) => (c.userId != null ? String(c.userId).trim().toLowerCase() : ''))
-        .filter((id) => DRAFT_TAG_ID_RE.test(id))
-    );
-    setFollowIds((prev) => {
-      let changed = false;
-      const next = new Set();
-      prev.forEach((id) => {
-        if (allowed.has(id)) next.add(id);
-        else changed = true;
-      });
-      return changed ? next : prev;
-    });
-  }, [creators, creatorsFetchSettled, creatorsLoading, creatorsError]);
-
-  /** Warm the tags picker chunk on the location step so step 2 isn't blocked on import. */
-  useEffect(() => {
-    if (step !== 1) return undefined;
-    let cancelled = false;
-    loadRestaurantTagPreferencePicker().catch(() => {
-      if (!cancelled) {
-        /* ignore — dynamic() will retry on render */
-      }
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [step]);
-
-  const onPreferenceSelectedIdsChange = useCallback((updater) => {
-    setSelectedTagIds((prev) => updater(prev));
-  }, []);
-
-  const toggleFollow = useCallback((userId) => {
-    if (!userId) return;
-    const id = String(userId).trim().toLowerCase();
-    if (!DRAFT_TAG_ID_RE.test(id)) return;
-    setFollowIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }, []);
 
   const finishAndExit = useCallback(async () => {
     setBusy(true);
@@ -1074,24 +853,6 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
     setErr(null);
     setStep((s) => (s > 0 ? s - 1 : s));
   }, [busy]);
-
-  const onNextFromTags = useCallback(async () => {
-    setBusy(true);
-    setErr(null);
-    try {
-      const r = await saveUserRestaurantTagPreferences([...selectedTagIds]);
-      if (r.error) {
-        setErr(r.error);
-        return;
-      }
-      setStep(3);
-    } catch (e) {
-      devWarn('[OnboardingWizard] save tag prefs failed', e);
-      setErr('tag_prefs_save_failed');
-    } finally {
-      setBusy(false);
-    }
-  }, [selectedTagIds]);
 
   const handleLocationsAutocompleteChange = useCallback((_, newValue) => {
     const arr = Array.isArray(newValue) ? newValue : [];
@@ -1134,9 +895,6 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
   /** Turns off the GPS "location is on" state (hint: Tap to turn off). Keeps manual city picks. */
   const clearGeo = useCallback(() => {
     geoRequestGenRef.current += 1;
-    geoFromAutoRef.current = false;
-    // Prevent auto-geo from immediately re-requesting after an explicit clear.
-    autoGeoAttemptedRef.current = true;
     setLocationGranted(false);
     setGeoLoading(false);
     pendingGeoLocalityRef.current = '';
@@ -1144,106 +902,56 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
   }, []);
 
   /**
-   * Request device geolocation and map coords → locality chip.
-   * @param {{ fromAuto?: boolean }} [options] - `fromAuto: true` for the one-shot
-   *   Location-step prompt; when the user already picked a city while GPS was in
-   *   flight, auto results are ignored so we never override their primary.
+   * Request device geolocation and map coords → locality chip. Only runs on
+   * explicit tap — never auto-prompted on the location step.
    */
-  const requestGeo = useCallback(
-    (options = {}) => {
-      if (!navigator.geolocation) {
+  const requestGeo = useCallback(() => {
+    if (!navigator.geolocation) {
+      setLocationGranted(false);
+      pendingGeoLocalityRef.current = '';
+      return;
+    }
+    const gen = ++geoRequestGenRef.current;
+    setErr(null);
+    setGeoLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        if (gen !== geoRequestGenRef.current) return;
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        try {
+          const { location: matched, error } = await resolveLocalityFromCoordinates(lng, lat);
+          if (gen !== geoRequestGenRef.current) return;
+          // Coords obtained (permission granted). Keep "Location is on" even when
+          // resolve fails / is outside coverage so the user can clear or pick manually.
+          setLocationGranted(true);
+          if (error) {
+            // Network/RPC failure — not the same as "coords outside supported area".
+            devWarn('[OnboardingWizard] resolve locality:', error);
+            setErr('gps_resolve_failed');
+            return;
+          }
+          if (matched?.id) {
+            applyGeoResolvedLocality(matched.id);
+            return;
+          }
+          // Coords ok but no supported locality — button stays "on"; user must pick a city.
+          setErr('gps_outside_supported');
+        } finally {
+          if (gen === geoRequestGenRef.current) {
+            setGeoLoading(false);
+          }
+        }
+      },
+      () => {
+        if (gen !== geoRequestGenRef.current) return;
         setLocationGranted(false);
         pendingGeoLocalityRef.current = '';
-        return;
-      }
-      const fromAuto = Boolean(options?.fromAuto);
-      const gen = ++geoRequestGenRef.current;
-      geoFromAutoRef.current = fromAuto;
-      setErr(null);
-      setGeoLoading(true);
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          if (gen !== geoRequestGenRef.current) return;
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-          try {
-            const { location: matched, error } = await resolveLocalityFromCoordinates(lng, lat);
-            if (gen !== geoRequestGenRef.current) return;
-            // Auto-geo lost the race to a manual city pick — leave their selection alone.
-            if (geoFromAutoRef.current && selectedLocalityIdsRef.current.length > 0) {
-              return;
-            }
-            // Coords obtained (permission granted). Keep "Location is on" even when
-            // resolve fails / is outside coverage so the user can clear or pick manually.
-            setLocationGranted(true);
-            if (error) {
-              // Network/RPC failure — not the same as "coords outside supported area".
-              devWarn('[OnboardingWizard] resolve locality:', error);
-              setErr('gps_resolve_failed');
-              return;
-            }
-            if (matched?.id) {
-              applyGeoResolvedLocality(matched.id);
-              return;
-            }
-            // Coords ok but no supported locality — button stays "on"; user must pick a city.
-            setErr('gps_outside_supported');
-          } finally {
-            if (gen === geoRequestGenRef.current) {
-              setGeoLoading(false);
-            }
-          }
-        },
-        () => {
-          if (gen !== geoRequestGenRef.current) return;
-          setLocationGranted(false);
-          pendingGeoLocalityRef.current = '';
-          setGeoLoading(false);
-        },
-        { enableHighAccuracy: true, maximumAge: 60_000, timeout: 10_000 }
-      );
-    },
-    [applyGeoResolvedLocality]
-  );
-
-  /**
-   * Auto-request device location after the city catalog is ready so a GPS match
-   * can select a chip immediately (and the “outside supported area” hint does
-   * not appear under the CTA while cities are still loading).
-   * Skip when the user already has a city (draft restore or manual pick).
-   */
-  useEffect(() => {
-    if (step !== 1) return;
-    if (!persistReadyRef.current) return;
-    if (autoGeoAttemptedRef.current) return;
-    if (locationsLoading || locationsError) return;
-    if (locationChoices.length === 0) return;
-    if (geoLoading) return;
-    if (locationGranted) {
-      // Draft restored "Location is on" — do not re-prompt on clear later.
-      autoGeoAttemptedRef.current = true;
-      return;
-    }
-    if (selectedLocalityIds.length > 0) {
-      autoGeoAttemptedRef.current = true;
-      return;
-    }
-    if (typeof navigator === 'undefined' || !navigator.geolocation) {
-      autoGeoAttemptedRef.current = true;
-      return;
-    }
-    autoGeoAttemptedRef.current = true;
-    requestGeo({ fromAuto: true });
-  }, [
-    step,
-    locationGranted,
-    geoLoading,
-    locationsLoading,
-    locationsError,
-    locationChoices.length,
-    selectedLocalityIds.length,
-    requestGeo,
-  ]);
+        setGeoLoading(false);
+      },
+      { enableHighAccuracy: true, maximumAge: 60_000, timeout: 10_000 }
+    );
+  }, [applyGeoResolvedLocality]);
 
   const onNextFromLocation = useCallback(async () => {
     if (selectedLocalityIds.length === 0) {
@@ -1260,49 +968,25 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
         setErr(r.error);
         return;
       }
-      setStep(2);
+      const cr = await completeOnboarding();
+      if (cr.error) {
+        setErr(cr.error);
+        return;
+      }
+      trackEvent('onboarding_completed', { path: 'full', from_step: 1 });
+      clearOnboardingDraftStorage(draftUserId);
+      router.replace(paths.dashboard.discover);
     } catch (e) {
       devWarn('[OnboardingWizard] save location failed', e);
       setErr('save_failed');
     } finally {
       setBusy(false);
     }
-  }, [locationGranted, selectedLocalityIds]);
-
-  const onFinish = useCallback(async () => {
-    setBusy(true);
-    setErr(null);
-    try {
-      const fr = await saveOnboardingFollows([...followIds]);
-      if (fr.error) {
-        setErr(fr.error);
-        return;
-      }
-      const cr = await completeOnboarding();
-      if (cr.error) {
-        setErr(cr.error);
-        return;
-      }
-      trackEvent('onboarding_completed', { path: 'full', from_step: step });
-      clearOnboardingDraftStorage(draftUserId);
-      // Go straight to Discover. `completeOnboarding` revalidates the onboarding
-      // layout (which redirects when completed) — a client-only "Done" step would
-      // flash for a moment then get yanked away.
-      router.replace(paths.dashboard.discover);
-    } catch (e) {
-      devWarn('[OnboardingWizard] finish failed', e);
-      setErr('save_failed');
-    } finally {
-      setBusy(false);
-    }
-  }, [draftUserId, followIds, router, step, trackEvent]);
+  }, [draftUserId, locationGranted, router, selectedLocalityIds, trackEvent]);
 
   let gpsState = 'idle';
   if (geoLoading) gpsState = 'getting';
   else if (locationGranted) gpsState = 'on';
-
-  /** True while creators are loading or waiting for the city slug before the first fetch. */
-  const creatorsPending = creatorsLoading || (!creatorsFetchSettled && !creatorsError);
 
   return (
     <Box
@@ -1321,7 +1005,7 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
       }}
     >
       <StepDecor step={step} />
-      {step >= 1 && step <= 3 ? (
+      {step === 1 ? (
         <Stack
           direction="row"
           alignItems="center"
@@ -1532,59 +1216,6 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
             </Box>
           )}
 
-          {step === 2 && (
-            <Box
-              key="step-tags"
-              component={m.div}
-              custom={direction}
-              variants={stepMotionVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-            >
-              <Stack spacing={STEP_SECTION_SPACING}>
-                <Box component={m.div} variants={stepChildVariants}>
-                  <Typography
-                    id="onboarding-step-heading"
-                    tabIndex={-1}
-                    component="h2"
-                    sx={(muiTheme) => ({
-                      ...stepSectionTitleSx(muiTheme),
-                      ...onboardingStepHeadingSx,
-                    })}
-                  >
-                    {t('pages.onboarding.tags.title_prefix')}{' '}
-                    <Box
-                      component="span"
-                      sx={{
-                        color: (theme) => readableAccent(theme),
-                        fontStyle: 'italic',
-                        textTransform: 'uppercase',
-                        fontWeight: 800,
-                      }}
-                    >
-                      {t('pages.onboarding.tags.title_highlight')}
-                    </Box>
-                    {t('pages.onboarding.tags.title_suffix')}
-                  </Typography>
-                </Box>
-                <Box component={m.div} variants={stepChildVariants}>
-                  <Typography variant="body1" color="text.secondary" sx={bodyCopySx}>
-                    {t('pages.onboarding.tags.body')}
-                  </Typography>
-                </Box>
-                <Box component={m.div} variants={stepChildVariants}>
-                  <RestaurantTagPreferencePicker
-                    tagSections={preferenceTagSections}
-                    selectedIds={selectedTagIds}
-                    onSelectedIdsChange={onPreferenceSelectedIdsChange}
-                    emptyMessage={t('pages.dashboard.map.filter_sheet_empty')}
-                    disablePortal={false}
-                  />
-                </Box>
-              </Stack>
-            </Box>
-          )}
 
           {step === 1 && (
             <Box
@@ -1850,333 +1481,6 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
             </Box>
           )}
 
-          {step === 3 ? (
-            <Box
-              key="step-creators"
-              component={m.div}
-              custom={direction}
-              variants={stepMotionVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-            >
-              <Stack spacing={STEP_SECTION_SPACING}>
-                <Box component={m.div} variants={stepChildVariants}>
-                  <Typography
-                    id="onboarding-step-heading"
-                    tabIndex={-1}
-                    component="h2"
-                    sx={(muiTheme) => ({
-                      ...stepSectionTitleSx(muiTheme),
-                      ...onboardingStepHeadingSx,
-                    })}
-                  >
-                    {t('pages.onboarding.creators.title')}
-                  </Typography>
-                </Box>
-                <Box component={m.div} variants={stepChildVariants}>
-                  <Typography variant="body1" color="text.secondary" sx={bodyCopySx}>
-                    {t('pages.onboarding.creators.body')}
-                  </Typography>
-                </Box>
-                {creatorsPending ? (
-                  <Box
-                    sx={(muiTheme) => ({
-                      mt: 0,
-                      borderRadius: 2,
-                      borderWidth: 2,
-                      borderStyle: 'solid',
-                      borderColor: alpha(muiTheme.palette.primary.main, 0.35),
-                      bgcolor: alpha(muiTheme.palette.primary.main, 0.06),
-                      px: { xs: 2, sm: 3 },
-                      py: { xs: 2, sm: 2.25 },
-                    })}
-                    aria-busy="true"
-                  >
-                    <SkeletonTheme
-                      baseColor={onboardingSkeletonTheme.baseColor}
-                      highlightColor={onboardingSkeletonTheme.highlightColor}
-                    >
-                      <Stack spacing={2.25}>
-                        {Array.from({ length: 3 }, (_, i) => (
-                          <Stack
-                            key={i}
-                            direction={{ xs: 'column', sm: 'row' }}
-                            alignItems={{ xs: 'stretch', sm: 'center' }}
-                            justifyContent="space-between"
-                            spacing={{ xs: 2, sm: 0 }}
-                            sx={{
-                              p: { xs: 2, sm: 2.25 },
-                              borderRadius: { xs: 2, sm: 4 },
-                              border: '2px solid',
-                              borderColor: 'divider',
-                              bgcolor: 'background.paper',
-                            }}
-                          >
-                            <Stack
-                              direction="row"
-                              spacing={2}
-                              alignItems="center"
-                              sx={{ minWidth: 0, flex: { sm: 1 } }}
-                            >
-                              <Skeleton
-                                width={56}
-                                height={56}
-                                borderRadius={8}
-                                style={{ flexShrink: 0 }}
-                              />
-                              <Box sx={{ flex: 1, minWidth: 0 }}>
-                                <Skeleton height={20} width={`${58 + i * 6}%`} borderRadius={4} />
-                                <Skeleton
-                                  height={14}
-                                  width="55%"
-                                  borderRadius={4}
-                                  style={{ marginTop: 8 }}
-                                />
-                              </Box>
-                            </Stack>
-                            <Box
-                              sx={{
-                                width: { xs: '100%', sm: 100 },
-                                alignSelf: { xs: 'stretch', sm: 'center' },
-                                flexShrink: 0,
-                              }}
-                            >
-                              <Skeleton height={44} width="100%" borderRadius={8} />
-                            </Box>
-                          </Stack>
-                        ))}
-                      </Stack>
-                    </SkeletonTheme>
-                  </Box>
-                ) : null}
-                {!creatorsPending && creatorsError ? (
-                  <Stack spacing={1}>
-                    <Alert severity="error" variant="outlined" role="alert">
-                      {t('pages.onboarding.creators.fetch_error')}
-                    </Alert>
-                    <Button
-                      variant="outlined"
-                      onClick={() => loadSuggestedCreators()}
-                      disabled={busy}
-                      sx={{ ...tapTargetButtonSx, fontWeight: 700 }}
-                    >
-                      {t('pages.onboarding.creators.retry')}
-                    </Button>
-                  </Stack>
-                ) : null}
-                {!creatorsPending &&
-                !creatorsError &&
-                creatorsFetchSettled &&
-                creators.length === 0 ? (
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    spacing={2}
-                    sx={{
-                      p: { xs: 2, sm: 2.25 },
-                      borderRadius: { xs: 2, sm: 4 },
-                      border: '2px solid',
-                      borderColor: 'divider',
-                      bgcolor: 'background.paper',
-                      WebkitTapHighlightColor: 'transparent',
-                    }}
-                  >
-                    <Avatar
-                      variant="rounded"
-                      alt=""
-                      sx={{
-                        width: { xs: 56, sm: 64 },
-                        height: { xs: 56, sm: 64 },
-                        flexShrink: 0,
-                        bgcolor: (muiTheme) => alpha(muiTheme.palette.grey[500], 0.14),
-                      }}
-                    >
-                      <Iconify
-                        icon={ic.userSpeakRoundedBold}
-                        width={28}
-                        sx={{ color: 'text.secondary' }}
-                      />
-                    </Avatar>
-                    <Box sx={{ minWidth: 0, flex: 1 }}>
-                      <Typography sx={{ fontWeight: 800, wordBreak: 'break-word' }}>
-                        {t('pages.onboarding.creators.empty_title')}
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        sx={{ display: 'block', lineHeight: 1.35 }}
-                      >
-                        {t('pages.onboarding.creators.empty_body')}
-                      </Typography>
-                    </Box>
-                  </Stack>
-                ) : null}
-                {!creatorsPending && !creatorsError && creators.length > 0 ? (
-                  <Box component={m.div} variants={stepChildVariants}>
-                    <Stack spacing={2.25}>
-                      {creators.map((c, idx) => {
-                        const followKey =
-                          c.userId != null ? String(c.userId).trim().toLowerCase() : '';
-                        const canFollow = DRAFT_TAG_ID_RE.test(followKey);
-                        const following = canFollow && followIds.has(followKey);
-                        return (
-                          <Stack
-                            key={followKey || `creator-${idx}-${c.name || 'unknown'}`}
-                            component={m.div}
-                            initial={{ opacity: 0, y: 12 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{
-                              duration: 0.38,
-                              ease: EASE_OUT_QUINT,
-                              delay: 0.18 + idx * 0.06,
-                            }}
-                            direction={{ xs: 'column', sm: 'row' }}
-                            alignItems={{ xs: 'stretch', sm: 'center' }}
-                            justifyContent="space-between"
-                            spacing={{ xs: 2, sm: 0 }}
-                            sx={(muiTheme) => ({
-                              p: { xs: 2, sm: 2.5 },
-                              borderRadius: { xs: 3, sm: 5 },
-                              border: following ? '3px solid' : '2px solid',
-                              borderColor: following ? muiTheme.palette.primary.main : 'divider',
-                              bgcolor: following
-                                ? alpha(muiTheme.palette.primary.main, 0.06)
-                                : 'background.paper',
-                              WebkitTapHighlightColor: 'transparent',
-                              transition: muiTheme.transitions.create(
-                                ['border-color', 'background-color', 'box-shadow'],
-                                { duration: 220, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' }
-                              ),
-                              '@media (prefers-reduced-motion: reduce)': { transition: 'none' },
-                            })}
-                          >
-                            <Stack
-                              direction="row"
-                              spacing={2}
-                              alignItems="center"
-                              sx={{ minWidth: 0, flex: { sm: 1 } }}
-                            >
-                              <Box sx={{ position: 'relative', flexShrink: 0 }}>
-                                <Avatar
-                                  src={c.avatar}
-                                  alt=""
-                                  variant="rounded"
-                                  sx={(muiTheme) => ({
-                                    width: { xs: 56, sm: 64 },
-                                    height: { xs: 56, sm: 64 },
-                                    borderRadius: { xs: 3, sm: 3.5 },
-                                    boxShadow: following
-                                      ? `0 0 0 3px ${alpha(muiTheme.palette.primary.main, 0.22)}`
-                                      : 'none',
-                                    transition: muiTheme.transitions.create('box-shadow', {
-                                      duration: 240,
-                                      easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
-                                    }),
-                                    '@media (prefers-reduced-motion: reduce)': {
-                                      transition: 'none',
-                                    },
-                                  })}
-                                />
-                                <AnimatePresence>
-                                  {following ? (
-                                    <Box
-                                      key="follow-sparkle"
-                                      component={m.div}
-                                      initial={{ scale: 0.4, opacity: 0, rotate: -20 }}
-                                      animate={{
-                                        scale: [0.4, 1.15, 1],
-                                        opacity: 1,
-                                        rotate: [-20, 8, 0],
-                                      }}
-                                      exit={{ scale: 0.6, opacity: 0 }}
-                                      transition={{
-                                        duration: 0.5,
-                                        times: [0, 0.6, 1],
-                                        ease: EASE_OUT_QUINT,
-                                      }}
-                                      sx={{
-                                        position: 'absolute',
-                                        top: -6,
-                                        right: -6,
-                                        width: 22,
-                                        height: 22,
-                                        borderRadius: '50%',
-                                        bgcolor: 'primary.main',
-                                        color: 'primary.contrastText',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        fontSize: 13,
-                                        lineHeight: 1,
-                                        boxShadow: (muiTheme) =>
-                                          `0 4px 10px ${alpha(muiTheme.palette.primary.main, 0.35)}`,
-                                      }}
-                                      aria-hidden="true"
-                                    >
-                                      ✨
-                                    </Box>
-                                  ) : null}
-                                </AnimatePresence>
-                              </Box>
-                              <Box sx={{ minWidth: 0 }}>
-                                <Typography sx={{ fontWeight: 800, wordBreak: 'break-word' }}>
-                                  {c.name}
-                                </Typography>
-                                <Typography
-                                  variant="caption"
-                                  color="text.secondary"
-                                  sx={{ display: 'block', lineHeight: 1.35 }}
-                                >
-                                  {c.subtitle}
-                                </Typography>
-                              </Box>
-                            </Stack>
-                            <Button
-                              size="medium"
-                              color="primary"
-                              variant={following ? 'outlined' : 'contained'}
-                              disabled={!canFollow}
-                              fullWidth
-                              onClick={() => canFollow && toggleFollow(followKey)}
-                              sx={{
-                                minHeight: { xs: 48, sm: 44 },
-                                flexShrink: 0,
-                                alignSelf: { xs: 'stretch', sm: 'center' },
-                                width: { xs: '100%', sm: 'auto' },
-                                minWidth: { xs: 0, sm: 100 },
-                                fontWeight: 800,
-                                borderRadius: 2.5,
-                                textTransform: 'uppercase',
-                                letterSpacing: '0.06em',
-                                fontSize: { xs: 13, sm: 13 },
-                                transition: (muiTheme) =>
-                                  muiTheme.transitions.create(['transform', 'background-color'], {
-                                    duration: 160,
-                                    easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
-                                  }),
-                                '&:active:not(:disabled)': { transform: 'scale(0.96)' },
-                                '@media (prefers-reduced-motion: reduce)': {
-                                  transition: 'none',
-                                  '&:active:not(:disabled)': { transform: 'none' },
-                                },
-                              }}
-                            >
-                              {(() => {
-                                if (!canFollow) return t('pages.onboarding.creators.preview');
-                                if (following) return t('pages.onboarding.creators.following');
-                                return t('pages.onboarding.creators.follow');
-                              })()}
-                            </Button>
-                          </Stack>
-                        );
-                      })}
-                    </Stack>
-                  </Box>
-                ) : null}
-              </Stack>
-            </Box>
-          ) : null}
         </AnimatePresence>
       </Box>
 
@@ -2213,13 +1517,7 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
               color="primary"
               variant="contained"
               onClick={onNextFromLocation}
-              disabled={
-                busy ||
-                // Don't block Continue once a city is selected — GPS and the catalog
-                // fetch can still be in flight (or the catalog can have errored).
-                (selectedLocalityIds.length === 0 &&
-                  (geoLoading || locationsLoading || !!locationsError))
-              }
+              disabled={busy || selectedLocalityIds.length === 0}
               aria-busy={busy}
               startIcon={
                 busy ? <CircularProgress size={22} color="inherit" thickness={5} /> : undefined
@@ -2227,47 +1525,7 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
               endIcon={busy ? undefined : <Iconify icon={ic.arrowRightBold} />}
               sx={{ ...primaryCtaSx, ...(busy ? primaryCtaBusySx : null) }}
             >
-              {t('pages.onboarding.cta.almost')}
-            </Button>
-          )}
-          {step === 2 && (
-            <Button
-              fullWidth
-              size="large"
-              color="primary"
-              variant="contained"
-              onClick={onNextFromTags}
-              disabled={busy}
-              aria-busy={busy}
-              startIcon={
-                busy ? <CircularProgress size={22} color="inherit" thickness={5} /> : undefined
-              }
-              endIcon={busy ? undefined : <Iconify icon={ic.arrowRightBold} />}
-              sx={{ ...primaryCtaSx, ...(busy ? primaryCtaBusySx : null) }}
-            >
-              {t('pages.onboarding.cta.keep')}
-            </Button>
-          )}
-          {step === 3 && (
-            <Button
-              fullWidth
-              size="large"
-              color="primary"
-              variant="contained"
-              onClick={onFinish}
-              disabled={
-                busy ||
-                // Wait for the first creators fetch so users don't finish before cards appear.
-                creatorsPending
-              }
-              aria-busy={busy}
-              startIcon={
-                busy ? <CircularProgress size={22} color="inherit" thickness={5} /> : undefined
-              }
-              endIcon={busy ? undefined : <Iconify icon={ic.rocketBold} />}
-              sx={{ ...primaryCtaSx, ...(busy ? primaryCtaBusySx : null) }}
-            >
-              {t('pages.onboarding.cta.start')}
+              {t('pages.onboarding.cta.show_spots')}
             </Button>
           )}
         </Stack>
@@ -2297,13 +1555,4 @@ export default function OnboardingWizard({ draftUserId = '', initialTags = [] })
 
 OnboardingWizard.propTypes = {
   draftUserId: PropTypes.string,
-  initialTags: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      slug: PropTypes.string.isRequired,
-      label: PropTypes.string.isRequired,
-      category: PropTypes.string.isRequired,
-      sort_order: PropTypes.number,
-    })
-  ),
 };

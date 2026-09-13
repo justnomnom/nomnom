@@ -115,10 +115,11 @@ Used by: `settings-appearance-form.js`, `settings-language-form.js`.
 
 Path: `src/sections/profile/profile-list-item-row.js`
 
-Avatar + name + badges + (optional) subtitle + trailing element. Two trailing modes:
+Avatar + name + badges + (optional) subtitle + trailing element. Trailing modes:
 
 - Pass `username` → row becomes a `RouterLink` to that user's public profile, with a chevron.
 - Pass `trailingAction` → row stays static; the action (typically an `IconButton`) sits on the right.
+- Pass both → avatar + name link to the profile; `trailingAction` stays a sibling so Follow / cancel is not nested inside the link.
 
 ```jsx
 import ProfileListItemRow from 'src/sections/profile/profile-list-item-row';

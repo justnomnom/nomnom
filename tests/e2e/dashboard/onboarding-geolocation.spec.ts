@@ -86,16 +86,13 @@ test.describe('onboarding location step — geolocation (O4/O10)', () => {
       async (page) => {
         await openLocationStep(page);
 
-        // Auto-geo may already have flipped the CTA before this click (permission
-        // is granted on the context). Don't wait on the idle label in that case —
-        // clicking it would time out, and clicking "Location is on" would clear GPS.
-        const locationOn = page.getByRole('button', { name: /Location is on/i });
+        // GPS is tap-only — the idle CTA must still be showing (no auto-prompt on arrival).
         const useMyLocation = page.getByRole('button', { name: 'Use my location' });
-        if (await useMyLocation.isVisible()) {
-          await useMyLocation.click();
-        }
+        await expect(useMyLocation).toBeVisible();
+        await expect(page.getByRole('button', { name: /Location is on/i })).toHaveCount(0);
+        await useMyLocation.click();
 
-        // Success callback flips the label — the grant + getCurrentPosition wiring works.
+        const locationOn = page.getByRole('button', { name: /Location is on/i });
         await expect(locationOn).toBeVisible({
           timeout: 90_000,
         });
@@ -112,7 +109,7 @@ test.describe('onboarding location step — geolocation (O4/O10)', () => {
           !chipAppeared,
           'GPS coordinates did not resolve to a supported locality in this environment'
         );
-        await expect(page.getByRole('button', { name: 'Almost there' })).toBeEnabled();
+        await expect(page.getByRole('button', { name: 'Show me spots' })).toBeEnabled();
       },
       { geolocation: LISBON, permissions: ['geolocation'] }
     );

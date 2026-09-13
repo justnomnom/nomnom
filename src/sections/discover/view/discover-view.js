@@ -29,7 +29,14 @@ import { useShareLink } from 'src/hooks/use-share-link';
 import { usePrefersReducedMotion } from 'src/hooks/use-prefers-reduced-motion';
 
 import { haversineKm } from 'src/utils/geo-distance';
+import { hasNormalizedSuggestedCreators } from 'src/utils/suggested-creator';
 import { USER_SCOPED_KEYS, clientScopedSetJson } from 'src/utils/user-scoped-storage';
+import {
+  restaurantHasSaves,
+  dismissActivationChecklist,
+  shouldShowActivationChecklist,
+  isActivationChecklistDismissed,
+} from 'src/utils/activation-checklist';
 
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
@@ -73,7 +80,9 @@ import { MapSpotSheetListRow } from 'src/sections/map/map-spot-sheet-inner';
 import DiscoverFeaturePromo from 'src/sections/discover/discover-feature-promo';
 import DiscoverListsLeaderboard from 'src/sections/discover/discover-lists-leaderboard';
 import DiscoverLocatingSkeleton from 'src/sections/discover/discover-locating-skeleton';
+import DiscoverSuggestedCreators from 'src/sections/discover/discover-suggested-creators';
 import DiscoverMarketListSkeleton from 'src/sections/discover/discover-market-list-skeleton';
+import DiscoverActivationChecklist from 'src/sections/discover/discover-activation-checklist';
 import {
   mapPlaceMapsUrl,
   mapPlaceTelHref,
@@ -220,6 +229,9 @@ export default function DiscoverView({
   feedRefLat = null,
   feedRefLng = null,
   isFallbackMarket = false,
+  suggestedCreators = [],
+  followingIds = [],
+  hasFollows = false,
   restaurants = [],
   savedListIdsByRestaurant = {},
   listsLeaderboard = { interaction_leaders: [], follower_leaders: [], error: null },
@@ -314,6 +326,17 @@ export default function DiscoverView({
     setPrevSavedByRestaurant(savedListIdsByRestaurant);
     setSavedByRestaurant(savedListIdsByRestaurant);
   }
+  const [hasFollowed, setHasFollowed] = useState(Boolean(hasFollows));
+  const [hasSaved, setHasSaved] = useState(() => restaurantHasSaves(savedListIdsByRestaurant));
+  const [checklistDismissed, setChecklistDismissed] = useState(false);
+  const [activationReady, setActivationReady] = useState(false);
+  const [activationToast, setActivationToast] = useState(
+    /** @type {{ severity: 'success' | 'error', text: string } | null} */ (null)
+  );
+  const suggestedCreatorsRef = useRef(/** @type {HTMLElement | null} */ (null));
+  const feedSectionRef = useRef(/** @type {HTMLElement | null} */ (null));
+  const firstFeedViewedRef = useRef(false);
+  const checklistShownRef = useRef(false);
   const [marketDialogOpen, setMarketDialogOpen] = useState(false);
   const [marketOptions, setMarketOptions] = useState(
     /** @type {Array<Record<string, unknown>>} */ ([])
@@ -530,10 +553,19 @@ export default function DiscoverView({
     setSaveSheetRestaurantId(null);
   }, []);
 
+  /** Close the save sheet, celebrate a first save, then refresh saved-state from the server. */
   const handleDiscoverSaveApplied = useCallback(() => {
     setSaveSheetRestaurantId(null);
+    if (!hasSaved) {
+      setHasSaved(true);
+      setActivationToast({
+        severity: 'success',
+        text: t('pages.dashboard.discover.activation_save_done'),
+      });
+      trackEvent('activation_item_completed', { item: 'save' });
+    }
     router.refresh();
-  }, [router]);
+  }, [hasSaved, router, t, trackEvent]);
 
   useEffect(() => {
     const id = setTimeout(() => setDebouncedQuery(search.trim()), 120);
@@ -960,6 +992,76 @@ export default function DiscoverView({
     !showDiscoverRefetching &&
     !showDiscoverFeedEmpty &&
     feedRestaurants.length > 1;
+
+  const hasSuggestedCreators = hasNormalizedSuggestedCreators(suggestedCreators);
+  const showActivationChecklist =
+    activationReady &&
+    shouldShowActivationChecklist({
+      dismissed: checklistDismissed,
+      hasFollowed: hasFollowed || !hasSuggestedCreators,
+      hasSaved,
+    });
+
+  useEffect(() => {
+    setChecklistDismissed(isActivationChecklistDismissed(user?.id));
+    setActivationReady(true);
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (hasFollows) setHasFollowed(true);
+  }, [hasFollows]);
+
+  useEffect(() => {
+    if (restaurantHasSaves(savedByRestaurant)) setHasSaved(true);
+  }, [savedByRestaurant]);
+
+  useEffect(() => {
+    if (!showActivationChecklist || checklistShownRef.current) return;
+    checklistShownRef.current = true;
+    trackEvent('activation_checklist_shown');
+  }, [showActivationChecklist, trackEvent]);
+
+  useEffect(() => {
+    if (showDiscoverLocating || showDiscoverRefetching) return;
+    if (firstFeedViewedRef.current) return;
+    firstFeedViewedRef.current = true;
+    trackEvent('discover_first_feed_viewed', {
+      restaurant_count: displayRestaurants.length,
+      is_fallback_market: isFallbackMarket,
+    });
+  }, [
+    displayRestaurants.length,
+    isFallbackMarket,
+    showDiscoverLocating,
+    showDiscoverRefetching,
+    trackEvent,
+  ]);
+
+  const handleDismissActivationChecklist = useCallback(() => {
+    dismissActivationChecklist(user?.id);
+    setChecklistDismissed(true);
+    trackEvent('activation_checklist_dismissed');
+  }, [trackEvent, user?.id]);
+
+  /** Scroll to suggested people (checklist “Follow someone”). */
+  const handleActivationFollowCta = useCallback(() => {
+    suggestedCreatorsRef.current?.scrollIntoView({
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+      block: 'start',
+    });
+  }, [prefersReducedMotion]);
+
+  /** Scroll to the feed, or open the city picker when Skip left home unset. */
+  const handleActivationSaveCta = useCallback(() => {
+    if (showDiscoverFeedEmpty && !homeLocalityId) {
+      setMarketDialogOpen(true);
+      return;
+    }
+    feedSectionRef.current?.scrollIntoView({
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+      block: 'start',
+    });
+  }, [homeLocalityId, prefersReducedMotion, showDiscoverFeedEmpty]);
 
   /**
    * Toggle a vibe. Tapping the selected chip clears it, so the feed is always one tap
@@ -1493,6 +1595,17 @@ export default function DiscoverView({
             </Stack>
           ) : null}
 
+          {showActivationChecklist ? (
+            <DiscoverActivationChecklist
+              hasFollowed={hasFollowed}
+              hasSaved={hasSaved}
+              showFollow={hasSuggestedCreators}
+              onDismiss={handleDismissActivationChecklist}
+              onFollowCta={hasSuggestedCreators ? handleActivationFollowCta : undefined}
+              onSaveCta={handleActivationSaveCta}
+            />
+          ) : null}
+
           <ResponsiveSheet
             open={marketDialogOpen}
             onClose={handleMarketClose}
@@ -1633,7 +1746,7 @@ export default function DiscoverView({
             </Box>
           </Stack>
 
-          <Stack {...dashboardSubsectionStackProps}>
+          <Stack ref={feedSectionRef} {...dashboardSubsectionStackProps}>
             {/**
              * Crossfade the three feed states so the skeleton fades out as results fade in,
              * instead of the abrupt swap. `MotionViewport` still drives its own per-card stagger.
@@ -1667,6 +1780,22 @@ export default function DiscoverView({
                   );
                 }
                 if (showDiscoverFeedEmpty) {
+                  const emptyNeedsArea = !homeLocalityId && !selectedVibeKey;
+                  const emptyTitleKey = emptyNeedsArea
+                    ? 'pages.dashboard.discover.empty_market_title'
+                    : 'pages.dashboard.discover.feed_empty_title';
+                  let emptyBodyKey = 'pages.dashboard.discover.feed_empty';
+                  if (selectedVibeKey) {
+                    emptyBodyKey = 'pages.dashboard.discover.feed_empty_vibe';
+                  } else if (!homeLocalityId) {
+                    emptyBodyKey = 'pages.dashboard.discover.empty_market_body';
+                  }
+                  let emptyCtaKey = 'pages.dashboard.discover.feed_empty_change_area';
+                  if (selectedVibeKey) {
+                    emptyCtaKey = 'pages.dashboard.discover.feed_empty_clear_vibe';
+                  } else if (!homeLocalityId) {
+                    emptyCtaKey = 'pages.dashboard.discover.empty_market_cta';
+                  }
                   return (
                     <motion.div
                       key="discover-empty"
@@ -1677,12 +1806,8 @@ export default function DiscoverView({
                     >
                       <DashboardDelightEmpty
                         icon={ic.mapPointBold}
-                        title={t('pages.dashboard.discover.feed_empty_title')}
-                        body={
-                          selectedVibeKey
-                            ? t('pages.dashboard.discover.feed_empty_vibe')
-                            : t('pages.dashboard.discover.feed_empty')
-                        }
+                        title={t(emptyTitleKey)}
+                        body={t(emptyBodyKey)}
                         action={
                           <Button
                             variant="soft"
@@ -1697,11 +1822,7 @@ export default function DiscoverView({
                                 : () => setMarketDialogOpen(true)
                             }
                           >
-                            {t(
-                              selectedVibeKey
-                                ? 'pages.dashboard.discover.feed_empty_clear_vibe'
-                                : 'pages.dashboard.discover.feed_empty_change_area'
-                            )}
+                            {t(emptyCtaKey)}
                           </Button>
                         }
                       />
@@ -1842,6 +1963,15 @@ export default function DiscoverView({
               })()}
             </AnimatePresence>
           </Stack>
+          {hasSuggestedCreators ? (
+            <Box ref={suggestedCreatorsRef} sx={{ scrollMarginTop: 72 }}>
+              <DiscoverSuggestedCreators
+                creators={suggestedCreators}
+                followingIds={followingIds}
+                onFollowed={() => setHasFollowed(true)}
+              />
+            </Box>
+          ) : null}
         </Stack>
       </Box>
       <SaveToListSheet
@@ -1852,8 +1982,11 @@ export default function DiscoverView({
         myUserId={user?.id ?? null}
       />
       <ShareFeedbackSnackbar
-        feedback={shareFeedback}
-        onClose={dismissShareFeedback}
+        feedback={shareFeedback ?? activationToast}
+        onClose={() => {
+          dismissShareFeedback();
+          setActivationToast(null);
+        }}
         /* Clear the fixed mobile bottom nav. */
         sx={{ bottom: { xs: NAV.H_MOBILE_BOTTOM + 16, md: 24 } }}
       />
@@ -1869,6 +2002,9 @@ DiscoverView.propTypes = {
   feedRefLat: PropTypes.number,
   feedRefLng: PropTypes.number,
   isFallbackMarket: PropTypes.bool,
+  suggestedCreators: PropTypes.arrayOf(PropTypes.object),
+  followingIds: PropTypes.arrayOf(PropTypes.string),
+  hasFollows: PropTypes.bool,
   restaurants: PropTypes.arrayOf(PropTypes.object),
   savedListIdsByRestaurant: PropTypes.object,
   listsLeaderboard: PropTypes.shape({

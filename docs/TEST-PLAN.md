@@ -164,8 +164,8 @@ a separately seeded *non*-admin for the deny path.
 unauth 401s), `stripe-api-authed.spec.ts` (B3 authed, verify-snapshot
 validation), `pricing-and-errors.spec.ts` (P1, E1, unknown-slug 404),
 `onboarding-gate.spec.ts` (O2, my-subscriptions route),
-`onboarding-happy-path.spec.ts` (O3 full four-step drive + persisted rows, O6
-back-nav preserves selection, O8 refresh mid-wizard restores the step — seeds an
+`onboarding-happy-path.spec.ts` (O3 welcome + city + persisted locality, O6
+back-nav preserves selection, O8 refresh mid-wizard restores the location step — seeds an
 onboarding-incomplete user via `seed.ts` and opens a fresh context authenticated
 as them, overriding the shared storage state).
 
@@ -285,22 +285,22 @@ Routes: `/auth/login`, `/auth/register`, `/auth/forgot-password`,
 
 ## 2. Onboarding (P0 — no coverage today)
 
-Route: `/onboarding` — 4-step wizard (`onboarding-wizard.js`): welcome →
-location → tag preferences → suggested creators. Server actions:
-`saveOnboardingLocation`, `saveUserRestaurantTagPreferences`,
-`saveOnboardingFollows`, `completeOnboarding`. Gating lives in
+Route: `/onboarding` — 2-step wizard (`onboarding-wizard.js`): welcome →
+location. Tag preferences stay in Settings; suggested creators render on Discover.
+Server actions: `saveOnboardingLocation`, `completeOnboarding` (tags/follows
+saves remain for Settings and Discover). Gating lives in
 `dashboard/layout.js` and `onboarding/layout.js`.
 
 | # | Case | Layer |
 |---|---|---|
 | O1 | New user (onboarding incomplete) hitting `/dashboard/*` is redirected to `/onboarding` | E2E (seeded incomplete user via `supabase-service.ts`) |
 | O2 | Completed user hitting `/onboarding` is redirected to dashboard | E2E dashboard |
-| O3 | Full happy path: pick locality → pick ≥1 tag → follow ≥1 creator → finish → lands on dashboard; profile rows persisted (localities, tag prefs, follows) | E2E |
-| O4 | Location step: search localities, select; "use my location" resolves coordinates (mock geolocation permission granted + denied) | ✅ E2E (`onboarding-geolocation.spec.ts`; locality auto-select chip is data-gated) |
-| O5 | Skip-optional paths: can complete without follows / without tags if UI permits; verify `completeOnboarding` still sets the flag | ✅ E2E (`onboarding-skip.spec.ts` — header Skip completes with zero optional rows) |
-| O6 | Back navigation between steps preserves selections | E2E |
-| O7 | Suggested creators load for the chosen municipality; empty-state when none | E2E |
-| O8 | Refresh mid-wizard: state either restored or restarts cleanly (no broken step) | E2E |
+| O3 | Full happy path: pick locality → finish → lands on Discover with activation checklist; `home_locality_id` + `onboarding_completed_at` persisted | E2E |
+| O4 | Location step: search localities, select; "use my location" resolves coordinates (mock geolocation permission granted + denied); GPS only after explicit tap | ✅ E2E (`onboarding-geolocation.spec.ts`; locality auto-select chip is data-gated) |
+| O5 | Skip from location completes onboarding with no locality / tags / follows | ✅ E2E (`onboarding-skip.spec.ts` — header Skip completes with zero optional rows) |
+| O6 | Back navigation between welcome and location preserves city selection | E2E |
+| O7 | Suggested creators / Get-started checklist on Discover after a completed user with a market | E2E |
+| O8 | Refresh mid-wizard: location step restored (not welcome) | E2E |
 | O9 | Server actions reject unauthenticated calls | API integration |
 | O10 | A11y: step live-region announcements exist (`ONBOARDING_STEP_A11Y_LABEL_KEYS`), keyboard-only completion | live region ✅ (`onboarding-geolocation.spec.ts`); keyboard-only pass stays manual |
 

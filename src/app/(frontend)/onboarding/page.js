@@ -1,6 +1,5 @@
 import { Suspense } from 'react';
 
-import { fetchRestaurantTagsCatalog } from 'src/auth/actions/location-actions';
 import { getSupabaseAuthUser } from 'src/libs/supabase/supabase-server-client';
 import { localizedDocumentTitle } from 'src/content-platform/page-metadata';
 
@@ -17,19 +16,14 @@ export async function generateMetadata() {
 }
 
 /**
- * Streams auth + tag catalog under Suspense (async-suspense-boundaries).
+ * Streams auth under Suspense (async-suspense-boundaries).
  */
 async function OnboardingPageContent() {
-  const [authResult, tagsResult] = await Promise.all([
-    getSupabaseAuthUser(),
-    fetchRestaurantTagsCatalog(),
-  ]);
   const {
     data: { user },
-  } = authResult;
-  const { tags } = tagsResult;
+  } = await getSupabaseAuthUser();
 
-  return <OnboardingWizard draftUserId={user?.id ?? ''} initialTags={tags ?? []} />;
+  return <OnboardingWizard draftUserId={user?.id ?? ''} />;
 }
 
 export default function OnboardingPage() {

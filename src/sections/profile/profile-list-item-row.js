@@ -25,11 +25,10 @@ import {
 /**
  * Shared row shell for settings list pages (subscribers, my-subscriptions, followers, following).
  *
- * Use one of two trailing modes:
- *   - Pass `username` → wrapper becomes a RouterLink to that user's public profile, with chevron.
- *   - Pass `trailingAction` → wrapper stays static; the action (e.g., cancel IconButton) sits on the right.
- *
- * Both modes share the avatar + title + chips + subtitle layout.
+ * Trailing modes:
+ *   - `username` only → whole row is a RouterLink to that profile, with a chevron.
+ *   - `trailingAction` only → static row; the action sits on the right.
+ *   - both → avatar + name link to the profile; `trailingAction` stays a sibling (not nested in the link).
  */
 export default function ProfileListItemRow({
   avatarSrc,
@@ -42,26 +41,12 @@ export default function ProfileListItemRow({
 }) {
   const theme = useTheme();
   const rowHoverBg = settingsShellRowHoverBg(theme);
-  const isLink = Boolean(username);
+  const profileHref = username ? paths.dashboard.userPublic(username) : undefined;
+  const isRowLink = Boolean(profileHref) && !trailingAction;
+  const isIdentityLink = Boolean(profileHref) && Boolean(trailingAction);
 
-  return (
-    <Box
-      component={isLink ? RouterLink : Box}
-      href={isLink ? paths.dashboard.userPublic(username) : undefined}
-      sx={{
-        ...hubCardShellSx(theme),
-        px: 2,
-        py: 1.75,
-        display: 'flex',
-        alignItems: 'center',
-        gap: 2,
-        ...(isLink && { textDecoration: 'none', color: 'inherit' }),
-        transition: theme.transitions.create('background-color', {
-          duration: theme.transitions.duration.shorter,
-        }),
-        '&:hover': { bgcolor: rowHoverBg },
-      }}
-    >
+  const identity = (
+    <>
       <Avatar
         src={avatarSrc || undefined}
         alt=""
@@ -76,13 +61,53 @@ export default function ProfileListItemRow({
           </Typography>
           {chips}
         </Stack>
-        {subtitle && (
+        {subtitle ? (
           <Typography variant="caption" color="text.secondary" display="block">
             {subtitle}
           </Typography>
-        )}
+        ) : null}
       </Box>
-      {isLink ? (
+    </>
+  );
+
+  return (
+    <Box
+      component={isRowLink ? RouterLink : Box}
+      href={isRowLink ? profileHref : undefined}
+      sx={{
+        ...hubCardShellSx(theme),
+        px: 2,
+        py: 1.75,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 2,
+        ...(isRowLink && { textDecoration: 'none', color: 'inherit' }),
+        transition: theme.transitions.create('background-color', {
+          duration: theme.transitions.duration.shorter,
+        }),
+        '&:hover': { bgcolor: rowHoverBg },
+      }}
+    >
+      {isIdentityLink ? (
+        <Box
+          component={RouterLink}
+          href={profileHref}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+            minWidth: 0,
+            flex: 1,
+            textDecoration: 'none',
+            color: 'inherit',
+          }}
+        >
+          {identity}
+        </Box>
+      ) : (
+        identity
+      )}
+      {isRowLink ? (
         <Iconify
           icon={ic.chevronRightLinear}
           width={SHELL_HUB_ICON}

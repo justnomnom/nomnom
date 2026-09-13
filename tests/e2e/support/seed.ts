@@ -379,7 +379,7 @@ export async function deleteListAccessRows(listId: string): Promise<void> {
  * Create a confirmed user whose onboarding is explicitly incomplete
  * (`public.users.onboarding_completed_at` = null, no `home_locality_id`). The shared E2E
  * user has already completed onboarding, so the onboarding wizard happy-path spec needs a
- * fresh incomplete user it can drive through all four steps. Torn down with
+ * fresh incomplete user it can drive through welcome + city. Torn down with
  * {@link deleteOnboardingUserData} + {@link deleteSeededUser}.
  */
 export async function createOnboardingIncompleteUser(prefix = 'e2eonboard'): Promise<SeededUser> {

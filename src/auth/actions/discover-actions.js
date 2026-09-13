@@ -77,6 +77,8 @@ async function resolveFallbackDiscoverLocality(supabase) {
  *     sort_order: number,
  *     municipality_slug: string
  *   }>,
+ *   followingIds: string[],
+ *   hasFollows: boolean,
  *   restaurants: Array<Record<string, unknown>>,
  *   listsLeaderboard: { interaction_leaders: object[], follower_leaders: object[], error: string | null }
  * }>}
@@ -124,15 +126,21 @@ export async function loadDiscoverPageData() {
       homeLocalityId: null,
       homeMunicipalityId: null,
       suggestedCreators: [],
+      followingIds: [],
+      hasFollows: false,
       restaurants: [],
       savedListIdsByRestaurant: {},
       listsLeaderboard: { interaction_leaders: [], follower_leaders: [], error: null },
     };
   }
 
-  // Leaderboard does not depend on locality — start immediately so it overlaps
-  // profile / geo / city resolution (async-parallel).
+  // Leaderboard and follows do not depend on locality — start immediately so they
+  // overlap profile / geo / city resolution (async-parallel).
   const lbPromise = supabase.rpc('discover_lists_leaderboard');
+  const followsPromise = supabase
+    .from('user_follows')
+    .select('following_id')
+    .eq('follower_id', user.id);
 
   const { data: profile, error: profileError } = await supabase
     .from('users')
@@ -204,16 +212,17 @@ export async function loadDiscoverPageData() {
     }
   }
 
-  const [creatorsResult, restaurantsOutcome, lbResult] = await Promise.all([
+  const [creatorsResult, restaurantsOutcome, lbResult, followsResult] = await Promise.all([
     supabase.rpc('get_suggested_creators_for_municipality', {
       p_municipality_slug: slugForCreators,
       p_exclude_user_id: user.id,
-      p_limit: 24,
+      p_limit: 8,
     }),
     resolvedLocalityId
       ? fetchRestaurantsForHomeLocality(resolvedLocalityId, { limit: 36, ...fallbackRef })
       : Promise.resolve({ restaurants: [] }),
     lbPromise,
+    followsPromise,
   ]);
 
   const { data: creatorsRaw, error: creatorsError } = creatorsResult;
@@ -225,6 +234,17 @@ export async function loadDiscoverPageData() {
 
   const suggestedCreators = creatorsRaw ?? [];
   const listsLeaderboard = normalizeListsLeaderboard(lbResult);
+  const { data: followRows, error: followsError } = followsResult;
+  if (followsError) {
+    console.error('[loadDiscoverPageData] user_follows', followsError);
+  }
+  const followingIds = [
+    ...new Set(
+      (followRows ?? [])
+        .map((row) => (row?.following_id != null ? String(row.following_id).trim().toLowerCase() : ''))
+        .filter(Boolean)
+    ),
+  ];
 
   const restaurantIds = restaurants.map((r) => r.id).filter(Boolean);
   const { map: savedListIdsByRestaurant, error: saveErr } =
@@ -250,6 +270,8 @@ export async function loadDiscoverPageData() {
     // and refines to precise GPS in the background.
     isFallbackMarket,
     suggestedCreators,
+    followingIds,
+    hasFollows: followingIds.length > 0,
     restaurants,
     savedListIdsByRestaurant: savedListIdsByRestaurant ?? {},
     listsLeaderboard,

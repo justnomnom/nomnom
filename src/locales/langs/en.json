@@ -667,6 +667,7 @@
         "lets_nomnom": "Let’s NomNom!",
         "keep": "Keep going",
         "almost": "Almost there",
+        "show_spots": "Show me spots",
         "start": "Let’s NomNom!",
         "enter": "Enter NomNom"
       },
@@ -764,6 +765,7 @@
         "lists_leaderboard_empty_title": "No list activity yet",
         "lists_leaderboard_empty_cta": "Create a list",
         "trending_title": "Trending creators",
+        "suggested_people_title": "People to follow",
         "view_all": "View all",
         "creator_avatar_alt": "{{handle}}",
         "creators_empty": "Suggested creators will appear here for your city.",
@@ -778,14 +780,23 @@
         "feed_card_open_aria": "Open details for {{name}}",
         "sponsored_badge": "Sponsored",
         "empty_market_title": "Pick your home area",
-        "empty_market_body": "We load spots from your home area first. Finish location in onboarding, or update it in your profile.",
-        "empty_market_cta": "Set location",
+        "empty_market_body": "We load spots from your home area first. Pick your area to see restaurants nearby.",
+        "empty_market_cta": "Pick your area",
         "fab_label": "NomNom?",
         "feed_empty_vibe": "No spots match that vibe here yet. Try another, or clear the filter.",
         "feed_empty_clear_vibe": "Clear filter",
         "filter_open_now": "Open now",
         "decide_group_kicker": "Can’t decide where to eat?",
-        "roulette_promo_title": "NomNom Roulette"
+        "roulette_promo_title": "NomNom Roulette",
+        "activation_title": "Get started",
+        "activation_progress": "{{done}} of {{total}}",
+        "activation_dismiss": "Dismiss",
+        "activation_follow": "Follow someone",
+        "activation_follow_cta": "See people",
+        "activation_save": "Save a spot",
+        "activation_save_cta": "See spots",
+        "activation_save_done": "Saved — your first spot is on your lists.",
+        "creator_fallback": "Creator"
       },
       "admin": {
         "hub": {

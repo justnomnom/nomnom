@@ -667,6 +667,7 @@
         "lets_nomnom": "Vamos NomNom!",
         "keep": "Segue em frente",
         "almost": "Quase lá",
+        "show_spots": "Mostrar sítios",
         "start": "Vamos NomNom!",
         "enter": "Entrar no NomNom"
       },
@@ -764,6 +765,7 @@
         "lists_leaderboard_empty_title": "Ainda sem atividade",
         "lists_leaderboard_empty_cta": "Criar uma lista",
         "trending_title": "Criadores em destaque",
+        "suggested_people_title": "Pessoas a seguir",
         "view_all": "Ver tudo",
         "creator_avatar_alt": "{{handle}}",
         "creators_empty": "Criadores sugeridos aparecerão aqui para a tua cidade.",
@@ -778,14 +780,23 @@
         "feed_card_open_aria": "Abrir detalhes de {{name}}",
         "sponsored_badge": "Patrocinado",
         "empty_market_title": "Escolhe a tua zona",
-        "empty_market_body": "Carregamos primeiro sítios da tua zona. Conclui a localização no onboarding, ou atualiza o teu perfil.",
-        "empty_market_cta": "Definir localização",
+        "empty_market_body": "Carregamos primeiro sítios da tua zona. Escolhe a tua área para ver restaurantes perto de ti.",
+        "empty_market_cta": "Escolher a tua área",
         "fab_label": "NomNom?",
         "feed_empty_vibe": "Ainda não há sítios com essa vibe por aqui. Experimenta outra ou limpa o filtro.",
         "feed_empty_clear_vibe": "Limpar filtro",
         "filter_open_now": "Aberto agora",
         "decide_group_kicker": "Não sabes onde comer?",
-        "roulette_promo_title": "NomNom Roulette"
+        "roulette_promo_title": "NomNom Roulette",
+        "activation_title": "Começar",
+        "activation_progress": "{{done}} de {{total}}",
+        "activation_dismiss": "Dispensar",
+        "activation_follow": "Segue alguém",
+        "activation_follow_cta": "Ver pessoas",
+        "activation_save": "Guarda um sítio",
+        "activation_save_cta": "Ver sítios",
+        "activation_save_done": "Guardado — o teu primeiro sítio está nas tuas listas.",
+        "creator_fallback": "Criador"
       },
       "admin": {
         "hub": {

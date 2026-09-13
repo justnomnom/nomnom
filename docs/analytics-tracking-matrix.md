@@ -43,6 +43,10 @@ This matrix documents all events currently instrumented for:
 | `signup_session_ready` | Activation | `method` | `src/auth/context/supabase/auth-provider.js`, `supabase-register-view.js` |
 | `onboarding_step_viewed` | Activation | `step`, `step_key` | `src/sections/onboarding/onboarding-wizard.js` |
 | `onboarding_completed` | Activation | `path`, `from_step` | `src/sections/onboarding/onboarding-wizard.js` |
+| `activation_checklist_shown` | Activation | — | `src/sections/discover/view/discover-view.js` |
+| `activation_checklist_dismissed` | Activation | — | `src/sections/discover/view/discover-view.js` |
+| `activation_item_completed` | Activation | `item` (`follow` / `save`) | `src/sections/discover/view/discover-view.js`, `src/sections/discover/discover-suggested-creators.js` |
+| `discover_first_feed_viewed` | Activation | `restaurant_count` (`is_fallback_market` optional) | `src/sections/discover/view/discover-view.js` |
 | `password_reset_completed` | Activation | — | `src/sections/auth/supabase/supabase-new-password-view.js` |
 
 > **`signup_completed` coverage:** emitted for email signups from `signUp()` and for new OAuth

@@ -26,6 +26,11 @@ test('ANALYTICS_EVENT_SCHEMAS: checkout, table, and restaurant funnels stay requ
     'surface',
   ]);
   assert.deepEqual(ANALYTICS_EVENT_SCHEMAS.onboarding_completed.required, ['path', 'from_step']);
+  assert.deepEqual(ANALYTICS_EVENT_SCHEMAS.activation_item_completed.required, ['item']);
+  assert.deepEqual(ANALYTICS_EVENT_SCHEMAS.discover_first_feed_viewed.required, [
+    'restaurant_count',
+  ]);
+  assert.deepEqual(ANALYTICS_EVENT_SCHEMAS.activation_checklist_shown.required, []);
 });
 
 test('ANALYTICS_EVENT_SCHEMAS: every entry has a required array', () => {

@@ -12,10 +12,10 @@ import {
 import { E2E_DASHBOARD_AUTH_SETUP_HINT } from '../support/test-credentials';
 
 /**
- * TEST-PLAN §2 O5 — the wizard's header "Skip" (visible from the location step onward)
+ * TEST-PLAN §2 O5 — the wizard's header "Skip" (visible from the location step)
  * calls completeOnboarding() directly and router.replace()s to Discover: onboarding must
- * complete with NO locality, tags, or follows persisted. Complements
- * onboarding-happy-path.spec.ts, which drives all four steps.
+ * complete with NO locality persisted. Complements onboarding-happy-path.spec.ts
+ * (welcome + city).
  */
 
 const baseURL = process.env.E2E_BASE_URL || 'http://localhost:3032';

@@ -31,6 +31,8 @@ async function DiscoverPageContent() {
       feedRefLng={data.feedRefLng}
       isFallbackMarket={data.isFallbackMarket}
       suggestedCreators={data.suggestedCreators}
+      followingIds={data.followingIds}
+      hasFollows={data.hasFollows}
       restaurants={data.restaurants}
       savedListIdsByRestaurant={data.savedListIdsByRestaurant}
       listsLeaderboard={data.listsLeaderboard}
