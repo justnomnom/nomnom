@@ -1,10 +1,7 @@
 /**
  * Country restaurant list URLs: pagination, tags, and [[...parts]] parsing.
  */
-import fs from 'node:fs';
-import path from 'node:path';
 import assert from 'node:assert/strict';
-import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
 
 import {
@@ -14,8 +11,6 @@ import {
 } from '../restaurant-list-urls.js';
 import { tryParseRestaurantParts } from '../restaurants-path-parse.js';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
-const CATALOG = path.join(ROOT, 'content', 'data', 'restaurants.json');
 
 test('restaurantListPath omits page 1 and encodes tags', () => {
   assert.equal(
@@ -71,11 +66,17 @@ test('paginateRestaurants uses 1-based pages and sane defaults', () => {
   assert.deepEqual(paginateRestaurants(items, 1, 0), [1]);
 });
 
-test('Lisbon catalog is large enough for a second restaurants page', () => {
-  const restaurants = JSON.parse(fs.readFileSync(CATALOG, 'utf8'));
-  const lisbon = restaurants.filter((r) => r.country === 'portugal' && r.city === 'lisbon');
-  assert.ok(lisbon.length > getRestaurantPageSize(), `got ${lisbon.length} Lisbon rows`);
-  const slugs = new Set(lisbon.map((r) => r.slug));
-  assert.equal(slugs.size, lisbon.length);
-  assert.ok(lisbon.some((r) => (r.categories ?? []).includes('tasca')));
+test('pagination splits a catalogue larger than one page', () => {
+  // Was an assertion about content/data/restaurants.json. The catalogue now lives
+  // in the database, so what is worth pinning here is the paging maths, not the
+  // row count — a data property belongs in `npm run db:check:all`, not a unit test.
+  const size = getRestaurantPageSize();
+  const rows = Array.from({ length: size + 2 }, (_, i) => ({ slug: `r-${i}` }));
+  assert.equal(paginateRestaurants(rows, 1, size).length, size);
+  assert.equal(paginateRestaurants(rows, 2, size).length, 2);
+  const seen = [
+    ...paginateRestaurants(rows, 1, size),
+    ...paginateRestaurants(rows, 2, size),
+  ].map((r) => r.slug);
+  assert.equal(new Set(seen).size, rows.length, 'pages must not overlap or drop rows');
 });

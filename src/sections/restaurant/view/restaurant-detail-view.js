@@ -865,6 +865,10 @@ export default function RestaurantDetailView({
   onReviewSaved,
   /** When false, hide save-to-list UI and reviews (e.g. static marketing / content-hub restaurants). */
   showListsAndReviews = true,
+  // Heading for the reviews/list-mentions section. Defaults to the dashboard's
+  // "Your NomNom Circle", which is wrong on a public content hub page where the
+  // visitor is anonymous and the reviewers are strangers, not their circle.
+  mentionsTitleKey = 'pages.dashboard.restaurant.mentions_title',
   /** Dashboard `<Main>` reserves fixed bottom nav; skip extra mobile `pb` on the outer Container. */
   dashboardFixedBottomNav = false,
   /** Analytics: `map_sheet` when `mapSheetMode`; else `content_hub` (marketing) or `dashboard` (default). */
@@ -2091,7 +2095,7 @@ export default function RestaurantDetailView({
             <Box
               id="restaurant-mentions"
               component="section"
-              aria-label={t('pages.dashboard.restaurant.mentions_title')}
+              aria-label={t(mentionsTitleKey)}
               sx={{ scrollMarginTop: { xs: '72px', sm: '88px' } }}
             >
               <Stack
@@ -2112,7 +2116,7 @@ export default function RestaurantDetailView({
                       lineHeight: 1.3,
                     }}
                   >
-                    {t('pages.dashboard.restaurant.mentions_title')}
+                    {t(mentionsTitleKey)}
                   </Typography>
                   <Box
                     component="span"
@@ -2151,7 +2155,7 @@ export default function RestaurantDetailView({
                   role="status"
                   aria-live="polite"
                   aria-busy="true"
-                  aria-label={t('pages.dashboard.restaurant.mentions_title')}
+                  aria-label={t(mentionsTitleKey)}
                 >
                   <SkeletonTheme
                     baseColor={mentionsSkeletonTheme.baseColor}
@@ -2447,6 +2451,7 @@ RestaurantDetailView.propTypes = {
     content_slug: PropTypes.string,
   }),
   showListsAndReviews: PropTypes.bool,
+  mentionsTitleKey: PropTypes.string,
   dashboardFixedBottomNav: PropTypes.bool,
   mentionsFeedLoading: PropTypes.bool,
   tagsLoading: PropTypes.bool,

@@ -26,11 +26,16 @@ function countryCollectionDocs(country: string): ParsedMdxDocument[] {
 
 /**
  * MDX pages that list this restaurant in `relatedRestaurantSlugs`.
+ *
+ * Async because the set of cities to scan comes from the curated restaurants in
+ * the database rather than from a JSON file on disk.
  */
-export function findDocsLinkingRestaurant(restaurantSlug: string): ParsedMdxDocument[] {
+export async function findDocsLinkingRestaurant(
+  restaurantSlug: string
+): Promise<ParsedMdxDocument[]> {
   const seenCityKeys = new Set<string>();
   const cityScoped: ParsedMdxDocument[] = [];
-  for (const r of getAllRestaurants()) {
+  for (const r of await getAllRestaurants()) {
     const key = `${r.country}\0${r.city}`;
     if (seenCityKeys.has(key)) continue;
     seenCityKeys.add(key);
@@ -114,6 +119,6 @@ export function sampleGlobalCollectionSlugs(limit = 3): string[] {
 /**
  * Returns city slugs for the given country (delegates to `getCitySlugsForCountry`).
  */
-export function cityNavSlugs(country: string): string[] {
+export async function cityNavSlugs(country: string): Promise<string[]> {
   return getCitySlugsForCountry(country);
 }

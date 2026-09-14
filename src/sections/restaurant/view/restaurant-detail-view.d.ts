@@ -17,6 +17,12 @@ export type RestaurantDetailViewProps = {
   myUserId?: string | null;
   onReviewSaved?: () => void;
   showListsAndReviews?: boolean;
+  /**
+   * Locale key for the reviews / list-mentions section heading. Defaults to the
+   * dashboard's "Your NomNom Circle"; public surfaces pass a neutral key, since
+   * an anonymous visitor has no circle.
+   */
+  mentionsTitleKey?: string;
   dashboardFixedBottomNav?: boolean;
   analyticsSurface?: 'content_hub' | 'dashboard' | null;
   analyticsContext?: {

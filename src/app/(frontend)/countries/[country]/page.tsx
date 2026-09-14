@@ -25,12 +25,12 @@ export const revalidate = 60;
 type PageProps = { params: Promise<{ country: string }> };
 
 export async function generateStaticParams() {
-  return getCountrySlugs().map((country) => ({ country }));
+  return (await getCountrySlugs()).map((country) => ({ country }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { country } = await params;
-  if (!getCountrySlugs().includes(country)) {
+  if (!(await getCountrySlugs()).includes(country)) {
     return { title: 'Country' };
   }
   const title = `${displaySlug(country)} — cities, spots, and creators`;
@@ -44,11 +44,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
  */
 export default async function CountryPage({ params }: PageProps) {
   const { country } = await params;
-  if (!getCountrySlugs().includes(country)) notFound();
+  if (!(await getCountrySlugs()).includes(country)) notFound();
 
   const t = await contentHubT();
   const countryName = displaySlug(country);
-  const cities = cityNavSlugs(country);
+  const cities = await cityNavSlugs(country);
   const infl = influencerSlugsForCountry(country);
   const col = collectionSlugsForCountry(country);
   const globalCol = sampleGlobalCollectionSlugs(4);

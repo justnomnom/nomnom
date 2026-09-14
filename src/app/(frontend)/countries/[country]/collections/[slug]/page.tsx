@@ -16,7 +16,7 @@ type PageProps = { params: Promise<{ country: string; slug: string }> };
 
 export async function generateStaticParams() {
   const out: { country: string; slug: string }[] = [];
-  for (const country of getCountrySlugs()) {
+  for (const country of await getCountrySlugs()) {
     for (const slug of collectionSlugsForCountry(country)) {
       out.push({ country, slug });
     }
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: PageProps) {
  */
 export default async function CountryCollectionPage({ params }: PageProps) {
   const { country, slug } = await params;
-  if (!getCountrySlugs().includes(country)) notFound();
+  if (!(await getCountrySlugs()).includes(country)) notFound();
 
   const doc = readMdxFilesInDir(path.join('countries', country, 'collections')).find(
     (d) => d.slug === slug

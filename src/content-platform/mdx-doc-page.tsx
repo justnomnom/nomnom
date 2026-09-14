@@ -44,7 +44,7 @@ export async function buildStandardDocLinks({
   }
 
   for (const slug of doc.frontmatter.relatedRestaurantSlugs ?? []) {
-    const r = getRestaurantBySlug(slug);
+    const r = await getRestaurantBySlug(slug);
     if (r) {
       add(
         `/countries/${r.country}/${r.city}/restaurants/${r.slug}`,

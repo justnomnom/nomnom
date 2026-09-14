@@ -36,7 +36,11 @@ export function contentRestaurantToDetailViewModel(
   }));
 
   return {
-    id: `content-hub:${r.country}:${r.city}:${r.slug}`,
+    // The real `restaurants.id`. This used to be a synthetic `content-hub:...`
+    // string because hub restaurants existed only in a JSON file and had no
+    // database row; now they are rows, so the hub and the app finally agree on
+    // what a given restaurant is.
+    id: r.id,
     name: r.name,
     address: `${cityLabel}, ${countryLabel}`,
     latitude: r.location.lat,

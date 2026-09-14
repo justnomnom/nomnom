@@ -3,10 +3,14 @@
 
 - typecheck: tsc --noEmit
 - lint: eslint "src/**/*.{js,jsx}"
-- test: `npm test` — NOT bare `node --test "src/**/__tests__/*.test.mjs"`. The real script
-  is `node --import ./scripts/register-node-test-loader.mjs --test ...`; without that loader
-  26 suites fail to load and ~200 tests silently never run, which reads as pre-existing
-  failures. Expected: 1330 pass, 0 fail (64 suites).
+- test: `npm test` — NOT bare `node --test "src/**/__tests__/*.test.mjs"`. The real script is
+  `node --import ./scripts/register-node-test-loader.mjs --experimental-test-module-mocks --test ...`.
+  Drop the loader and 26 suites fail to load while ~200 tests silently never run; drop
+  `--experimental-test-module-mocks` and any suite using `mock.module` (e.g.
+  `src/auth/__tests__/restaurants-ingest-route.test.mjs`) dies at import with
+  `TypeError: mock.module is not a function`. Both read as pre-existing failures.
+  **Run a single suite with the same two flags**, not with bare `node --test`.
+  Baseline as of 2026-09-13: **1713 tests, 100 suites**, 0 fail on a clean tree.
 - e2e: `npm run test:e2e:all` (Playwright; boots a dev server on :3032 and seeds the linked
   Supabase project via service role)
 - deadcode: npx knip

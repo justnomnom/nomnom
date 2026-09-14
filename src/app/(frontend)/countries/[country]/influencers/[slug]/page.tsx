@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: PageProps) {
  */
 export default async function InfluencerPage({ params }: PageProps) {
   const { country, slug } = await params;
-  if (!getCountrySlugs().includes(country)) notFound();
+  if (!(await getCountrySlugs()).includes(country)) notFound();
 
   const doc = readMdxFilesInDir('influencers').find(
     (d) => d.slug === slug && d.frontmatter.country === country

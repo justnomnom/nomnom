@@ -19,6 +19,10 @@ import {
 import { JsonLd } from '@/components/content-platform/seo/json-ld';
 import { contentRestaurantToDetailViewModel } from '@/content-platform/content-restaurant-detail-adapter';
 import {
+  getPublicReviewsForRestaurant,
+  getPublicListMentionsForRestaurant,
+} from '@/content-platform/curated-restaurant-social';
+import {
   getCitySlugsForCountry,
   getCountrySlugs,
   getRestaurantBySlug,
@@ -50,10 +54,10 @@ type PageProps = {
 
 export async function generateStaticParams() {
   const out: { country: string; city: string; parts: string[] | undefined }[] = [];
-  for (const country of getCountrySlugs()) {
-    for (const city of getCitySlugsForCountry(country)) {
+  for (const country of await getCountrySlugs()) {
+    for (const city of await getCitySlugsForCountry(country)) {
       out.push({ country, city, parts: undefined });
-      const restaurants = getRestaurantsByCityFiltered(country, city);
+      const restaurants = await getRestaurantsByCityFiltered(country, city);
       const pageSize = getRestaurantPageSize();
       const pages = Math.ceil(restaurants.length / pageSize);
       for (let p = 2; p <= pages; p += 1) {
@@ -61,7 +65,7 @@ export async function generateStaticParams() {
       }
       const tags = [...new Set(restaurants.flatMap((r) => r.categories ?? []))];
       for (const tag of tags) {
-        const filtered = getRestaurantsByCityFiltered(country, city, tag);
+        const filtered = await getRestaurantsByCityFiltered(country, city, tag);
         const tagPages = Math.ceil(filtered.length / pageSize);
         out.push({ country, city, parts: ['tag', tag] });
         for (let p = 2; p <= tagPages; p += 1) {
@@ -84,7 +88,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   if (mode.kind === 'detail') {
-    const r = getRestaurantBySlug(mode.slug);
+    const r = await getRestaurantBySlug(mode.slug);
     if (!r || r.country !== country || r.city !== city) {
       return { title: 'Restaurant' };
     }
@@ -141,25 +145,35 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function RestaurantsCatchAllPage({ params }: PageProps) {
   const { country, city, parts } = await params;
 
-  if (!getCountrySlugs().includes(country) || !getCitySlugsForCountry(country).includes(city)) {
+  if (
+    !(await getCountrySlugs()).includes(country) ||
+    !(await getCitySlugsForCountry(country)).includes(city)
+  ) {
     notFound();
   }
 
   const t = await contentHubT();
   const cityName = displaySlug(city);
   const countryName = displaySlug(country);
-  const mode = parseRestaurantParts(parts);
+  const mode = await parseRestaurantParts(parts);
 
   if (mode.kind === 'detail') {
-    const r = getRestaurantBySlug(mode.slug);
+    const r = await getRestaurantBySlug(mode.slug);
     if (!r || r.country !== country || r.city !== city) notFound();
 
-    const linking = findDocsLinkingRestaurant(r.slug)
+    const linking = (await findDocsLinkingRestaurant(r.slug))
       .map((d) => {
         const href = hrefForMdxDoc(d);
         return href ? { href, label: d.frontmatter.title } : null;
       })
       .filter(Boolean) as { href: string; label: string }[];
+
+    // Public reviews and public list mentions for this restaurant. Anonymous
+    // reads with no cookies, so the route stays statically generated.
+    const [reviews, listMentions] = await Promise.all([
+      getPublicReviewsForRestaurant(r.id),
+      getPublicListMentionsForRestaurant(r.id),
+    ]);
 
     const inflLinks = (r.influencerSlugs ?? []).map((slug) => ({
       href: `/countries/${country}/influencers/${slug}`,
@@ -249,8 +263,15 @@ export default async function RestaurantsCatchAllPage({ params }: PageProps) {
 
           <RestaurantDetailView
             restaurant={contentRestaurantToDetailViewModel(r, country, city)}
+            // Reviews and list mentions DISPLAY regardless of this flag; it gates
+            // the authoring affordances (write a review, edit mine, save sheet).
+            // Nobody is signed in on a statically generated hub page, so leaving
+            // it false shows the content without offering controls that cannot
+            // work — the same choice the public share page makes.
             showListsAndReviews={false}
-            reviews={[]}
+            mentionsTitleKey="pages.dashboard.restaurant.reviews_title"
+            reviews={reviews}
+            listMentions={listMentions}
             myUserId={null}
             analyticsSurface="content_hub"
             analyticsContext={{
@@ -281,7 +302,7 @@ export default async function RestaurantsCatchAllPage({ params }: PageProps) {
   }
 
   const pageSize = getRestaurantPageSize();
-  const all = getRestaurantsByCityFiltered(country, city, mode.tag);
+  const all = await getRestaurantsByCityFiltered(country, city, mode.tag);
   const page = mode.page;
   const slice = paginateRestaurants(all, page, pageSize);
   const totalPages = Math.max(1, Math.ceil(all.length / pageSize));

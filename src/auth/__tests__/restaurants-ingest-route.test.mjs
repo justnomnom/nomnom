@@ -235,6 +235,42 @@ describe('POST /api/restaurants/ingest', { concurrency: false }, () => {
       updated: false,
       municipality_id: MUNI_ID,
       ingest_tag_slugs: [],
+      // The mocked Supabase client returns no curated rows, so there is nothing
+      // to merge into and the place is inserted as a new restaurant. The merge
+      // path itself is covered by the reconcile unit tests.
+      content_slug: null,
+      content_link_status: 'none',
+      merged_into_curated: false,
     });
+  });
+
+  test('a place with no editorial counterpart is ingested without a content link', async () => {
+    mapped = {
+      closedStatus: null,
+      row: {
+        external_place_id: 'ChIJy',
+        name: 'Snack Bar Sem Nome',
+        address: 'Rua Qualquer',
+        latitude: 38.75,
+        longitude: -9.2,
+        rating: 3.9,
+        price_level: 1,
+        phone: null,
+        website: null,
+        maps_link: null,
+        menu_url: null,
+        menu_source: null,
+      },
+      imageUrls: [],
+      metadataBase: {},
+      flattenedAbout: '',
+      priceTagSlug: null,
+    };
+    const res = await POST(req({ placeId: 'ChIJy' }));
+    assert.equal(res.status, 200);
+    const body = await res.json();
+    assert.equal(body.content_slug, null);
+    assert.equal(body.content_link_status, 'none');
+    assert.equal(body.merged_into_curated, false);
   });
 });

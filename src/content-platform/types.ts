@@ -1,4 +1,6 @@
 export type Restaurant = {
+  /** Real `restaurants.id`, so hub pages can link into the app rather than render a synthetic record. */
+  id: string;
   name: string;
   slug: string;
   city: string;

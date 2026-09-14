@@ -18,7 +18,7 @@ export const revalidate = 60;
 type PageProps = { params: Promise<{ country: string }> };
 
 export async function generateStaticParams() {
-  return getCountrySlugs().map((country) => ({ country }));
+  return (await getCountrySlugs()).map((country) => ({ country }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
  */
 export default async function CountryInfluencersIndex({ params }: PageProps) {
   const { country } = await params;
-  if (!getCountrySlugs().includes(country)) notFound();
+  if (!(await getCountrySlugs()).includes(country)) notFound();
 
   const t = await contentHubT();
   const countryName = displaySlug(country);

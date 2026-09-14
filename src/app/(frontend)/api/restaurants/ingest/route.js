@@ -13,6 +13,11 @@ import {
   persistRestaurantImageUrls,
 } from 'src/libs/restaurant-ingest/persist-restaurant-images';
 import {
+  matchEditorialEntry,
+  fetchCuratedRestaurants,
+  loadEditorialCatalogSafely,
+} from 'src/libs/restaurant-ingest/reconcile-editorial-catalog';
+import {
   fetchAllTags,
   insertNewTags,
   resolveTagIds,
@@ -247,7 +252,7 @@ export async function POST(request) {
     const municipalityId = String(municipalityRow.id);
 
     const externalPlaceId = mapped.row.external_place_id;
-    const { data: existing, error: exErr } = await supabaseAdminClient
+    const { data: byPlaceId, error: exErr } = await supabaseAdminClient
       .from('restaurants')
       .select('id, metadata')
       .eq('external_place_id', externalPlaceId)
@@ -256,6 +261,64 @@ export async function POST(request) {
     if (exErr) {
       logger.error('existing restaurant select', exErr);
       return NextResponse.json({ error: 'lookup_failed' }, { status: 500 });
+    }
+
+    // Second dedupe pass. Curated restaurants are seeded by hand and have no
+    // external_place_id, so the lookup above misses them and this route would
+    // insert a duplicate — splitting authored hub copy away from the live data.
+    // Match those by name + proximity and merge into the row that already holds
+    // the copy. Only runs when the place id found nothing, so a normal re-ingest
+    // pays for no extra query.
+    let existing = byPlaceId ?? null;
+    let editorialMatch = /** @type {ReturnType<typeof matchEditorialEntry>} */ ({
+      status: 'none',
+      slug: null,
+      restaurantId: null,
+      confidence: null,
+      nameScore: 0,
+      distanceMeters: null,
+      candidates: [],
+    });
+
+    if (!existing) {
+      const curated = await loadEditorialCatalogSafely(
+        () => fetchCuratedRestaurants(supabaseAdminClient),
+        logger
+      );
+      editorialMatch = matchEditorialEntry(
+        {
+          name: mapped.row.name,
+          latitude: mapped.row.latitude,
+          longitude: mapped.row.longitude,
+        },
+        curated
+      );
+
+      if (editorialMatch.status === 'ambiguous') {
+        // Merging two different restaurants would destroy authored content, so a
+        // tie inserts a duplicate instead and leaves a human to resolve it.
+        logger.error('curated reconciliation ambiguous; inserting instead of merging', {
+          place: mapped.row.name,
+          externalPlaceId,
+          candidates: editorialMatch.candidates,
+        });
+      }
+
+      if (editorialMatch.status === 'matched' && editorialMatch.restaurantId) {
+        // Re-read the target's metadata: the write below spreads priorMeta, so
+        // merging with an empty prior would wipe `metadata.editorial` — the
+        // authored copy this whole pass exists to protect.
+        const { data: target, error: tErr } = await supabaseAdminClient
+          .from('restaurants')
+          .select('id, metadata')
+          .eq('id', editorialMatch.restaurantId)
+          .maybeSingle();
+        if (tErr) {
+          logger.error('curated merge target select', tErr);
+          return NextResponse.json({ error: 'lookup_failed' }, { status: 500 });
+        }
+        if (target?.id) existing = target;
+      }
     }
 
     const priorMeta =
@@ -511,6 +574,14 @@ export async function POST(request) {
       updated: !created,
       municipality_id: municipalityId,
       ingest_tag_slugs: orderedSlugs,
+      // Bulk importers use these to report how many places merged into an
+      // existing curated row, and which need a human decision.
+      content_slug: editorialMatch.slug ?? null,
+      content_link_status: editorialMatch.status,
+      merged_into_curated: editorialMatch.status === 'matched' && Boolean(editorialMatch.restaurantId),
+      ...(editorialMatch.status === 'ambiguous'
+        ? { content_link_candidates: editorialMatch.candidates }
+        : {}),
     });
   } catch (e) {
     logger.error('unhandled', e);

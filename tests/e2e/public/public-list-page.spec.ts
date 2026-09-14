@@ -25,6 +25,8 @@ test.describe('public list page — handle/slug (L1)', () => {
 
     const municipalityId = await getAnyMunicipalityId();
     test.skip(!municipalityId, 'No municipality rows to seed a restaurant');
+    // test.skip() is not a type guard, so narrow for seedRestaurant(name: string).
+    if (!municipalityId) return;
 
     const creator = await createSeededUser('e2el1');
     const listName = `E2E Public List ${Date.now().toString(36)}`;

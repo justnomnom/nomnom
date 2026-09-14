@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
  */
 export default async function CountriesIndexPage() {
   const t = await contentHubT();
-  const countries = getCountrySlugs();
+  const countries = await getCountrySlugs();
   return (
     <ContentPageShell
       title={t('explore_title')}

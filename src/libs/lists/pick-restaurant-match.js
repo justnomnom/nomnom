@@ -9,8 +9,11 @@
  */
 
 // Leading venue-type words carry no identity ("Restaurante O Trevo" === "O Trevo").
+// Applied symmetrically to both sides of a comparison, so widening it cannot
+// create a false match — it only lets "Pastelaria Aloma" reach "Aloma".
+// Deliberately excludes identity-bearing openers like "Casa" ("Casa Lundum").
 const VENUE_PREFIX_RE =
-  /^(restaurante|restaurant|cafe|tasca|tasquinha|cervejaria|marisqueira|churrasqueira|pizzaria|pizzeria|snack bar|bar)\s+/;
+  /^(restaurante|restaurant|cafe|cafetaria|tasca|tasquinha|taberna|cervejaria|marisqueira|churrasqueira|pastelaria|padaria|confeitaria|gelataria|leitaria|adega|pizzaria|pizzeria|snack bar|bar)\s+/;
 
 /**
  * Lowercase, strip diacritics, drop punctuation, drop a leading venue-type word.

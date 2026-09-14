@@ -27,8 +27,8 @@ type PageProps = { params: Promise<{ country: string; city: string }> };
 
 export async function generateStaticParams() {
   const out: { country: string; city: string }[] = [];
-  for (const country of getCountrySlugs()) {
-    for (const city of getCitySlugsForCountry(country)) {
+  for (const country of await getCountrySlugs()) {
+    for (const city of await getCitySlugsForCountry(country)) {
       out.push({ country, city });
     }
   }
@@ -50,14 +50,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
  */
 export default async function CityPage({ params }: PageProps) {
   const { country, city } = await params;
-  if (!getCountrySlugs().includes(country) || !getCitySlugsForCountry(country).includes(city)) {
+  if (!(await getCountrySlugs()).includes(country) || !(await getCitySlugsForCountry(country)).includes(city)) {
     notFound();
   }
 
   const t = await contentHubT();
   const cityName = displaySlug(city);
   const countryName = displaySlug(country);
-  const restaurants = getRestaurantsByCity(country, city);
+  const restaurants = await getRestaurantsByCity(country, city);
   const cityCols = collectionSlugsForCity(country, city);
   const globalCols = sampleGlobalCollectionSlugs(2);
 

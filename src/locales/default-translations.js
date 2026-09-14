@@ -15,8 +15,26 @@ function lookup(dict, key) {
   }, dict);
 }
 
-/** English fallback for keys that have no viewer-lang string yet. Cache-bust: localizedMeta + mesaNames + spotsNotPlaces + mapEmpty. */
-export const getDefaultTranslation = (key) => lookup(enTranslations, key);
+/**
+ * English fallback for keys that have no viewer-lang string yet. Cache-bust: localizedMeta + mesaNames + spotsNotPlaces + mapEmpty.
+ *
+ * Returns `''` rather than the raw value for a missing key or a branch node, so
+ * the inferred type stays `string` instead of widening to `string | object` with
+ * the shape of `en.json`. Without this, every caller that passes the result
+ * somewhere typed — `ogText`, the Playwright `getByLabel`/`getByRole` specs —
+ * fails `tsc` whenever the locale files gain a nested key.
+ *
+ * `''` (not the key) is the established contract: `fillPlaceholders` already
+ * collapses non-strings to `''`, and `ogText` documents an empty string for a
+ * missing key. Echoing the key back would print `pages.foo.bar` onto share cards.
+ *
+ * @param {string} key dotted locale path, e.g. `pages.contact_us.form.email`.
+ * @returns {string} the leaf string, or `''` when missing or not a leaf.
+ */
+export const getDefaultTranslation = (key) => {
+  const value = lookup(enTranslations, key);
+  return typeof value === 'string' ? value : '';
+};
 
 /**
  * Locale string for server-rendered chrome. Substitutes `{{name}}` vars when provided.
