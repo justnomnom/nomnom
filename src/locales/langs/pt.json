@@ -797,6 +797,7 @@
         "activation_save": "Guarda um sítio",
         "activation_save_cta": "Ver sítios",
         "activation_save_done": "Guardado — o teu primeiro sítio está nas tuas listas.",
+        "follow_failed": "Não foi possível seguir agora. Tenta outra vez.",
         "creator_fallback": "Criador"
       },
       "admin": {

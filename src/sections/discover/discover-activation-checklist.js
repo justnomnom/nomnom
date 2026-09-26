@@ -132,7 +132,15 @@ function ChecklistRow({ done, label, ctaLabel, onCta, accent }) {
           variant="text"
           color="primary"
           onClick={onCta}
-          sx={{ fontWeight: 700, flexShrink: 0, ...touchTargetSx, minWidth: 'auto', px: 1.5 }}
+          sx={{
+            fontWeight: 700,
+            flexShrink: 0,
+            ...touchTargetSx,
+            height: TOUCH_TARGET_SIZE,
+            minHeight: TOUCH_TARGET_SIZE,
+            minWidth: 'auto',
+            px: 1.5,
+          }}
         >
           {ctaLabel}
         </Button>

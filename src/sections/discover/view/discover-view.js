@@ -65,7 +65,6 @@ import {
 
 import Iconify from 'src/components/iconify';
 import { ResponsiveSheet } from 'src/components/sheet-shell';
-import { DashboardDelightEmpty, DashboardDelightEmptyCta } from 'src/components/dashboard';
 // Aliased: a helper in this file already uses `m` as a local variable name.
 import { m as motion, AnimatePresence } from 'src/components/animate';
 import SearchAiToggleAdornment from 'src/components/search-ai-toggle';
@@ -73,6 +72,7 @@ import { ScrollableChipRow } from 'src/components/horizontal-scroll-row';
 import ShareFeedbackSnackbar from 'src/components/share/share-feedback-snackbar';
 import DashboardSearchFilterRow from 'src/components/dashboard-search-filter-row';
 import { SCROLLABLE_CHIP_SELECTED_TEXT } from 'src/components/scrollable-chip-select';
+import { DashboardDelightEmpty, DashboardDelightEmptyCta } from 'src/components/dashboard';
 
 import MapSheetSortMenu from 'src/sections/map/map-sheet-sort-menu';
 import MapSearchSuggestions from 'src/sections/map/map-search-suggestions';
@@ -84,6 +84,14 @@ import DiscoverSuggestedCreators from 'src/sections/discover/discover-suggested-
 import DiscoverMarketListSkeleton from 'src/sections/discover/discover-market-list-skeleton';
 import DiscoverActivationChecklist from 'src/sections/discover/discover-activation-checklist';
 import {
+  SettingsDrillShell,
+  dashboardPageRootSx,
+  dashboardSectionLabelSx,
+  dashboardSubsectionStackProps,
+  settingsDrillFullBleedStripSx,
+  dashboardPageSectionStackProps,
+} from 'src/sections/profile/view';
+import {
   mapPlaceMapsUrl,
   mapPlaceTelHref,
   mapPlaceNumericRating,
@@ -92,15 +100,6 @@ import {
   sortMapSheetPlacesByRecency,
   mapSheetViewerIdentityFromUser,
 } from 'src/sections/map/map-spot-sheet-helpers';
-import {
-  SettingsDrillShell,
-  dashboardPageRootSx,
-  dashboardSectionLabelSx,
-  dashboardSubsectionStackProps,
-  settingsDrillFullBleedStripSx,
-  dashboardMobileStretchButtonSx,
-  dashboardPageSectionStackProps,
-} from 'src/sections/profile/view';
 
 const SaveToListSheet = dynamic(() => import('src/sections/lists/save-to-list-sheet'), {
   ssr: false,
@@ -1029,6 +1028,12 @@ export default function DiscoverView({
     hasSuggestedCreators,
     user?.id,
   ]);
+
+  useEffect(() => {
+    if (!activationToast) return undefined;
+    const id = setTimeout(() => setActivationToast(null), 2500);
+    return () => clearTimeout(id);
+  }, [activationToast]);
 
   useEffect(() => {
     if (!showActivationChecklist || checklistShownRef.current) return;

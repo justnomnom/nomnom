@@ -19,8 +19,8 @@ import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import { useAuthContext } from 'src/auth/hooks';
 import { setFollowUser } from 'src/auth/actions/profile-actions';
-import { SPACE, RADIUS, touchTargetSx } from 'src/theme/spacing';
 import { useAnalytics } from 'src/libs/analytics/analytics-provider';
+import { SPACE, RADIUS, touchTargetSx, TOUCH_TARGET_SIZE } from 'src/theme/spacing';
 
 import Iconify from 'src/components/iconify';
 
@@ -152,6 +152,12 @@ export default function DiscoverSuggestedCreators({
                   color="primary"
                   variant={following ? 'outlined' : 'soft'}
                   disabled={busy}
+                  aria-busy={busy}
+                  aria-label={
+                    following
+                      ? t('pages.onboarding.creators.following')
+                      : t('pages.onboarding.creators.follow')
+                  }
                   onClick={(event) => {
                     event.preventDefault();
                     event.stopPropagation();
@@ -159,6 +165,8 @@ export default function DiscoverSuggestedCreators({
                   }}
                   sx={{
                     ...touchTargetSx,
+                    height: TOUCH_TARGET_SIZE,
+                    minHeight: TOUCH_TARGET_SIZE,
                     minWidth: 88,
                     fontWeight: 800,
                     borderRadius: `${RADIUS.tight}px`,

@@ -100,6 +100,11 @@ export default function ProfileListItemRow({
             flex: 1,
             textDecoration: 'none',
             color: 'inherit',
+            borderRadius: 1,
+            '&:focus-visible': {
+              outline: `2px solid ${theme.palette.primary.main}`,
+              outlineOffset: 2,
+            },
           }}
         >
           {identity}
