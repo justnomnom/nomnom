@@ -1182,10 +1182,10 @@ export default function OnboardingWizard({ draftUserId = '' }) {
                 >
                   <Box sx={{ display: 'flex' }} aria-hidden="true">
                     {[
-                      { initial: 'M', color: 'primary' },
-                      { initial: 'Y', color: 'info' },
-                      { initial: 'S', color: 'success' },
-                      { initial: 'D', color: 'warning' },
+                      { initial: 'M', bgcolor: 'primary.main', color: 'primary.contrastText' },
+                      { initial: 'Y', bgcolor: 'primary.dark', color: 'primary.contrastText' },
+                      { initial: 'S', bgcolor: 'primary.darker', color: 'primary.contrastText' },
+                      { initial: 'D', bgcolor: 'text.primary', color: 'background.paper' },
                     ].map((a, i) => (
                       <Box
                         key={a.initial}
@@ -1194,8 +1194,8 @@ export default function OnboardingWizard({ draftUserId = '' }) {
                           height: 32,
                           borderRadius: '50%',
                           ml: i === 0 ? 0 : '-9px',
-                          bgcolor: `${a.color}.main`,
-                          color: `${a.color}.contrastText`,
+                          bgcolor: a.bgcolor,
+                          color: a.color,
                           fontSize: 13,
                           fontWeight: 800,
                           display: 'flex',

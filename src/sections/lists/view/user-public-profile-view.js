@@ -37,6 +37,7 @@ import { cancelMyCreatorSubscription } from 'src/auth/actions/creator-subscriber
 import { PROFILE_ACTIVITY_PAGE_SIZE } from 'src/libs/profile/public-profile-activity-constants';
 
 import Iconify from 'src/components/iconify';
+import { DashboardDelightEmpty, DashboardDelightEmptyCta } from 'src/components/dashboard';
 import DeleteDialog from 'src/components/custom-dialog/delete-dialog';
 import { ScrollableChipRow } from 'src/components/horizontal-scroll-row';
 import { scrollableChipPillButtonSx } from 'src/components/scrollable-chip-select';
@@ -992,24 +993,23 @@ export default function UserPublicProfileView({
           ) : null}
 
           {(lists ?? []).length === 0 && !isOwnProfile ? (
-            <Box sx={{ py: 1.5, minWidth: 240, maxWidth: 320 }}>
-              <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                {t('pages.lists.no_public_lists')}
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, mb: 1.5 }}>
-                {t('pages.lists.no_public_lists_hint')}
-              </Typography>
-              <Button
-                component={RouterLink}
-                href={isDashboard ? paths.dashboard.discover : paths.home}
-                variant="contained"
-                color="primary"
-                size="small"
-              >
-                {isDashboard
-                  ? t('pages.dashboard.discover_spots_cta')
-                  : t('pages.lists.explore_nomnom_cta')}
-              </Button>
+            <Box sx={{ py: 0.5, minWidth: 240, maxWidth: 360 }}>
+              <DashboardDelightEmpty
+                compact
+                icon={ic.bookmarkLinear}
+                title={t('pages.lists.no_public_lists')}
+                body={t('pages.lists.no_public_lists_hint')}
+                action={
+                  <DashboardDelightEmptyCta
+                    component={RouterLink}
+                    href={isDashboard ? paths.dashboard.discover : paths.home}
+                  >
+                    {isDashboard
+                      ? t('pages.dashboard.discover_spots_cta')
+                      : t('pages.lists.explore_nomnom_cta')}
+                  </DashboardDelightEmptyCta>
+                }
+              />
             </Box>
           ) : null}
         </ScrollableChipRow>
@@ -1079,69 +1079,58 @@ export default function UserPublicProfileView({
           {(() => {
             if ((activityRows ?? []).length === 0) {
               return (
-                <Stack spacing={1.5} sx={{ width: 1, alignItems: 'center', py: 2 }}>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 700, textAlign: 'center' }}>
-                    {t('pages.lists.creator_activity_empty_title')}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ textAlign: 'center', maxWidth: 360 }}
-                  >
-                    {t(
-                      isOwnProfile
-                        ? 'pages.lists.creator_activity_empty_own'
-                        : 'pages.lists.creator_activity_empty'
-                    )}
-                  </Typography>
-                  <Button
-                    component={RouterLink}
-                    href={isDashboard ? paths.dashboard.discover : paths.home}
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                  >
-                    {isDashboard
-                      ? t('pages.dashboard.discover_spots_cta')
-                      : t('pages.lists.explore_nomnom_cta')}
-                  </Button>
-                </Stack>
+                <DashboardDelightEmpty
+                  compact
+                  icon={ic.usersGroupRoundedBold}
+                  title={t('pages.lists.creator_activity_empty_title')}
+                  body={t(
+                    isOwnProfile
+                      ? 'pages.lists.creator_activity_empty_own'
+                      : 'pages.lists.creator_activity_empty'
+                  )}
+                  action={
+                    <DashboardDelightEmptyCta
+                      component={RouterLink}
+                      href={isDashboard ? paths.dashboard.discover : paths.home}
+                    >
+                      {isDashboard
+                        ? t('pages.dashboard.discover_spots_cta')
+                        : t('pages.lists.explore_nomnom_cta')}
+                    </DashboardDelightEmptyCta>
+                  }
+                />
               );
             }
             if (filteredActivity.length === 0) {
               return (
-                <Stack spacing={2} sx={{ width: 1, alignItems: 'center' }}>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ textAlign: 'center', py: 2 }}
-                  >
-                    {t('pages.lists.creator_activity_filter_empty')}
-                  </Typography>
-                  <Button
-                    type="button"
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    onClick={() => setActivityFilter(PROFILE_ACTIVITY_FILTER_ALL)}
-                  >
-                    {t('pages.lists.creator_activity_filter_empty_cta')}
-                  </Button>
-                  {activityHasMore ? (
-                    <Button
-                      type="button"
-                      variant="outlined"
-                      color="inherit"
-                      size="medium"
-                      disabled={activityLoadMoreBusy}
-                      onClick={handleLoadMoreActivity}
-                    >
-                      {activityLoadMoreBusy
-                        ? t('pages.lists.creator_activity_loading_more')
-                        : t('pages.lists.creator_activity_load_more')}
-                    </Button>
-                  ) : null}
-                </Stack>
+                <DashboardDelightEmpty
+                  compact
+                  icon={ic.filterBold}
+                  title={t('pages.lists.creator_activity_filter_empty_title')}
+                  body={t('pages.lists.creator_activity_filter_empty')}
+                  action={
+                    <>
+                      <DashboardDelightEmptyCta
+                        type="button"
+                        onClick={() => setActivityFilter(PROFILE_ACTIVITY_FILTER_ALL)}
+                      >
+                        {t('pages.lists.creator_activity_filter_empty_cta')}
+                      </DashboardDelightEmptyCta>
+                      {activityHasMore ? (
+                        <DashboardDelightEmptyCta
+                          type="button"
+                          variant="soft"
+                          disabled={activityLoadMoreBusy}
+                          onClick={handleLoadMoreActivity}
+                        >
+                          {activityLoadMoreBusy
+                            ? t('pages.lists.creator_activity_loading_more')
+                            : t('pages.lists.creator_activity_load_more')}
+                        </DashboardDelightEmptyCta>
+                      ) : null}
+                    </>
+                  }
+                />
               );
             }
             return (

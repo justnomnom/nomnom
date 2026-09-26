@@ -37,6 +37,7 @@ import {
 } from 'src/libs/notifications/notification-feed-helpers';
 
 import Iconify from 'src/components/iconify';
+import { DashboardDelightEmpty, DashboardDelightEmptyCta } from 'src/components/dashboard';
 import { ScrollableChipRow } from 'src/components/horizontal-scroll-row';
 import { scrollableChipPillButtonSx } from 'src/components/scrollable-chip-select';
 
@@ -174,8 +175,9 @@ export default function NotificationsPanel({
     if (isEmpty) {
       const filtered = listFilter !== NOTIFICATION_LIST_FILTER_ALL;
       return (
-        <EmptyFeed
-          theme={theme}
+        <DashboardDelightEmpty
+          compact
+          icon={ic.bellLinear}
           title={t(
             filtered
               ? 'components.notifications.empty_filtered_title'
@@ -186,18 +188,16 @@ export default function NotificationsPanel({
           )}
           action={
             filtered ? (
-              <Button
-                variant="contained"
-                color="primary"
-                size="small"
+              <DashboardDelightEmptyCta
                 onClick={() => setListFilter(NOTIFICATION_LIST_FILTER_ALL)}
               >
                 {t('components.notifications.empty_filtered_cta')}
-              </Button>
+              </DashboardDelightEmptyCta>
             ) : (
               emptyAction
             )
           }
+          sx={{ m: 1.5 }}
         />
       );
     }
@@ -294,43 +294,6 @@ NotificationsPanel.propTypes = {
 
 // ----------------------------------------------------------------------
 
-/** Teaches what the feed is for instead of only reporting absence (DESIGN.md §7). */
-function EmptyFeed({ theme, title, body, action }) {
-  return (
-    <Stack alignItems="center" spacing={1.25} sx={{ px: 3, py: 6, textAlign: 'center' }}>
-      <Box
-        sx={{
-          width: 56,
-          height: 56,
-          borderRadius: '50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          bgcolor: alpha(theme.palette.primary.main, 0.1),
-          color: readableAccent(theme),
-        }}
-      >
-        <Iconify icon={ic.bellLinear} width={26} />
-      </Box>
-      <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-        {title}
-      </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 320 }}>
-        {body}
-      </Typography>
-      {action ? <Box sx={{ pt: 0.5 }}>{action}</Box> : null}
-    </Stack>
-  );
-}
-
-EmptyFeed.propTypes = {
-  theme: PropTypes.object.isRequired,
-  title: PropTypes.string,
-  body: PropTypes.string,
-  action: PropTypes.node,
-};
-
-// ----------------------------------------------------------------------
 
 /**
  * Row chrome shared by every notification type.

@@ -31,6 +31,7 @@ import { useSkeletonThemeColors } from 'src/theme/use-skeleton-theme';
 import { mobileStretchButtonSx } from 'src/theme/responsive-button-sx';
 
 import Iconify from 'src/components/iconify';
+import { DashboardDelightEmpty } from 'src/components/dashboard';
 import { SCROLLABLE_CHIP_SELECTED_TEXT } from 'src/components/scrollable-chip-select';
 import {
   SheetHeaderRow,
@@ -370,9 +371,12 @@ export default function MapTagFilterSheet({
         })}
 
       {!loading && tagSections.length === 0 ? (
-        <Typography variant="body2" color="text.secondary">
-          {t('pages.dashboard.map.filter_sheet_empty')}
-        </Typography>
+        <DashboardDelightEmpty
+          compact
+          icon={ic.filterBold}
+          title={t('pages.dashboard.map.filter_sheet_empty_title')}
+          body={t('pages.dashboard.map.filter_sheet_empty')}
+        />
       ) : null}
     </Stack>
   );

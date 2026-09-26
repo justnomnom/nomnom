@@ -32,7 +32,7 @@ import {
 } from 'src/auth/actions/creator-subscribers-actions';
 
 import Iconify from 'src/components/iconify';
-import { DashboardDelightEmpty } from 'src/components/dashboard';
+import { DashboardDelightEmpty, DashboardDelightEmptyCta } from 'src/components/dashboard';
 import DeleteDialog from 'src/components/custom-dialog/delete-dialog';
 import { ScrollableChipRow } from 'src/components/horizontal-scroll-row';
 import { scrollableChipPillButtonSx } from 'src/components/scrollable-chip-select';
@@ -436,15 +436,9 @@ export default function SettingsMySubscriptions({ initialSubscriptions, initialF
               title={t('pages.dashboard.settings.my_subscriptions.following_empty_heading')}
               body={t('pages.dashboard.settings.my_subscriptions.following_empty')}
               action={
-                <Button
-                  variant="contained"
-                  color="primary"
-                  component={RouterLink}
-                  href={paths.dashboard.discover}
-                  sx={[touchTargetSx, dashboardMobileStretchButtonSx]}
-                >
+                <DashboardDelightEmptyCta component={RouterLink} href={paths.dashboard.discover}>
                   {t('pages.dashboard.settings.my_subscriptions.following_empty_cta')}
-                </Button>
+                </DashboardDelightEmptyCta>
               }
             />
           )}
@@ -456,15 +450,9 @@ export default function SettingsMySubscriptions({ initialSubscriptions, initialF
               title={t('pages.dashboard.settings.my_subscriptions.empty_heading')}
               body={t('pages.dashboard.settings.my_subscriptions.empty')}
               action={
-                <Button
-                  variant="contained"
-                  color="primary"
-                  component={RouterLink}
-                  href={paths.dashboard.discover}
-                  sx={[touchTargetSx, dashboardMobileStretchButtonSx]}
-                >
+                <DashboardDelightEmptyCta component={RouterLink} href={paths.dashboard.discover}>
                   {t('pages.dashboard.settings.my_subscriptions.empty_cta')}
-                </Button>
+                </DashboardDelightEmptyCta>
               }
             />
           )}
@@ -476,15 +464,9 @@ export default function SettingsMySubscriptions({ initialSubscriptions, initialF
               title={t('pages.dashboard.settings.my_subscriptions.all_empty_heading')}
               body={t('pages.dashboard.settings.my_subscriptions.all_empty')}
               action={
-                <Button
-                  variant="contained"
-                  color="primary"
-                  component={RouterLink}
-                  href={paths.dashboard.discover}
-                  sx={[touchTargetSx, dashboardMobileStretchButtonSx]}
-                >
+                <DashboardDelightEmptyCta component={RouterLink} href={paths.dashboard.discover}>
                   {t('pages.dashboard.settings.my_subscriptions.empty_cta')}
-                </Button>
+                </DashboardDelightEmptyCta>
               }
             />
           )}

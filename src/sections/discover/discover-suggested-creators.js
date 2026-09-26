@@ -6,6 +6,7 @@ import { useMemo, useState, useEffect, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -23,6 +24,7 @@ import { useAnalytics } from 'src/libs/analytics/analytics-provider';
 
 import Iconify from 'src/components/iconify';
 
+import { dashboardSectionLabelSx } from 'src/sections/profile/view';
 import ProfileListItemRow from 'src/sections/profile/profile-list-item-row';
 
 const SUGGESTED_CREATORS_MAX = 4;
@@ -42,8 +44,10 @@ export default function DiscoverSuggestedCreators({
   creators,
   followingIds = [],
   onFollowed,
+  onFollowFailed,
 }) {
   const { t } = useTranslate();
+  const theme = useTheme();
   const router = useRouter();
   const { user } = useAuthContext();
   const { trackEvent } = useAnalytics();
@@ -101,6 +105,7 @@ export default function DiscoverSuggestedCreators({
           return copy;
         });
         setBusyId('');
+        onFollowFailed?.();
         return;
       }
       if (next) {
@@ -109,14 +114,23 @@ export default function DiscoverSuggestedCreators({
       }
       setBusyId('');
     },
-    [busyId, localFollowing, onFollowed, router, trackEvent, user?.id]
+    [busyId, localFollowing, onFollowed, onFollowFailed, router, trackEvent, user?.id]
   );
 
   if (normalized.length === 0) return null;
 
   return (
-    <Box data-testid="e2e-suggested-creators" sx={{ display: 'flex', flexDirection: 'column', gap: SPACE.sm }}>
-      <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
+    <Box
+      component="section"
+      aria-labelledby="discover-suggested-people-label"
+      data-testid="e2e-suggested-creators"
+      sx={{ display: 'flex', flexDirection: 'column', gap: SPACE.sm }}
+    >
+      <Typography
+        id="discover-suggested-people-label"
+        variant="overline"
+        sx={dashboardSectionLabelSx(theme)}
+      >
         {t('pages.dashboard.discover.suggested_people_title')}
       </Typography>
       <Stack spacing={1}>
@@ -136,7 +150,7 @@ export default function DiscoverSuggestedCreators({
                 <Button
                   size="small"
                   color="primary"
-                  variant={following ? 'outlined' : 'contained'}
+                  variant={following ? 'outlined' : 'soft'}
                   disabled={busy}
                   onClick={(event) => {
                     event.preventDefault();
@@ -148,9 +162,7 @@ export default function DiscoverSuggestedCreators({
                     minWidth: 88,
                     fontWeight: 800,
                     borderRadius: `${RADIUS.tight}px`,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.04em',
-                    fontSize: 12,
+                    px: 1.5,
                   }}
                 >
                   {busy ? <CircularProgress size={16} color="inherit" thickness={5} /> : null}
@@ -170,4 +182,5 @@ DiscoverSuggestedCreators.propTypes = {
   creators: PropTypes.arrayOf(PropTypes.object),
   followingIds: PropTypes.arrayOf(PropTypes.string),
   onFollowed: PropTypes.func,
+  onFollowFailed: PropTypes.func,
 };

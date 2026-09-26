@@ -21,7 +21,7 @@ import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import { tabularNumsSx } from 'src/theme/spacing';
 
-import { DashboardDelightEmpty } from 'src/components/dashboard';
+import { DashboardDelightEmpty, DashboardDelightEmptyCta } from 'src/components/dashboard';
 import RemoteCoverImage from 'src/components/image/remote-cover-image';
 import { ScrollableChipRow } from 'src/components/horizontal-scroll-row';
 
@@ -34,11 +34,11 @@ function LeaderboardEmptyPanel({ titleKey, bodyKey, action }) {
   const { t } = useTranslate();
   return (
     <DashboardDelightEmpty
+      compact
       icon={ic.usersGroupRoundedBold}
       title={t(titleKey)}
       body={t(bodyKey)}
       action={action}
-      sx={{ py: 3.5 }}
     />
   );
 }
@@ -94,15 +94,13 @@ export default function DiscoverListsLeaderboard({ leaderboard, variant = 'disco
 
   const emptyAction =
     variant === 'discover' ? (
-      <Button
+      <DashboardDelightEmptyCta
         component={RouterLink}
         href={paths.dashboard.lists}
-        variant="contained"
-        color="primary"
-        size="small"
+        variant="soft"
       >
         {t('pages.dashboard.discover.lists_leaderboard_empty_cta')}
-      </Button>
+      </DashboardDelightEmptyCta>
     ) : null;
 
   const rows =

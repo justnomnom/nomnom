@@ -28,7 +28,7 @@ import {
 } from 'src/api/notifications';
 
 import Iconify from 'src/components/iconify';
-import { DashboardPageMotion } from 'src/components/dashboard';
+import { DashboardPageMotion, DashboardDelightEmptyCta } from 'src/components/dashboard';
 import DeleteDialog from 'src/components/custom-dialog/delete-dialog';
 import NotificationsPanel from 'src/components/notifications/notifications-panel';
 import CompactToolbarIconSkeleton from 'src/components/loading-screen/compact-toolbar-icon-skeleton';
@@ -196,15 +196,12 @@ export default function NotificationsView() {
               onDelete={handleDelete}
               onMuteList={handleMuteList}
               emptyAction={
-                <Button
-                  variant="contained"
-                  color="primary"
+                <DashboardDelightEmptyCta
                   component={RouterLink}
                   href={paths.dashboard.discover}
-                  startIcon={<Iconify icon={ic.compassBold} width={18} />}
                 >
                   {t('components.notifications.empty_cta')}
-                </Button>
+                </DashboardDelightEmptyCta>
               }
             />
           </Box>

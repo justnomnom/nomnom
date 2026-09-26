@@ -65,7 +65,7 @@ import {
 
 import Iconify from 'src/components/iconify';
 import { ResponsiveSheet } from 'src/components/sheet-shell';
-import { DashboardDelightEmpty } from 'src/components/dashboard';
+import { DashboardDelightEmpty, DashboardDelightEmptyCta } from 'src/components/dashboard';
 // Aliased: a helper in this file already uses `m` as a local variable name.
 import { m as motion, AnimatePresence } from 'src/components/animate';
 import SearchAiToggleAdornment from 'src/components/search-ai-toggle';
@@ -1016,6 +1016,21 @@ export default function DiscoverView({
   }, [savedByRestaurant]);
 
   useEffect(() => {
+    if (!activationReady || checklistDismissed) return;
+    const followDone = hasFollowed || !hasSuggestedCreators;
+    if (!followDone || !hasSaved) return;
+    dismissActivationChecklist(user?.id);
+    setChecklistDismissed(true);
+  }, [
+    activationReady,
+    checklistDismissed,
+    hasFollowed,
+    hasSaved,
+    hasSuggestedCreators,
+    user?.id,
+  ]);
+
+  useEffect(() => {
     if (!showActivationChecklist || checklistShownRef.current) return;
     checklistShownRef.current = true;
     trackEvent('activation_checklist_shown');
@@ -1809,11 +1824,7 @@ export default function DiscoverView({
                         title={t(emptyTitleKey)}
                         body={t(emptyBodyKey)}
                         action={
-                          <Button
-                            variant="soft"
-                            color="primary"
-                            size="small"
-                            sx={[touchTargetSx, dashboardMobileStretchButtonSx]}
+                          <DashboardDelightEmptyCta
                             onClick={
                               // A vibe filter is the likelier cause of an empty feed than the
                               // market being wrong, so offer the fix that matches the cause.
@@ -1823,7 +1834,7 @@ export default function DiscoverView({
                             }
                           >
                             {t(emptyCtaKey)}
-                          </Button>
+                          </DashboardDelightEmptyCta>
                         }
                       />
                     </motion.div>
@@ -1969,6 +1980,12 @@ export default function DiscoverView({
                 creators={suggestedCreators}
                 followingIds={followingIds}
                 onFollowed={() => setHasFollowed(true)}
+                onFollowFailed={() =>
+                  setActivationToast({
+                    severity: 'error',
+                    text: t('pages.dashboard.discover.follow_failed'),
+                  })
+                }
               />
             </Box>
           ) : null}

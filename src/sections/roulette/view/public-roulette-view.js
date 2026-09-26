@@ -6,7 +6,6 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
-import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
@@ -27,6 +26,7 @@ import { useAnalytics } from 'src/libs/analytics/analytics-provider';
 import { fetchPublicLisboaRouletteRestaurantIds } from 'src/auth/actions/location-actions';
 
 import Iconify from 'src/components/iconify';
+import { DashboardDelightEmpty, DashboardDelightEmptyCta } from 'src/components/dashboard';
 
 import { MARKETING_SPACE_HERO_TO_CONTENT } from 'src/sections/profile/view/settings-shell-shared';
 
@@ -244,20 +244,22 @@ export default function PublicRouletteView() {
           </Stack>
 
           {emptyPoolMessage ? (
-            <Stack spacing={1.5} sx={{ width: 1, maxWidth: 360 }} alignItems="center">
-              <Alert severity="warning" variant="outlined" sx={{ width: 1 }}>
-                {emptyPoolMessage}
-              </Alert>
-              <Button
-                component={RouterLink}
-                href={paths.home}
-                variant="soft"
-                color="primary"
-                sx={{ width: 1 }}
-              >
-                {t('pages.public.roulette.lisboa.empty_pool_cta')}
-              </Button>
-            </Stack>
+            <DashboardDelightEmpty
+              compact
+              icon={ic.dice5}
+              title={t('pages.public.roulette.lisboa.empty_pool_title')}
+              body={emptyPoolMessage}
+              action={
+                <DashboardDelightEmptyCta
+                  component={RouterLink}
+                  href={paths.home}
+                  variant="soft"
+                >
+                  {t('pages.public.roulette.lisboa.empty_pool_cta')}
+                </DashboardDelightEmptyCta>
+              }
+              sx={{ width: 1, maxWidth: 360 }}
+            />
           ) : null}
 
           <Button

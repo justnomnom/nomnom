@@ -63,6 +63,7 @@ import {
 } from 'src/libs/lists/actions';
 
 import Iconify from 'src/components/iconify';
+import { DashboardDelightEmpty, DashboardDelightEmptyCta } from 'src/components/dashboard';
 import DeleteDialog from 'src/components/custom-dialog/delete-dialog';
 import RemoteCoverImage from 'src/components/image/remote-cover-image';
 import ShareFeedbackSnackbar from 'src/components/share/share-feedback-snackbar';
@@ -1215,53 +1216,25 @@ export default function ListManageView({ listId, isOwner, canEditItems, initial 
                   </Card>
                 )}
                 {items.length === 0 ? (
-                  <Box
-                    sx={{
-                      mt: 0.5,
-                      py: { xs: 3, sm: 4 },
-                      px: 2,
-                      width: 1,
-                      textAlign: 'center',
-                      borderRadius: 2,
-                      bgcolor: (muiTheme) => alpha(muiTheme.palette.grey[500], 0.06),
-                      border: (muiTheme) => `1px dashed ${muiTheme.palette.divider}`,
-                    }}
-                  >
-                    <Iconify
-                      icon={ic.mapPointBold}
-                      width={36}
-                      sx={{
-                        color: (muiTheme) => alpha(muiTheme.palette.primary.main, 0.4),
-                        mb: 1.5,
-                        display: 'block',
-                        mx: 'auto',
-                      }}
-                    />
-                    <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600 }}>
-                      {t('pages.lists.no_places')}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="text.disabled"
-                      sx={{ mt: 0.75, maxWidth: 280, mx: 'auto' }}
-                    >
-                      {t(
-                        canEditItems
-                          ? 'pages.lists.no_places_hint'
-                          : 'pages.lists.no_places_hint_readonly'
-                      )}
-                    </Typography>
-                    <Button
-                      component={RouterLink}
-                      href={paths.dashboard.discover}
-                      variant="contained"
-                      color="primary"
-                      size="small"
-                      sx={[touchTargetSx, dashboardMobileStretchButtonSx, { mt: 2 }]}
-                    >
-                      {t('pages.dashboard.discover_spots_cta')}
-                    </Button>
-                  </Box>
+                  <DashboardDelightEmpty
+                    compact
+                    icon={ic.mapPointBold}
+                    title={t('pages.lists.no_places')}
+                    body={t(
+                      canEditItems
+                        ? 'pages.lists.no_places_hint'
+                        : 'pages.lists.no_places_hint_readonly'
+                    )}
+                    action={
+                      <DashboardDelightEmptyCta
+                        component={RouterLink}
+                        href={paths.dashboard.discover}
+                      >
+                        {t('pages.dashboard.discover_spots_cta')}
+                      </DashboardDelightEmptyCta>
+                    }
+                    sx={{ mt: SPACE.xxs }}
+                  />
                 ) : (
                   <Stack spacing={1}>
                     {listHasMultiplePlaces ? (

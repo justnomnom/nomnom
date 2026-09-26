@@ -13,8 +13,8 @@ import Typography from '@mui/material/Typography';
 import { alpha, useTheme } from '@mui/material/styles';
 
 import { paths } from 'src/routes/paths';
-import { useRouter, useSearchParams } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
+import { useRouter, useSearchParams } from 'src/routes/hooks';
 
 import { usePrefersReducedMotion } from 'src/hooks/use-prefers-reduced-motion';
 
@@ -39,6 +39,7 @@ import {
   dashboardFade,
   DashboardPageMotion,
   DashboardDelightEmpty,
+  DashboardDelightEmptyCta,
   DashboardMotionSection,
 } from 'src/components/dashboard';
 
@@ -281,7 +282,7 @@ export default function ListsHubView() {
     return {
       title: t('pages.dashboard.lists.empty_lists_title'),
       body: t('pages.dashboard.lists.empty_lists_body'),
-      cta: t('pages.lists.new_list'),
+      cta: t('pages.dashboard.lists.empty_lists_cta'),
       href: null,
     };
   }, [filter, t]);
@@ -595,14 +596,9 @@ export default function ListsHubView() {
                         title={t('pages.dashboard.lists.empty_lists_title')}
                         body={t('pages.dashboard.lists.empty_lists_body')}
                         action={
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={() => setCreateOpen(true)}
-                            sx={dashboardMobileStretchButtonSx}
-                          >
-                            {t('pages.lists.new_list')}
-                          </Button>
+                          <DashboardDelightEmptyCta onClick={() => setCreateOpen(true)}>
+                            {t('pages.dashboard.lists.empty_lists_cta')}
+                          </DashboardDelightEmptyCta>
                         }
                       />
                     </motion.div>
@@ -623,18 +619,15 @@ export default function ListsHubView() {
                         title={filteredEmptyCopy.title}
                         body={filteredEmptyCopy.body}
                         action={
-                          <Button
-                            variant="contained"
-                            color="primary"
+                          <DashboardDelightEmptyCta
                             component={filteredEmptyCopy.href ? RouterLink : undefined}
                             href={filteredEmptyCopy.href || undefined}
                             onClick={
                               filteredEmptyCopy.href ? undefined : () => setCreateOpen(true)
                             }
-                            sx={dashboardMobileStretchButtonSx}
                           >
                             {filteredEmptyCopy.cta}
-                          </Button>
+                          </DashboardDelightEmptyCta>
                         }
                       />
                     </motion.div>

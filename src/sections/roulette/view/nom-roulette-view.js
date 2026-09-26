@@ -5,7 +5,6 @@ import { useRef, useMemo, useState, useEffect, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Alert from '@mui/material/Alert';
 import Switch from '@mui/material/Switch';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -14,8 +13,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-import { restaurantHrefWithFrom } from 'src/routes/restaurant-nav-from';
 import { RouterLink } from 'src/routes/components';
+import { restaurantHrefWithFrom } from 'src/routes/restaurant-nav-from';
 
 import { usePrefersReducedMotion } from 'src/hooks/use-prefers-reduced-motion';
 
@@ -29,6 +28,7 @@ import { fetchCircleRestaurantIds } from 'src/auth/actions/location-actions';
 import { fetchMyVisitedRestaurantIds } from 'src/auth/actions/visit-actions';
 
 import Iconify from 'src/components/iconify';
+import { DashboardDelightEmpty, DashboardDelightEmptyCta } from 'src/components/dashboard';
 
 import {
   SettingsDrillShell,
@@ -326,20 +326,22 @@ export default function NomRouletteView() {
             </Stack>
 
             {emptyPoolMessage ? (
-              <Stack spacing={1.5} sx={{ width: 1, maxWidth: 360 }} alignItems="center">
-                <Alert severity="warning" variant="outlined" sx={{ width: 1 }}>
-                  {emptyPoolMessage}
-                </Alert>
-                <Button
-                  component={RouterLink}
-                  href={paths.dashboard.discover}
-                  variant="soft"
-                  color="primary"
-                  sx={{ width: 1 }}
-                >
-                  {t('pages.dashboard.roulette.empty_pool_cta')}
-                </Button>
-              </Stack>
+              <DashboardDelightEmpty
+                compact
+                icon={ic.dice5}
+                title={t('pages.dashboard.roulette.empty_pool_title')}
+                body={emptyPoolMessage}
+                action={
+                  <DashboardDelightEmptyCta
+                    component={RouterLink}
+                    href={paths.dashboard.discover}
+                    variant="soft"
+                  >
+                    {t('pages.dashboard.roulette.empty_pool_cta')}
+                  </DashboardDelightEmptyCta>
+                }
+                sx={{ width: 1, maxWidth: 360 }}
+              />
             ) : null}
 
             <Button

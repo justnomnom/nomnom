@@ -21,7 +21,6 @@ import { subscriptionStatusLabel } from 'src/utils/subscription-status-label';
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import { touchTargetSx } from 'src/theme/spacing';
-import { readableAccent } from 'src/theme/readable-accent';
 import { getMyFollowers } from 'src/auth/actions/profile-actions';
 import { useMyStripeConnectStatus } from 'src/api/stripe-connect-status';
 import {
@@ -31,6 +30,7 @@ import {
 } from 'src/auth/actions/creator-subscribers-actions';
 
 import Iconify from 'src/components/iconify';
+import { DashboardDelightEmpty, DashboardDelightEmptyCta } from 'src/components/dashboard';
 import DeleteDialog from 'src/components/custom-dialog/delete-dialog';
 import { ScrollableChipRow } from 'src/components/horizontal-scroll-row';
 import { scrollableChipPillButtonSx } from 'src/components/scrollable-chip-select';
@@ -450,173 +450,46 @@ export default function SettingsSubscribers({
 
           {/* Empty state for followers filter */}
           {filter === FILTER_FOLLOWERS && followerRows.length === 0 && (
-            <Box
-              sx={{
-                py: 5,
-                px: 3,
-                textAlign: 'center',
-                borderRadius: 2,
-                bgcolor: (theme) => theme.palette.background.neutral,
-                border: (theme) => `1px dashed ${theme.palette.divider}`,
-              }}
-            >
-              <Box
-                sx={{
-                  width: 56,
-                  height: 56,
-                  borderRadius: '50%',
-                  bgcolor: (theme) => theme.palette.primary.lighter,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  mx: 'auto',
-                  mb: 2,
-                }}
-              >
-                <Iconify
-                  icon={ic.usersGroupRoundedBold}
-                  width={28}
-                  sx={{ color: (theme) => readableAccent(theme) }}
-                />
-              </Box>
-              <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 0.75 }}>
-                {t('pages.dashboard.settings.subscribers.followers_empty_heading')}
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{ color: 'text.secondary', maxWidth: 300, mx: 'auto', lineHeight: 1.6, mb: 2.5 }}
-              >
-                {t('pages.dashboard.settings.subscribers.followers_empty')}
-              </Typography>
-              <Button
-                component={RouterLink}
-                href={paths.dashboard.lists}
-                variant="contained"
-                color="primary"
-                size="small"
-                sx={[touchTargetSx, dashboardMobileStretchButtonSx]}
-              >
-                {t('pages.dashboard.settings.subscribers.followers_empty_cta')}
-              </Button>
-            </Box>
+            <DashboardDelightEmpty
+              icon={ic.usersGroupRoundedBold}
+              title={t('pages.dashboard.settings.subscribers.followers_empty_heading')}
+              body={t('pages.dashboard.settings.subscribers.followers_empty')}
+              action={
+                <DashboardDelightEmptyCta component={RouterLink} href={paths.dashboard.lists}>
+                  {t('pages.dashboard.settings.subscribers.followers_empty_cta')}
+                </DashboardDelightEmptyCta>
+              }
+            />
           )}
 
           {/* Empty state for subscribers filter */}
           {filter === FILTER_SUBSCRIBERS && subscriberRows.length === 0 && payoutReady && (
-            <Box
-              sx={{
-                py: 5,
-                px: 3,
-                textAlign: 'center',
-                borderRadius: 2,
-                bgcolor: (theme) => theme.palette.background.neutral,
-                border: (theme) => `1px dashed ${theme.palette.divider}`,
-              }}
-            >
-              <Box
-                sx={{
-                  width: 56,
-                  height: 56,
-                  borderRadius: '50%',
-                  bgcolor: (theme) => theme.palette.primary.lighter,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  mx: 'auto',
-                  mb: 2,
-                }}
-              >
-                <Iconify
-                  icon={ic.usersGroupRoundedBold}
-                  width={28}
-                  sx={{ color: (theme) => readableAccent(theme) }}
-                />
-              </Box>
-              <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 0.75 }}>
-                {t('pages.dashboard.settings.subscribers.empty_heading')}
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: 'text.secondary',
-                  maxWidth: 300,
-                  mx: 'auto',
-                  lineHeight: 1.6,
-                  mb: 2.5,
-                }}
-              >
-                {t('pages.dashboard.settings.subscribers.empty')}
-              </Typography>
-              <Button
-                component={RouterLink}
-                href={paths.dashboard.settingsBilling}
-                variant="soft"
-                color="primary"
-                size="small"
-                sx={[touchTargetSx, { width: { xs: '100%', sm: 'auto' } }]}
-              >
-                {t('pages.dashboard.settings.subscribers.empty_cta')}
-              </Button>
-            </Box>
+            <DashboardDelightEmpty
+              icon={ic.usersGroupRoundedBold}
+              title={t('pages.dashboard.settings.subscribers.empty_heading')}
+              body={t('pages.dashboard.settings.subscribers.empty')}
+              action={
+                <DashboardDelightEmptyCta
+                  component={RouterLink}
+                  href={paths.dashboard.settingsBilling}
+                >
+                  {t('pages.dashboard.settings.subscribers.empty_cta')}
+                </DashboardDelightEmptyCta>
+              }
+            />
           )}
 
-          {/* All-empty state */}
           {filter === FILTER_ALL && isEmpty && payoutReady && (
-            <Box
-              sx={{
-                py: 5,
-                px: 3,
-                textAlign: 'center',
-                borderRadius: 2,
-                bgcolor: (theme) => theme.palette.background.neutral,
-                border: (theme) => `1px dashed ${theme.palette.divider}`,
-              }}
-            >
-              <Box
-                sx={{
-                  width: 56,
-                  height: 56,
-                  borderRadius: '50%',
-                  bgcolor: (theme) => theme.palette.primary.lighter,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  mx: 'auto',
-                  mb: 2,
-                }}
-              >
-                <Iconify
-                  icon={ic.usersGroupRoundedBold}
-                  width={28}
-                  sx={{ color: (theme) => readableAccent(theme) }}
-                />
-              </Box>
-              <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 0.75 }}>
-                {t('pages.dashboard.settings.subscribers.all_empty_heading')}
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: 'text.secondary',
-                  maxWidth: 300,
-                  mx: 'auto',
-                  lineHeight: 1.6,
-                  mb: 2.5,
-                }}
-              >
-                {t('pages.dashboard.settings.subscribers.all_empty')}
-              </Typography>
-              <Button
-                component={RouterLink}
-                href={paths.dashboard.lists}
-                variant="contained"
-                color="primary"
-                size="small"
-                sx={[touchTargetSx, dashboardMobileStretchButtonSx]}
-              >
-                {t('pages.dashboard.settings.subscribers.followers_empty_cta')}
-              </Button>
-            </Box>
+            <DashboardDelightEmpty
+              icon={ic.usersGroupRoundedBold}
+              title={t('pages.dashboard.settings.subscribers.all_empty_heading')}
+              body={t('pages.dashboard.settings.subscribers.all_empty')}
+              action={
+                <DashboardDelightEmptyCta component={RouterLink} href={paths.dashboard.lists}>
+                  {t('pages.dashboard.settings.subscribers.followers_empty_cta')}
+                </DashboardDelightEmptyCta>
+              }
+            />
           )}
         </>
       )}

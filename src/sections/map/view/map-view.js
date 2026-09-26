@@ -16,8 +16,8 @@ import { alpha, useTheme } from '@mui/material/styles';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import { paths } from 'src/routes/paths';
-import { useRouter, useSearchParams } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
+import { useRouter, useSearchParams } from 'src/routes/hooks';
 
 import { groupRestaurantTagsByCategory } from 'src/utils/restaurant-tag-groups';
 import {
@@ -55,6 +55,7 @@ import {
 } from 'src/libs/lists/actions';
 
 import Iconify from 'src/components/iconify';
+import { DashboardDelightEmpty, DashboardDelightEmptyCta } from 'src/components/dashboard';
 import SearchAiToggleAdornment from 'src/components/search-ai-toggle';
 import { ScrollableChipRow } from 'src/components/horizontal-scroll-row';
 import DashboardSearchFilterRow from 'src/components/dashboard-search-filter-row';
@@ -2015,13 +2016,17 @@ export default function MapView() {
     [sourcePlaces, pinHighlightId]
   );
 
-  const sheetEmptyCopy = useMemo(() => {
+  const sheetEmptyKeys = useMemo(() => {
     if ((savedActive || followingActive) && !userId) {
-      return t(
-        followingActive && !savedActive
-          ? 'pages.dashboard.map.sheet_login_following'
-          : 'pages.dashboard.map.sheet_login_saved'
-      );
+      return followingActive && !savedActive
+        ? {
+            title: 'pages.dashboard.map.sheet_login_following_title',
+            body: 'pages.dashboard.map.sheet_login_following',
+          }
+        : {
+            title: 'pages.dashboard.map.sheet_login_saved_title',
+            body: 'pages.dashboard.map.sheet_login_saved',
+          };
     }
     if (
       (savedActive || followingActive) &&
@@ -2030,13 +2035,20 @@ export default function MapView() {
       (!savedActive || savedListPlaces.length === 0) &&
       (!followingActive || followingListPlaces.length === 0)
     ) {
-      return t(
-        followingActive && !savedActive
-          ? 'pages.dashboard.map.sheet_empty_following'
-          : 'pages.dashboard.map.sheet_empty_saved'
-      );
+      return followingActive && !savedActive
+        ? {
+            title: 'pages.dashboard.map.sheet_empty_following_title',
+            body: 'pages.dashboard.map.sheet_empty_following',
+          }
+        : {
+            title: 'pages.dashboard.map.sheet_empty_saved_title',
+            body: 'pages.dashboard.map.sheet_empty_saved',
+          };
     }
-    return t('pages.dashboard.map.sheet_empty');
+    return {
+      title: 'pages.dashboard.map.sheet_empty_title',
+      body: 'pages.dashboard.map.sheet_empty',
+    };
   }, [
     savedActive,
     followingActive,
@@ -2044,36 +2056,28 @@ export default function MapView() {
     query,
     savedListPlaces.length,
     followingListPlaces.length,
-    t,
   ]);
+  const sheetEmptyTitle = t(sheetEmptyKeys.title);
+  const sheetEmptyCopy = t(sheetEmptyKeys.body);
 
   const sheetEmptyAction = useMemo(() => {
     const needsLogin = (savedActive || followingActive) && !userId;
     if (needsLogin) {
       const returnTo = encodeURIComponent(paths.dashboard.map);
       return (
-        <Button
+        <DashboardDelightEmptyCta
           component={RouterLink}
           href={`${paths.auth.supabase.login}?returnTo=${returnTo}`}
-          variant="contained"
-          color="primary"
-          size="small"
         >
           {t('pages.dashboard.map.sheet_login_cta')}
-        </Button>
+        </DashboardDelightEmptyCta>
       );
     }
     const findPeople = followingActive && !savedActive;
     return (
-      <Button
-        component={RouterLink}
-        href={paths.dashboard.discover}
-        variant="contained"
-        color="primary"
-        size="small"
-      >
+      <DashboardDelightEmptyCta component={RouterLink} href={paths.dashboard.discover}>
         {t(findPeople ? 'pages.dashboard.find_people_cta' : 'pages.dashboard.discover_spots_cta')}
-      </Button>
+      </DashboardDelightEmptyCta>
     );
   }, [savedActive, followingActive, userId, t]);
 
@@ -2234,6 +2238,7 @@ export default function MapView() {
       onCloseDetail={handleCloseSpotPanel}
       onSaveApplied={handleSaveApplied}
       refetchSheetReviews={refetchSheetReviews}
+      sheetEmptyTitle={sheetEmptyTitle}
       sheetEmptyCopy={sheetEmptyCopy}
       sheetEmptyAction={sheetEmptyAction}
       isMobileSheet={isMobileSheet}
@@ -2672,20 +2677,21 @@ export default function MapView() {
                     </Stack>
                   )}
                   {!followingListsLoading && followingLists.length === 0 && (
-                    <Stack spacing={1} sx={{ px: 2, py: 2 }}>
-                      <Typography variant="body2" color="text.secondary">
-                        {t('pages.dashboard.map.chip_following_empty')}
-                      </Typography>
-                      <Button
-                        component={RouterLink}
-                        href={paths.dashboard.discover}
-                        variant="contained"
-                        color="primary"
-                        size="small"
-                      >
-                        {t('pages.dashboard.find_people_cta')}
-                      </Button>
-                    </Stack>
+                    <DashboardDelightEmpty
+                      compact
+                      icon={ic.usersGroupRoundedBold}
+                      title={t('pages.dashboard.map.chip_following_empty_title')}
+                      body={t('pages.dashboard.map.chip_following_empty')}
+                      action={
+                        <DashboardDelightEmptyCta
+                          component={RouterLink}
+                          href={paths.dashboard.discover}
+                        >
+                          {t('pages.dashboard.find_people_cta')}
+                        </DashboardDelightEmptyCta>
+                      }
+                      sx={{ m: 1.5 }}
+                    />
                   )}
                   {!followingListsLoading &&
                     followingLists.length > 0 &&
@@ -2887,20 +2893,21 @@ export default function MapView() {
                     !savedSharedListsLoading &&
                     savedOwnedLists.length === 0 &&
                     savedSharedLists.length === 0 && (
-                      <Stack spacing={1} sx={{ px: 2, py: 2 }}>
-                        <Typography variant="body2" color="text.secondary">
-                          {t('pages.dashboard.map.chip_saved_empty')}
-                        </Typography>
-                        <Button
-                          component={RouterLink}
-                          href={paths.dashboard.discover}
-                          variant="contained"
-                          color="primary"
-                          size="small"
-                        >
-                          {t('pages.dashboard.discover_spots_cta')}
-                        </Button>
-                      </Stack>
+                      <DashboardDelightEmpty
+                        compact
+                        icon={ic.bookmarkLinear}
+                        title={t('pages.dashboard.map.chip_saved_empty_title')}
+                        body={t('pages.dashboard.map.chip_saved_empty')}
+                        action={
+                          <DashboardDelightEmptyCta
+                            component={RouterLink}
+                            href={paths.dashboard.discover}
+                          >
+                            {t('pages.dashboard.discover_spots_cta')}
+                          </DashboardDelightEmptyCta>
+                        }
+                        sx={{ m: 1.5 }}
+                      />
                     )}
                   {!savedOwnedListsLoading &&
                     !savedSharedListsLoading &&

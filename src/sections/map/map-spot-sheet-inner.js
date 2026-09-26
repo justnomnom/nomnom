@@ -25,7 +25,7 @@ import { fRating } from 'src/utils/format-number';
 
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
-import { RADIUS, tabularNumsSx } from 'src/theme/spacing';
+import { SPACE, RADIUS, tabularNumsSx } from 'src/theme/spacing';
 import { hoverable } from 'src/theme/overrides/hoverable';
 import { readableAccent } from 'src/theme/readable-accent';
 import { useSkeletonThemeColors } from 'src/theme/use-skeleton-theme';
@@ -35,6 +35,7 @@ import {
 } from 'src/libs/analytics/restaurant-analytics';
 
 import Iconify from 'src/components/iconify';
+import { DashboardDelightEmpty } from 'src/components/dashboard';
 import RemoteCoverImage from 'src/components/image/remote-cover-image';
 import PhotoCarouselPillDots from 'src/components/photo-carousel-pill-dots/photo-carousel-pill-dots';
 
@@ -1023,6 +1024,7 @@ function MapSpotSheetInner({
   onCloseDetail,
   onSaveApplied,
   refetchSheetReviews,
+  sheetEmptyTitle = null,
   sheetEmptyCopy,
   sheetEmptyAction = null,
   isMobileSheet,
@@ -1286,41 +1288,14 @@ function MapSpotSheetInner({
       {!showInitialSkeleton && !selected && (
         <>
           {places.length === 0 ? (
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                textAlign: 'center',
-                px: 3,
-                pt: isMobileSheet ? 2 : 4,
-                pb: 3,
-              }}
-            >
-              <Box
-                sx={{
-                  width: 52,
-                  height: 52,
-                  borderRadius: '16px',
-                  bgcolor: (tt) =>
-                    alpha(tt.palette.text.primary, tt.palette.mode === 'dark' ? 0.07 : 0.05),
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  mb: 1.75,
-                }}
-              >
-                <Iconify icon={ic.shopBold} width={26} sx={{ color: 'text.disabled' }} />
-              </Box>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ lineHeight: 1.6, maxWidth: 260 }}
-              >
-                {sheetEmptyCopy}
-              </Typography>
-              {sheetEmptyAction ? <Box sx={{ mt: 2 }}>{sheetEmptyAction}</Box> : null}
-            </Box>
+            <DashboardDelightEmpty
+              compact
+              icon={ic.mapPointBold}
+              title={sheetEmptyTitle || sheetEmptyCopy}
+              body={sheetEmptyTitle ? sheetEmptyCopy : null}
+              action={sheetEmptyAction}
+              sx={{ mx: SPACE.sm, mt: isMobileSheet ? SPACE.xs : SPACE.md }}
+            />
           ) : (
             <>
               {shareFeedback ? (
@@ -1507,6 +1482,7 @@ MapSpotSheetInner.propTypes = {
   onSaveApplied: PropTypes.func,
   onGuestSaveClick: PropTypes.func,
   refetchSheetReviews: PropTypes.func,
+  sheetEmptyTitle: PropTypes.node,
   sheetEmptyCopy: PropTypes.node,
   sheetEmptyAction: PropTypes.node,
   isMobileSheet: PropTypes.bool,

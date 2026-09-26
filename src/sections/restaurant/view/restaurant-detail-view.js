@@ -48,6 +48,7 @@ import {
 
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
+import { DashboardDelightEmpty, DashboardDelightEmptyCta } from 'src/components/dashboard';
 import RemoteCoverImage from 'src/components/image/remote-cover-image';
 import PhotoCarouselPillDots from 'src/components/photo-carousel-pill-dots/photo-carousel-pill-dots';
 
@@ -1935,18 +1936,18 @@ export default function RestaurantDetailView({
             >
               {t('pages.dashboard.restaurant.community_title')}
             </Typography>
-            <Card
-              variant="outlined"
-              sx={{
-                p: { xs: 2, sm: 2.5 },
-                borderRadius: '24px',
-                boxShadow: (tt) =>
-                  tt.palette.mode === 'light'
-                    ? `0 1px 3px ${alpha(tt.palette.common.black, 0.06)}`
-                    : 'none',
-              }}
-            >
-              {reviewConsensus ? (
+            {reviewConsensus ? (
+              <Card
+                variant="outlined"
+                sx={{
+                  p: { xs: 2, sm: 2.5 },
+                  borderRadius: '24px',
+                  boxShadow: (tt) =>
+                    tt.palette.mode === 'light'
+                      ? `0 1px 3px ${alpha(tt.palette.common.black, 0.06)}`
+                      : 'none',
+                }}
+              >
                 <Stack spacing={2.25}>
                   {reviewConsensus.summary ? (
                     <Typography
@@ -2068,24 +2069,22 @@ export default function RestaurantDetailView({
                     </Box>
                   ) : null}
                 </Stack>
-              ) : (
-                <Stack spacing={1.5} alignItems="flex-start">
-                  <Typography variant="body2" color="text.secondary">
-                    {t('pages.dashboard.restaurant.community_empty')}
-                  </Typography>
-                  {showSaveButton ? (
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      size="small"
-                      onClick={handleSave}
-                    >
+              </Card>
+            ) : (
+              <DashboardDelightEmpty
+                compact
+                icon={ic.starBold}
+                title={t('pages.dashboard.restaurant.community_empty_title')}
+                body={t('pages.dashboard.restaurant.community_empty')}
+                action={
+                  showSaveButton ? (
+                    <DashboardDelightEmptyCta onClick={handleSave}>
                       {t('pages.dashboard.restaurant.reviews_add_via_save')}
-                    </Button>
-                  ) : null}
-                </Stack>
-              )}
-            </Card>
+                    </DashboardDelightEmptyCta>
+                  ) : null
+                }
+              />
+            )}
           </Box>
 
           {(showListsAndReviews ||
@@ -2406,23 +2405,23 @@ export default function RestaurantDetailView({
                 <ReviewPendingSkeleton />
               )}
               {!mentionsFeedLoading && mentionCardsTotal <= 0 && !showPendingReviewSkeleton && (
-                <Card variant="outlined" sx={{ borderRadius: '24px', p: 2.5 }}>
-                  <Stack spacing={1.5} alignItems="flex-start">
-                    <Typography variant="body2" color="text.secondary">
-                      {t('pages.dashboard.restaurant.mentions_empty')}
-                    </Typography>
-                    {showSaveButton ? (
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        size="small"
+                <DashboardDelightEmpty
+                  compact
+                  icon={ic.chatRoundLineLinear}
+                  title={t('pages.dashboard.restaurant.mentions_empty_title')}
+                  body={t('pages.dashboard.restaurant.mentions_empty')}
+                  action={
+                    showSaveButton ? (
+                      <DashboardDelightEmptyCta
+                        // Soft when community empty already owns the contained CTA on this screen.
+                        variant={reviewConsensus ? 'contained' : 'soft'}
                         onClick={handleSave}
                       >
                         {t('pages.dashboard.restaurant.save_to_list')}
-                      </Button>
-                    ) : null}
-                  </Stack>
-                </Card>
+                      </DashboardDelightEmptyCta>
+                    ) : null
+                  }
+                />
               )}
             </Box>
           )}

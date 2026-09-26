@@ -12,7 +12,7 @@ import { alpha, useTheme } from '@mui/material/styles';
 import { ic } from 'src/assets/icons';
 import { useTranslate } from 'src/locales';
 import { readableAccent } from 'src/theme/readable-accent';
-import { SPACE, RADIUS, touchTargetSx, TOUCH_TARGET_SIZE } from 'src/theme/spacing';
+import { SPACE, RADIUS, touchTargetSx, tabularNumsSx, TOUCH_TARGET_SIZE } from 'src/theme/spacing';
 
 import Iconify from 'src/components/iconify';
 
@@ -46,17 +46,27 @@ export default function DiscoverActivationChecklist({
     >
       <Stack direction="row" alignItems="flex-start" spacing={1}>
         <Box sx={{ minWidth: 0, flex: 1 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
             {t('pages.dashboard.discover.activation_title')}
           </Typography>
-          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.25 }}>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ display: 'block', mt: 0.25, ...tabularNumsSx }}
+          >
             {t('pages.dashboard.discover.activation_progress', { done: doneCount, total })}
           </Typography>
         </Box>
         <IconButton
           aria-label={t('pages.dashboard.discover.activation_dismiss')}
           onClick={onDismiss}
-          sx={{ width: TOUCH_TARGET_SIZE, height: TOUCH_TARGET_SIZE, mt: -0.5, mr: -0.5 }}
+          sx={{
+            width: TOUCH_TARGET_SIZE,
+            height: TOUCH_TARGET_SIZE,
+            mt: -0.5,
+            mr: -0.5,
+            color: 'text.secondary',
+          }}
         >
           <Iconify icon={ic.closeLine} width={18} />
         </IconButton>
@@ -98,7 +108,7 @@ DiscoverActivationChecklist.propTypes = {
  */
 function ChecklistRow({ done, label, ctaLabel, onCta, accent }) {
   return (
-    <Stack direction="row" alignItems="center" spacing={1} sx={{ minHeight: 36 }}>
+    <Stack direction="row" alignItems="center" spacing={1} sx={{ minHeight: TOUCH_TARGET_SIZE }}>
       <Iconify
         icon={done ? ic.checkCircleBold : ic.checkCircleLinear}
         width={20}
@@ -119,9 +129,10 @@ function ChecklistRow({ done, label, ctaLabel, onCta, accent }) {
       {!done && onCta ? (
         <Button
           size="small"
+          variant="text"
           color="primary"
           onClick={onCta}
-          sx={{ fontWeight: 800, flexShrink: 0, ...touchTargetSx, minWidth: 'auto', px: 1.5 }}
+          sx={{ fontWeight: 700, flexShrink: 0, ...touchTargetSx, minWidth: 'auto', px: 1.5 }}
         >
           {ctaLabel}
         </Button>

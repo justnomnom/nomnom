@@ -21,8 +21,8 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-import { restaurantHrefWithFrom } from 'src/routes/restaurant-nav-from';
 import { RouterLink } from 'src/routes/components';
+import { restaurantHrefWithFrom } from 'src/routes/restaurant-nav-from';
 
 import { useShareLink } from 'src/hooks/use-share-link';
 
@@ -51,7 +51,7 @@ import {
   useRestaurantAnalytics,
 } from 'src/libs/analytics/restaurant-analytics';
 
-import Iconify from 'src/components/iconify';
+import { DashboardDelightEmpty, DashboardDelightEmptyCta } from 'src/components/dashboard';
 import ShareFeedbackSnackbar from 'src/components/share/share-feedback-snackbar';
 
 import StartTableSheet from 'src/sections/lists/start-table-sheet';
@@ -789,17 +789,12 @@ export default function ListPublicView({
       onSaveApplied={handleListMapSaveApplied}
       onGuestSaveClick={isPublicPageVariant && !authenticated ? handleRowSaveRequest : null}
       refetchSheetReviews={refetchSheetReviews}
-      sheetEmptyCopy={t('pages.dashboard.map.sheet_empty')}
+      sheetEmptyTitle={t('pages.lists.no_places')}
+      sheetEmptyCopy={t(emptyPlacesHintKey)}
       sheetEmptyAction={
-        <Button
-          component={RouterLink}
-          href={emptyPlacesHref}
-          variant="contained"
-          color="primary"
-          size="small"
-        >
+        <DashboardDelightEmptyCta component={RouterLink} href={emptyPlacesHref}>
           {emptyPlacesCta}
-        </Button>
+        </DashboardDelightEmptyCta>
       }
       isMobileSheet={isMobileSheet}
       spotsHeadingBadgeCount={sheetSpotsHeadingBadgeCount}
@@ -1644,15 +1639,18 @@ export default function ListPublicView({
 
         if (showEmptyPlaces) {
           const emptyPlacesCard = (
-            <Box
+            <DashboardDelightEmpty
+              compact
+              icon={ic.mapPointBold}
+              title={t('pages.lists.no_places')}
+              body={t(emptyPlacesHintKey)}
+              action={
+                <DashboardDelightEmptyCta component={RouterLink} href={emptyPlacesHref}>
+                  {emptyPlacesCta}
+                </DashboardDelightEmptyCta>
+              }
               sx={{
-                mt: 0.5,
-                py: { xs: 3, sm: 4 },
-                px: 2,
-                textAlign: 'center',
-                borderRadius: 2,
-                bgcolor: (muiTheme) => alpha(muiTheme.palette.grey[500], 0.06),
-                border: (muiTheme) => `1px dashed ${muiTheme.palette.divider}`,
+                mt: SPACE.xxs,
                 ...(!freemiumGateCard && isDashboardEmbed
                   ? {
                       flex: '1 1 0%',
@@ -1665,38 +1663,7 @@ export default function ListPublicView({
                     }
                   : { width: 1 }),
               }}
-            >
-              <Iconify
-                icon={ic.mapPointBold}
-                width={36}
-                sx={{
-                  color: (muiTheme) => alpha(muiTheme.palette.primary.main, 0.4),
-                  mb: 1.5,
-                  display: 'block',
-                  mx: 'auto',
-                }}
-              />
-              <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600 }}>
-                {t('pages.lists.no_places')}
-              </Typography>
-              <Typography
-                variant="body2"
-                color="text.disabled"
-                sx={{ mt: 0.75, maxWidth: 280, mx: 'auto' }}
-              >
-                {t(emptyPlacesHintKey)}
-              </Typography>
-              <Button
-                component={RouterLink}
-                href={emptyPlacesHref}
-                variant="contained"
-                color="primary"
-                size="small"
-                sx={{ mt: 2 }}
-              >
-                {emptyPlacesCta}
-              </Button>
-            </Box>
+            />
           );
 
           mainPlaces = freemiumGateCard ? (
