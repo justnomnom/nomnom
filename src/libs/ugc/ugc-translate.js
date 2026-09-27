@@ -1,9 +1,7 @@
-import { generateText } from 'ai';
-
 import { normalizeAppLocale } from 'src/libs/locale-utils';
+import { qwenJsonChat } from 'src/libs/restaurant-ingest/qwen-json-chat';
 import { ugcContentHash } from 'src/libs/ugc/ugc-content-hash';
 import { dedupeMustTryDishesByDisplayLabel } from 'src/libs/ugc/must-try-dedupe';
-import { getRestaurantSearchLanguageModel } from 'src/libs/restaurant-search/restaurant-search-llm';
 
 export { ugcContentHash } from 'src/libs/ugc/ugc-content-hash';
 
@@ -75,7 +73,7 @@ async function writeTranslationCache(row) {
     p_source_locale: row.source_locale,
     p_target_locale: row.target_locale,
     p_translated_text: row.translated_text,
-    p_provider: row.provider ?? 'llm',
+    p_provider: row.provider ?? 'qwen',
   });
   if (error) {
     console.warn('[ugc-translate] cache write failed', error.message);
@@ -83,8 +81,8 @@ async function writeTranslationCache(row) {
 }
 
 /**
- * Machine-translate short UGC (dish names). Falls back to original on failure.
- * Disabled when `UGC_TRANSLATE_ENABLED=false` or no AI key.
+ * Machine-translate a dish name with Qwen (same OpenRouter/DashScope helper as ingest).
+ * Falls back to the original text when disabled, the key is missing, or the call fails.
  *
  * @param {string} text
  * @param {AppLocale} sourceLocale
@@ -94,23 +92,18 @@ async function translateWithLlm(text, sourceLocale, targetLocale) {
   if (process.env.UGC_TRANSLATE_ENABLED === 'false') {
     return text;
   }
+  const src = SOURCE_NAMES[sourceLocale] ?? sourceLocale;
+  const tgt = TARGET_NAMES[targetLocale] ?? targetLocale;
   try {
-    const model = getRestaurantSearchLanguageModel();
-    const src = SOURCE_NAMES[sourceLocale] ?? sourceLocale;
-    const tgt = TARGET_NAMES[targetLocale] ?? targetLocale;
-    const { text: out } = await generateText({
-      model,
-      prompt: `Translate this restaurant dish or ingredient name from ${src} to ${tgt}. Use the wording diners would see on a menu in the target language (plain name: e.g. rice, bacalhau, nata — not a sentence). Reply with ONLY that name, no quotes or explanation.\n\n${text}`,
-      maxOutputTokens: 120,
-      experimental_telemetry: {
-        isEnabled: true,
-        functionId: 'ugc_translate',
-        recordInputs: true,
-        recordOutputs: true,
-      },
+    const parsed = await qwenJsonChat({
+      system: `You translate a restaurant dish or ingredient name from ${src} to ${tgt}. Use the wording diners would see on a menu (a plain name, not a sentence: e.g. rice, bacalhau, nata). Respond with ONLY JSON: {"name":"<translated name>"}.`,
+      user: text,
+      maxTokens: 80,
+      temperature: 0.1,
+      logTag: 'ugc-translate',
     });
-    const trimmed = (out ?? '').trim();
-    return trimmed.length ? trimmed : text;
+    const name = typeof parsed?.name === 'string' ? parsed.name.trim() : '';
+    return name || text;
   } catch (e) {
     console.warn('[ugc-translate] LLM translate failed', e?.message ?? e);
     return text;
@@ -140,7 +133,7 @@ export async function resolveUgcDisplayLabel(supabase, label, labelLocale, viewe
       source_locale: src,
       target_locale: tgt,
       translated_text: translated,
-      provider: 'llm',
+      provider: 'qwen',
     });
   }
   return translated;
@@ -214,7 +207,7 @@ async function resolveUgcLabelsBatch(supabase, needs, tgt) {
             source_locale: n.sourceLocale,
             target_locale: tgt,
             translated_text: translated,
-            provider: 'llm',
+            provider: 'qwen',
           });
         }
       })

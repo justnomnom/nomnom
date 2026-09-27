@@ -210,7 +210,7 @@
     "semantic_hash": ""
   },
   ".cursor/settings.json": {
-    "mtime": 1785367742.667579,
+    "mtime": 1790529483.0921946,
     "ast_hash": "7cc2c79a4c20a72b805f657f6c653c52",
     "semantic_hash": ""
   },
@@ -13355,8 +13355,8 @@
     "semantic_hash": ""
   },
   "src/libs/ugc/ugc-translate.js": {
-    "mtime": 1786573882.7033064,
-    "ast_hash": "60f9bfcd9ff2b2d00a2fbe5d7ceaf2d3",
+    "mtime": 1790529694.808252,
+    "ast_hash": "8225d1678822ba8550b547d2172248f6",
     "semantic_hash": ""
   },
   "src/app/(frontend)/onboarding/loading.js": {
