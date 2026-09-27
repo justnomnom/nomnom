@@ -16,7 +16,7 @@ function lookup(dict, key) {
 }
 
 /**
- * English fallback for keys that have no viewer-lang string yet. Cache-bust: localizedMeta + mesaNames + spotsNotPlaces + mapEmpty.
+ * English fallback for keys that have no viewer-lang string yet. Cache-bust: firstSteps + localizedMeta + mesaNames + spotsNotPlaces + mapEmpty + tableDocTitle.
  *
  * Returns `''` rather than the raw value for a missing key or a branch node, so
  * the inferred type stays `string` instead of widening to `string | object` with

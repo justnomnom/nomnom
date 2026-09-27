@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation';
 
 import { fetchListPage } from 'src/libs/lists/actions';
 import { getServerViewerLang } from 'src/libs/i18n-server';
+import { fetchListDocumentName } from 'src/libs/lists/list-document-name';
+import { getTranslation } from 'src/locales/default-translations';
 
 import { DynamicTitle } from 'src/components/dynamic-title';
 
@@ -13,6 +15,14 @@ import DashboardListPublicSkeleton from 'src/sections/lists/view/dashboard-list-
 // ----------------------------------------------------------------------
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+  if (!UUID_RE.test(id)) return {};
+  const [lang, name] = await Promise.all([getServerViewerLang(), fetchListDocumentName(id)]);
+  if (!name) return {};
+  return { title: getTranslation(lang, 'pages.lists.document_title', { name }) };
+}
 
 /**
  * Streams list payload under Suspense (async-suspense-boundaries).

@@ -393,6 +393,7 @@
     },
     "table": {
       "default_title": "Table",
+      "document_title": "{{name}} · NomNom Table",
       "subtitle": "Vote, add spots, and settle where you’re going.",
       "when_today": "Today at {{time}}",
       "when_tomorrow": "Tomorrow at {{time}}",
@@ -789,7 +790,7 @@
         "filter_open_now": "Open now",
         "decide_group_kicker": "Can’t decide where to eat?",
         "roulette_promo_title": "NomNom Roulette",
-        "activation_title": "Get started",
+        "activation_title": "Your first steps",
         "activation_progress": "{{done}} of {{total}}",
         "activation_dismiss": "Dismiss",
         "activation_follow": "Follow someone",

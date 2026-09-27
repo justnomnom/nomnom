@@ -393,6 +393,7 @@
     },
     "table": {
       "default_title": "Mesa",
+      "document_title": "{{name}} · NomNom Mesa",
       "subtitle": "Votem, acrescentem sítios e fechem onde vão.",
       "when_today": "Hoje às {{time}}",
       "when_tomorrow": "Amanhã às {{time}}",
@@ -789,7 +790,7 @@
         "filter_open_now": "Aberto agora",
         "decide_group_kicker": "Não sabes onde comer?",
         "roulette_promo_title": "NomNom Roulette",
-        "activation_title": "Começar",
+        "activation_title": "Os teus primeiros passos",
         "activation_progress": "{{done}} de {{total}}",
         "activation_dismiss": "Dispensar",
         "activation_follow": "Segue alguém",

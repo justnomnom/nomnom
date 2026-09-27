@@ -17,7 +17,7 @@ import { SPACE, RADIUS, touchTargetSx, tabularNumsSx, TOUCH_TARGET_SIZE } from '
 import Iconify from 'src/components/iconify';
 
 /**
- * Dismissable Get-started card: follow someone, save a spot.
+ * Dismissable first-steps card: follow someone, save a spot.
  * Hide the follow row with `showFollow={false}` when Discover has nobody to suggest.
  */
 export default function DiscoverActivationChecklist({

@@ -154,6 +154,12 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      // Legacy marketing URL — product path is `/about` (paths.about).
+      {
+        source: '/about-us',
+        destination: '/about',
+        permanent: true,
+      },
       // Dashboard index redirects — HTTP level only (no redirect-only page.js).
       // Server redirect() in page.js caused React hooks violations on client nav
       // (Next.js 16 + React 19) and broke Vercel builds (missing client manifests).
