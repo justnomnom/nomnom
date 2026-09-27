@@ -157,7 +157,7 @@ export async function qwenJsonChat({
   const { key, model, baseUrl } = QWEN_API;
   if (!key || typeof key !== 'string') return null;
 
-  const resolvedModel = modelOverride?.trim() || model?.trim() || 'qwen-turbo';
+  const resolvedModel = modelOverride?.trim() || model?.trim() || 'qwen-flash';
   const url = `${baseUrl}/chat/completions`;
   const userContent = typeof user === 'string' ? user : JSON.stringify(user);
   const body = JSON.stringify({

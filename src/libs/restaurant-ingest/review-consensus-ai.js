@@ -283,7 +283,7 @@ export async function extractReviewConsensus(input) {
   if (!summary && !strengths.length && !weaknesses.length) return null;
 
   // Model name lives in env; surface what actually answered for auditability.
-  const model = process.env.QWEN_MODEL?.trim() || 'qwen-turbo';
+  const model = process.env.QWEN_MODEL?.trim() || 'qwen-flash';
 
   return {
     summary,

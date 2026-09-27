@@ -100,7 +100,7 @@ export const INTEGRATION_FLAGS = {
  */
 export const QWEN_API = {
   key: process.env.QWEN_API_KEY,
-  model: process.env.QWEN_MODEL || 'qwen-turbo',
+  model: process.env.QWEN_MODEL || 'qwen-flash',
   baseUrl: process.env.QWEN_BASE_URL || 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1',
 };
 

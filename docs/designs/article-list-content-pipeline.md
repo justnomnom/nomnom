@@ -73,7 +73,7 @@ Prompt returns `{ restaurants: [{ name, area, evidence }] }` (json_object, not a
 
 Drop a row if `evidence` is missing or `articleText` does not contain it (whitespace-normalized). Also drop unless `normalizeName(name)` appears in `normalizeName(articleText)` — evidence-only would let Qwen invent a venue next to a real sentence. If `articleText.length > 12000`, split into 8k windows with **1k overlap**, extract per chunk, then merge. Merge key is `normalizeName`. Same key: keep the first-seen row (article order); if later chunks add a different `evidence` string, append with ` | `; if `area` is empty on the first row, take the first non-empty later area. After merge, cap at the **first 20** first-seen names.
 
-Copied Qwen helper **fails closed** (no empty `review.json` that looks successful). Require `QWEN_API_KEY`, `QWEN_BASE_URL`, and `QWEN_MODEL` after the same dotenv load as `remotion/scripts/lib/supabase-client.mjs`. Defaults if you need them for a local note: intl DashScope URL and `qwen-turbo` — but missing env is a crash, not a silent default.
+Copied Qwen helper **fails closed** (no empty `review.json` that looks successful). Require `QWEN_API_KEY`, `QWEN_BASE_URL`, and `QWEN_MODEL` after the same dotenv load as `remotion/scripts/lib/supabase-client.mjs`. Defaults if you need them for a local note: intl DashScope URL and `qwen-flash` — but missing env is a crash, not a silent default.
 
 ### Match (this is new code, wrapping the existing scorer)
 
