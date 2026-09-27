@@ -341,6 +341,39 @@ const MIN_MEANINGFUL_REVIEW_TEXT_CHARS = 10;
  *   when: string | null,
  * }>}
  */
+/**
+ * Combine the deep-scrolled review array with the first-paint one, preferring the
+ * deep list and dropping duplicates. Reviews are keyed by `review_id` when the
+ * scraper captured one (the extended pass often leaves it empty), else by
+ * author+text, which is stable enough to dedupe the small overlap between the two
+ * arrays.
+ *
+ * @param {unknown} extended
+ * @param {unknown} basic
+ * @returns {Array<unknown>}
+ */
+function mergeReviewSources(extended, basic) {
+  const keyOf = (r) => {
+    const o = /** @type {Record<string, unknown>} */ (r);
+    const id = typeof o.review_id === 'string' && o.review_id.trim() ? o.review_id.trim() : null;
+    if (id) return id;
+    const name = typeof o.Name === 'string' ? o.Name : '';
+    const text = typeof o.Description === 'string' ? o.Description.slice(0, 120) : '';
+    return `${name}|${text}`;
+  };
+  const candidates = [
+    ...(Array.isArray(extended) ? extended : []),
+    ...(Array.isArray(basic) ? basic : []),
+  ].filter((r) => r && typeof r === 'object');
+  const seen = new Set();
+  return candidates.filter((r) => {
+    const key = keyOf(r);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 export function normalizeUserReviews(reviews) {
   if (!Array.isArray(reviews)) return [];
   const scored = reviews
@@ -444,7 +477,15 @@ export function mapGooglePlacePayload(payload) {
   const reservations = normalizeLinkArray(p.reservations);
   const orderOnline = normalizeLinkArray(p.order_online);
   const owner = normalizeOwner(p.owner);
-  const userReviews = normalizeUserReviews(p.user_reviews);
+  // The scraper runs with -extra-reviews, which deep-scrolls the review panel
+  // into `user_reviews_extended` (~119/place) while `user_reviews` holds only the
+  // ~8 visible on first paint. Reading just `user_reviews` threw away >90% of the
+  // scraped reviews and left the AI consensus with 5-8 samples instead of the 25
+  // it is capped at (MAX_REVIEWS_USED). Prefer the extended array, fall back to
+  // the short one, and merge so nothing is lost when only one is present.
+  const userReviews = normalizeUserReviews(
+    mergeReviewSources(p.user_reviews_extended, p.user_reviews)
+  );
   const mentionedInReviews = normalizeMentionedInReviews(p.mentioned_in_reviews);
 
   const popularTimes =

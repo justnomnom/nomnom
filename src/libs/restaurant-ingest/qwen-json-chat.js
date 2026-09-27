@@ -17,6 +17,8 @@ import * as Sentry from '@sentry/nextjs';
 
 import { QWEN_API, SENTRY_API, INTEGRATION_FLAGS } from 'src/config-global';
 
+/** Floor for max_tokens when reasoning cannot be disabled, so content is not starved. */
+const MIN_REASONING_HEADROOM_TOKENS = 4000;
 const DEFAULT_TIMEOUT_MS = 25_000;
 const RETRY_DELAY_MS = 500;
 const SPAN_TEXT_MAX = 8_000;
@@ -160,11 +162,29 @@ export async function qwenJsonChat({
   const resolvedModel = modelOverride?.trim() || model?.trim() || 'qwen-flash';
   const url = `${baseUrl}/chat/completions`;
   const userContent = typeof user === 'string' ? user : JSON.stringify(user);
+  // Reasoning models (qwen3.x-flash and friends) bill their chain-of-thought
+  // against max_tokens. At the 800-1024 budgets this helper used, reasoning
+  // consumed the ENTIRE allowance: finish_reason came back "length" with
+  // reasoning_tokens == max_tokens and content == "", so JSON.parse failed and
+  // this helper returned null. Callers "fail open" on null, so the whole AI layer
+  // went silently dead — no review consensus, ingest_tag_ai null, ~1 tag per
+  // restaurant — while every HTTP call still returned 200.
+  //
+  // OpenRouter lets us turn reasoning off, which is both correct and ~7x cheaper
+  // here (126 vs 951 completion tokens measured on a real consensus prompt).
+  // Only send the field to OpenRouter; DashScope and other OpenAI-compatible
+  // gateways may reject unknown top-level keys.
+  const isOpenRouter = /openrouter\.ai/i.test(baseUrl || '');
+  // Safety net for gateways that ignore the flag: leave room for reasoning so a
+  // truncated-but-nonempty answer is still parseable. max_tokens is a ceiling,
+  // not a target, so raising it costs nothing when reasoning is off.
+  const effectiveMaxTokens = isOpenRouter ? maxTokens : Math.max(maxTokens, MIN_REASONING_HEADROOM_TOKENS);
   const body = JSON.stringify({
     model: resolvedModel,
     temperature,
-    max_tokens: maxTokens,
+    max_tokens: effectiveMaxTokens,
     response_format: { type: 'json_object' },
+    ...(isOpenRouter ? { reasoning: { enabled: false } } : {}),
     messages: [
       { role: 'system', content: system },
       { role: 'user', content: userContent },

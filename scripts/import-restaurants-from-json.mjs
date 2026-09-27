@@ -11,8 +11,11 @@ const ENDPOINT = process.env.INGEST_ENDPOINT || 'http://localhost:3032/api/resta
 const SECRET = process.env.RESTAURANT_INGEST_SECRET;
 const CONCURRENCY = Number(process.env.CONCURRENCY || 4);
 const MAX_RETRIES = Number(process.env.MAX_RETRIES || 4);
-const PROGRESS_PATH = 'scripts/.ingest-progress.json';
-const RESULTS_PATH = 'scripts/.ingest-results.json';
+// Per-environment state. Resume is keyed by place_id, so sharing one progress
+// file between staging and production makes the second environment SKIP every
+// place the first already ingested. Override these when switching targets.
+const PROGRESS_PATH = process.env.INGEST_PROGRESS || 'scripts/.ingest-progress.json';
+const RESULTS_PATH = process.env.INGEST_RESULTS || 'scripts/.ingest-results.json';
 
 if (!SECRET) {
   console.error('Missing RESTAURANT_INGEST_SECRET env');

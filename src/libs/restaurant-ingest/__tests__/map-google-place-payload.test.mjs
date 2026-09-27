@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { normalizeUserReviews } from '../map-google-place-payload.js';
+import { mapGooglePlacePayload, normalizeUserReviews } from '../map-google-place-payload.js';
 
 const textReview = (text, i = 0) => ({
   Name: `Author ${i}`,
@@ -130,4 +130,54 @@ test('normalizeUserReviews returns empty array for non-array input', () => {
   assert.deepEqual(normalizeUserReviews(null), []);
   assert.deepEqual(normalizeUserReviews({}), []);
   assert.deepEqual(normalizeUserReviews('reviews'), []);
+});
+
+// Regression: the scraper runs with -extra-reviews, so the deep-scrolled reviews
+// land in `user_reviews_extended` (~119/place) while `user_reviews` holds only the
+// ~8 visible on first paint. Reading just the short array starved the AI consensus
+// (5-8 samples instead of the 25 cap) and silently discarded >90% of the scrape.
+test('mapGooglePlacePayload feeds the deep-scrolled reviews to the consensus layer', () => {
+  const extended = Array.from({ length: 40 }, (_, i) =>
+    textReview(`Deep scrolled review number ${i} with plenty of detail.`, i)
+  );
+  const basic = [textReview('Only visible on first paint, long enough to count.', 999)];
+  const mapped = mapGooglePlacePayload({
+    title: 'Test Place',
+    place_id: 'ChIJtest',
+    latitude: 38.7,
+    longitude: -9.1,
+    user_reviews: basic,
+    user_reviews_extended: extended,
+  });
+  const out = mapped.metadataBase.user_reviews;
+  assert.equal(out.length, 25, 'should fill the 25-review cap from the extended array');
+  assert.ok(
+    out.every((r) => typeof r.text === 'string' && r.text.trim().length >= 10),
+    'every mapped review should carry usable text'
+  );
+});
+
+test('mapGooglePlacePayload falls back to user_reviews when no extended array exists', () => {
+  const basic = [1, 2, 3, 4].map((i) => textReview(`Short-array review ${i} with enough text.`, i));
+  const mapped = mapGooglePlacePayload({
+    title: 'Test Place',
+    place_id: 'ChIJtest2',
+    latitude: 38.7,
+    longitude: -9.1,
+    user_reviews: basic,
+  });
+  assert.equal(mapped.metadataBase.user_reviews.length, 4);
+});
+
+test('mapGooglePlacePayload dedupes reviews present in both arrays', () => {
+  const shared = textReview('This exact review appears in both arrays verbatim.', 1);
+  const mapped = mapGooglePlacePayload({
+    title: 'Test Place',
+    place_id: 'ChIJtest3',
+    latitude: 38.7,
+    longitude: -9.1,
+    user_reviews: [shared],
+    user_reviews_extended: [shared, textReview('A second distinct review, long enough.', 2)],
+  });
+  assert.equal(mapped.metadataBase.user_reviews.length, 2, 'the duplicate should collapse');
 });
